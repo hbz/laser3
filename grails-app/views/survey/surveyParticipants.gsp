@@ -11,7 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
@@ -65,7 +65,7 @@
                     </g:link>
                 </g:if>
 
-                <g:if test="${surveyConfig.type != 'IssueEntitlementsSurvey'}">
+                <g:if test="${surveyConfig.type != SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
                     <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"

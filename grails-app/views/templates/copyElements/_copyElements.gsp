@@ -109,7 +109,7 @@
                                             <%
                                                 if (AuditConfig.getConfig(targetObject, objProperty)) {
                                                     if (targetObject.isSlaved) {
-                                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                     } else {
                                                         println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                     }
@@ -631,7 +631,7 @@
                                         perspectiveIndex = 1
                                 %>
                                 <div data-oid="${genericOIDService.getOID(link)}">
-                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject)}<br />
+                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject).dropdownNamingConvention()}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -669,7 +669,7 @@
                                             perspectiveIndex = 1
                                     %>
                                     <div data-oid="${genericOIDService.getOID(link)}">
-                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject)}<br />
+                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject).dropdownNamingConvention()}<br />
                                     </div>
                                 </g:each>
                             </div>

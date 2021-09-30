@@ -96,7 +96,7 @@
 
                                     <g:if test="${! AuditConfig.getConfig(prop)}">
                                         <g:if test="${prop.type in memberProperties}">
-                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -119,7 +119,7 @@
                                             </laser:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -144,7 +144,7 @@
                                     </g:if>
                                     <g:else>
 
-                                        <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax" action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
                                                                    ownerId: "${ownobj.id}",
@@ -179,7 +179,7 @@
                                             </laser:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                            <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
@@ -191,7 +191,7 @@
 
                                     <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                    <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                    <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="deleteCustomProperty"
                                                       params='[propClass: prop.getClass(),
@@ -208,7 +208,7 @@
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </laser:remoteLink>
                                 </g:if>
                                 <g:else>
@@ -229,7 +229,7 @@
                                     </laser:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                    <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
@@ -238,7 +238,7 @@
                                     </laser:remoteLink>
                                 </g:else>
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-                                <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),
@@ -255,7 +255,7 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </laser:remoteLink>
                             </g:elseif>
                             <g:else>
@@ -268,14 +268,14 @@
                                 </g:elseif>
                                 <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
                                     <g:if test="${ownobj.isSlaved}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                     </g:if>
                                     <g:else>
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down blue"></i></span>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
                                 </g:elseif>
                             </g:else>
                         </td>

@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -51,6 +52,7 @@ class RDStore {
     public static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     public static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
+    public static final COMBO_TYPE_FOLLOWS         = getRefdataValue('follows', RDConstants.COMBO_TYPE)
 
     public static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
@@ -125,6 +127,16 @@ class RDStore {
     public static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
     public static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
 
+    public static final REPORTING_CONTACT_TYPE_CONTACTS     = getRefdataValue('contacts', RDConstants.REPORTING_CONTACT_TYPE)
+    public static final REPORTING_CONTACT_TYPE_ADDRESSES    = getRefdataValue('addresses', RDConstants.REPORTING_CONTACT_TYPE)
+
+    public static final READER_NUMBER_USER              = getRefdataValue(ReaderNumber.READER_NUMBER_USER, RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_PEOPLE            = getRefdataValue(ReaderNumber.READER_NUMBER_PEOPLE, RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_SCIENTIFIC_STAFF  = getRefdataValue(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF, RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_STUDENTS          = getRefdataValue(ReaderNumber.READER_NUMBER_STUDENTS, RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_FTE               = getRefdataValue(ReaderNumber.READER_NUMBER_FTE, RDConstants.NUMBER_TYPE)
+
+
     public static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
     public static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     public static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
@@ -163,6 +175,7 @@ class RDStore {
 
     public static final TASK_STATUS_OPEN            = getRefdataValue('Open', RDConstants.TASK_STATUS)
     public static final TASK_STATUS_DONE            = getRefdataValue('Done', RDConstants.TASK_STATUS)
+    public static final TASK_STATUS_DEFERRED        = getRefdataValue('Deferred', RDConstants.TASK_STATUS)
 
     public static final TAX_REVERSE_CHARGE          = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
@@ -234,6 +247,22 @@ class RDStore {
     public static final ACCESS_POINT_TYPE_PROXY        = getRefdataValue('proxy', RDConstants.ACCESS_POINT_TYPE)
     public static final ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
     public static final ACCESS_POINT_TYPE_VPN          = getRefdataValue('vpn', RDConstants.ACCESS_POINT_TYPE)
+
+    //public static final WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
+    //public static final WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)
+
+    public static final WF_TASK_PRIORITY_NORMAL     = getRefdataValue('normal', RDConstants.WF_TASK_PRIORITY)
+    public static final WF_TASK_PRIORITY_IMPORTANT  = getRefdataValue('important', RDConstants.WF_TASK_PRIORITY)
+    public static final WF_TASK_PRIORITY_OPTIONAL   = getRefdataValue('optional', RDConstants.WF_TASK_PRIORITY)
+
+    public static final WF_TASK_STATUS_OPEN         = getRefdataValue('open', RDConstants.WF_TASK_STATUS)
+    public static final WF_TASK_STATUS_CANCELED     = getRefdataValue('canceled', RDConstants.WF_TASK_STATUS)
+    public static final WF_TASK_STATUS_DONE         = getRefdataValue('done', RDConstants.WF_TASK_STATUS)
+
+    public static final WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
+    public static final WF_WORKFLOW_STATUS_OPEN     = getRefdataValue('open', RDConstants.WF_WORKFLOW_STATUS)
+    public static final WF_WORKFLOW_STATUS_CANCELED = getRefdataValue('canceled', RDConstants.WF_WORKFLOW_STATUS)
+    public static final WF_WORKFLOW_STATUS_DONE     = getRefdataValue('done', RDConstants.WF_WORKFLOW_STATUS)
 
     public static final YN_YES              = getRefdataValue('Yes', RDConstants.Y_N)
     public static final YN_NO               = getRefdataValue('No', RDConstants.Y_N)

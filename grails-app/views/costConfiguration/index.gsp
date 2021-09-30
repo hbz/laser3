@@ -57,14 +57,14 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"
                                             params="${[ciec: ciec.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                 </td>
                             </g:if>

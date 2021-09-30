@@ -7,6 +7,7 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -45,7 +46,7 @@ class FinanceControllerService {
             result.sortConfig.ownOrder = params.order
         }
         if(params.consSort) {
-            result.sortConfig.consSort = params.sort
+            result.sortConfig.consSort = (params.sort.contains("oo.org") || params.sort.contains("ci.")) ? params.sort : 'ci.'+params.sort
             result.sortConfig.consOrder = params.order
         }
         if(params.subscrSort) {

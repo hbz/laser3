@@ -43,134 +43,138 @@ class PersonController  {
                     break
                 case 'POST':
                     if (formService.validateToken(params)) {
-
-                        Person personInstance = new Person(params)
-                        if (!personInstance.save()) {
-                            flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
-                            log.debug("Person could not be created: " + personInstance.errors)
-                            redirect(url: request.getHeader('referer'))
-                            //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
-                            return
-                        }
-                        // processing dynamic form data
-                        //addPersonRoles(personInstance)
-                        Org personRoleOrg
-                        if (params.personRoleOrg) {
-                            personRoleOrg = Org.get(params.personRoleOrg)
-                        }
-                        else {
-                            personRoleOrg = contextOrg
-                        }
-
-                        if (params.functionType) {
-                            params.list('functionType').each {
-                                PersonRole personRole
-                                RefdataValue functionType = RefdataValue.get(it)
-                                personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
-
-                                if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
-                                    log.debug("ignore adding PersonRole because of existing duplicate")
-                                }
-                                else if (personRole) {
-                                    if (personRole.save()) {
-                                        log.debug("adding PersonRole ${personRole}")
-                                    }
-                                    else {
-                                        log.error("problem saving new PersonRole ${personRole}")
-                                    }
-                                }
+                        if(params.functionType || params.positionType)  {
+                            Person personInstance = new Person(params)
+                            if (!personInstance.save()) {
+                                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                                log.debug("Person could not be created: " + personInstance.errors)
+                                redirect(url: request.getHeader('referer'))
+                                //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
+                                return
                             }
-                        }
+                            // processing dynamic form data
+                            //addPersonRoles(personInstance)
+                            Org personRoleOrg
+                            if (params.personRoleOrg) {
+                                personRoleOrg = Org.get(params.personRoleOrg)
+                            }
+                            else {
+                                personRoleOrg = contextOrg
+                            }
 
-                        if (params.positionType) {
-                            params.list('positionType').each {
-                                PersonRole personRole
-                                RefdataValue positionType = RefdataValue.get(it)
-                                personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
+                            if (params.functionType) {
+                                params.list('functionType').each {
+                                    PersonRole personRole
+                                    RefdataValue functionType = RefdataValue.get(it)
+                                    personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
 
-                                if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
-                                    log.debug("ignore adding PersonRole because of existing duplicate")
-                                }
-                                else if (personRole) {
-                                    if (personRole.save()) {
-                                        log.debug("adding PersonRole ${personRole}")
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
+                                        log.debug("ignore adding PersonRole because of existing duplicate")
                                     }
-                                    else {
-                                        log.error("problem saving new PersonRole ${personRole}")
+                                    else if (personRole) {
+                                        if (personRole.save()) {
+                                            log.debug("adding PersonRole ${personRole}")
+                                        }
+                                        else {
+                                            log.error("problem saving new PersonRole ${personRole}")
+                                        }
                                     }
                                 }
                             }
 
-                        }
+                            if (params.positionType) {
+                                params.list('positionType').each {
+                                    PersonRole personRole
+                                    RefdataValue positionType = RefdataValue.get(it)
+                                    personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
 
-                        if (params.content) {
-                            params.list('content').eachWithIndex { content, i ->
-                                if (content) {
-                                    RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
+                                        log.debug("ignore adding PersonRole because of existing duplicate")
+                                    }
+                                    else if (personRole) {
+                                        if (personRole.save()) {
+                                            log.debug("adding PersonRole ${personRole}")
+                                        }
+                                        else {
+                                            log.error("problem saving new PersonRole ${personRole}")
+                                        }
+                                    }
+                                }
 
-                                    if (RDStore.CCT_EMAIL == rdvCT) {
-                                        if (!formService.validateEmailAddress(content)) {
-                                            flash.error = message(code: 'contact.create.email.error')
+                            }
+
+                            if (params.content) {
+                                params.list('content').eachWithIndex { content, i ->
+                                    if (content) {
+                                        RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
+                                        RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
+                                        if (RDStore.CCT_EMAIL == rdvCT) {
+                                            if (!formService.validateEmailAddress(content)) {
+                                                flash.error = message(code: 'contact.create.email.error')
+                                                return
+                                            }
+                                        }
+
+                                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, language: contactLang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                                        contact.save()
+                                    }
+                                }
+                            }
+
+                            if (params.multipleAddresses) {
+                                params.list('multipleAddresses').eachWithIndex { name, i ->
+                                    if(params.type) {
+                                        Address addressInstance = new Address(
+                                                name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                                                additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                                                additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                                                street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                                                street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                                                zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                                                city: (1 == params.list('city').size()) ? params.city : params.city[i],
+                                                region: (1 == params.list('region').size()) ? params.region : params.region[i],
+                                                country: (1 == params.list('country').size()) ? params.country : params.country[i],
+                                                pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                                                pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                                                pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
+                                                prs: personInstance)
+
+                                        params.list('type').each {
+                                            if (!(it in addressInstance.type)) {
+                                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                                            }
+                                        }
+                                        if (!addressInstance.save()) {
+                                            flash.error = message(code: 'default.save.error.general.message')
+                                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                                            redirect(url: request.getHeader('referer'), params: params)
                                             return
                                         }
                                     }
-
-                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
-                                    contact.save()
                                 }
                             }
-                        }
 
-                        if (params.multipleAddresses) {
-                            params.list('multipleAddresses').eachWithIndex { name, i ->
-                                Address addressInstance = new Address(
-                                        name: (1 == params.list('name').size()) ? params.name : params.name[i],
-                                        additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
-                                        additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
-                                        street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
-                                        street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
-                                        zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
-                                        city: (1 == params.list('city').size()) ? params.city : params.city[i],
-                                        region: (1 == params.list('region').size()) ? params.region : params.region[i],
-                                        country: (1 == params.list('country').size()) ? params.country : params.country[i],
-                                        pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
-                                        pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
-                                        pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
-                                        prs: personInstance)
+                            /*['contact1', 'contact2', 'contact3'].each { c ->
+                        if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
 
-                                params.list('type').each {
-                                    if (!(it in addressInstance.type)) {
-                                        addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
-                                    }
-                                }
-                                if (!addressInstance.save()) {
-                                    flash.error = message(code: 'default.save.error.general.message')
-                                    log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                                    redirect(url: request.getHeader('referer'), params: params)
+                            RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
+                            RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
+
+                            if(RDStore.CCT_EMAIL == rdvCT){
+                                if ( !formService.validateEmailAddress(params."${c}_content") ) {
+                                    flash.error = message(code:'contact.create.email.error')
                                     return
                                 }
                             }
+
+                            Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
+                            contact.save(flush: true)
                         }
+                    }*/
 
-                        /*['contact1', 'contact2', 'contact3'].each { c ->
-                    if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
-
-                        RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
-                        RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
-
-                        if(RDStore.CCT_EMAIL == rdvCT){
-                            if ( !formService.validateEmailAddress(params."${c}_content") ) {
-                                flash.error = message(code:'contact.create.email.error')
-                                return
-                            }
+                            flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
                         }
-
-                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
-                        contact.save(flush: true)
-                    }
-                }*/
-
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
+                        else flash.error = message(code: 'person.create.missing_function')
                     }
                     redirect(url: request.getHeader('referer'))
                     break
@@ -241,6 +245,11 @@ class PersonController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
+            if (!params.functionType && !params.positionType) {
+                flash.error = message(code: 'person.create.missing_function')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
 
             personInstance.properties = params
 
@@ -278,7 +287,7 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
                     if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
                         personInstance.removeFromRoleLinks(psr)
                         psr.delete()
@@ -306,7 +315,7 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
                     if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
                         personInstance.removeFromRoleLinks(psr)
                         psr.delete()
@@ -320,13 +329,17 @@ class PersonController  {
                     contact.content = params."content${contact.id}"
                     contact.save()
                 }
+                if (params."contactLang${contact.id}") {
+                    contact.language = RefdataValue.get(params."contactLang${contact.id}")
+                    contact.save()
+                }
             }
 
             if (params.content) {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-
+                        RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error')
@@ -334,7 +347,7 @@ class PersonController  {
                             }
                         }
 
-                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, language: contactLang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
                         contact.save()
                     }
                 }
@@ -342,7 +355,8 @@ class PersonController  {
 
             if (params.multipleAddresses) {
                 params.list('multipleAddresses').eachWithIndex { name, i ->
-                    Address addressInstance = new Address(
+                    if(params.type) {
+                        Address addressInstance = new Address(
                             name: (1 == params.list('name').size()) ? params.name : params.name[i],
                             additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
                             additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
@@ -357,16 +371,17 @@ class PersonController  {
                             pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
                             prs: personInstance)
 
-                    params.list('type').each {
-                        if (!(it in addressInstance.type)) {
-                            addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                        params.list('type').each {
+                            if (!(it in addressInstance.type)) {
+                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                            }
                         }
-                    }
-                    if (!addressInstance.save()) {
-                        flash.error = message(code: 'default.save.error.general.message')
-                        log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                        redirect(url: request.getHeader('referer'), params: params)
-                        return
+                        if (!addressInstance.save()) {
+                            flash.error = message(code: 'default.save.error.general.message')
+                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                            redirect(url: request.getHeader('referer'), params: params)
+                            return
+                        }
                     }
                 }
             }

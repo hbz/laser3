@@ -17,14 +17,14 @@
     <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
     <semui:crumb class="active" id="${issueEntitlementInstance.id}"
-                 text="${issueEntitlementInstance.tipp.name}"/>
+                 text="${issueEntitlementInstance.name}"/>
 </semui:breadcrumbs>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.titleType}"/>
 
 <g:message code="issueEntitlement.for_title.label"
-           args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"/>
+           args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -142,13 +142,13 @@
                                             <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                                   owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                            <br/>
+                                            <%--<br/>
                                             (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
                                                                                                       type="date"
                                                                                                       owner="${priceItem}"/>-
                                             <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
                                                                                                    type="date"
-                                                                                                   owner="${priceItem}"/>)
+                                                                                                   owner="${priceItem}"/>)--%>
                                         </div>
                                     </div>
                                 </div>

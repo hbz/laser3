@@ -11,7 +11,7 @@
 }
 .ui.card .ui.label {
   margin: 0;
-  background-color: #d3dae3;
+  //background-color: #d3dae3;
 }
 // annual rings
 
@@ -202,4 +202,17 @@
 }
 .ui.label.la-advanced-label {
   background-color: #d3dae3;
+}
+/* label what server */
+
+.ui.label.la-server-label {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999;
+  padding:0.2em;
+  font-size: 2.5rem;
 }

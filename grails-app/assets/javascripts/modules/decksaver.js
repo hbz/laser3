@@ -126,7 +126,7 @@ deckSaver = {
                 var button = $(this).closest('.button');
                 var clone = $(this).clone();
                 clone.appendTo(container);
-                clone.addClass('la-clone blue');
+                clone.addClass('la-clone grey');
 
                 //transfer the tooltip-content from button to cloned icon
                 var dataContent = button.attr("data-content");

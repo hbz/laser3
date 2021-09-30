@@ -134,10 +134,10 @@
                             <g:select class="ui search multiple dropdown"
                                       optionKey="id" optionValue="${{ it.getPackageName() }}"
                                       from="${validPackages}" name="packageSelection" value=""
-                                      noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
+                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                         </g:if>
                         <g:else>
-                            <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${superOrgType}"/>
+                            <g:message code="subscriptionsManagement.noValidPackages" args="${superOrgType}"/>
                         </g:else>
                     </div>
                 </div>

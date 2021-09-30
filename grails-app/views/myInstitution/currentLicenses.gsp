@@ -17,6 +17,10 @@
           <g:if test="${filterSet || defaultSet}">
               <semui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+              </semui:exportDropdownItem>
+              <semui:exportDropdownItem>
+                  <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
@@ -25,6 +29,9 @@
               </semui:exportDropdownItem>
           </g:if>
           <g:else>
+              <semui:exportDropdownItem>
+                  <g:link class="item" action="currentLicenses" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+              </semui:exportDropdownItem>
               <semui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </semui:exportDropdownItem>
@@ -146,7 +153,7 @@
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2">
-                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}" data-position="top right">
+                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
                                   <i class="users large icon"></i>
                               </span>
                           </th>
@@ -196,7 +203,13 @@
                           <td>
                               <g:set var="licensor" value="${l.getLicensor()}"/>
                               <g:if test="${licensor}">
-                                  <g:link controller="organisation" action="show" id="${licensor.id}">${licensor.name}</g:link>
+                                  <g:link controller="organisation" action="show" id="${licensor.id}">
+                                      ${fieldValue(bean: licensor, field: "name")}
+                                      <g:if test="${licensor.shortname}">
+                                          <br />
+                                          (${fieldValue(bean: licensor, field: "shortname")})
+                                      </g:if>
+                                  </g:link>
                               </g:if>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
@@ -207,7 +220,7 @@
                               <td class="x">
                               <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
-                                      <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button">
+                                      <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
                                           <i class="copy icon"></i>
                                       </g:link>
                                   </span>

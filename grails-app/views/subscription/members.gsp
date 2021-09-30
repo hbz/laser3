@@ -176,7 +176,7 @@
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.isSlaved.tooltip')}">
-                                    <i class="thumbtack blue icon"></i>
+                                    <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
                             </g:if>
 
@@ -256,12 +256,12 @@
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkLicenseMembers" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-license icon"></i>
                                 </g:link>
                             </g:else>
@@ -270,12 +270,12 @@
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
-                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkPackagesMembers" id="${subscription.id}" class="ui icon ">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-package icon"></i>
                                 </g:link>
                             </g:else>
@@ -292,7 +292,7 @@
                     </td>
                     <td class="x">
 
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
@@ -311,18 +311,18 @@
                             </g:if>
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci.id from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context',[sub:sub,deleted:RDStore.COST_ITEM_DELETED,context:institution])}"/>
                             <g:if test="${!hasCostItems}">
-                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}"
+                                <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="ui disabled icon negative button"
+                                    <button class="ui disabled icon negative button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </button>
                                 </span>
                             </g:else>

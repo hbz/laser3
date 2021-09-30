@@ -49,30 +49,45 @@ class FinanceService {
         CostItem newCostItem
         try {
             Set<Subscription> subsToDo = []
-            if (params.newSubscription.contains("${Subscription.class.name}:")) {
-                subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
-            }
-            switch (params.newLicenseeTarget) {
-                case "${Subscription.class.name}:forParent":
-                    // keep current
-                    break
-                case "${Subscription.class.name}:forAllSubscribers":
-                    // iterate over members
-                    Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
-                    subsToDo = parentSub.getDerivedSubscriptions()
-                    break
-                default:
-                    if (params.newLicenseeTarget) {
-                        subsToDo.clear()
-                        if(params.newLicenseeTarget instanceof String)
-                            subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
-                        else if(params.newLicenseeTarget instanceof String[]) {
-                            params.newLicenseeTarget.each { newLicenseeTarget ->
-                                subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
-                            }
+
+            if(params.selectedSubs){
+                if (params.selectedSubs) {
+                    subsToDo.clear()
+                    if (params.selectedSubs instanceof String)
+                        subsToDo << Subscription.get(Long.parseLong(params.selectedSubs))
+                    else if (params.selectedSubs instanceof String[]) {
+                        params.selectedSubs.each { selectedSubs ->
+                            subsToDo <<  Subscription.get(Long.parseLong(selectedSubs))
                         }
                     }
-                    break
+                }
+            }else {
+
+                if (params.newSubscription.contains("${Subscription.class.name}:")) {
+                    subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                }
+                switch (params.newLicenseeTarget) {
+                    case "${Subscription.class.name}:forParent":
+                        // keep current
+                        break
+                    case "${Subscription.class.name}:forAllSubscribers":
+                        // iterate over members
+                        Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                        subsToDo = parentSub.getDerivedSubscriptions()
+                        break
+                    default:
+                        if (params.newLicenseeTarget) {
+                            subsToDo.clear()
+                            if (params.newLicenseeTarget instanceof String)
+                                subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
+                            else if (params.newLicenseeTarget instanceof String[]) {
+                                params.newLicenseeTarget.each { newLicenseeTarget ->
+                                    subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
+                                }
+                            }
+                        }
+                        break
+                }
             }
             SubscriptionPackage pkg
             if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {
@@ -500,13 +515,12 @@ class FinanceService {
                         ownFilter.remove('filterConsMembers')
                         Set<Long> ownCostItems = CostItem.executeQuery(
                                 'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
-                                        genericExcludes + subFilter + filterQuery.ciFilter +
-                                        ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
+                                        genericExcludes + subFilter + filterQuery.ciFilter,
                                 [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         pu.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset])
+                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
                             result.own.sums = calculateResults(ownCostItems)
                         }
                         break
@@ -527,13 +541,12 @@ class FinanceService {
                     case "consAtSubscr":
                         pu.setBenchmark("before cons at subscr")
                         Set<Long> consCostItems = CostItem.executeQuery('select ci.id from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub'+
-                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
-                            ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter,
                             [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset])
+                            result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -541,13 +554,12 @@ class FinanceService {
                         pu.setBenchmark("before subscr")
                         List<CostItem> subscrCostItems = CostItem.executeQuery(
                                 'select ci.id from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
-                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
-                                 ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
+                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter,
                                  [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
+                            result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset, sort: configMap.sortConfig.subscrSort, order: configMap.sortConfig.subscrOrder])
                             result.subscr.sums = calculateResults(subscrCostItems)
                         }
                         break
@@ -617,9 +629,9 @@ class FinanceService {
                         [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
-                        List<Long> consortialCostItems = consortialCostRows
+                        Set<Long> consortialCostItems = consortialCostRows.toSet()
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'oo.org.sortname') {
                             result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
@@ -904,8 +916,8 @@ class FinanceService {
             costItems = costItemSet
         else costItems = []
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as localSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as localSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
         Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List billingSums = []
@@ -913,6 +925,8 @@ class FinanceService {
         Map<String,BigDecimal> localSums = [:]
         BigDecimal billingSum = 0.0
         BigDecimal billingSumAfterTax = 0.0
+        BigDecimal localSum = 0.0
+        BigDecimal localSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
             billingSumsPositive.each { posEntry ->
                 if (billingSumsNegative.size() > 0) {
@@ -921,24 +935,30 @@ class FinanceService {
                         Map negEntry = billingSumsNegative[index]
                         billingSum = posEntry.billingSum - negEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax - negEntry.billingSumAfterTax
+                        localSum = posEntry.localSum - negEntry.localSum
+                        localSumAfterTax = posEntry.localSumAfterTax - negEntry.localSumAfterTax
                     }
                     else {
                         billingSum = posEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax
+                        localSum = posEntry.localSum
+                        localSumAfterTax = posEntry.localSumAfterTax
                     }
                 }
                 else {
                     billingSum = posEntry.billingSum
                     billingSumAfterTax = posEntry.billingSumAfterTax
+                    localSum = posEntry.localSum
+                    localSumAfterTax = posEntry.localSumAfterTax
                 }
                 positiveCurrencies << posEntry.currency
-                billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax])
+                billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax, localSum: localSum, localSumAfterTax: localSumAfterTax])
             }
         }
         if(billingSumsNegative.size() > 0) {
             billingSumsNegative.each { negEntry ->
                 if(!positiveCurrencies.contains(negEntry.currency))
-                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
+                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1), localSum: negEntry.localSum * (-1), localSumAfterTax: negEntry.localSumAfterTax * (-1)])
             }
         }
         if(localSumsPositive.localSum && localSumsPositive.localSumAfterTax) {
@@ -1073,10 +1093,10 @@ class FinanceService {
         Map<String,IdentifierNamespace> namespaces = [
                 'wibid':IdentifierNamespace.findByNs('wibid'),
                 'isil':IdentifierNamespace.findByNs('ISIL'),
-                'doi':IdentifierNamespace.findByNs('doi'),
-                'zdb':IdentifierNamespace.findByNs('zdb'),
-                'issn':IdentifierNamespace.findByNs('issn'),
-                'eissn':IdentifierNamespace.findByNs('eissn')
+                'doi':IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                'zdb':IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                'issn':IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                'eissn':IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name)
         ]
         rows.eachWithIndex { row, Integer r ->
             log.debug("now processing entry ${r}")
@@ -1171,7 +1191,7 @@ class FinanceService {
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)
-                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.name}" }
+                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.name}" }
                             else if(ieMatches.size() == 1) {
                                 ie = ieMatches[0]
                                 if(ie.tipp.pkg.gokbId != subPkg.pkg.gokbId)

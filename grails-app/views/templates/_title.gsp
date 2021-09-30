@@ -1,9 +1,10 @@
+<%@ page import="de.laser.helper.RDStore;" %>
 <div class="la-icon-list">
 
     <semui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
         <g:link controller="issueEntitlement" id="${ie.id}"
-                action="show"><strong>${ie.tipp.name}</strong>
+                action="show"><strong>${ie.name}</strong>
         </g:link>
     </g:if>
     <g:else>
@@ -89,6 +90,17 @@
             </div>
         </g:if>
     </g:else>
+
+    <g:if test="${ie}">
+        <div class="item">
+            <i class="grey save icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
+            </div>
+        </div>
+    </g:if>
 
     <g:if test="${(tipp.titleType == 'Book') && (tipp.volume || showEmptyFields)}">
         <div class="item">

@@ -17,6 +17,9 @@
 
         <semui:controlButtons>
             <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                </semui:exportDropdownItem>
                 <g:if test="${filterSet || defaultSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
@@ -63,6 +66,8 @@
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
+
+    <g:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
 
   </body>
 </html>

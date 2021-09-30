@@ -29,10 +29,11 @@
 
         <semui:messages data="${flash}"/>
 
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForScientificLibrary',withDueDate: true,title:message(code: 'readerNumber.createForScientificLibrary.label')]"/>
 
         <g:if test="${numbersWithSemester || numbersWithDueDate}">
             <g:if test="${numbersWithSemester}">
@@ -73,19 +74,19 @@
                             </g:each>
                             <%
                                 Map<String,Integer> sumRow = semesterSums.get(numbersInstance.getKey())
-                                int students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                int FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                int staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
                                 boolean missing = students == 0 || FTEs == 0 || staff == 0
                                 //int allOthers = sumRow.findAll { row -> !RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect { rdv -> rdv.getI10n("value") }.contains(row.key) }.collect { row -> row.value }.sum()
                             %>
                             <td>
                                 <g:if test="${FTEs > 0}">
-                                    <g:formatNumber number="${students+FTEs}"/>
+                                    <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
                                 </g:if>
                                 <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
                                 <g:if test="${staff > 0}">
-                                    <g:formatNumber number="${students+staff}"/>
+                                    <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
                                 </g:if>
                             </td>
                             <td>
@@ -94,17 +95,17 @@
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
-                                        <a role="button" class="ui icon button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}"
+                                        <a role="button" class="ui icon button blue la-modern-button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}"
                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="write icon"></i>
                                         </a>
                                     </g:if>
-                                    <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                     <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
@@ -140,16 +141,16 @@
                                         </g:if>
                                     </td>
                                 </g:each>
-                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
+                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
                                 <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

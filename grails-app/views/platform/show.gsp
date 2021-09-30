@@ -27,7 +27,7 @@
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">
         <div class="la-inline-lists">
-            <div class="ui two stackable cards">
+            <div class="ui two doubling stackable cards">
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
@@ -55,7 +55,7 @@
                             <dd>
                                 <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
                                 <g:if test="${platformInstance.primaryUrl}">
-                                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="share square icon"></i></a>
@@ -214,7 +214,7 @@
                                 </td>
                                 <td class="right aligned">
                                 <g:if test="${editable}">
-                                    <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
+                                    <g:link class="ui negative icon button la-modern-button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
                                             data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgAccessPoint.oap.name, platformInstance.name])}"
                                             data-confirm-term-how="unlink"
                                             role="button"

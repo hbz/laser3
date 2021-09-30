@@ -11,7 +11,7 @@ class ReaderNumber {
     String referenceGroup
     String dateGroupNote //counts for every number for a given date
 
-    Integer value
+    BigDecimal value
     @RefdataAnnotation(cat = RDConstants.SEMESTER)
     RefdataValue semester
     Date dueDate
@@ -30,6 +30,7 @@ class ReaderNumber {
     final static Set<String> CONSTANTS_STATE_LIBRARY = [READER_NUMBER_USER] //for further extension
     final static Set<String> CONSTANTS_PUBLIC_LIBRARY = [READER_NUMBER_PEOPLE] //for further extension
     final static Set<String> CONSTANTS_RESEARCH_INSTITUTE = [READER_NUMBER_FTE] //for further extension
+    final static Set<String> CONSTANTS_SCIENTIFIC_LIBRARY = [READER_NUMBER_FTE, READER_NUMBER_USER] //for further extension
 
     static constraints = {
         //type            (blank:false)

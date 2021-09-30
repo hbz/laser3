@@ -39,8 +39,8 @@
 									<i class="checkmark icon"></i>
 									<g:message code="default.button.update.label" />
 								</button>
-								<button type="submit" class="ui negative button" name="_action_delete" formnovalidate>
-									<i class="trash alternate icon"></i>
+								<button type="submit" class="ui negative button la-modern-button" name="_action_delete" formnovalidate>
+									<i class="trash alternate outline icon"></i>
 									<g:message code="default.button.delete.label" />
 								</button>
 							</div>

@@ -91,7 +91,7 @@
 											</g:link>
 										</g:if>
 										<g:else>
-											<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+											<g:link class="ui icon positive button blue la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
 												<i class="plus icon"></i>
 											</g:link>
 										</g:else>

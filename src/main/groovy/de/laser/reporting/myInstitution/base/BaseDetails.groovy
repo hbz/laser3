@@ -1,33 +1,19 @@
 package de.laser.reporting.myInstitution.base
 
-import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
-import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.SubscriptionProperty
-import grails.util.Holders
+
 
 class BaseDetails {
 
-    static Map<String, Object> getDetailsCache(String token) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + token)
-
-        cacheMap.detailsCache as Map<String, Object>
-    }
-
-    // ----- ----- -----
-
     static List<String> resolvePropertiesGeneric(Object obj, Long pdId, Org ctxOrg) {
 
-        BaseDetails.getPropertiesGeneric(obj, pdId, ctxOrg).collect { prop ->
+        getPropertiesGeneric(obj, pdId, ctxOrg).collect { prop ->
             if (prop.getType().isRefdataValueType()) {
                 if (prop.getRefValue()) {
                     prop.getRefValue()?.getI10n('value')

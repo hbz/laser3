@@ -50,6 +50,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
+                <th>${message(code: 'org.isWekbCurated.label')}</th>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
@@ -217,33 +220,29 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
-                    <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        ${fieldValue(bean: org, field: "name")} <br />
-                        <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                            (${fieldValue(bean: org, field: "shortname")})
+                    <div class="la-flexbox">
+                        <g:if test="${org.getCustomerType() in ['ORG_INST']}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${org.getCustomerTypeI10n()}">
+                                <i class="chess rook grey la-list-icon icon"></i>
+                            </span>
                         </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
-                            ${fieldValue(bean: org, field: "name")}
+                        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                            ${fieldValue(bean: org, field: "name")} <br />
                             <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                <br />
                                 (${fieldValue(bean: org, field: "shortname")})
                             </g:if>
-                        </g:link>
-                    </g:else>
-                    <g:if test="${org.getCustomerType() in ['ORG_INST']}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${org.getCustomerTypeI10n()}">
-                            <i class="chess rook grey icon"></i>
-                        </span>
-                    </g:if>
-                    <g:elseif test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                            <i class="certificate grey icon"></i>
-                        </span>
-                    </g:elseif>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
+                                ${fieldValue(bean: org, field: "name")}
+                                <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
+                                    <br />
+                                    (${fieldValue(bean: org, field: "shortname")})
+                                </g:if>
+                            </g:link>
+                        </g:else>
+                    </div>
                 </th>
             </g:if>
 
@@ -308,9 +307,25 @@
                     </g:else>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
+                <td>
+                    <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+                            <i class="grey handshake outline la-list-icon icon"></i>
+                        </span>
+                    </g:if>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <td>
                     <g:if test="${org.status == RDStore.ORG_STATUS_CURRENT}">
+                        <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
+                        <g:each in="${precedents}" var="precedent">
+                            <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeedsTo.label" args="${[precedent.sortname ?: precedent.name]}"/>">
+                                <g:link controller="org" action="show" id="${precedent.id}"><i class="ui icon left arrow"></i></g:link>
+                            </span>
+                        </g:each>
                         <span class="la-popup-tooltip la-delay" data-position="top right">
                             <i class="ui icon green circle"></i>
                         </span>
@@ -319,6 +334,12 @@
                         <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
                             <i class="ui icon yellow circle"></i>
                         </span>
+                        <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
+                        <g:each in="${successors}" var="successor">
+                            <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeededBy.label" args="${[successor.sortname ?: successor.name]}"/>">
+                                <g:link controller="org" action="show" id="${successor.id}"><i class="ui icon right arrow"></i></g:link>
+                            </span>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>
@@ -420,18 +441,27 @@
                         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id : null, validOn: params.subValidOn, filterSet: true]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
                         </g:if>
+                        <g:elseif test="${actionName == 'currentConsortia'}">
+                            <g:link controller="myInstitution" action="currentSubscriptions"
+                                    params="${[consortia: genericOIDService.getOID(org), status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
+                                <div class="ui circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
+                        </g:elseif>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
@@ -447,9 +477,14 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
-
-                            <g:set var="participantSurveys"
-                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            <g:if test="${invertDirection}">
+                                <g:set var="participantSurveys"
+                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            </g:if>
+                            <g:else>
+                                <g:set var="participantSurveys"
+                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            </g:else>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
@@ -473,12 +508,23 @@
                                 }
                             %>
 
-                            <g:link controller="myInstitution" action="manageParticipantSurveys"
-                                    id="${org.id}">
-                                <div class="ui circular ${finishColor} label">
-                                    ${numberOfSurveys}
-                                </div>
-                            </g:link>
+                            <g:if test="${invertDirection}">
+                                <g:link controller="myInstitution" action="currentSurveys"
+                                        params="[owner: org.id]">
+                                    <div class="ui circular ${finishColor} label">
+                                        ${numberOfSurveys}
+                                    </div>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                        id="${org.id}">
+                                    <div class="ui circular ${finishColor} label">
+                                        ${numberOfSurveys}
+                                    </div>
+                                </g:link>
+                            </g:else>
+
                         </div>
                     </td>
                 </g:if>
@@ -491,10 +537,10 @@
                 </g:if></td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
-                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
+                <td>${org.getIdentifiersByType('wibid') && !org.getIdentifiersByType('wibid').value.contains('Unknown') ? org.getIdentifiersByType('wibid').value.join(', ') : ''}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
-                <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
+                <td>${org.getIdentifiersByType('isil') && !org.getIdentifiersByType('isil').value.contains('Unknown') ? org.getIdentifiersByType('isil').value.join(', ') : ''}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <td>
@@ -661,7 +707,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-                <td class="x">
+                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && orgSub.endDate.minus(orgSub.startDate) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>

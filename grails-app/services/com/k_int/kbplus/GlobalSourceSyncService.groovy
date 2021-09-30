@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.AlternativeName
 import de.laser.ApiSource
 import de.laser.Contact
 import de.laser.DeweyDecimalClassification
@@ -59,6 +60,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_TITLE = 1
     final static long RECTYPE_ORG = 2
     final static long RECTYPE_TIPP = 3
+    final static String PERMANENTLY_DELETED = "Permanently Deleted"
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -213,16 +215,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void updateIdentifiers() {
+    void updateData(String dataToLoad) {
         running = true
         executorService.execute({
-            Thread.currentThread().setName("UpdateIdentifiers")
+            Thread.currentThread().setName("UpdateData")
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+            List<String> triggeredTypes
+            int max
+            switch(dataToLoad) {
+                case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
+                    max = 100
+                    break
+                case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
+                    RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
+                        ddc.put(rdv.value, rdv)
+                    }
+                    max = 5000
+                    break
+                case "language":
+                case "editionStatement":
+                    triggeredTypes = ['TitleInstancePackagePlatform']
+                    max = 5000
+                    break
+                default: triggeredTypes = []
+                    break
+            }
             try {
-                ['Package','Org','TitleInstancePackagePlatform'].each { String componentType ->
+                triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
-                        int offset = 0, max = 1000
+                        int offset = 0
                         Map<String, Object> queryParams = [component_type: componentType, max: max]
                         Map<String,Object> result = fetchRecordJSON(true,queryParams)
                         if(result) {
@@ -238,7 +260,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'Package': List<Package> packages = Package.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
                                             packages.eachWithIndex { Package pkg, int idx ->
-                                                log.debug("now processing package ${idx}, total entry: ${offset+idx}")
+                                                log.debug("now processing package ${idx} with uuid ${pkg.gokbId}, total entry: ${offset+idx}")
                                                 List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
                                                 if(identifiers) {
                                                     if(pkg.ids) {
@@ -255,7 +277,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
                                             providers.eachWithIndex { Org provider, int idx ->
-                                                log.debug("now processing org ${idx}, total entry: ${offset+idx}")
+                                                log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
                                                 List identifiers = result.records.find { record -> record.uuid == provider.gokbId }.identifiers
                                                 if(identifiers) {
                                                     if(provider.ids) {
@@ -272,27 +294,62 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from this page, ${tipps.size()} TIPPs do exist in LAS:eR")
                                             tipps.eachWithIndex { TitleInstancePackagePlatform tipp, int idx ->
-                                                long start = System.currentTimeMillis()
-                                                log.debug("now processing tipp ${idx}, total entry: ${offset+idx}")
-                                                List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
-                                                log.debug("after identifiers: ${System.currentTimeMillis()-start} msecs")
-                                                Set<String> oldIds = []
-                                                if(tipp.ids)
-                                                    oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
-                                                if(identifiers) {
-                                                    if(oldIds) {
-                                                        start = System.currentTimeMillis()
-                                                        Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)',[tipp: tipp, newValues: identifiers.collect { id -> id.values }]) //damn those wrestlers ...
-                                                        log.debug("deleting old: ${System.currentTimeMillis()-start} msecs")
-                                                    }
-                                                    start = System.currentTimeMillis()
-                                                    identifiers.each { id ->
-                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                                            if(!(id.value in (oldIds)))
-                                                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: tipp, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                                                log.debug("now processing tipp ${idx} with uuid ${tipp.gokbId}, total entry: ${offset+idx}")
+                                                switch(dataToLoad) {
+                                                    case "identifier":
+                                                        List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
+                                                        Set<String> oldIds = []
+                                                        if(tipp.ids)
+                                                            oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
+                                                        if(identifiers) {
+                                                            if(oldIds) {
+                                                                Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)', [tipp: tipp, newValues: identifiers.collect { id -> id.value }]) //damn those wrestlers ...
+                                                            }
+                                                            identifiers.each { id ->
+                                                                if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                                    if(!(id.value in (oldIds)))
+                                                                        Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: tipp, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                                                                }
+                                                            }
                                                         }
-                                                    }
-                                                    log.debug("after creating new: ${System.currentTimeMillis()-start}")
+                                                        break
+                                                    case "ddc":
+                                                        List ddcs = result.records.find { record -> record.uuid == tipp.gokbId }.ddcs
+                                                        Set<String> oldDdcs = []
+                                                        if(tipp.ddcs)
+                                                            oldDdcs.addAll(tipp.ddcs.collect { DeweyDecimalClassification ddc -> ddc.ddc.value })
+                                                        if(ddcs) {
+                                                            if(oldDdcs) {
+                                                                DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.id in (select ddc.id from DeweyDecimalClassification ddc join ddc.ddc rdv where ddc.tipp = :tipp and rdv.value not in (:newDdcs))', [tipp: tipp, newDdcs: ddcs.collect { ddc -> ddc.value }])
+                                                            }
+                                                            ddcs.each { ddcData ->
+                                                                if(!(ddcData.value in (oldDdcs))) {
+                                                                    DeweyDecimalClassification.construct([ddc: ddc.get(ddcData.value), tipp: tipp])
+                                                                }
+                                                            }
+                                                        }
+                                                        break
+                                                    case "language":
+                                                        List languages = result.records.find { record -> record.uuid == tipp.gokbId }.languages
+                                                        Set<String> oldLanguages = []
+                                                        if(tipp.languages)
+                                                            oldLanguages.addAll(tipp.languages.collect { Language language -> language.language.value })
+                                                        if(languages) {
+                                                            if(oldLanguages) {
+                                                                //the direct way would require a join in a delete query which is not allowed
+                                                                Language.executeUpdate('delete from Language lang where lang.id in (select lang.id from Language lang join lang.language rdv where lang.tipp = :tipp and rdv.value not in (:newLangs))', [tipp: tipp, newLangs: languages.collect { lang -> lang.value }])
+                                                            }
+                                                            languages.each { langData ->
+                                                                if(!(langData.value in (oldLanguages))) {
+                                                                    Language.construct([language: RefdataValue.getByValueAndCategory(langData.value,RDConstants.LANGUAGE_ISO), tipp: tipp])
+                                                                }
+                                                            }
+                                                        }
+                                                        break
+                                                    case "editionStatement":
+                                                        tipp.editionStatement = result.records.find { record -> record.uuid == tipp.gokbId }.editionStatement
+                                                        tipp.save()
+                                                        break
                                                 }
                                             }
                                             log.debug("interim flush at end of load: ${offset}")
@@ -323,12 +380,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void processScrollPage(Map<String, Object> result, String componentType, String changedSince) throws SyncException {
+    void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null) throws SyncException {
         if(result.count >= 5000) {
             int offset = 0, max = 5000
             Map<String, Object> queryParams = [component_type: componentType, max: max]
             if(changedSince)
                 queryParams.changedSince = changedSince
+            if(pkgFilter)
+                queryParams.pkg = pkgFilter
             String scrollId
             boolean more = true
             while(more) {
@@ -439,12 +498,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,
                     name: tipp.name,
+                    altnames: [],
                     packageUUID: tipp.tippPackageUuid ?: null,
                     platformUUID: tipp.hostPlatformUuid ?: null,
                     titlePublishers: [],
                     publisherName: tipp.publisherName,
                     firstAuthor: tipp.firstAuthor ?: null,
                     firstEditor: tipp.firstEditor ?: null,
+                    editionStatement: tipp.editionStatement ?: null,
                     dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
                     dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
                     imprint: tipp.titleImprint ?: null,
@@ -494,6 +555,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tipp.identifiers.each { identifier ->
                     updatedTIPP.identifiers << [namespace:identifier.namespace, value: identifier.value, name_de: identifier.namespaceName]
                 }
+                tipp.altname.each { altname ->
+                    updatedTIPP.altnames << altname
+                }
                 tipp.ddcs.each { ddcData ->
                     updatedTIPP.ddcs << ddc.get(ddcData.value)
                 }
@@ -515,7 +579,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
-                else if(updatedTIPP.status != RDStore.TIPP_STATUS_DELETED.value) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
                         addNewTIPP(pkg, updatedTIPP, platformsOnPage)
@@ -533,7 +597,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * This records the package changes so that subscription holders may decide whether they apply them or not
+     * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
      * @param packagesToTrack
      */
     Map<String, Set<PendingChange>> trackPackageHistory() {
@@ -573,22 +637,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         }
                                     }
                                         break
+                                    /*
                                     case 'price': tippDiff.priceDiffs.each { priceEntry ->
                                         switch(priceEntry.event) {
                                             case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                             case 'update':
                                                 priceEntry.diffs.each { priceDiff ->
-                                                    packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
+                                                    //packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
                                                 }
                                                 //log.debug("tippDiff.priceDiffs: "+ priceEntry)
                                                 break
-                                            case 'delete': JSON oldMap = priceEntry.target.properties as JSON
-                                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
+                                            case 'delete': //JSON oldMap = priceEntry.target.properties as JSON
+                                                //packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
                                     }
                                         break
+                                     */
                                     default:
                                         packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                                         break
@@ -621,29 +687,31 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))*/
             //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             packageChanges.each { PendingChange newChange ->
-                boolean processed = false
-                if(newChange.tipp) {
-                    if(newChange.targetProperty)
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
-                    else
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
-                }
-                else if(newChange.tippCoverage) {
-                    if(newChange.targetProperty)
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
-                    else
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
-                }
-                /*else if(newChange.priceItem && newChange.priceItem.tipp) {
-                    processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
-                }*/
+                if(newChange.msgToken in pendingChangeConfigurations) {
+                    boolean processed = false
+                    if(newChange.tipp) {
+                        if(newChange.targetProperty)
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                        else
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                    }
+                    else if(newChange.tippCoverage) {
+                        if(newChange.targetProperty)
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                        else
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                    }
+                    /*else if(newChange.priceItem && newChange.priceItem.tipp) {
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                    }*/
 
-                if(!processed) {
-                    /*
-                    get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
-                    if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
-                     */
-                    pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
+                    if(!processed) {
+                        /*
+                        get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
+                        if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
+                         */
+                        pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
+                    }
                 }
             }
         }
@@ -659,7 +727,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted")) {
+                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted") && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value])) {
                     //new TIPP
                     TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
                     result.event = 'add'
@@ -871,6 +939,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         createOrUpdateSupport(provider, contact)
                 }
             }
+            if(providerRecord.altname) {
+                List<String> oldAltNames = provider.altnames.collect { AlternativeName altname -> altname.name }
+                providerRecord.altname.each { String newAltName ->
+                    if(!oldAltNames.contains(newAltName)) {
+                        if(!AlternativeName.construct([org: provider, name: newAltName]))
+                            throw new SyncException("error on creating new alternative name for provider ${provider}")
+                    }
+                }
+            }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
             if(lastUpdatedTime.getTime() > maxTimestamp) {
                 maxTimestamp = lastUpdatedTime.getTime()
@@ -1059,9 +1136,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else if(tippA.status != RDStore.TIPP_STATUS_DELETED && status != RDStore.TIPP_STATUS_DELETED) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
-            tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
+            //tippA.name = tippB.name //TODO include name, sortname in IssueEntitlements, then, this property may move to the controlled ones
+            if(tippA.altnames) {
+                List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
+                tippB.altnames.each { String newAltName ->
+                    if(!oldAltNames.contains(newAltName)) {
+                        if(!AlternativeName.construct([tipp: tippA, name: newAltName]))
+                            throw new SyncException("error on creating new alternative name for title ${tippA}")
+                    }
+                }
+            }
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
+            tippA.editionStatement = tippB.editionStatement
             tippA.publisherName = tippB.publisherName
             tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
@@ -1211,6 +1298,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 name: tippData.name,
                 firstAuthor: tippData.firstAuthor,
                 firstEditor: tippData.firstEditor,
+                editionStatement: tippData.editionStatement,
                 dateFirstInPrint: (Date) tippData.dateFirstInPrint,
                 dateFirstOnline: (Date) tippData.dateFirstOnline,
                 imprint: tippData.imprint,
@@ -1281,6 +1369,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(!Language.construct(language: langB, tipp: newTIPP))
                     throw new SyncException("Error on saving language! See stack trace as follows:")
             }
+            tippData.altnames.each { String altName ->
+                if(!AlternativeName.construct([tipp: newTIPP, name: altName]))
+                    throw new SyncException("error on creating alternative name for title ${newTIPP}")
+            }
             tippData.history.each { historyEvent ->
                 historyEvent.from.each { from ->
                     TitleHistoryEvent the = new TitleHistoryEvent(tipp:newTIPP,from:from.name,eventDate:historyEvent.date)
@@ -1326,14 +1418,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.add([prop: 'coverage', covDiffs: coverageDiffs])
 
         Set<Map<String, Object>> priceDiffs = getSubListDiffs(tippa,tippb.priceItems,'price')
-        if(!priceDiffs.isEmpty())
-            result.add([prop: 'price', priceDiffs: priceDiffs])
+        //if(!priceDiffs.isEmpty())
+            //result.add([prop: 'price', priceDiffs: priceDiffs]) are auto-applied
 
-        /* is perspectively ordered; needs more refactoring
         if (tippb.containsKey("name") && tippa.name != tippb.name) {
             result.add([prop: 'name', newValue: tippb.name, oldValue: tippa.name])
         }
-        */
 
         if (tippb.containsKey("accessStartDate") && tippa.accessStartDate != tippb.accessStartDate) {
             result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
@@ -1400,8 +1490,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         def newItem
                         if(instanceType == 'coverage')
                             newItem = addNewStatement(tippA,itemB)
-                        else if(instanceType == 'price')
-                            newItem = addNewPriceItem(tippA,itemB)
+                        else if(instanceType == 'price') {
+                            addNewPriceItem(tippA, itemB)
+                            IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ie ->
+                                addNewPriceItem(ie, itemB)
+                            }
+                        }
                         if(newItem)
                             subDiffs << [event: 'add', target: newItem]
                     }
@@ -1425,8 +1519,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         def newItem
                         if(instanceType == 'coverage')
                             newItem = addNewStatement(tippA,itemB)
-                        else if(instanceType == 'price')
-                            newItem = addNewPriceItem(tippA,itemB)
+                        else if(instanceType == 'price') {
+                            addNewPriceItem(tippA, itemB)
+                            IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ie ->
+                                addNewPriceItem(ie, itemB)
+                            }
+                        }
                         if(newItem)
                             subDiffs << [event: 'add', target: newItem]
                     }
@@ -1468,7 +1566,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     calA.setTime((Date) itemA[cp])
                     calB.setTime((Date) itemB[cp])
                     if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))) {
-                        diffs << [prop: cp, oldValue: itemA[cp], newValue: itemB[cp]]
+                        if(itemA instanceof IssueEntitlementCoverage)
+                            diffs << [prop: cp, oldValue: itemA[cp], newValue: itemB[cp]]
+                        else if(itemA instanceof PriceItem) {
+                            itemA[cp] = itemB[cp]
+                            itemA.save()
+                        }
                     }
                 }
                 else {
@@ -1479,17 +1582,32 @@ class GlobalSourceSyncService extends AbstractLockableService {
                      */
                     if(itemA[cp] != null && itemB[cp] == null) {
                         calA.setTime((Date) itemA[cp])
-                        diffs << [prop:cp, oldValue:itemA[cp],newValue:null]
+                        if(itemA instanceof IssueEntitlementCoverage)
+                            diffs << [prop:cp, oldValue:itemA[cp],newValue:null]
+                        else if(itemA instanceof PriceItem) {
+                            itemA[cp] = null
+                            itemA.save()
+                        }
                     }
                     else if(itemA[cp] == null && itemB[cp] != null) {
                         calB.setTime((Date) itemB[cp])
-                        diffs << [prop:cp, oldValue:null, newValue: itemB[cp]]
+                        if(itemA instanceof IssueEntitlementCoverage)
+                            diffs << [prop:cp, oldValue:null, newValue: itemB[cp]]
+                        else if(itemA instanceof PriceItem) {
+                            itemA[cp] = itemB[cp]
+                            itemA.save()
+                        }
                     }
                 }
             }
             else {
                 if(itemA[cp] != itemB[cp] && !((itemA[cp] == '' && itemB[cp] == null) || (itemA[cp] == null && itemB[cp] == ''))) {
-                    diffs << [prop:cp, oldValue: itemA[cp], newValue: itemB[cp]]
+                    if(itemA instanceof IssueEntitlementCoverage)
+                        diffs << [prop:cp, oldValue: itemA[cp], newValue: itemB[cp]]
+                    else if(itemA instanceof PriceItem) {
+                        itemA[cp] = itemB[cp]
+                        itemA.save()
+                    }
                 }
             }
         }
@@ -1553,15 +1671,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else null
     }
 
-    PriceItem addNewPriceItem(tippA, piB) {
+    PriceItem addNewPriceItem(entitlementA, piB) {
         Map<String,Object> params = [startDate: (Date) piB.startDate,
                                      endDate: (Date) piB.endDate,
                                      listPrice: piB.listPrice,
-                                     listCurrency: piB.listCurrency,
-                                     tipp: tippA]
+                                     listCurrency: piB.listCurrency]
+        if(entitlementA instanceof TitleInstancePackagePlatform)
+            params.tipp = entitlementA
+        else if(entitlementA instanceof IssueEntitlement)
+            params.issueEntitlement = entitlementA
         PriceItem pi = new PriceItem(params)
         pi.setGlobalUID()
-        pi
+        if(pi.save())
+            pi
+        else null
     }
 
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
@@ -1579,7 +1702,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else http = new HTTPBuilder(source.uri+'/find')
         Map<String,Object> result = [:]
         //setting default status
-        queryParams.status = ["Current","Expected","Retired","Deleted"]
+        queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED]
         log.debug("mem check: ${Runtime.getRuntime().freeMemory()} bytes")
         http.request(Method.POST, ContentType.JSON) { req ->
             body = queryParams
@@ -1612,6 +1735,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
         tippStatus.put(RDStore.TIPP_STATUS_DELETED.value,RDStore.TIPP_STATUS_DELETED)
+        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_DELETED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_TRANSFERRED.value,RDStore.TIPP_STATUS_TRANSFERRED)
@@ -1633,8 +1757,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         staticPackageStatus.each { RefdataValue rdv ->
             packageStatus.put(rdv.value, rdv)
         }
+        packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_DELETED)
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
+        orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_DELETED)
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value, rdv)

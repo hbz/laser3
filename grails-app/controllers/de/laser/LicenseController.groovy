@@ -1,7 +1,10 @@
 package de.laser
 
 import com.k_int.kbplus.InstitutionsService
+import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
+import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
 import de.laser.auth.UserOrg
@@ -12,6 +15,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinitionGroup
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -43,6 +47,8 @@ class LicenseController {
     LinksGenerationService linksGenerationService
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
+    CustomWkhtmltoxService wkhtmltoxService
+    EscapeService escapeService
 
     //----------------------------------------- general or ungroupable section ----------------------------------------
 
@@ -170,7 +176,9 @@ class LicenseController {
 
             pu.setBenchmark('links')
 
-            result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
+            if(params.export)
+                result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
+            else result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
 
             // -- private properties
 
@@ -211,8 +219,39 @@ class LicenseController {
 
         List bm = pu.stopBenchmark()
         result.benchMark = bm
+        if(params.export) {
+            result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
+            result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
+            result.prop_desc = PropertyDefinition.LIC_PROP
+            result.memberLicenses = License.findAllByInstanceOf(result.license)
+            result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+            result.entry = result.license
+            result.tasks = taskService.getTasksForExport((User) result.user, (Org) result.institution, (License) result.license)
+            result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
+            result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 
-        result
+            Map<String, Object> pageStruct = [
+                    width       : 85,
+                    height      : 35,
+                    pageSize    : 'A4',
+                    orientation : 'Portrait'
+            ]
+            result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
+            byte[] pdf = wkhtmltoxService.makePdf(
+                    view: '/license/licensePdf',
+                    model: result,
+                    pageSize: pageStruct.pageSize,
+                    orientation: pageStruct.orientation,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginTop: 15,
+                    marginBottom: 15
+            )
+            response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+        }
+        else result
         /*withFormat {
         html result
 
@@ -232,7 +271,6 @@ class LicenseController {
         response.contentTypexml"
         exportService.streamOutXML(doc, response.outputStream)
       }
-      /*
       csv {
           response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
           response.contentType = "text/csv"
@@ -241,8 +279,7 @@ class LicenseController {
           out.close()
 
       }
-    }
-    */
+      */
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -717,13 +754,10 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
         result
     }
 
@@ -732,8 +766,6 @@ class LicenseController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return

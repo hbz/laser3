@@ -13,6 +13,8 @@
             break
         case 'newForResearchInstitute': preloadGroups = ReaderNumber.CONSTANTS_RESEARCH_INSTITUTE
             break
+        case 'newForScientificLibrary': preloadGroups = ReaderNumber.CONSTANTS_SCIENTIFIC_LIBRARY
+            break
     }
     if(formId.contains("newForSemester"))
         preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL
@@ -62,7 +64,7 @@
                     <label for="value">
                         <g:message code="readerNumber.number.label"/>
                     </label>
-                    <input type="number" id="value" name="value" value="${numbersInstance?.value}"/>
+                    <input type="number" id="value" name="value" step=".01" value="${numbersInstance?.value}"/>
                 </div>
             </div>
 

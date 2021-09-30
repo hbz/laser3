@@ -310,6 +310,13 @@ r2d2 = {
                             return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
                         }
                     }
+                    if (dVal.includes('email')) {
+                        let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return "Bitte geben Sie eine gültige Mailadresse ein!"
+                        }
+                    }
                     if (dVal.includes('datesCheck')) {
                         var thisInput = $.trim(value), startDateInput, endDateInput, startDate, endDate;
                         if($(this).attr("data-name") === "startDate") {
@@ -354,7 +361,7 @@ r2d2 = {
                 });
             }else {
                 var dType = $(this).attr('data-type')
-                if (dType == "text") {
+                if (dType == "text" && $(this).attr('data-validation') && $(this).attr('data-validation').includes("maxlength")) {
                     var maxLength = 255;
                     $('input').keyup(function () {
                         if($(this).attr('type') == 'text') {
@@ -605,7 +612,7 @@ r2d2 = {
 
                 switch (how) {
                     case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
                         break;
                     case "unlink":
                         $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');

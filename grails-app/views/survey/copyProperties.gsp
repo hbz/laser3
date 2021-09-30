@@ -14,7 +14,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
@@ -436,19 +436,19 @@ ${surveyInfo.name}
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit.auto')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack blue"></i></span>
+                                                        class="icon grey la-thumbtack-regular"></i></span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack grey"></i></span>
+                                                        class="icon thumbtack grey"></i></span>
                                             </g:else>
                                         </g:if>
 
                                     </g:elseif><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -501,7 +501,7 @@ ${surveyInfo.name}
 
                                     </g:elseif><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -604,19 +604,19 @@ ${surveyInfo.name}
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit.auto')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack blue"></i></span>
+                                                        class="icon grey la-thumbtack-regular"></i></span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack grey"></i></span>
+                                                        class="icon thumbtack grey"></i></span>
                                             </g:else>
                                         </g:if>
 
                                     </g:if><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -666,7 +666,7 @@ ${surveyInfo.name}
 
                                     </g:if><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
 
                                 </g:else>
                                 </g:if>

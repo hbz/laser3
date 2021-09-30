@@ -1,22 +1,32 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
-<table class="ui four column table">
+<table class="ui table">
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
-
             <tr>
-                <th scope="row" class="control-label la-js-dont-hide-this-card">${role.roleType.getI10n("value")}</th>
-                <td colspan="2">
-                    <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                <td>
+                    <span class="la-flexbox la-minor-object">
+                        <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIA.value}">
+                            <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
+                        </g:if>
+                        <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
+                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                        </g:elseif>
+                        <g:elseif test="${role.roleType.value ==RDStore.OR_AGENCY.value}">
+                            <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
+                        </g:elseif>
+                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                    </span>
+
                 </td>
 
-                <td class="right aligned">
+                <td class="right aligned eight wide column">
                     <g:if test="${editmode}">
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
                                 <span class="la-js-editmode-container">
-                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay"
+                                    <g:link id="test" class="ui icon button la-modern-button green la-selectable-button la-popup-tooltip la-delay"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
@@ -27,7 +37,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay  "
+                                    <g:link  class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
@@ -39,7 +49,7 @@
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
-                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
+                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
                                     data-confirm-how = "unlink"
                                     role="button"
@@ -51,12 +61,12 @@
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
-                                <i class="green alternate share icon"></i>
+                                <i class="grey alternate share icon"></i>
                             </span>
                         </g:if>
 
                         <g:if test="${showPersons}">
-                                <button class="ui icon button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
                                     <i class="address plus icon"></i>
                                 </button>
 
@@ -77,134 +87,162 @@
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
-                    <td></td>
-                    <td colspan="2">
+                    <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
-                            <div class="ui divided middle list la-flex-list">
-                                <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
-                                    <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
-                                        </span>
-                                        <div class="content">
-                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
-                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                            <div class="ui segment la-timeLineSegment-contact">
+                                <div class="la-timeLineGrid">
+                                    <div class="ui grid">
+                                        <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
+                                            <div class="row">
+                                                <div class="two wide column">
+                                                    <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                </div>
+                                                <div class="twelve wide column">
+                                                    <div class="ui  label">
+                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                    </div>
+                                                    <div class="ui header">
+                                                        ${func}
+                                                    </div>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                <g:render template="/templates/cpa/contact" model="${[
-                                                        contact             : email,
-                                                        tmplShowDeleteButton: false,
-                                                        overwriteEditable   : false
-                                                ]}">
+                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                            contact             : email,
+                                                            tmplShowDeleteButton: false,
+                                                            overwriteEditable   : false
+                                                    ]}">
 
-                                                </g:render>
-                                            </g:each>
-                                        </div>
-                                    </div>
-                                </g:each>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
-                                    <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
-                                        </span>
-                                        <div class="content">
-                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
-                                            <g:each in="${Contact.findAllByPrsAndContentType(
-                                                    resp,
-                                                    RDStore.CCT_EMAIL
-                                            )}" var="email">
-                                                <g:render template="/templates/cpa/contact" model="${[
-                                                        contact             : email,
-                                                        tmplShowDeleteButton: false,
-                                                        overwriteEditable   : false
-                                                ]}">
-
-                                                </g:render>
-                                            </g:each>
-
-                                            <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
-                                                <div class="ui mini icon buttons">
-                                                    <g:link class="ui negative  button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
-                                                            data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
-                                                            data-confirm-how = "unlink">
-                                                        <i class="unlink icon"></i>
-                                                    </g:link>
+                                                        </g:render>
+                                                    </g:each>
                                                 </div>
-                                            </g:if>
-                                        </div>
+                                            </div>
+                                        </g:each>
+                                        <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
+                                            <div class="row">
+                                                <div class="two wide column">
+                                                    <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                </div>
+                                                <div class="twelve wide column">
+                                                    <div class="ui  label">
+                                                        ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
+                                                    </div>
+                                                    <div class="ui header">
+                                                        ${resp}
+                                                    </div>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(
+                                                            resp,
+                                                            RDStore.CCT_EMAIL
+                                                    )}" var="email">
+                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                                contact             : email,
+                                                                tmplShowDeleteButton: false,
+                                                                overwriteEditable   : false
+                                                        ]}">
+                                                        </g:render>
+                                                    </g:each>
+                                                </div>
+                                                <g:if test="${editmode}">
+                                                    <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                                    <div class="two wide column">
+                                                        <div class="ui icon buttons">
+                                                            <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                                    data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
+                                                                    data-confirm-how = "unlink">
+                                                                <i class="unlink icon"></i>
+                                                            </g:link>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </g:each>
                                     </div>
-                                </g:each>
+                                </div>
                             </div>
-                        </g:if><%-- public --%>
+                        </g:if>
+                        <%-- public --%>
 
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
-                            <div class="ui divided middle la-flex-list list">
-                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
-                                    <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
-                                        </span>
-                                        <div class="content">
-                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
-                                            <g:each in="${Contact.findAllByPrsAndContentType(
-                                                    func,
-                                                    RDStore.CCT_EMAIL
-                                            )}" var="email">
-                                                <g:render template="/templates/cpa/contact" model="${[
-                                                        contact             : email,
-                                                        tmplShowDeleteButton: false,
-                                                        overwriteEditable   : false
-                                                ]}">
+                            <div class="ui segment la-timeLineSegment-contact">
+                                <div class="la-timeLineGrid">
+                                    <div class="ui grid">
+                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
+                                            <div class="row">
+                                                <div class="two wide column">
+                                                    <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                </div>
+                                                <div class="twelve wide column">
+                                                    <div class="ui  label">
+                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                    </div>
+                                                    <div class="ui header">
+                                                        ${func}
+                                                    </div>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(
+                                                            func,
+                                                            RDStore.CCT_EMAIL
+                                                    )}" var="email">
+                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                                contact             : email,
+                                                                tmplShowDeleteButton: false,
+                                                                overwriteEditable   : false
+                                                        ]}">
 
-                                                </g:render>
-                                            </g:each>
-                                        </div>
-                                    </div>
-                                </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
-                                    <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
-                                        </span>
-                                        <div class="content">
-                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
-                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                                        </g:render>
+                                                    </g:each>
+                                                </div>
+                                            </div>
+                                        </g:each>
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
+                                            <div class="row">
+                                               <div class="two wide column">
+                                                    <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" ></i>
+                                               </div>
+                                                <div class="twelve wide column">
+                                                    <div class="ui  label">
+                                                        ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
+                                                    </div>
+                                                    <div class="ui header">
+                                                        ${resp}
+                                                    </div>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(
                                                     resp,
                                                     RDStore.CCT_EMAIL
-                                            )}" var="email">
-                                                <g:render template="/templates/cpa/contact" model="${[
-                                                        contact             : email,
-                                                        tmplShowDeleteButton: false,
-                                                        overwriteEditable   : false
-                                                ]}">
+                                                    )}" var="email">
+                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                                contact             : email,
+                                                                tmplShowDeleteButton: false,
+                                                                overwriteEditable   : false
+                                                        ]}">
 
-                                                </g:render>
-                                            </g:each>
-
-                                            <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
-                                                <div class="ui mini icon buttons">
-                                                    <g:link class="ui negative button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
-                                                            data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
-                                                            data-confirm-how = "unlink">
-                                                        <i class="unlink icon"></i>
-                                                    </g:link>
+                                                        </g:render>
+                                                    </g:each>
                                                 </div>
-                                            </g:if>
-                                        </div>
+                                                <g:if test="${editmode}">
+                                                    <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                                    <div class="two wide column">
+                                                        <div class="ui icon buttons">
+                                                            <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                                    data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
+                                                                    data-confirm-how = "unlink">
+                                                                <i class="unlink icon"></i>
+                                                            </g:link>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </g:each>
                                     </div>
-                                </g:each>
+                                </div>
                             </div>
-                        </g:if><%-- private --%>
-
+                        </g:if>
+                        <%-- private --%>
                     </td>
-                    <td></td>
                 </tr>
             </g:if>
         </g:if>

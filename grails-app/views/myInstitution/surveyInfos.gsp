@@ -51,33 +51,36 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
+
 
     <semui:form>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
-        <table class="ui table la-table compact">
-            <tbody>
-            <tr>
-                <td>
-                    <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+        <g:if test="${choosenOrg}">
+            <g:set var="choosenOrgCPAs" value="${choosenOrg.getGeneralContactPersons(false)}"/>
+            <table class="ui table la-table compact">
+                <tbody>
+                <tr>
+                    <td>
+                        <p><strong>${choosenOrg.name} (${choosenOrg.shortname})</strong></p>
 
-                    ${choosenOrg?.libraryType?.getI10n('value')}
-                </td>
-                <td>
-                    <g:if test="${choosenOrgCPAs}">
-                        <g:set var="oldEditable" value="${editable}"/>
-                        <g:set var="editable" value="${false}" scope="request"/>
-                        <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
-                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
-                        </g:each>
-                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-                    </g:if>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                        ${choosenOrg.libraryType?.getI10n('value')}
+                    </td>
+                    <td>
+                        <g:if test="${choosenOrgCPAs}">
+                            <g:set var="oldEditable" value="${editable}"/>
+                            <g:set var="editable" value="${false}" scope="request"/>
+                            <g:each in="${choosenOrgCPAs}" var="gcp">
+                                <g:render template="/templates/cpa/person_details"
+                                          model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            </g:each>
+                            <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                        </g:if>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </g:if>
 
         <div class="ui form">
             <div class="field">
@@ -115,6 +118,17 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
                 <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>
+            </g:if>
+
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+
+                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
+                                                                                  subscription        : subscription,
+                                                                                  visibleOrgRelations : visibleOrgRelations,
+                                                                                  surveyResults       : surveyResults]"/>
+
+                <g:render template="/templates/survey/entitlementSurvey"/>
             </g:if>
 
         </div>

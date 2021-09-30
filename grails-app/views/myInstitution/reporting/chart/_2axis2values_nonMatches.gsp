@@ -5,19 +5,19 @@
             text: '${labels.tooltip}',
             show: false
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2' ],
-                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
                 var str = params.name
 
-                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
 
@@ -58,7 +58,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
             ]
         },
         legend: {
@@ -70,7 +70,7 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
                 }
 
@@ -126,7 +126,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue

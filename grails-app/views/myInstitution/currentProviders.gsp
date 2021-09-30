@@ -73,7 +73,7 @@
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
+                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'privateContacts', 'numberOfSubscriptions']
                   ]"/>
         </g:if>
         <g:else>

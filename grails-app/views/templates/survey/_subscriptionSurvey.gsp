@@ -1,10 +1,10 @@
-<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="ten wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
@@ -256,7 +256,7 @@
                                 <g:message code="surveyConfigsInfo.comment"/>
                             </label>
                             <g:if test="${surveyConfig.comment}">
-                                <textarea readonly="readonly" rows="15">${surveyConfig.comment}</textarea>
+                                <textarea readonly="readonly" rows="1">${surveyConfig.comment}</textarea>
                             </g:if>
                             <g:else>
                                 <g:message code="surveyConfigsInfo.comment.noComment"/>
@@ -269,18 +269,36 @@
 
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
-                            class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
+                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i></button></button>
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
                             if ($("#subscription-info").hasClass('visible')) {
-                                $(this).html('Lizenzinformationen anzeigen <i class="ui angle double down icon"></i>')
+                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i>')
                             } else {
-                                $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
+                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> <i class="ui angle double up icon"></i>')
                             }
                         })
                     </laser:script>
                 </div>
+
+                <g:if test="${subscription.packages}">
+
+                                <div class="field" style="text-align: right;">
+                                    <button id="package-info-toggle"
+                                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i></button></button>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
+                                        $('#package-info-toggle').on('click', function () {
+                                            $("#packages").transition('slide down');
+                                            if ($("#packages").hasClass('visible')) {
+                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i>')
+                                            } else {
+                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.hide"/> <i class="ui angle double up icon"></i>')
+                                            }
+                                        })
+                                    </laser:script>
+                                </div>
+                </g:if>
 
             </div>
         </div>
@@ -368,7 +386,7 @@
 
 
                             <div class="column">
-                                <g:if test="${subscription.packages}">
+                                %{--<g:if test="${subscription.packages}">
                                     <table class="ui three column la-selectable table">
                                         <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                                             <tr>
@@ -388,7 +406,7 @@
                                             </tr>
                                         </g:each>
                                     </table>
-                                </g:if>
+                                </g:if>--}%
 
                                 <g:if test="${visibleOrgRelations}">
 
@@ -448,7 +466,7 @@
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
                                                         <button id="derived-license-properties-toggle${link.id}"
-                                                                class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                                 data-content="${message(code:'subscription.details.viewLicenseProperties')}">
                                                             <i class="ui angle double down icon"></i>
                                                         </button>
@@ -485,37 +503,46 @@
 
         </div>
 
-    </div>
-
-    <aside class="four wide column la-sidekick">
-        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-
-            <g:render template="/templates/tasks/card"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
-
-
-            <div id="container-notes">
-                <g:render template="/templates/notes/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
-            </div>
-
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-
-                <g:render template="/templates/tasks/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-            </g:if>
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                <g:render template="/templates/notes/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-            </g:if>
+        <g:if test="${subscription.packages}">
+            <div id="packages" class="la-inline-lists hidden"></div>
         </g:if>
 
-        <div id="container-documents">
-            <g:render template="/survey/cardDocuments"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+
+    </div>
+
+    <aside class="six wide column la-sidekick">
+        <div class="ui one cards">
+
+            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <div id="container-tasks">
+                    <g:render template="/templates/tasks/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+
+                </div>
+                <div id="container-notes">
+                    <g:render template="/templates/notes/card"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
+                </div>
+
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+
+                    <g:render template="/templates/tasks/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+                </g:if>
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                    <g:render template="/templates/notes/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+                </g:if>
+            </g:if>
+
+            <div id="container-documents">
+                <g:render template="/survey/cardDocuments"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+            </div>
+
         </div>
-    </aside><!-- .four -->
+    </aside>
 
 </div><!-- .grid -->
 
@@ -860,12 +887,14 @@
                 <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
+                <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
+
                 <th></th>
             </tr>
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.name }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
@@ -904,18 +933,33 @@
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
+
+                    <td>
+                        <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
+
+                            <div class="ui checkbox">
+                                <input type="checkbox"
+                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' :  ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
+                                       name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
+                            </div>
+                        </g:form>
+                    </td>
+
                     <td>
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -1002,7 +1046,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults}" var="surveyResult" status="i">
+            <g:each in="${surveyResults.sort{it.type.getI10n('name')}}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -1017,6 +1061,16 @@
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
+
+                        <g:set var="surveyConfigProperties"
+                               value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
+                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.mandatory.tooltip')}">
+                                <i class="info circle icon"></i>
+                            </span>
+                        </g:if>
+
 
                     </td>
                     <td>
@@ -1103,6 +1157,8 @@
     <br />
 </g:if>
 
+
+
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('body #participation').editable('destroy').editable({
@@ -1132,6 +1188,23 @@
                 $("#${link.id}Properties").html(response);
             }).fail();
        </g:each>
+    </g:if>
+
+    <g:if test="${subscription.packages}">
+        JSPC.app.loadPackages = function () {
+                  $.ajax({
+                      url: "<g:createLink controller="ajaxHtml" action="getGeneralPackageData"/>",
+                      data: {
+                          subscription: "${subscription.id}"
+                      }
+                  }).done(function(response){
+                      $("#packages").html(response);
+                      r2d2.initDynamicSemuiStuff("#packages");
+                  })
+              }
+
+
+        JSPC.app.loadPackages();
     </g:if>
 
 </laser:script>

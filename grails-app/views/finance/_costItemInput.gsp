@@ -198,7 +198,8 @@
                 </div>
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
-            <g:if test="${idSuffix != 'bulk'}">
+
+            <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && !copyCostsFromConsortia)}">
                 <fieldset class="seven wide field la-modal-fieldset-no-margin">
                     <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
@@ -340,7 +341,52 @@
 
         </div><!-- three fields -->
 
+        <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+        <div class="fields">
+            <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
+                <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
+
+                <div class="ui field">
+                    <div class="field">
+                        <label>${message(code: 'filter.status')}</label>
+                        <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="JSPC.app.adjustDropdown()">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }" var="status">
+                                <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+                            </g:each>
+                        </select>
+
+                    </div>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <div class="ui checkbox">
+                            <g:checkBox name="show.subscriber" value="true" checked="true"
+                                        onchange="JSPC.app.adjustDropdown()"/>
+                            <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
+                        </div><br />
+                    </g:if>
+                   %{-- <div class="ui checkbox">
+                        <g:checkBox name="show.connectedObjects" value="true" checked="false"
+                                    onchange="JSPC.app.adjustDropdown()"/>
+                        <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
+                    </div>--}%
+                    <br />
+                    <select id="selectedSubs" name="selectedSubs" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                    </select>
+                </div>
+
+            </fieldset> <!-- 1/2 field |  .la-account-currency -->
+        </div>
+        </g:if>
+
 <laser:script file="${this.getGroovyPageFileName()}">
+    <%
+        String contextSub = ""
+        if(costItem && costItem.sub)
+            contextSub = genericOIDService.getOID(costItem.sub)
+        else if(subscription)
+            contextSub = genericOIDService.getOID(subscription)
+    %>
     JSPC.app.finance${idSuffix} = {
         userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
         currentForm: $("#editCost_${idSuffix}"),
@@ -368,7 +414,6 @@
         costElems: $("#newCostInLocalCurrency_${idSuffix}, #newCostCurrencyRate_${idSuffix}, #newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
         newSubscription: $("#newSubscription_${idSuffix}"),
-        selectedMembers: $("[name='newLicenseeTarget']~a"),
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -382,14 +427,7 @@
         selLinks: {
             newSubscription_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
         <g:if test="${costItem?.sub || subscription}">
-            <%
-                String contextSub = ""
-                if(costItem && costItem.sub)
-                    contextSub = genericOIDService.getOID(costItem.sub)
-                else if(subscription)
-                    contextSub = genericOIDService.getOID(subscription)
-            %>
-            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&sub=${contextSub}",
+            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx=${contextSub}",
                 newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
                 newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
         </g:if>
@@ -421,7 +459,7 @@
                 });
             });
         <% if(costItem?.issueEntitlement) {
-            String ieTitleName = costItem.issueEntitlement.tipp.name
+            String ieTitleName = costItem.issueEntitlement.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
         JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
         <%  }
@@ -434,8 +472,7 @@
             let values = [];
             for(let i = 0;i < fields.length;i++) {
                 let value = fields[i];
-                if(!value.getAttribute("data-value").match(/:null|:for/))
-                            values.push(value.getAttribute("data-value"));
+                values.push(value.getAttribute("data-value"));
             }
             //console.log(values);
             return values;
@@ -450,11 +487,13 @@
         },
         onSubscriptionUpdate: function () {
             let context;
-            if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1){
-                let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
-                    if(!values[0].match(/:null|:for/)) {
-                    context = values[0];
+            selectedMembers = $("[name='newLicenseeTarget']~a");
+            if(selectedMembers.length === 1){
+                let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
+                if(!values[0].match(/:null|:for/)) {
+                     context = values[0];
                 }
+                else context = "${contextSub}";
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
                 context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');
@@ -468,8 +507,9 @@
         },
         checkPackageBelongings: function () {
             var subscription = $("#newSubscription_${idSuffix}, #pickedSubscription_${idSuffix}").val();
-            let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
-            if(values.length === 1) {
+            let selectedMembers = $("[name='newLicenseeTarget']~a");
+            let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
+            if(values.length === 1 && !values[0].match(/:null|:for/)) {
                 subscription = values[0];
                 $.ajax({
                     url: "<g:createLink controller="ajaxJson" action="checkCascade"/>?subscription="+subscription+"&package="+JSPC.app.finance${idSuffix}.newPackage.val()+"&issueEntitlement="+JSPC.app.finance${idSuffix}.newIE.val(),
@@ -568,13 +608,15 @@
             });
             this.newPackage.change(function(){
                 let context;
-                if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1) {
-                    let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
+                let selectedMembers = $("[name='newLicenseeTarget']~a");
+                if(selectedMembers.length === 1) {
+                    let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
                     if(!values[0].match(/:null|:for/)) {
                         context = values[0];
                     }
+                    else context = "${contextSub}";
                 }
-                else if(JSPC.app.finance${idSuffix}.selectedMembers.length === 0)
+                else if(selectedMembers.length === 0)
                     context = JSPC.app.finance${idSuffix}.newSubscription.val();
                 JSPC.app.finance${idSuffix}.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+JSPC.app.finance${idSuffix}.newPackage.val();
                 JSPC.app.finance${idSuffix}.newIE.dropdown('clear');
@@ -589,7 +631,7 @@
             this.calculateBillingCurrency.click( function() {
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(JSPC.app.finance${idSuffix}.parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -704,4 +746,42 @@
     }
 
     JSPC.app.setupCalendar();
+
+    JSPC.app.adjustDropdown = function () {
+
+        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
+
+        var dropdownSelectedSubs = $('#selectedSubs');
+
+        dropdownSelectedSubs.empty();
+        dropdownSelectedSubs.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+        dropdownSelectedSubs.prop('selectedIndex', 0);
+
+        $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(entry.value == "${costItem?.sub?.id}"){
+                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        }else{
+                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                            }
+                     });
+                }
+        });
+    }
+
+    <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+        JSPC.app.adjustDropdown();
+    </g:if>
+
 </laser:script>
+
+

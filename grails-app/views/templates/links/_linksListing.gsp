@@ -14,6 +14,11 @@
     </h2>
     <g:if test="${links.entrySet()}">
         <table class="ui three column table">
+            <style>
+                .ui.table tr:first-child th {
+                    border-top: none;
+                }
+            </style>
             <g:each in="${links.entrySet()}" var="linkTypes">
                 <g:if test="${linkTypes.getValue().size() > 0}">
                     <g:each in="${linkTypes.getValue()}" var="link">
@@ -50,14 +55,16 @@
                                 </g:if>
                             </td>
                             <td class="right aligned">
-                                <g:if test="${pair.propertySet && pair instanceof License}">
-                                    <button id="derived-license-properties-toggle${link.id}"
-                                            class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                            data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                        <i class="ui angle double down icon"></i>
-                                    </button>
-                                    <laser:script file="${this.getGroovyPageFileName()}">
-                                        $("#derived-license-properties-toggle${link.id}").on('click', function() {
+                                <g:if test="${license}"></g:if>
+                                <g:else>
+                                    <g:if test="${pair.propertySet && pair instanceof License}">
+                                        <button id="derived-license-properties-toggle${link.id}"
+                                                class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </button>
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
@@ -67,12 +74,14 @@
                                                 $(this).html('<i class="ui angle double up icon"></i>');
                                             }
                                         })
-                                    </laser:script>
-                                </g:if>
+                                        </laser:script>
+                                    </g:if>
+                                </g:else>
+
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
+                                                    tmplCss: 'icon blue la-selectable-button la-popup-tooltip la-delay',
                                                     tmplID:'editLink',
                                                     tmplModalID:"sub_edit_link_${link.id}",
                                                     subscriptionLicenseLink: subscriptionLicenseLink,
@@ -85,7 +94,7 @@
                                     <g:if test="${subscriptionLicenseLink}">
                                         <div class="ui icon negative buttons">
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
                                                         controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}"
@@ -98,7 +107,7 @@
                                     </g:if>
                                     <g:else>
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                     data-confirm-term-how="unlink"
                                                     controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}"
@@ -111,15 +120,18 @@
                                 </g:if>
                             </td>
                         </tr>
-                        <g:if test="${pair.propertySet && pair instanceof License}">
-                            <tr>
-                                <td style="border-top: none;" colspan="3">
-                                    <div>
-                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </g:if>
+                        <g:if test="${license}"></g:if>
+                        <g:else>
+                            <g:if test="${pair.propertySet && pair instanceof License}">
+                                <tr>
+                                    <td style="border-top: none; padding:0" colspan="3">
+
+                                            <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
+
+                                    </td>
+                                </tr>
+                            </g:if>
+                        </g:else>
                     </g:each>
                 </g:if>
             </g:each>

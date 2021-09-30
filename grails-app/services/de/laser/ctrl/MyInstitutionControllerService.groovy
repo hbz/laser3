@@ -1,5 +1,10 @@
 package de.laser.ctrl
 
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.FactService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.GlobalSourceSyncService
+import com.k_int.kbplus.PackageService
 import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.DateUtils
@@ -7,11 +12,15 @@ import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.system.SystemAnnouncement
+import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 @Transactional
 class MyInstitutionControllerService {
@@ -20,9 +29,13 @@ class MyInstitutionControllerService {
     def contextService
     def dashboardDueDatesService
     def filterService
-    def pendingChangeService
     def surveyService
     def taskService
+    def workflowService
+
+    FormService formService
+    SubscriptionService subscriptionService
+    MessageSource messageSource
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
@@ -40,9 +53,12 @@ class MyInstitutionControllerService {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
+        result.pendingOffset = 0
         result.dashboardDueDatesOffset = 0
         switch(params.view) {
             case 'AcceptedChanges': result.acceptedOffset = result.offset
+                break
+            case 'PendingChanges': result.pendingOffset = result.offset
                 break
             case 'dueDatesView': result.dashboardDueDatesOffset = result.offset
                 break
@@ -50,11 +66,11 @@ class MyInstitutionControllerService {
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        // changes
+        // changes -> to AJAX
 
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
-        pu.setBenchmark('pending changes')
-        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //pu.setBenchmark('pending changes')
+        //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
         pu.setBenchmark('system announcements')
@@ -77,22 +93,35 @@ class MyInstitutionControllerService {
         pu.setBenchmark('due dates')
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false).size()
+        /* -> to AJAX
         pu.setBenchmark('surveys')
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
                 " order by surConfig.surveyInfo.endDate",
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
+        */
 
-        if(accessService.checkPerm('ORG_CONSORTIUM')){
-            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+        if (accessService.checkPerm('ORG_CONSORTIUM')){
+            /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
-                     status: RDStore.SURVEY_SURVEY_STARTED])
-        }
+                     status: RDStore.SURVEY_SURVEY_STARTED])*/
 
+            if (params.cmd && params.cmd.contains(WfWorkflow.KEY)) {
+                workflowService.usage(params)
+            }
+
+            List<WfWorkflow> workflows = WfWorkflow.executeQuery(
+                    'select wf from WfWorkflow wf where wf.owner = :ctxOrg and wf.status = :status order by wf.id desc',
+                    [ctxOrg: result.institution, status: RDStore.WF_WORKFLOW_STATUS_OPEN] )
+
+            result.currentWorkflowsCount = workflows.size()
+            result.currentWorkflows = workflows.take(contextService.getUser().getDefaultPageSizeAsInteger())
+        }
+        /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
-
+        */
         result.benchMark = pu.stopBenchmark()
         [status: STATUS_OK, result: result]
     }
@@ -110,8 +139,6 @@ class MyInstitutionControllerService {
 //            case 'currentSurveys':
 //            case 'surveyInfos':
 //            case 'surveyInfoFinish':
-//            case 'surveyInfosIssueEntitlements':
-//            case 'surveyResultFinish':
 //                result.user = user
 //                break
 //            default:
@@ -126,9 +153,10 @@ class MyInstitutionControllerService {
             case 'currentLicenses':
             case 'currentSurveys':
             case 'dashboard':
+            case 'getChanges':
+            case 'getSurveys':
             case 'emptyLicense': //to be moved to LicenseController
             case 'surveyInfoFinish':
-            case 'surveyResultFinish':
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
                 break
             case 'addressbook':
@@ -138,9 +166,6 @@ class MyInstitutionControllerService {
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
-                break
-            case 'surveyInfosIssueEntitlements':
-                result.editable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
                 break
             case 'users':
                 result.editable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')

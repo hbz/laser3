@@ -27,6 +27,9 @@ class SemanticUiIconTagLib {
             case 'Survey':
                 out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
                 break
+            case 'Workflow':
+                out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
+                break
             default:
                 out << '<i aria-hidden="true" class="circular icon la-object"></i> '
                 break

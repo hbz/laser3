@@ -3,8 +3,24 @@ println("<-- local config found and loaded -->")
 laserSystemId = 'LAS:eR - 1.7'
 
 aggr_es_cluster         = 'laser2'
-aggr_es_index           = 'laser2'
 aggr_es_hostname        = '127.0.0.1'
+aggr_es_indices = [
+"DocContext": "laser_doc_contexts",
+"IssueEntitlement": "laser_issue_intitlements",
+"License": "laser_licenses",
+"LicenseProperty": "laser_license_propertys",
+"Org": "laser_orgs",
+"Package": "laser_packages",
+"Platform": "laser_platforms",
+"Subscription": "laser_subscriptions",
+"SubscriptionProperty": "laser_subscription_propertys",
+"SurveyConfig": "laser_survey_configs",
+"SurveyOrg": "laser_survey_orgs",
+"Task": "laser_tasks",
+"TitleInstancePackagePlatform": "laser_tipps",
+]
+
+
 statsApiUrl             = 'https://xy'
 
 dataSource.url          = 'jdbc:postgresql://localhost:5432/laser'
@@ -48,4 +64,3 @@ appDefaultPrefs {
     globalDateFormat          = 'yyyy-MM-dd'
     globalDateFormatSQL       = '%Y-%m-%d'
 }
-

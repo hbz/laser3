@@ -79,8 +79,10 @@ class ApiIssueEntitlement {
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
-        result.medium           = ie.medium?.value
+        result.medium           = ie.medium ? ie.medium.value : ie.tipp.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
+
+        result.perpetualAccessBySub 	= ie.perpetualAccessBySub
 
         result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // de.laser.TitleInstancePackagePlatform
 

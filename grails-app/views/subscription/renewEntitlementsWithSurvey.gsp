@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -10,8 +10,8 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb controller="myInstitution" action="surveyInfosIssueEntitlements"
-                 id="${surveyConfig?.id}" message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="myInstitution" action="surveyInfos"
+                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
 </semui:breadcrumbs>
 
@@ -20,14 +20,30 @@
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig?.id,
-                               exportKBart   : true]}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab           : 'allIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig?.id,
-                               exportXLS     : true]}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab           : 'allIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab           : 'selectedIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab           : 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -45,17 +61,26 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     <div class="two fields">
 
         <div class="eight wide field" style="text-align: right;">
-            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                    id="${surveyConfig?.id}"
-                    class="ui button">
-                <g:message code="surveyInfo.backToSurvey"/>
-            </g:link>
+            <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+                <g:link controller="survey" action="evaluationParticipant"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
+                        class="ui button">
+                    <g:message code="surveyInfo.backToSurvey"/>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link controller="myInstitution" action="surveyInfos"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
+                        class="ui button">
+                    <g:message code="surveyInfo.backToSurvey"/>
+                </g:link>
+            </g:else>
         </div>
     </div>
 </div>
 </br>
 
-<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 
@@ -70,73 +95,82 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </div>
 </g:if>
 
-<g:render template="/templates/filter/tipp_ieFilter"/>
+
+<div class="row">
+    <div class="column">
+
+        <g:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab == 'allIEsStats']"/>
+
+    </div>
+</div><!--.row-->
+
+<g:if test="${num_ies_rows}">
+    <div class="row">
+        <div class="column">
+
+            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
+            </div>
+        </div>
+    </div>
+</g:if>
 
 </br>
-<div class="ui pointing two item massive menu">
+<semui:tabs actionName="${actionName}">
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
+                    text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
+                    counts="${countAllIEs}"/>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
+                    text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
+                    counts="${countSelectedIEs}"/>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
+                    text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
+                    counts="${countCurrentIEs}"/>
 
-    <g:link class="item ${params.tab == 'allIEs' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
-        <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui circular label">${countSelectedIEs}/${countAllIEs}</div>
-    </g:link>
+    <g:if test="${surveyService.showStatisticByParticipant(subscription, subscriber)}">
+        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                        params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']"
+                        text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"/>
+    </g:if>
 
-    <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'selectedIEs']">
-        <g:message code="renewEntitlementsWithSurvey.currentEntitlements"/>
-        <div class="ui circular label">${countSelectedIEs}</div></g:link>
+</semui:tabs>
 
-</div>
+
+<g:if test="${params.tab == 'allIEsStats'}">
+    <semui:tabs>
+        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                        params="${params + [tabStat: 'total']}"
+                        text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
+        <g:each in="${monthsInRing}" var="month">
+            <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                            params="${params + [tabStat: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}"
+                            tab="${month.format("yyyy-MM")}" subTab="tabStat"/>
+        </g:each>
+    </semui:tabs>
+</g:if>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
-    <g:hiddenField id="iesToAdd" name="iesToAdd"/>
-
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
-    <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
+    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+    <g:hiddenField name="tab" value="${params.tab}"/>
 
     <div class="ui segment">
 
-        <div class="ui grid">
-
-            <div class="row">
-
-                <div class="sixteen wide column">
-                    <g:if test="${targetInfoMessage}">
-                        <h3 class="ui header center aligned"><g:message code="${targetInfoMessage}"/></h3>
-                    </g:if>
-
-                    <g:if test="${sourceInfoMessage}">
-                        <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}"/></h3>
-                    </g:if>
-
-                    <semui:form>
-                        <g:message code="subscription"/>: <strong><g:link action="show"
-                                                                     id="${newSub.id}">${newSub.name}</g:link></strong>
-                        <br />
-                        <br />
-                        <g:message code="package"/>:
-
-                        <div class="ui list">
-                            <g:each in="${newSub.packages.sort { it?.pkg?.name }}" var="subPkg">
-                                <div class="item">
-                                    <strong>${subPkg?.pkg?.name}</strong> (<g:message
-                                        code="title.plural"/>: ${raw(subPkg.getIEandPackageSize())})
-                                </div>
-                            </g:each>
-                        </div>
-                    </semui:form>
-                </div>
-
-            </div>
-
+        <g:if test="${params.tab == 'allIEsStats'}">
+            <g:if test="${usages}">
+                <g:render template="/templates/survey/entitlementTableSurveyWithStats"
+                          model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
+            </g:if>
+            <g:else>
+                <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>
+            </g:else>
+        </g:if>
+        <g:else>
             <g:render template="/templates/survey/entitlementTableSurvey"
-                      model="${[ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], showPackage: true, showPlattform: true]}"/>
-
-        </div>
+                      model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
+        </g:else>
 
     </div>
 
@@ -144,68 +178,106 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <div class="two fields">
 
             <div class="eight wide field" style="text-align: left;">
-                <g:if test="${editable && params.tab == 'allIEs'}">
-                    <button type="submit" name="process" value="preliminary" class="ui green button"><g:message
-                            code="renewEntitlementsWithSurvey.preliminary"/></button>
+                <g:if test="${editable && params.tab != 'selectedIEs'}">
+                    <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
+                        ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>
 
                 <g:if test="${editable && params.tab == 'selectedIEs'}">
-                    <button type="submit" name="process" value="remove" class="ui red button"><g:message
-                            code="renewEntitlementsWithSurvey.remove"/></button>
+                    <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
+                        ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
                 </g:if>
             </div>
 
 
             <div class="eight wide field" style="text-align: right;">
-                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                        id="${surveyConfig?.id}"
-                        class="ui button">
-                    <g:message code="surveyInfo.backToSurvey"/>
-                </g:link>
+                <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
+                            class="ui button">
+                        <g:message code="surveyInfo.backToSurvey"/>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link controller="myInstitution" action="surveyInfos"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
+                            class="ui button">
+                        <g:message code="surveyInfo.backToSurvey"/>
+                    </g:link>
+                </g:else>
             </div>
         </div>
     </div>
 
-
-    <g:if test="${sourceIEs}">
-        <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                        total="${num_ies_rows}"/>
-    </g:if>
-
 </g:form>
+
+<g:if test="${usages}">
+    <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
+                    total="${total}"/>
+</g:if>
+
+<g:if test="${sourceIEs}">
+    <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
+                    total="${num_ies_rows}"/>
+</g:if>
 
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.iesToAdd = [];
 
-        $(".select-all").click(function () {
-            var id = $(this).parents("table").attr("id");
-            if (this.checked) {
-                $("#" + id).find('.bulkcheck').prop('checked', true);
-                console.log($(this).parents('div.column').siblings('div'));
-                $(this).parents('div.column').siblings('div').find('.select-all').prop('checked', false);
-            } else {
-                $("#" + id).find('.bulkcheck').prop('checked', false);
-            }
-            $("#" + id + " .bulkcheck").trigger("change");
-        });
+        JSPC.app.selectAll = function () {
+            $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+            $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
+            JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
+        }
 
-        $("#surveyEntitlements .bulkcheck").change(function () {
-            var index = $(this).parents("tr").attr("data-index");
+        JSPC.app.updateSelectionCache = function (index,checked) {
+            $.ajax({
+                url: "<g:createLink controller="ajax" action="updateChecked" />",
+                data: {
+                    sub: "${newSub.id}?${params.tab}",
+                    index: index,
+                    <g:if test="${params.pkgfilter}">
+                        packages: ${params.pkgfilter},
+                    </g:if>
+                    referer: "${actionName}",
+                    checked: checked,
+                    tab: "${params.tab}",
+                    baseSubID: "${subscription.id}",
+                    newSubID: "${newSub.id}"
+                },
+                success: function (data) {
+                        <g:if test="${editable && params.tab != 'selectedIEs'}">
+                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
+                        </g:if>
+
+                        <g:if test="${editable && params.tab == 'selectedIEs'}">
+                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.remove')}");
+                        </g:if>
+                    }
+            }).done(function(result){
+
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+    }
+
+    $("#select-all").change(function() {
+        JSPC.app.selectAll();
+    });
+
+    $(".bulkcheck").change(function() {
+        var index = $(this).parents("tr").attr("data-index");
             if (this.checked) {
                 $("tr[data-index='" + index + "'").addClass("positive");
-                JSPC.app.iesToAdd.push($(this).parents("tr").attr("data-ieId"));
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
-                var delIdx = JSPC.app.iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) JSPC.app.iesToAdd.splice(delIdx, 1);
             }
-        });
+        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
+    });
 
-        $("#renewEntitlements").submit(function () {
-            $("#iesToAdd").val(JSPC.app.iesToAdd.join(','));
-        });
 </laser:script>
 </html>

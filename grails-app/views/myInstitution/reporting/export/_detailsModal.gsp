@@ -1,18 +1,18 @@
-<%@ page import="de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
-<!-- _chartDetailsModal.gsp -->
-<g:set var="export" value="${DetailsExportManager.createExport( token )}" />
+<!-- _detailsModal.gsp -->
+<g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
+    <g:set var="filterLabels" value="${ExportGlobalHelper.getCachedFilterLabels( token )}" />
+    <g:set var="queryLabels" value="${ExportGlobalHelper.getCachedQueryLabels( token )}" />
 
-    <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
+    <semui:modal id="${modalID}" text="${message(code: 'reporting.modal.export.key.' + export.KEY)}" msgSave="${message(code: 'default.button.export.label')}">
 
         <div class="ui form">
             <div class="field">
-                <label>Zu exportierende Datensätze</label>
+                <label>${message(code: 'reporting.modal.export.todoData')}</label>
             </div>
             <div class="ui segments">
                 <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
@@ -20,11 +20,10 @@
             </div>
         </div>
 
-        <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${ExportGlobalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
-                <i class="info circle icon"></i>
-                Bei größeren Datenmengen kann der Export einige Sekunden dauern.
+                <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}
             </div>
         </g:if>
 
@@ -34,11 +33,11 @@
 
             <div class="ui vertical segment">
                 <div class="field">
-                    <label>Zu exportierende Felder</label>
+                    <label>${message(code: 'reporting.modal.export.todoFields')}</label>
                 </div>
                 <div class="fields">
 
-                    <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${ExportGlobalHelper.reorderFieldsForUI( formFields.findAll { !ExportGlobalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -66,10 +65,10 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${ExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${ExportGlobalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
@@ -92,33 +91,47 @@
                 <div class="fields">
 
                     <div id="fileformat-csv" class="wide eight field">
-                        <label>CSV-Konfiguration</label>
+                        <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
-                            Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
-                            Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
-                            Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
-
-                    <div id="fileformat-pdf" class="wide eight field">
-                        <label>PDF-Konfiguration</label>
+                    <div id="fileformat-xlsx" class="wide eight field">
+                        <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
                         <p>
-                            Seitenformat: <span class="ui circular label">auto</span> <br />
-                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
+                            <br />
+                            <br />
+                            <span class="ui label orange">Funktionalität in Entwicklung</span>
+                        </p>
+                    </div>
+                    <div id="fileformat-pdf" class="wide eight field">
+                        <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
+                        <p>
+                            ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>
                     </div>
 
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
-                            <label for="fileformat">Dateiformat</label>
+                            <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
                             <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
-                                      from="${[csv:'CSV', pdf:'PDF']}"
+                                      from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
+                            %{-- <semui:dropdownWithI18nExplanations name="fileformat"
+                                    class="ui dropdown la-not-clearable"
+                                    from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
+                                    optionKey="key"
+                                    optionValue="${{it.value[0]}}"
+                                    optionExpl="${{it.value[1]}}" /> --}%
                         </div>
                         <div class="field">
-                            <label for="filename">Dateiname</label>
-                            <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
+                            <label for="filename">${message(code: 'default.fileName.label')}</label>
+                            <input name="filename" id="filename" value="${BaseExportHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 
@@ -128,6 +141,7 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
+            <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
         </g:form>
 
     </semui:modal>
@@ -140,5 +154,5 @@
         }).trigger('change');
     </laser:script>
 </g:if>
-<!-- _chartDetailsModal.gsp -->
+<!-- _detailsModal.gsp -->
 

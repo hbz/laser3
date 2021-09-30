@@ -35,7 +35,7 @@ class SubscriptionFilter extends BaseFilter {
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getMessage('subscription.source.' + filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -136,6 +136,18 @@ class SubscriptionFilter extends BaseFilter {
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
+                    else if (p == BaseConfig.CUSTOM_KEY_STARTDATE_LIMIT) {
+                        whereParts.add( '(YEAR(sub.startDate) >= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_KEY_ENDDATE_LIMIT) {
+                        whereParts.add( '(YEAR(sub.endDate) <= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
                 }
 
                 if (filterLabelValue) {
@@ -174,7 +186,7 @@ class SubscriptionFilter extends BaseFilter {
     private void handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
@@ -254,6 +266,18 @@ class SubscriptionFilter extends BaseFilter {
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
+                    else if (p == BaseConfig.CUSTOM_KEY_STARTDATE_LIMIT) {
+                        whereParts.add( '(YEAR(mbr.startDate) >= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_KEY_ENDDATE_LIMIT) {
+                        whereParts.add( '(YEAR(mbr.endDate) <= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
                 }
 
                 if (filterLabelValue) {
@@ -274,7 +298,7 @@ class SubscriptionFilter extends BaseFilter {
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {

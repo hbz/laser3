@@ -30,12 +30,17 @@ class SemanticUiSubNavTagLib {
         String aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
-            out << g.link(body(),
-                    class: aClass,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params
-            )
+            if(attrs.disabled == true) {
+                out << '<div class="item disabled">' +body()+ '</div>'
+            }
+            else {
+                out << g.link(body(),
+                        class: aClass,
+                        controller: attrs.controller,
+                        action: attrs.action,
+                        params: attrs.params
+                )
+            }
         }
         else {
             out << body()
@@ -48,13 +53,13 @@ class SemanticUiSubNavTagLib {
         String aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        Integer counts = (attrs.counts >= 0) ? attrs.counts : null
+        Integer counts = attrs.counts ? attrs.counts as Integer : null
 
         if(tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
         }
 
-        if(counts >= 0) {
+        if (counts) {
             linkBody = linkBody + '<div class="ui floating blue circular label">'+counts+'</div>'
         }
 
@@ -85,7 +90,7 @@ class SemanticUiSubNavTagLib {
         String aClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        Integer counts = (attrs.counts >= 0) ? attrs.counts : null
+        Integer counts = attrs.counts ? attrs.counts as Integer : null
 
         boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
@@ -93,7 +98,7 @@ class SemanticUiSubNavTagLib {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
         }
 
-        if(counts >= 0) {
+        if (counts) {
             linkBody = linkBody + '<div class="ui floating blue circular label">'+counts+'</div>'
         }
 

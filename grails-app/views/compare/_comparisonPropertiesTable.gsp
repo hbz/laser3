@@ -173,7 +173,7 @@
                                         &nbsp;
                                         <span class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                              data-position="top right"><i class="icon thumbtack blue"></i></span>
+                                              data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                     </g:if>
                                     <g:else>
                                         &nbsp;
@@ -186,7 +186,7 @@
                                     &nbsp;
                                     <span class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'property.notInherited.fromConsortia')}"
-                                          data-position="top right"><i class="large icon cart arrow down blue"></i>
+                                          data-position="top right"><i class="icon cart arrow down grey la-thumbtack-regular"></i>
                                     </span>
                                 </g:elseif>
 

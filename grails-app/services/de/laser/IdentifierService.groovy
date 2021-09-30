@@ -71,7 +71,7 @@ class IdentifierService {
         }
     }
 
-    Map<String, Object> prepareIDsForTable(object) {
+    Map<String, Object> prepareIDsForTable(object, Org contextOrg = contextService.getOrg()) {
         boolean objIsOrgAndInst = object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)
         Locale locale = LocaleContextHolder.getLocale()
         String lang = I10nTranslation.decodeLocale(locale)
@@ -103,9 +103,9 @@ class IdentifierService {
         }
         boolean showConsortiaFunctions = false
         if(object instanceof Subscription)
-            showConsortiaFunctions = subscriptionService.showConsortiaFunctions(contextService.getOrg(), object)
+            showConsortiaFunctions = subscriptionService.showConsortiaFunctions(contextOrg, object)
         else if(object instanceof License)
-            showConsortiaFunctions = licenseControllerService.showConsortiaFunctions(object)
+            showConsortiaFunctions = licenseControllerService.showConsortiaFunctions(contextOrg, object)
         [objIsOrgAndInst: objIsOrgAndInst, count: count, objectIds: objectIds, nsList: nsList, editable: true, object: object, showConsortiaFunctions: showConsortiaFunctions]
     }
 

@@ -10,14 +10,15 @@ class SubscriptionConsCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'consortia-sub' : 'Meine Lizenzen'
+                            'consortia-sub'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -25,7 +26,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
@@ -33,76 +34,74 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
-                                    [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDate', 'endDate' ]
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
+                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
                             ]
                     ],
                     query : [
                             default : [
-                                    'Lizenz' : [ // TODO ..
-                                            'subscription-form'         : 'Lizenzform',
-                                            'subscription-kind'         : 'Lizenztyp',
-                                            'subscription-resource'     : 'Ressourcentyp',
-                                            'subscription-status'       : 'Lizenzstatus',
-                                            'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
-                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum',
-                                            'subscription-*'            : 'Alle'
+                                    'subscription' : [
+                                            'subscription-form',
+                                            'subscription-kind',
+                                            'subscription-resource',
+                                            'subscription-status',
+                                            'subscription-isMultiYear',
+                                            'subscription-manualCancellationDate',
+                                            'subscription-*'
                                     ]
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
+                            'distribution' : [
                                      'subscription-x-identifier' : [
-                                             label               : 'Identifikatoren → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                             chartLabels         : [ 'base', 'x.identifiers' ]
                                      ],
                                      'subscription-x-property' : [
-                                            label               : 'Merkmale (eigene/allgemeine) → Lizenz',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                            chartLabels         : [ 'base', 'x.properties' ]
                                      ],
                                      'subscription-x-annual' : [
-                                             label              : 'Jahresring → Lizenz',
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
+                                             chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-memberAnnual' : [
-                                             label              : 'Jahresring → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
+                                             chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
-//                                     'subscription-x-subscription-provider' : [
-//                                            label : 'Anbieter → Teilnehmerlizenz',
-//                                            chartTemplate : 'generic',
-//                                            chartLabels : []
-//                                    ],
                                      'subscription-x-provider' : [
-                                             label               : 'Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
+                                     'subscription-x-memberProvider' : [
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+//                                     'subscription-x-memberCost-TODO' : [
+//                                             label              : 'Anbieter → Lizenz → Teilnehmerkosten',
+//                                             detailsTemplate    : 'TODO',
+//                                             chartTemplate      : 'generic',
+//                                             chartLabels        : []
+//                                     ],
                                      'subscription-x-platform' : [
-                                             label               : 'Plattform → Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
+                                             chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
                                      ],
                                      'subscription-x-memberSubscription' : [
-                                             label              : 'Lizenz → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-member' : [
-                                             label              : 'Lizenz → Teilnehmerlizenz → Teilnehmer',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
@@ -113,14 +112,15 @@ class SubscriptionConsCfg extends BaseConfig {
 
             memberSubscription : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-memberSubscription' : 'Betreffende Teilnehmerlizenzen',
+                            'depending-memberSubscription'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -128,27 +128,27 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default : [
-                                    [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
-                                    [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDate', 'endDate' ]
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
+                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
                             ]
                     ],
                     query : [
                             default: [
-                                    'Teilnehmerlizenz' : [ // TODO ..
-                                                 'memberSubscription-form'        : 'Lizenzform',
-                                                 'memberSubscription-kind'        : 'Lizenztyp',
-                                                 'memberSubscription-resource'    : 'Ressourcentyp',
-                                                 'memberSubscription-status'      : 'Lizenzstatus',
-                                                 'memberSubscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                                 'memberSubscription-manualCancellationDate'  : 'Kündigungsdatum',
-                                                 'memberSubscription-*'           : 'Alle'
+                                    'memberSubscription' : [
+                                                 'memberSubscription-form',
+                                                 'memberSubscription-kind',
+                                                 'memberSubscription-resource',
+                                                 'memberSubscription-status',
+                                                 'memberSubscription-isMultiYear',
+                                                 'memberSubscription-manualCancellationDate',
+                                                 'memberSubscription-*'
                                     ]
                             ]
                     ]
@@ -156,10 +156,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             member : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-member' : 'Betreffende Teilnehmer'
+                            'depending-member'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -185,16 +186,16 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Teilnehmer' : [ // TODO ..
-                                            'member-orgType'            : 'Organisationstyp',
-                                            'member-customerType'       : 'Kundentyp',
-                                            'member-libraryType'        : 'Bibliothekstyp',
-                                            'member-region'             : 'Bundesländer',
-                                            'member-subjectGroup'       : 'Fächergruppen',
-                                            'member-libraryNetwork'     : 'Verbundzugehörigkeit',
-                                            'member-funderType'         : 'Unterhaltsträger',
-                                            'member-funderHskType'      : 'Trägerschaft',
-                                            'member-*'                  : 'Alle'
+                                    'member' : [
+                                            'member-orgType',
+                                            'member-customerType',
+                                            'member-libraryType',
+                                            'member-region',
+                                            'member-subjectGroup',
+                                            'member-libraryNetwork',
+                                            'member-funderType',
+                                            'member-funderHskType',
+                                            'member-*'
                                     ]
                             ]
                     ]
@@ -202,10 +203,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-provider' : 'Betreffende Anbieter'
+                            'depending-provider'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -217,11 +219,11 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Anbieter' : [ // TODO ..
-                                            'provider-orgType'      : 'Organisationstyp',
-                                            'provider-*'            : 'Alle'
-                                            //'provider-country'      : 'Länder',
-                                            //'provider-region'       : 'Bundesländer'
+                                    'provider' : [
+                                            'provider-orgType',
+                                            'provider-*'
+                                            //'provider-country',
+                                            //'provider-region'
                                     ]
                             ]
                     ]
@@ -229,10 +231,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             agency : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-agency' : 'Betreffende Lieferanten'
+                            'depending-agency'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -243,12 +246,10 @@ class SubscriptionConsCfg extends BaseConfig {
                             default : []
                     ],
                     query : [
-                            default: [
-                                    'Lieferant' : [ // TODO ..
-                                            'agency-orgType'      : 'Organisationstyp',
-                                            'agency-*'            : 'Alle'
-                                            // 'provider-country'      : 'Länder',
-                                            // 'provider-region'       : 'Bundesländer'
+                            default : [
+                                    'agency' : [
+                                            'agency-orgType',
+                                            'agency-*'
                                     ]
                             ]
                     ]

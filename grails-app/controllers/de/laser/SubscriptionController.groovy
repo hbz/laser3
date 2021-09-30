@@ -1,14 +1,12 @@
 package de.laser
 
 import de.laser.annotations.DebugAnnotation
-import de.laser.auth.User
 import de.laser.ctrl.SubscriptionControllerService
-
-import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfWorkflow
+import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -33,6 +31,7 @@ class SubscriptionController {
     AccessPointService accessPointService
     CopyElementsService copyElementsService
     ExportClickMeService exportClickMeService
+    ManagementService managementService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -92,6 +91,45 @@ class SubscriptionController {
             }
         }
         else ctrlResult.result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def stats() {
+        Map<String,Object> ctrlResult
+        SXSSFWorkbook wb
+        if(params.exportXLS) {
+            ctrlResult = subscriptionControllerService.statsForExport(params)
+            wb = exportService.exportReport(params, ctrlResult.result)
+        }
+        else {
+            ctrlResult = subscriptionControllerService.stats(params)
+        }
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else {
+            if(params.exportXLS) {
+                if(wb) {
+                    response.setHeader "Content-disposition", "attachment; filename=report_${ctrlResult.result.dateRun.format('yyyy-MM-dd')}.xlsx"
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                }
+            }
+            else {
+                params.metricType = ctrlResult.result.metricType
+                params.reportType = ctrlResult.result.reportType
+                ctrlResult.result
+            }
+        }
     }
 
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -245,7 +283,7 @@ class SubscriptionController {
                     Map<String, Object> selectedFields = [:]
                     selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution)
+                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution)
                 }
                 else if (params.exportIPs) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))
@@ -336,16 +374,30 @@ class SubscriptionController {
             else redirect(url: request.getHeader('referer'))
         }
         else {
-            redirect(action: 'show', id: ctrlResult.result.redirect)
+            redirect(action: 'members', id: params.id)
         }
     }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def linkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.linkLicenseMembers(this,params)
+    def membersSubscriptionsManagement() {
+        def input_file
+        if(params.tab == 'documents' && params.upload_file) {
+            input_file = request.getFile("upload_file")
+            if (input_file.size == 0) {
+                flash.error = message(code: 'template.emptyDocument.file')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            params.original_filename = input_file.originalFilename
+            params.mimeType = input_file.contentType
+        }
+
+        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params, input_file)
+
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -353,197 +405,20 @@ class SubscriptionController {
             }
         }
         else {
+            params.tab = params.tab ?: 'generalProperties'
+
             ctrlResult.result
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processLinkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkLicenseMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [ctrlResult.result.message])
-            redirect(action: 'linkLicenseMembers', id: params.id)
-        }
-    }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processUnLinkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkLicenseMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [ctrlResult.result.message])
-        }
-        redirect(action: 'linkLicenseMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def linkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.linkPackagesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else
-            ctrlResult.result
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processLinkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkPackagesMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-                redirect(action: 'linkPackagesMembers', id: params.id)
-            }
-        }
-        else {
-            redirect(action: 'linkPackagesMembers', id: params.id)
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processUnLinkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkPackagesMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message.join("<br/>")
-            flash.error = ctrlResult.result.error.join("<br/>")
-        }
-        redirect(action: 'linkPackagesMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def propertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.propertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processPropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processDeletePropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processDeletePropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def subscriptionPropertiesMembers() {
-        params.tab = params.tab ?: 'generalProperties'
-        Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processSubscriptionPropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processSubscriptionPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            if(ctrlResult.result.change){
-                flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [ctrlResult.result.change.join(', ').toString()])
-            }
-            if(ctrlResult.result.noChange){
-                flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [ctrlResult.result.noChange.join(', ').toString()])
-            }
-        }
-        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
+    def deleteCustomerIdentifier() {
+        managementService.deleteCustomerIdentifier(params.deleteCI)
+        redirect(url: request.getHeader("referer"))
     }
 
     //-------------------------------- survey section --------------------------------------
@@ -823,6 +698,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
+
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
@@ -834,7 +710,7 @@ class SubscriptionController {
             flash.error = ctrlResult.result.error
             flash.message = ctrlResult.result.message
         }
-        redirect action: 'addEntitlements', id: ctrlResult.result.subscription.id
+        redirect action: 'index', id: ctrlResult.result.subscription.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -855,24 +731,29 @@ class SubscriptionController {
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if (result.subscription) {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+
+                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+                        }
                     }
-                }
-                catch(EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    catch (EntitlementCreationException e) {
+                        flash.error = e.getMessage()
+                    }
                 }
             }
         } else {
             log.error("Unable to locate subscription instance")
         }
-        redirect(url: request.getHeader("referer"))
+
+        redirect action: "renewEntitlementsWithSurvey", id: result.subscription.id, params: [surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs']
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -880,7 +761,7 @@ class SubscriptionController {
     def processRemoveIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
             log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
         redirect(url: request.getHeader("referer"))
@@ -1009,6 +890,7 @@ class SubscriptionController {
         redirect action: 'manageEntitlementGroup', id: params.sub
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
@@ -1037,16 +919,21 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = [user: contextService.getUser()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        result.contextOrg = contextService.getOrg()
+        result.institution = result.contextOrg
         SwissKnife.setPaginationParams(result,params,result.user)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
-        result.ies = IssueEntitlement.findAllByIdInList(result.ieIDs.take(32767)) //TODO
+        result.newSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriber = result.newSub.getSubscriber()
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.newSub)
+        result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
@@ -1095,12 +982,22 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            List<Long> exportIEIDs
+            String filename
+            if(params.tab == 'allIEs') {
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+            if(params.tab == 'selectedIEs') {
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(ctrlResult.result.newSub)
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
+                Map<String, List> tableData = exportService.generateTitleExportKBART(exportIEIDs, IssueEntitlement.class.name)
                 out.withWriter { Writer writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -1109,7 +1006,7 @@ class SubscriptionController {
             } else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
+                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1137,7 +1034,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect(url: request.getHeader("referer"))
+        redirect action: "renewEntitlementsWithSurvey", id: ctrlResult.result.subscription.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, tab: 'selectedIEs']
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -1328,6 +1225,8 @@ class SubscriptionController {
             else flash.error = ctrlResult.result.error
         }
         else {
+            if(ctrlResult.result.transferIntoMember && params.workFlowPart in [CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS])
+                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
@@ -1380,7 +1279,10 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
                     break
                 default:
-                    ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                    if(ctrlResult.result.transferIntoMember)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    else
+                        ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
             }
             ctrlResult.result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
@@ -1495,12 +1397,19 @@ class SubscriptionController {
                 return
         }
         else {
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = [ queryCache: [:] ]
-            sessionCache.put("SubscriptionController/reporting" /* + ctrlResult.result.token */, cacheMap)
-
+            ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
+    }
+
+    //--------------------------------------------- workflows -------------------------------------------------
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def workflows() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
+
+        render view: 'workflows', model: ctrlResult.result
     }
 
     //--------------------------------------------- helper section -------------------------------------------------

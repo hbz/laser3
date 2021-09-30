@@ -5,6 +5,7 @@ package de.laser
 import de.laser.annotations.DebugAnnotation
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -25,6 +26,11 @@ class PendingChangeController  {
             pendingChangeService.performAccept(pc)
         }
         else if (!pc.payload) {
+            SessionCacheWrapper scw = new SessionCacheWrapper()
+            String ctx = 'dashboard/changes'
+            Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
+            if(changesCache)
+                scw.remove(ctx)
             if(pc.status == RDStore.PENDING_CHANGE_HISTORY) {
                 Org contextOrg = contextService.getOrg()
                 Package targetPkg
@@ -61,7 +67,7 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            pendingChangeService.reject(pc)
+            pendingChangeService.reject(pc, params.subId)
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -74,22 +80,28 @@ class PendingChangeController  {
         boolean acceptAll = params.acceptAll != null
         boolean rejectAll = params.rejectAll != null
         if(concernedPackage){
+            SessionCacheWrapper scw = new SessionCacheWrapper()
+            String ctx = 'dashboard/changes'
+            Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
+            if(changesCache)
+                scw.remove(ctx)
             concernedPackage.each { String spID ->
                 if(spID) {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
                     Set<PendingChange> pendingChanges = []
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId))",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.tippCoverage = pc.tippCoverage and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId))",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id]))
 
                     pendingChanges.each { PendingChange pc ->
                         log.info("processing change ${pc}")
                         if(acceptAll) {
                             //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
-                            pendingChangeService.accept(pc)
+                            pendingChangeService.applyPendingChange(pc, sp, contextService.getOrg())
                         }
                         else if(rejectAll) {
                             //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
-                            pendingChangeService.reject(pc, params.subId)
+                            //PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(sp.subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextService.getOrg()])
+                            pendingChangeService.reject(pc, sp.subscription.id)
                         }
                     }
                 }

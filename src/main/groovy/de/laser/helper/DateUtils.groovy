@@ -61,8 +61,22 @@ class DateUtils {
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
+    static SimpleDateFormat getSDF_yearMonth(){
+        return new SimpleDateFormat('yyyy-MM')
+    }
+
+    static SimpleDateFormat getSDF_year(){
+        return new SimpleDateFormat('yyyy')
+    }
+
     static Date toDate_NoTime(String value) {
         (Date) getSDF_NoTime()?.parseObject(value)
+    }
+
+    // --
+
+    static int getYearAsInteger(Date date) {
+        date ? new SimpleDateFormat('yyyy').format(date).toInteger() : null
     }
 
     // --
@@ -92,7 +106,7 @@ class DateUtils {
                     parsed_date = next.parse(value)
                 }
                 catch (Exception e) {
-                    static_logger.debug("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
+                    //static_logger.debug("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
                 }
             }
         }

@@ -37,7 +37,7 @@
 
 %{--<div class="ui segment">
 
-    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
+    <strong>${message(code: 'subscriptionsManagement.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
     <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -138,7 +138,7 @@
 
                                             <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == institution.id && it.type == filterPropDef }}"/>
                                             <g:if test="${customProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -179,7 +179,7 @@
                                                     <%
                                                         if (AuditConfig.getConfig(customProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
                                                                 println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
@@ -190,7 +190,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
                                                 </div>
                                             </g:else>
                                         </div>
@@ -201,7 +201,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -245,7 +245,7 @@
                                                     <%
                                                         if (AuditConfig.getConfig(privateProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
                                                                 println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
@@ -256,7 +256,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
                                                 </div>
                                             </g:else>
                                         </div>
@@ -264,7 +264,7 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button"
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
@@ -378,7 +378,7 @@
 
                                             <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == institution.id && it.type.id == filterPropDef.id }}"/>
                                             <g:if test="${customProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p><g:if test="${customProperty.type.isIntegerType()}">
@@ -421,7 +421,7 @@
                                                     <%
                                                         if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
                                                             if (row.isSlaved) {
-                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
                                                                 print '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
@@ -431,7 +431,7 @@
                                                 </div>
                                             </g:if><g:else>
                                             <div class="content">
-                                                ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                                ${message(code: 'subscriptionsManagement.noCustomProperty')}
                                             </div>
                                         </g:else>
                                         </div>
@@ -443,7 +443,7 @@
                                             <g:set var="privateProperty" value="${row.propertySet.find { it.type.id == filterPropDef.id }}"/>
 
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -484,7 +484,7 @@
                                                     <%
                                                         if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
                                                             if (row.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
                                                                 println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
@@ -495,7 +495,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
                                                 </div>
                                             </g:else>
 
@@ -506,7 +506,7 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button"
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>

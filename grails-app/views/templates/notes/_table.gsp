@@ -29,14 +29,14 @@
                     <td class="x">
                         <g:if test="${docctx.sharedFrom}">
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                <i class="green alternate share icon"></i>
+                                <i class="grey alternate share icon"></i>
                             </span>
                         </g:if>
 
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green"
+                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>
@@ -44,25 +44,25 @@
                             </g:if>
                             <g:else>
                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button"
+                                    <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="alternate share icon"></i>
+                                        <i class="la-share slash icon"></i>
                                     </g:link>
                                 </span>
                             </g:else>
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button"
+                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button blue la-modern-button"
                                role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
+                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button"
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>

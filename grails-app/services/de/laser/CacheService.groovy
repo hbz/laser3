@@ -49,7 +49,7 @@ class CacheService implements ApplicationContextAware {
 
         if (! cache_ttl_300) {
 
-            String cacheName = 'CACHE_TTL_300'
+            String cacheName = 'TTL_300_CACHE'
             CacheManager cacheManager = getCacheManager()
             cache_ttl_300 = getCache(cacheManager, cacheName)
 
@@ -64,7 +64,7 @@ class CacheService implements ApplicationContextAware {
 
         if (! cache_ttl_1800) {
 
-            String cacheName = 'CACHE_TTL_1800'
+            String cacheName = 'TTL_1800_CACHE'
             CacheManager cacheManager = getCacheManager()
             cache_ttl_1800 = getCache(cacheManager, cacheName)
 
@@ -118,6 +118,10 @@ class CacheService implements ApplicationContextAware {
     }
 
     /* --- */
+
+    List getKeys() {
+        cache.getKeys()
+    }
 
     def put(def cache, String key, def value) {
         cache.put(new Element(key, value))

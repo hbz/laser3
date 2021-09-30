@@ -56,7 +56,8 @@
 </head>
 
 <body>
-
+%{-- help sidebar --}%
+<g:render template="/templates/help/help_subscription_show"/>
 <section id="example">
 
     <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
@@ -95,6 +96,9 @@
             <div class="column"><i aria-hidden="true" class="la-equals icon"></i>la-equals</div>
             <div class="column"><i aria-hidden="true" class="la-less-than-equal icon"></i>la-less-than-equal</div>
             <div class="column"><i aria-hidden="true" class="la-greater-than-equal icon"></i>la-greater-than-equal</div>
+
+            <div class="column"><i aria-hidden="true" class="la-open icon"></i>la-open</div>
+            <div class="column"><i aria-hidden="true" class="la-consortia icon"></i>la-consortia</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
@@ -109,6 +113,8 @@
     <i class="circular la-database icon"></i>
     <i class="circular la-ebook icon"></i>
     <i class="circular la-book icon"></i>
+    <i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>
+    <i aria-hidden="true" class="circular icon inverted blue chart pie"></i>
     <div class="html ui top attached segment example">
 
         <div class="ui doubling five column grid">
@@ -130,9 +136,13 @@
 
             <div class="column"><i class="circular la-book icon"></i>circular la-book icon</div>
 
+            <div class="column"><i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>circular icon inverted brown icon tasks</div>
+                <div class="column"><i aria-hidden="true" class="circular icon inverted purple chart pie"></i>circular icon inverted purple chart pie</div>
+            <div class="column"><i aria-hidden="true" class="circular icon inverted pink chart pie"></i>circular icon inverted pink chart pie</div>
+
         </div>
 
-        <div class="ui top attached label">Zusätzliche Icons in Laser</div>
+        <div class="ui top attached label">Icons und Farben von laser-Objekten</div>
     </div>
     <h2 class="ui dividing header">Form-Elemente<a class="anchor" id="form-elemente"></a></h2>
     <!-- Dropdowns -->
@@ -214,7 +224,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
     <dd class="la-js-editmode-container">
-        <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
+        <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='' data-content="4 5 6">
             <i  class="icon thumbtack la-js-editmode-icon"></i>
         </a>
     </dd><br />
@@ -232,7 +242,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
 
-    <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
+    <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
         <i  class="icon thumbtack la-js-editmode-icon"></i>
     </a><br /><br />
     <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
@@ -291,9 +301,9 @@ if (customerType) {
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
-                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
-            <i aria-hidden="true" class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate outline icon"></i>
         </g:link>
     </div>
 
@@ -310,9 +320,9 @@ if (customerType) {
                 data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
-                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
-            <i aria-hidden="true" class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate outline icon"></i>
         </g:link>
     </div>
 
@@ -320,7 +330,7 @@ if (customerType) {
 
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
-        <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+        <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                           controller="dev"
                           action="frontend"
                           params=""
@@ -330,7 +340,7 @@ if (customerType) {
                           data-confirm-term-how="delete"
                           role="button">
         >
-            <i aria-hidden="true" class="trash alternate icon"></i>
+            <i aria-hidden="true" class="trash alternate outline icon"></i>
         </laser:remoteLink>
     </div>
 

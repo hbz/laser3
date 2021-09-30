@@ -40,7 +40,7 @@
                     </div>
                     <div class="field required">
                         <label for="email">${message(code:'user.email')} ${message(code: 'messageRequiredField')}</label>
-                        <input class="validateNotEmpty" type="text" id="email" name="email" value="${params.email}"/>
+                        <input class="validateMailAddress" type="text" id="email" name="email" value="${params.email}"/>
                     </div>
 
                     <div class="two fields">
@@ -82,14 +82,26 @@
         JSPC.app.checkUsername();
     });
 
+    $(".validateMailAddress").keyup(function(){
+        if($(this).val().length === 0) {
+            JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+        }
+        if($(this).val().length > 0 && !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/.test($(this).val()))) {
+            JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.mailAddress"/></span>');
+        }
+        else {
+            JSPC.app.removeError($(this),$("#"+$(this).attr("id")+"Error"));
+        }
+    });
+
     $(".validateNotEmpty").keyup(function(){
         if($(this).val().length === 0) {
             JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
-            }
-            else {
-                JSPC.app.removeError($(this),$("#"+$(this).attr("id")+"Error"));
-            }
-        });
+        }
+        else {
+            JSPC.app.removeError($(this),$("#"+$(this).attr("id")+"Error"));
+        }
+    });
 
         $("#newUser").submit(function(e){
             e.preventDefault();

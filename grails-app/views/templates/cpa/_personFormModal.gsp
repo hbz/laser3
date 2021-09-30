@@ -219,13 +219,22 @@
                 </label>
 
                 <g:if test="${personInstance}">
-                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact">
-                        <div class="two fields">
-                            <div class="field three wide">
+                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
+                        <div class="three fields" id="contactFields${i}">
+                            <div class="field wide four ">
                                 <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
 
-                            <div class="field thirteen wide">
+                            <div class="field wide four">
+                                <laser:select class="ui search dropdown" name="contactLang${contact.id}"
+                                              from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              value="${contact.language?.id}"
+                                              noSelection="['null': '']"/>
+                            </div>
+
+                            <div class="field wide eight">
                                 <g:textField name="content${contact.id}" value="${contact.content}"/>
                             </div>
                         </div>
@@ -248,9 +257,9 @@
 
                 <br />
                 <br />
-
-                <div class="three fields">
-                    <div class="field three wide">
+            <div class="field">
+                <div class="three fields" id="contactFields1">
+                    <div class="field wide four">
                         <label></label>
                         <laser:select class="ui dropdown" name="contentType.id"
                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
@@ -259,16 +268,24 @@
                                       value="${contactInstance?.contentType?.id}"/>
                     </div>
 
-                    <div class="field one wide">
-
+                    <div class="field wide four">
+                        <label></label>
+                        <laser:select class="ui search dropdown" name="contactLang.id"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${contactInstance?.language?.id}"
+                                      noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
                     </div>
 
 
-                    <div class="field twelve wide">
+                    <div class="field wide eight">
                         <label></label>
                         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
                     </div>
                 </div>
+            </div>
+
 
                 <div id="contactElements"></div>
             </g:if>
@@ -307,6 +324,7 @@
 
                 <br />
                 <br />
+                <g:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
 
                 <div id="addressElements"></div>
             </g:if>
@@ -342,6 +360,9 @@
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+        $.fn.form.settings.rules.functionOrPosition = function() {
+                return $('#functionType').dropdown('get value').length > 0 || $('#positionType').dropdown('get value').length > 0
+             };
             $('#person_form').form({
                 on: 'blur',
                 inline: true,
@@ -355,14 +376,32 @@
                                                         default=" muss ausgefüllt werden"/>'
                             }
                         ]
+                    },
+                    functionType: {
+                        identifier: 'functionType',
+                        rules: [
+                            {
+                                type: 'functionOrPosition',
+                                prompt: '{name} <g:message code="person.create.missing_function"/>'
+                            }
+                        ]
+                    },
+                    positionType: {
+                        identifier: 'positionType',
+                        rules: [
+                            {
+                                type: 'functionOrPosition',
+                                prompt: '{name} <g:message code="person.create.missing_function"/>'
+                            }
+                        ]
                     }
                 }
             });
 
             tooltip.go()  // TODO: set ctxSel @ tooltip.init()
 
-            JSPC.app.addressElementCount = 0;
-            JSPC.app.contactElementCount = 0;
+            JSPC.app.addressElementCount = 1;
+            JSPC.app.contactElementCount = 1;
 
             JSPC.app.addressContainer = $(document.createElement('div'));
             JSPC.app.contactContainer = $(document.createElement('div'));

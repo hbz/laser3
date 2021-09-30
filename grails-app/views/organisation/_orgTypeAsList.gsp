@@ -9,14 +9,14 @@
                 <g:if test="${editable}">
                     <g:if test="${type.id in availableOrgTypeIds}">
                         <div class="content la-space-right">
-                            <div class="ui mini icon buttons">
-                                <g:link class="ui negative button js-open-confirm-modal"
+                            <div class="ui icon buttons">
+                                <g:link class="ui negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [type?.getI10n('value')])}"
                                         data-confirm-term-how="delete"
                                         controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </g:link>
                             </div>
                         </div>

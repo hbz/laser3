@@ -86,7 +86,7 @@
                 <g:if test="${sourceObject instanceof SurveyConfig}">
                     <g:select class="ui search dropdown"
                               name="targetObjectId"
-                              from="${((List<Object>) allObjects_writeRights)?.sort { it.dropdownNamingConvention() }}"
+                              from="${((List<Object>) allObjects_readRights)?.sort { it.dropdownNamingConvention() }}"
                               optionValue="${{ it.dropdownNamingConvention() }}"
                               optionKey="${{ genericOIDService.getOID(it) }}"
                               value="${genericOIDService.getOID(sourceObject)}"/>
@@ -113,7 +113,7 @@
         var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'
 
-        url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
+        url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs + '&context=' + ${sourceObject.id}
 
         var status = $("select#status").serialize()
         if (status) {
@@ -131,7 +131,7 @@
                     var count = index + 1
                     // console.log(optionValue +'-'+optionText)
 
-                    select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
+                    select += '<div class="item" data-value="' + optionValue + '">' + optionText + '</div>';
                 }
 
                 select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
@@ -155,7 +155,7 @@
                         value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                     }
                 });
-            }, async: false
+            }
         });
     }
 

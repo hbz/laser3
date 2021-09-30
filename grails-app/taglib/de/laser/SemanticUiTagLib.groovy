@@ -140,7 +140,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -220,12 +220,12 @@ class SemanticUiTagLib {
                         else hasAuditConfig = auditService.getAuditConfig(obj.instanceOf, objAttr)
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -240,7 +240,7 @@ class SemanticUiTagLib {
                         else hasAuditConfig = auditService.getAuditConfig(obj, objAttr)
 
                         if (hasAuditConfig) {
-                            out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'
+                            out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
                             out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
@@ -260,7 +260,7 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
@@ -292,12 +292,12 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -311,19 +311,19 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj, objAttr)) {
 
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
                         else {
-                            out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
+                            out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
                             out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</span>'
                         }
@@ -470,7 +470,7 @@ class SemanticUiTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<a href="#" class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
+        out << '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
@@ -492,6 +492,28 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:infoModal> ${content} <semui:infoModal />
+
+    def infoModal = { attrs, body ->
+
+        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
+        String msgClose  = attrs.msgClose  ?: "${g.message(code:'default.button.merci.label')}"
+
+        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out <<    '<div class="content ui items">'
+        out <<       '<div class="item">'
+        out <<          '<div class="image"><i class="ui icon huge circular question"></i></div>'
+        out <<          '<div class="content">'
+        out << body()
+        out <<          '</div>'
+        out <<       '</div>'
+        out <<    '</div>'
+        out <<    '<div class="actions">'
+        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out <<    '</div>'
+        out << '</div>'
+    }
 
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp
@@ -516,7 +538,7 @@ class SemanticUiTagLib {
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i aria-hidden="true" class="trash alternate icon"></i>'
+        out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'
         out << '</div>'
@@ -558,9 +580,10 @@ class SemanticUiTagLib {
         // reporting -->
         if (attrs.modifiers) {
             String modName = name + '_modifier'
+            String modValue = params.get(modName) ?: attrs.defaultModifier
             String modIconClass = 'small icon la-equals'
 
-            switch(params.get(modName)) {
+            switch (modValue) {
                 case 'less':
                     modIconClass = 'small icon la-less-than'
                     break
@@ -580,15 +603,15 @@ class SemanticUiTagLib {
             out << '<div class="field la-combi-input-left">'
             out <<   '<label for="dateBeforeVal">&nbsp;</label>'
             out <<   '<div class="ui compact selection dropdown la-not-clearable">'
-            out <<     '<input type="hidden" name="' + modName + '" value="' + params.get(modName) + '">'
+            out <<     '<input type="hidden" name="' + modName + '" value="' + modValue + '">'
             out <<     '<i class="dropdown icon"></i>'
             out <<      '<div class="text"><i class="' + modIconClass + '"></i></div>'
             out <<      '<div class="menu">'
-            out <<        '<div class="item' + ( params.get(modName) == 'less' ? ' active' : '' ) + '" data-value="less"><i class="la-less-than small icon"></i></div>'
-            out <<        '<div class="item' + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
-            out <<        '<div class="item' + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
-            out <<        '<div class="item' + ( params.get(modName) == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="la-less-than-equal small icon"></i></div>'
-            out <<        '<div class="item' + ( params.get(modName) == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="la-greater-than-equal small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'less' ? ' active' : '' ) + '" data-value="less"><i class="la-less-than small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="la-less-than-equal small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="la-greater-than-equal small icon"></i></div>'
             out <<     '</div>'
             out <<   '</div>'
             out << '</div>'
@@ -912,7 +935,7 @@ class SemanticUiTagLib {
 
     def tabs = { attrs, body ->
 
-        out << '<div class="ui top attached tabular menu">'
+        out << '<div class="ui top attached tabular menu" style="overflow-x: auto; overflow-y: hidden">' //ugliest workaround ever!!!!
         out << body()
         out << '</div>'
     }
@@ -921,7 +944,7 @@ class SemanticUiTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (text && message) ? text + " - " + message : text + message
-        String aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String aClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
 

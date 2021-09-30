@@ -66,6 +66,9 @@
     }
   }
 }
+.ui.table tr th {
+  border-top: 1px solid @internalBorderColor;
+}
 /*--------------
      la-table
 ---------------*/
@@ -252,4 +255,50 @@
 .ui.table.la-noSticky thead tr:first-child>th,
 .ui.table.la-noSticky thead tr:nth-child(2)>th {
     position: static!important;
+}
+/*--------------
+    Stackable
+---------------*/
+
+@media only screen and (max-width : @largestSmallMonitor) {
+
+  .ui[class*="monitor stackable"].table,
+  .ui[class*="monitor stackable"].table tbody,
+  .ui[class*="monitor stackable"].table tr,
+  .ui[class*="monitor stackable"].table tr > th,
+  .ui[class*="monitor stackable"].table tr > td  {
+    display: block !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .ui[class*="monitor stackable"].table {
+    padding: 0em;
+  }
+  .ui[class*="monitor stackable"].table thead {
+    display: @responsiveHeaderDisplay;
+  }
+  .ui[class*="monitor stackable"].table tfoot {
+    display: @responsiveFooterDisplay;
+  }
+  .ui[class*="monitor stackable"].table tr {
+    padding-top: @responsiveRowVerticalPadding;
+    padding-bottom: @responsiveRowVerticalPadding;
+    box-shadow: @responsiveRowBoxShadow;
+  }
+  .ui[class*="monitor stackable"].table tr > th,
+  .ui[class*="monitor stackable"].table tr > td {
+    background: none;
+    border: none !important;
+    padding: @responsiveCellVerticalPadding @responsiveCellHorizontalPadding;
+    box-shadow: @responsiveCellBoxShadow;
+  }
+
+  /* Definition Table */
+  .ui.definition[class*="monitor stackable"].table thead th:first-child {
+    box-shadow: none !important;
+  }
+}
+.ui.table tr:first-child th {
+  border-top: none;
 }

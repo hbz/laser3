@@ -59,7 +59,7 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="ui icon button" id="${params.id}"
+                    <g:link action="index" class="ui icon blue button la-modern-button" id="${params.id}"
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -72,15 +72,15 @@
                                     params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'issueEntitlementGroup.delete.existingCostItems')}">
-                                <button class="ui disabled button la-selectable-button"
+                                <button class="ui disabled button la-modern-button  la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </button>
                             </div>
                         </g:else>

@@ -33,7 +33,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     String participantComment
     String ownerComment
 
-    Date finishDate
     Date startDate
     Date endDate
 
@@ -52,7 +51,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         note        (nullable: true)
         dateValue   (nullable: true)
         tenant      (nullable: true)
-        finishDate  (nullable:true)
         comment (nullable:true, blank:false)
         startDate   (nullable:true)
         endDate     (nullable:true)
@@ -84,7 +82,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
         startDate column: 'surre_start_date'
         endDate column: 'surre_end_date'
-        finishDate column: 'surre_finish_date'
         tenant        column: 'surre_tenant_fk' //never set, is for mapping of superclass
         owner column: 'surre_owner_fk'
         participant column: 'surre_participant_fk'

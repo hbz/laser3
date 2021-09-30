@@ -32,12 +32,12 @@
                 </td>
                 <td>
                     <g:if test="${editable}">
-                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" class="ui icon negative button js-open-confirm-modal"
+                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 role="button"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                 data-confirm-term-how="unlink"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate icon"></i></g:link>
+                            <i class="trash alternate outline icon"></i></g:link>
                     </g:if>
                 </td>
             </g:if>

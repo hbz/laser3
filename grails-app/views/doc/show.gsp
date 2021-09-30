@@ -90,12 +90,12 @@
                         <g:form>
                             <g:hiddenField id="doc_id_${docInstance?.id}" name="id" value="${docInstance?.id}" />
                             <div class="ui form-actions">
-                                <g:link class="ui button" action="show" id="${docInstance?.id}">
+                                <g:link class="ui button blue la-modern-button" action="show" id="${docInstance?.id}">
                                     <i aria-hidden="true" class="write icon"></i>
                                     <g:message code="default.button.edit.label" />
                                 </g:link>
-                                <button class="ui negative button" type="submit" name="_action_delete">
-                                    <i class="trash alternate icon"></i>
+                                <button class="ui negative button la-modern-button" type="submit" name="_action_delete">
+                                    <i class="trash alternate outline icon"></i>
                                     <g:message code="default.button.delete.label" />
                                 </button>
                             </div>

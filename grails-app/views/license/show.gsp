@@ -55,13 +55,13 @@
 
         <div class="ui stackable grid">
 
-            <div class="twelve wide column">
+            <div class="ten wide column">
                 <%--semui:errors bean="${titleInstanceInstance}" /--%>
 
                 <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
 
                 <div class="la-inline-lists">
-                    <div class="ui two stackable cards">
+                    <div class="ui two doubling stackable cards">
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
@@ -142,35 +142,6 @@
                         </div>
                     </div>
 
-                    <div class="ui card" id="links"></div>
-
-                    <div class="ui card">
-                        <div class="content">
-
-                        <g:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks: visibleOrgRelations,
-                                            roleObject: license,
-                                            roleRespValue: 'Specific license editor',
-                                            editmode: editable,
-                                            showPersons: true
-                                  ]}" />
-
-                        <g:render template="/templates/links/orgLinksSimpleModal"
-                                  model="${[linkType: license.class.name,
-                                            parent: license.class.name + ':' + license.id,
-                                            property: 'orgRelations',
-                                            recip_prop: 'lic',
-                                            tmplRole: RDStore.OR_LICENSOR,
-                                            tmplEntity: message(code:'license.details.tmplEntity'),
-                                            tmplText: message(code:'license.details.tmplText'),
-                                            tmplButtonText: message(code:'license.details.tmplButtonText'),
-                                            tmplModalID:'osel_add_modal_lizenzgeber',
-                                            tmplType: RDStore.OT_LICENSOR,
-                                            editmode: editable
-                                  ]}" />
-                        </div>
-                    </div>
-
                 <div id="new-dynamic-properties-block">
                     <g:render template="properties" model="${[ license: license ]}" />
                 </div><!-- #new-dynamic-properties-block -->
@@ -181,8 +152,42 @@
 
             </div><!-- .twelve -->
 
-            <aside class="four wide column la-sidekick">
-                <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+            <aside class="six wide column la-sidekick">
+                <div class="ui one cards">
+
+                    <div id="container-provider">
+                        <div class="ui card ">
+                            <div class="content">
+                                <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
+                                <g:render template="/templates/links/orgLinksAsList"
+                                          model="${[roleLinks: visibleOrgRelations,
+                                                    roleObject: license,
+                                                    roleRespValue: 'Specific license editor',
+                                                    editmode: editable,
+                                                    showPersons: true
+                                          ]}" />
+
+                                <g:render template="/templates/links/orgLinksSimpleModal"
+                                          model="${[linkType: license.class.name,
+                                                    parent: license.class.name + ':' + license.id,
+                                                    property: 'orgRelations',
+                                                    recip_prop: 'lic',
+                                                    tmplRole: RDStore.OR_LICENSOR,
+                                                    tmplEntity: message(code:'license.details.tmplEntity'),
+                                                    tmplText: message(code:'license.details.tmplText'),
+                                                    tmplButtonText: message(code:'license.details.tmplButtonText'),
+                                                    tmplModalID:'osel_add_modal_lizenzgeber',
+                                                    tmplType: RDStore.OT_LICENSOR,
+                                                    editmode: editable
+                                          ]}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="container-links">
+                        <div class="ui card" id="links"></div>
+                    </div>
+                    <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+                </div>
             </aside><!-- .four -->
 
         </div><!-- .grid -->

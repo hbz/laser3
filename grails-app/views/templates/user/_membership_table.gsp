@@ -47,13 +47,13 @@
                         <td class="x">
                             <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
-                                            class="ui icon negative button">
+                                            class="ui icon negative button la-modern-button">
                                         <i class="unlink icon"></i>
                                     </g:link>
                             </g:if>
                             <g:else>
                                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
-                                        <button class="ui icon negative button" disabled="disabled">
+                                        <button class="ui icon negative button la-modern-button" disabled="disabled">
                                             <i class="unlink icon"></i>
                                         </button>
                                     </span>

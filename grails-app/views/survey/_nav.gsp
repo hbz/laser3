@@ -65,7 +65,7 @@
                 </semui:menuDropdownItems>
             </g:if>
 
-            <semui:menuDropdownItems actionName="surveyEvaluation" message="surveyEvaluation.label">
+            <semui:menuDropdownItems actionName="surveyEvaluation" message="surveyResult.label">
                 <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <semui:menuDropdownItem controller="survey" action="surveyEvaluation"
                                             params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
@@ -122,7 +122,7 @@
 
             <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluation"
                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                              message="surveyEvaluation.label"
+                              message="surveyResult.label"
                               class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -168,9 +168,9 @@
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyParticipants.label"/>
 
-        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTitlesEvaluation"
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluation"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="surveyTitlesEvaluation.label"
+                          message="surveyEvaluation.titles.label"
                           class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
     </g:else>

@@ -68,7 +68,13 @@
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+                <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+                    <semui:actionsDropdownItem message="workflow.instantiate" data-semui="modal" href="#modalInstantiateWorkflow" />
+                    <div class="divider"></div>
+                </g:if>
+            </sec:ifAnyGranted>
+        <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
@@ -153,9 +159,9 @@
 
             <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && contextCustomerType == 'ORG_CONSORTIUM'}">
 
-                  <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
-                                             params="${[id: params.id]}"
-                                             text="${message(code:'subscription.details.subscriberManagement.label',args:menuArgs)}"/>
+                  <semui:actionsDropdownItem controller="subscription" action="membersSubscriptionsManagement"
+                                           params="${[id: params.id]}"
+                                           text="${message(code:'subscriptionsManagement.subscriptions.members')}"/>
             </g:if>
 
             <g:if test="${actionName == 'members'}">
@@ -174,10 +180,10 @@
 
                 <g:if test="${editable}">
                     <div class="divider"></div>
-                    <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.subscription')}</g:link>
+                    <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
                 <g:else>
-                    <a class="item disabled" href="#"><i class="trash alternate icon"></i> ${message(code:'deletion.subscription')}</a>
+                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>
                 </g:else>
             </g:if>
         </g:if>
@@ -190,3 +196,8 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
+<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+        <g:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
+    </g:if>
+</sec:ifAnyGranted>

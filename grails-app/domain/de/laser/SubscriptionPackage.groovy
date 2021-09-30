@@ -89,6 +89,10 @@ class SubscriptionPackage implements Comparable {
     this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}
   }
 
+  int getIssueEntitlementCountOfPackage(){
+    IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status != :deleted', [sub: this.subscription, pkg: this.pkg, deleted: RDStore.TIPP_STATUS_DELETED])[0]
+  }
+
   String getIEandPackageSize(){
 
     return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(ie.id) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current and ie.acceptStatus = :fixed',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT,fixed:RDStore.IE_ACCEPT_STATUS_FIXED])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
@@ -101,6 +105,10 @@ class SubscriptionPackage implements Comparable {
 
   String getPackageName() {
     return this.pkg.name
+  }
+
+  String getPackageNameWithCurrentTippsCount() {
+    return this.pkg.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
   }
 
   def getNotActiveAccessPoints(Org org){

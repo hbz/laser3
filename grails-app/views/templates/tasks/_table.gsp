@@ -1,7 +1,5 @@
 <laser:serviceInjection />
 
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <div class="ui grid la-clear-before">
 
@@ -28,6 +26,8 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
+                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+                <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <th scope="row" class="la-th-column la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</th>
 
@@ -64,20 +64,20 @@
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button"
+                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button blue la-modern-button"
                                role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
                                     action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.task')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>

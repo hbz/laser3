@@ -1,10 +1,12 @@
 package de.laser
 
+import com.k_int.kbplus.ESWrapperService
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.auth.UserRole
+import de.laser.base.AbstractCounterApiSource
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
@@ -13,6 +15,11 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
+import de.laser.stats.LaserStatsCursor
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
@@ -22,6 +29,16 @@ import grails.gorm.transactions.Transactional
 import grails.web.Action
 import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
+import org.elasticsearch.action.support.master.AcknowledgedResponse
+import org.elasticsearch.client.RequestOptions
+import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.client.core.CountRequest
+import org.elasticsearch.client.core.CountResponse
+import org.elasticsearch.client.indices.CreateIndexRequest
+import org.elasticsearch.client.indices.CreateIndexResponse
+import org.elasticsearch.client.indices.GetIndexRequest
+import org.elasticsearch.common.xcontent.XContentType
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
@@ -48,12 +65,14 @@ class YodaController {
     StatusUpdateService statusUpdateService
     SystemService systemService
     FinanceService financeService
+    FormService formService
     def quartzScheduler
     def identifierService
     def deletionService
     def surveyUpdateService
     def subscriptionService
     def exportService
+    def ESWrapperService
 
     @Secured(['ROLE_YODA'])
     @Transactional
@@ -513,6 +532,11 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    Map<String, Object> expungeDeletedTIPPs() {
+        yodaService.expungeDeletedTIPPs(Boolean.valueOf(params.doIt))
+    }
+
+    @Secured(['ROLE_YODA'])
     @Transactional
     def remapOriginEditUrl() {
         List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
@@ -536,6 +560,55 @@ class YodaController {
             }
         }
         redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    Map<String, Object> manageStatsSources() {
+        Map<String, Object> result = [platforms: Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>]
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def resetStatsData() {
+        boolean fullReset = Boolean.valueOf(params.fullReset)
+        Long platform = params.long("platform")
+        if(fullReset) {
+            Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform.id = :plat', [plat: platform])
+            Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform.id = :plat', [plat: platform])
+        }
+        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform.id = :plat', [plat: platform])
+        redirect(action: 'manageStatsSources')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def editStatsSource() {
+        statsSyncService.updateStatsSource(params)
+        redirect(action: 'manageStatsSources')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteStatsSource() {
+        statsSyncService.deleteStatsSource(params)
+        redirect(action: 'manageStatsSources')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def statsSync() {
+        log.debug("statsSync()")
+        statsSyncService.doSync()
+        redirect(controller:'home')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def fetchStats() {
+        if(formService.validateToken(params) && !StatsSyncService.running) {
+            log.debug("fetchStats()")
+            statsSyncService.doFetch(params.incremental == "true")
+        }
+        else if(StatsSyncService.running)
+            log.info("sync is already running, not starting again ...")
+        else log.info("form token expired, doing nothing ...")
+        redirect(controller: 'yoda', action: 'appThreads')
     }
 
     @Secured(['ROLE_YODA'])
@@ -588,10 +661,13 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def updateIdentifiers() {
+    def updateData() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.updateIdentifiers()
+            if(params.dataToLoad == "iemedium")
+                yodaService.fillIEMedium()
+            else
+                globalSourceSyncService.updateData(params.dataToLoad)
         }
         else {
             log.debug("process running, lock is set!")
@@ -646,14 +722,61 @@ class YodaController {
     def manageFTControl() {
         Map<String, Object> result = [:]
         log.debug("manageFTControle ..")
-        result.ftControls = FTControl.list()
+        result.ftControls = FTControl.list([sort: 'domainClassName'])
         result.dataloadService = [:]
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result.dataloadService.update_running = dataloadService.update_running
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result.editable = true
 
+        RestHighLevelClient esclient = ESWrapperService.getClient()
+
+        result.indices = []
+        def esIndices = ESWrapperService.es_indices
+        esIndices.each{ def indice ->
+            Map indexInfo = [:]
+            indexInfo.name = indice.value
+            indexInfo.type = indice.key
+
+            GetIndexRequest request = new GetIndexRequest(indice.value)
+
+            if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
+                CountRequest countRequest = new CountRequest(indice.value)
+                CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+                indexInfo.countIndex = countResponse ? countResponse.getCount().toInteger() : 0
+            }else {
+                indexInfo.countIndex = ""
+            }
+
+            String query = "select count(id) from ${indice.key}"
+            indexInfo.countDB = FTControl.executeQuery(query)[0]
+            result.indices << indexInfo
+        }
+
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def createESIndices() {
+        def esIndices = ESWrapperService.es_indices?.values()
+
+        esIndices.each { String indexName ->
+            ESWrapperService.createIndex(indexName)
+        }
+        dataloadService.updateFTIndexes()
+        redirect action: 'manageFTControl'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteAndRefillIndex() {
+        String indexName = params.name
+        if (indexName) {
+           ESWrapperService.deleteIndex(indexName)
+           ESWrapperService.createIndex(indexName)
+           dataloadService.updateFTIndexes()
+        }
+
+        redirect(action: 'manageFTControl')
     }
 
     @Secured(['ROLE_YODA'])

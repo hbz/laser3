@@ -70,8 +70,11 @@
                                     <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 </label>
 
+                                <div>
+                                    <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
+                                </div>
+                                <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
-
                                 <div class="ui accordion">
                                     <div class="title">
                                         <i class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
@@ -84,14 +87,14 @@
                                                     <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_DELETED}">
                                                         <div class="item willBeReplaced willBeReplacedStrong">
                                                             <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
-                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                         <i><g:message code="issueEntitlement.missingSource"/></i>
                                                     </g:if>
                                                     <g:else>
                                                         <div class="item">
                                                             <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
-                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                     </g:else>
                                                     <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
@@ -100,6 +103,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                --%>
 
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
@@ -163,12 +167,18 @@
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
-                                <i class="gift icon"></i>
-                                <g:link controller="packageDetails" action="show" target="_blank"
-                                        id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                                <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
-                                <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
-                                <br />
+                                <label>
+                                    <i class="gift icon"></i>
+                                    <g:link controller="packageDetails" action="show" target="_blank"
+                                            id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                </label>
+
+                                <div>
+                                    <g:link controller="subscription" action="index" id="${targetObject?.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
+                                </div>
+                                <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
 
                                 <div class="ui accordion">
@@ -184,7 +194,7 @@
                                                         <semui:listIcon hideTooltip="true"
                                                                         type="${ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
-                                                                        id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                                        id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                                     </div>
                                                 </g:each>
@@ -192,6 +202,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                --%>
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
 
@@ -269,12 +280,12 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortName }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.sortname }}"
                                                         var="item">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
                                                         <strong>
-                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link>
+                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.name}</g:link>
                                                         </strong>
                                                     </div>
                                                 </g:each>
@@ -322,7 +333,7 @@
                                                         <semui:listIcon hideTooltip="true"
                                                                         type="${item.ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
-                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
+                                                                        id="${item.ie.tipp.id}">${item.ie.name}</g:link></strong>
                                                     </div>
                                                 </g:each>
                                             </div>

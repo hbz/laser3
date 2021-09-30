@@ -3,7 +3,7 @@ package de.laser.ajax
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.auth.Role
-import de.laser.helper.SessionCacheWrapper
+import de.laser.helper.DateUtils
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -27,20 +27,20 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.myInstitution.CostItemQuery
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.myInstitution.LicenseQuery
-import de.laser.reporting.myInstitution.OrganisationQuery
-import de.laser.reporting.myInstitution.SubscriptionQuery
-import de.laser.reporting.subscription.SubscriptionReporting
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
@@ -58,7 +58,8 @@ class AjaxJsonController {
     def genericOIDService
     def licenseService
     def linksGenerationService
-    def reportingService
+    def reportingGlobalService
+    def reportingLocalService
     def subscriptionService
 
     @Secured(['ROLE_USER'])
@@ -70,28 +71,57 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def adjustSubscriptionList(){
-        List<Subscription> data
-        List result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedObjs = params.showConnectedObjs == 'true'
+        List data
+        Set result = []
         Map queryParams = [:]
 
         queryParams.status = []
         if (params.get('status')){
             queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedObjs = showConnectedObjs
+        queryParams.showSubscriber = params.showSubscriber == 'true'
+        queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
+        queryParams.forDropdown = true
+        Org contextOrg = contextService.getOrg()
 
-        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+        data = subscriptionService.getMySubscriptions_readRights(queryParams)
+        Map<Long, Map> subscriptionRows = [:]
         if (data) {
-            if (params.valueAsOID){
-                data.each { Subscription s ->
-                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
+
+            if(params.showConnectedObjs == 'true') {
+                data.addAll(linksGenerationService.getAllLinkedSubscriptionsForDropdown(data.collect { s -> s[0] } as Set<Long>))
+            }
+            data.each { s ->
+                if(s[0] != params.long("context")) {
+                    Map subscriptionRow = subscriptionRows.get(s[0])
+                    if(!subscriptionRow)
+                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
+                    subscriptionRow.orgRelations.put(s[6].id, s[5])
+                    subscriptionRows.put(s[0], subscriptionRow)
                 }
-            } else {
-                data.each { Subscription s ->
-                    result.add([value: s.id, text: s.dropdownNamingConvention()])
+            }
+            subscriptionRows.each {Long subId, Map entry ->
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                String startDate = "", endDate = "", additionalInfo = ""
+                if(entry.startDate)
+                    startDate = sdf.format(entry.startDate)
+                if(entry.endDate)
+                    endDate = sdf.format(entry.endDate)
+                if(entry.instanceOf) {
+                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+                        Org subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS.id)
+                        if(!subscriber)
+                            subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)
+                        additionalInfo = " - ${subscriber?.sortname}"
+                    }
+                    else additionalInfo = " - ${message(code: 'gasco.filter.consortialLicence')}"
+                }
+                String text = "${entry.name} - ${entry.status.getI10n("value")} (${startDate} - ${endDate})${additionalInfo}"
+                if (params.valueAsOID) {
+                    result.add([value: "${Subscription.class.name}:${subId}", text: text])
+                }
+                else {
+                    result.add([value: subId, text: text])
                 }
             }
         }
@@ -100,7 +130,7 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def adjustLicenseList(){
-        List<Subscription> data
+        Set<License> data
         List result = []
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
@@ -116,6 +146,7 @@ class AjaxJsonController {
 
         data =  licenseService.getMyLicenses_writeRights(queryParams)
         if (data) {
+            data = data-License.get(params.context)
             if (params.valueAsOID){
                 data.each { License l ->
                     result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])
@@ -157,10 +188,11 @@ class AjaxJsonController {
         }
 
         if (data) {
+            data.unique()
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
-            result.sort{it.text}
+            result.sort{it.text.toLowerCase()}
         }
         render result as JSON
     }
@@ -197,6 +229,17 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
+    def adjustMetricList() {
+        Map<String, Object> result = [:], queryParams = [reportTypes: params.list("reportTypes[]"), platforms: params.list("platforms[]").collect { platId -> Long.parseLong(platId) }, customer: params.customer as long]
+        if(queryParams.reportTypes.any { String reportType -> reportType in Counter4ApiSource.COUNTER_4_REPORTS }) {
+            result.metricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType in (:reportTypes) and r.platform.id in :platforms and r.reportInstitution.id = :customer', queryParams) as SortedSet<String>
+        }
+        else if(queryParams.reportTypes.any { String reportType -> reportType in Counter5ApiSource.COUNTER_5_REPORTS }) {
+            result.metricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportType in (:reportTypes) and r.platform.id in :platforms and r.reportInstitution.id = :customer', queryParams) as SortedSet<String>
+        }
+        render result as JSON
+    }
 
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
@@ -471,6 +514,11 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupOrgs() {
+        render controlledListService.getOrgs(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
         List result = []
 
@@ -676,6 +724,33 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
+    @Secured(['ROLE_USER'])
+    def checkReportingCache() {
+
+        Map<String, Object> result = [
+            exists: false
+        ]
+
+        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
+            ReportingCache rCache
+
+            if (params.token) {
+                rCache = new ReportingCache( params.context, params.token )
+                result.token = params.token
+            }
+            else {
+                rCache = new ReportingCache( params.context )
+            }
+
+            result.exists       = rCache.exists()
+            result.filterCache  = rCache.get().filterCache ? true : false
+            result.queryCache   = rCache.get().queryCache ? true : false
+            result.detailsCache = rCache.get().detailsCache ? true : false
+        }
+
+        render result as JSON
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -683,11 +758,16 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
-        if (params.context == BaseConfig.KEY_MYINST) {
-            reportingService.doGlobalChart( result, params ) // manipulates result
-        }
-        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            reportingService.doLocalChart( result, params ) // manipulates result
+        try {
+            if (params.context == BaseConfig.KEY_MYINST) {
+                reportingGlobalService.doChart(result, params) // manipulates result
+            }
+            else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+                reportingLocalService.doChart(result, params) // manipulates result
+            }
+        } catch (Exception e) {
+            log.error( e.getMessage() )
+            e.printStackTrace()
         }
 
         if (result.tmpl) {

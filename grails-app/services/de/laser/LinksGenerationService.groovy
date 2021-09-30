@@ -123,6 +123,26 @@ class LinksGenerationService {
         result
     }
 
+    List<Subscription> getAllLinkedSubscriptionsForDropdown(Set<Long> ownerSubscriptions) {
+        Set sources
+        Set destinations
+        List result = []
+
+        // links
+        if (ownerSubscriptions) {
+            log.debug(ownerSubscriptions.toListString())
+            //IN is from the point of view of the context object (= obj)
+            String srcQuery = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id from Links li join li.destinationSubscription s right join s.orgRelations so where li.sourceSubscription.id in (:subs)"
+            String dstQuery = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id from Links li join li.sourceSubscription s right join s.orgRelations so where li.destinationSubscription.id in (:subs)"
+            sources = Subscription.executeQuery( srcQuery, [subs: ownerSubscriptions])
+            destinations = Subscription.executeQuery( dstQuery, [subs: ownerSubscriptions])
+
+            result.addAll(sources)
+            result.addAll(destinations)
+        }
+        result
+    }
+
 
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
@@ -329,4 +349,7 @@ class LinksGenerationService {
         else false
     }
 
+    Set<Combo> getOrgLinks(Org org) {
+        Combo.executeQuery('select c from Combo c where (c.fromOrg = :context or c.toOrg = :context) and c.type = :follows', [follows: RDStore.COMBO_TYPE_FOLLOWS, context: org])
+    }
 }

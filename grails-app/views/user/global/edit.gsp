@@ -47,7 +47,7 @@
 
                 <div class="ui field">
                     <label>${message(code:'user.email')}</label>
-                    <semui:xEditable owner="${user}" field="email" />
+                    <semui:xEditable owner="${user}" field="email" validation="email"/>
                 </div>
 
                 <g:if test="${editable}">
@@ -90,10 +90,12 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
-                                                class="ui icon negative button"
+                                                class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                 role="button"
+                                                data-confirm-tokenMsg="${message(code:'default.button.confirm.delete')}"
+                                                data-confirm-term-how="delete"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

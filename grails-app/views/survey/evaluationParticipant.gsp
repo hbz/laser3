@@ -13,7 +13,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
@@ -30,18 +30,29 @@
                 </g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>--}%
-        <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
-            <semui:actionsDropdown>
-            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                       message="openSurveyAgainForParticipant.button"/>
-            </semui:actionsDropdown>
+    <semui:actionsDropdown>
+        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+            <semui:actionsDropdownItem action="renewEntitlements" controller="survey"
+                                       id="${surveyConfig.id}" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       message="renewEntitlementsWithSurvey.renewEntitlements"/>
         </g:if>
-        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id] && !surveyConfig.isResultsSetFinishByOrg(participant)}">
-            <semui:actionsDropdown>
-                <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+
+            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
+                                           params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                            message="openSurveyAgainForParticipant.button"/>
-            </semui:actionsDropdown>
+
+            </g:if>
+            <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
+                <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
+                                           params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                           message="finishSurveyForParticipant.button"/>
+
+            </g:if>
         </g:if>
+    </semui:actionsDropdown>
+
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -67,6 +78,8 @@
 </g:if>
 
 <g:if test="${participant}">
+
+    <semui:form>
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -92,6 +105,22 @@
         </tr>
         </tbody>
     </table>
+
+        <div class="ui form">
+            <div class="field">
+                <label>
+                    <g:message code="surveyInfo.comment.label"/>
+                </label>
+                <g:if test="${surveyInfo.comment}">
+                    <textarea readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
+                </g:if>
+                <g:else>
+                    <g:message code="surveyConfigsInfo.comment.noComment"/>
+                </g:else>
+            </div>
+        </div>
+
+    </semui:form>
 </g:if>
 
 <div class="ui stackable grid">
@@ -115,6 +144,18 @@
                                                                              subscription        : surveyConfig.subscription,
                                                                              tasks               : tasks,
                                                                              visibleOrgRelations : visibleOrgRelations]"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+
+                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
+                                                                                  subscription        : subscription,
+                                                                                  visibleOrgRelations : visibleOrgRelations,
+                                                                                  surveyResults       : surveyResults]"/>
+
+                <g:render template="/templates/survey/entitlementSurvey"/>
+
             </g:if>
 
         </div>

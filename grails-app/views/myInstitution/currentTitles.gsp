@@ -199,7 +199,7 @@
                     <thead>
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn params="${params}" property="tipp.sortName"
+                        <g:sortableColumn params="${params}" property="tipp.sortname"
                                           title="${message(code: 'title.label')}"/>
                         <th style="width: 50%">
                             <div class="ui three column grid">
@@ -208,7 +208,7 @@
                                 </div>
 
                                 <div class="eight wide column">
-                                    ${message(code: 'subscription.details.coverage_dates')}
+                                    ${message(code: 'subscription.details.date_header')}
                                     <br/>
                                     ${message(code: 'default.from')}
                                     <br/>
@@ -225,6 +225,10 @@
 
                                 <div class="sixteen wide column">
                                     <g:message code="subscription.details.prices"/>
+                                </div>
+
+                                <div class="eight wide column">
+                                    <g:message code="issueEntitlement.perpetualAccessBySub.label"/>
                                 </div>
                             </div>
                         </th>
@@ -305,12 +309,16 @@
                                                                                                       owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}"
                                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                                <semui:xEditable field="startDate" type="date"
-                                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                                    field="endDate" type="date"
-                                                    owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                            <%--<semui:xEditable field="startDate" type="date"
+                                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                                field="endDate" type="date"
+                                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                             </g:each>
+                                        </div>
+
+                                        <div class="eight wide column">
+                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}  ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
                                         </div>
                                     </g:each>
                                 </div>

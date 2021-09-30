@@ -15,7 +15,8 @@ class StatsSyncJob extends AbstractJob {
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
         // Example - every 10 mins 0 0/10 * * * ?
         // At 5 past 2am on the first of every month - Sync stats
-        //cron name:'statsSyncTrigger', startDelay:10, cronExpression: "* 10 * * * ?"
+        cron name:'statsSyncTrigger', cronExpression: "0 0 4 5 * ?"
+        //cron name:'statsSyncTrigger', cronExpression: "0 0/10 * * * ?" //debug only!
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]
         //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -26,10 +27,10 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static List<String> configFlags = ['StatsSyncJobActiv']
+    static List<String> configFlags = ['laserStatsSyncJobActive']
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running
+        !jobIsRunning && !statsSyncService.running && ConfigUtils.getLaserStatsSyncJobActive()
     }
     boolean isRunning() {
         jobIsRunning
@@ -44,11 +45,11 @@ class StatsSyncJob extends AbstractJob {
         try {
             log.debug("Execute::statsSyncJob")
 
-            if (ConfigUtils.getStatsSyncJobActiv()) {
+            if (ConfigUtils.getLaserStatsSyncJobActive()) {
                 log.debug("Running Stats SYNC batch job")
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 
-                statsSyncService.doSync()
+                statsSyncService.doFetch(true)
                 //if (! statsSyncService.doSync()) {
                 //    log.warn( 'Failed. Maybe ignored due blocked statsSyncService')
                 //}

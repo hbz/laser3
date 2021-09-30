@@ -15,8 +15,8 @@ class ConfigUtils {
     static String getAggrEsHostname(boolean validate = false) {
         readConfig('aggr_es_hostname', validate)
     }
-    static String getAggrEsIndex(boolean validate = false) {
-        readConfig('aggr_es_index', validate)
+    static String getAggrEsIndices(boolean validate = false) {
+        readConfig('aggr_es_indices', validate)
     }
     static String getAggrEsGOKBCluster(boolean validate = false) {
         readConfig('aggr_es_gokb_cluster', validate)
@@ -53,6 +53,9 @@ class ConfigUtils {
     }
     static boolean getIsUpdateDashboardTableInDatabase(boolean validate = false) {
         readConfig('isUpdateDashboardTableInDatabase', validate)
+    }
+    static String getLaserStatsSyncJobActive(boolean validate = false) {
+        readConfig('laserStatsSyncJobActive', validate)
     }
     static String getLaserSystemId(boolean validate = false) {
         readConfig('laserSystemId', validate)
@@ -119,7 +122,7 @@ class ConfigUtils {
         getActivateTestJob(true)
         getAggrEsCluster(true)
         getAggrEsHostname(true)
-        getAggrEsIndex(true)
+        //getAggrEsIndices(true)
         getAppDefaultPrefs(true)
         getBasicDataFileName(true)
         getBasicDataPath(true)

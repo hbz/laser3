@@ -322,7 +322,7 @@
                                                 <g:if test="${targetObject.isSlaved}">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                          data-position="top right"><i class="icon thumbtack blue"></i>
+                                                          data-position="top right"><i class="icon grey la-thumbtack-regular"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:else>
@@ -336,7 +336,7 @@
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.notInherited.fromConsortia')}"
                                                       data-position="top right"><i
-                                                        class="large icon cart arrow down blue"></i></span>
+                                                        class="large icon cart arrow down grey"></i></span>
                                             </g:elseif>
 
                                         </g:if>

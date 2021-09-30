@@ -5,13 +5,13 @@
             text: '${labels.tooltip}',
             show: false
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," } %>
             ]
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
@@ -59,7 +59,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," } %>
             ]
         },
         tooltip: {
@@ -104,10 +104,10 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}', '${BaseQuery.NO_STARTDATE_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         }
-                        else if (JSPC.helper.contains(['${BaseQuery.NO_ENDDATE_LABEL}'], params.name)) {
+                        else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.ice
                         }
                         else {

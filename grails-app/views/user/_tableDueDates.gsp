@@ -59,16 +59,8 @@
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:if test="${!obj.surveyConfigs[0].pickAndChoose}">
                                     <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                             id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}</g:link>
-                                </g:if>
-                                <g:if test="${obj.surveyConfigs[0].pickAndChoose}">
-                                    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${obj.surveyConfigs[0].id}"
-                                            params="${[targetObjectId: obj.surveyConfigs[0].subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
-                                        ${obj.surveyConfigs[0].getSurveyName()}
-                                    </g:link>
-                                </g:if>
                             </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
@@ -105,7 +97,7 @@
                 </td>
                 <td style="text-align: center">
                     <g:if test="${false}">
-                        <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
+                        <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
@@ -118,7 +110,7 @@
                                           role="button"
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
-                            <i class="trash alternate icon"></i>
+                            <i class="trash alternate outline icon"></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">

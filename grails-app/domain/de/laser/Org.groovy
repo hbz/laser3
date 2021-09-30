@@ -264,7 +264,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -506,7 +506,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
             boolean isChanged = false
             IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
-                if ( ! ids.find {it.ns?.ns == coreNs}){
+                if ( ! ids.find {it.ns.ns == coreNs}){
                     addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
                     isChanged = true
                 }

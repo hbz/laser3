@@ -154,10 +154,10 @@
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button js-open-confirm-modal"
+                                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="trash alternate icon"></i>
+                                                        <i class="trash alternate outline icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>

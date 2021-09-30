@@ -945,6 +945,8 @@
           description: Mapping RefdataCategory
           enum:
             [""]
+        perpetualAccessBySub:
+          $ref: "#/components/schemas/SubscriptionStub"
         coverages:
           $ref: "#/components/schemas/CoverageCollection"
 

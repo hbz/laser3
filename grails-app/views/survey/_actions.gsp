@@ -1,13 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:if test="${actionName == 'renewalEvaluation'}">
-<semui:exportDropdown>
-    <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
-                               message="renewalEvaluation.exportRenewal"/>
-</semui:exportDropdown>
-</g:if>
-
 <semui:actionsDropdown>
     <g:if test="${contextService.getUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
@@ -143,7 +136,7 @@
                         id="${surveyInfo.id}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i> ${message(code:'deletion.survey')}
+                    <i class="trash alternate outline icon"></i> ${message(code:'deletion.survey')}
                 </g:link>
 
             </g:if>

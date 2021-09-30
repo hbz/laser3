@@ -7,6 +7,320 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
+
+--      30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Sortierung bei Titelumfrage-Auflistung korrigiert
+
+3878    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht         
+
+3873    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         500er bei Eingabe von IP-Adresse
+
+3838    30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Umstrukturierung des Titelübertrages zwischen zwei Lizenzen
+
+3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
+
+3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
+
+3863    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     neue Spakte we:kb-gepflegt in Anbieterlisten
+
+3862    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Kostendarstellung auf Lizenzübersichtsseite angepasst
+
+3855    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Titelvergleich wieder lauffähig gemacht
+
+3867    28.09.2021  rc-2.2  2.2-RC      Moe     Bug         Rechter von Benutzern in Meine Lizenzverwaltung
+
+3866    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Menüpunkt "Merkmale in Objekten verwalten" war für INST_USERs erreichbar
+
+3861    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Aufgaben an einen INST_USER waren von selbigem nicht bearbeitbar
+
+3854    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         fehlende Übersetzungsstrings nachgereicht
+
+3853    28.09.2021  rc-2.2  2.2-RC      David   Bug         RC 2.2: Systemmeldungen nicht editierbar
+
+3852    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         verschiedene Vererbungsbugs behoben
+
+3851    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Fehlermeldung in der Lizenzverwaltung vereinheitlicht
+
+3849    28.09.2021  rc-2.2  2.2-RC      Andreas Feature     Lizenzverwaltungsformular kann nicht ohne Lizenz abgeschickt werden
+
+3848    28.09.2021  rc-2.2  2.2-RC      Andreas Feature     Buttons in Umfrage umbenannt
+
+3847    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler bei Hinweistext korrigiert
+
+3844    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         obsoleten und fehlerhaften Menüpunkt entfernt
+
+3841    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Minor-Bugfix(-versuch) für Org-Verknüpfungen
+
+3827    28.09.2021  rc-2.2  2.2-RC      Moe     Feature     ClickMe Excel für meine Lizenzen?
+
+3510    28.09.2021  rc-2.2  2.2-RC      David   Feature     Reporting: XSLX-Export
+
+3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
+
+3826    27.09.2021  dev     2.2         Andreas Feature     Umstellung der Nutzerzahlen auf Kommazahlen
+
+3818    24.09.2021  dev     2.2         Andreas Bug         Dashboard-Benachrichtigungen/Änderungen auf natives SQL umgestellt
+
+3835    24.09.2021  dev     2.2         Moe     Feature     Dauerhafter Zugriff in Lizenzbestände setzen über Dauerhafter Zugriff Attribute der Lizenz
+
+3832    24.09.2021  dev     2.2         Moe     Feature     Darstellungsanpassungen der Merkmalsverwaltungen
+
+3821    24.09.2021  dev     2.2         David   Feature     Reporting: Vollnutzer braucht einige Auswahlmöglichkeiten nicht
+
+3834    24.09.2021  dev     2.2         Andreas Feature     Eingrenzung der darzustellenden Titelmenge
+
+3817    24.09.2021  dev     2.2         David   Feature     Reporting: Übersetzung
+
+3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
+
+3819    22.09.2021  dev     2.2         Moe     Bug         Fehlermeldung beim Aufrufen der Teilnehmer
+
+3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
+
+3822    21.09.2021  dev     2.2         Andreas Feature     neue FID-Merkmale, Referenzwerte und Identifier-Namensräume aufgenommen
+
+3820    21.09.2021  dev     2.2         Andreas Feature     neue Darstellung der Anbieter/Lieferanten/Lizenzgeber in Meine Lizenzen und Verträge
+
+3809    21.09.2021  dev     2.2         Andreas Feature     Nachbesserungen und Bugfixes bei der Statistik-Darstellung
+
+3811    17.09.2021  dev     2.2         Moe     Feature     Click me auch bei Umfragen
+
+3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe
+
+3812    17.09.2021  dev     2.2         David   Feature     Modale Dialoge springen nach dem Schließen zum Seitenanfang
+
+3748    17.09.2021  dev     2.2         Andreas Feature     Massenlöschung von gelöscht markierten TIPP-Einträgen implementiert
+
+3805    16.09.2021  dev     2.2         Andreas Feature     Rückverweis bei Teilnehmer-Vorgänger/Nachfolger verknüpfen umgestellt
+
+3804    16.09.2021  dev     2.2         Andreas Bug         Statistik war für Lizenz ohne Start- und Enddatum nicht abrufbar und weitere Bugfixes 
+
+3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
+
+3802    15.09.2021  dev     2.2         Andreas Bug         Tippfehler korrigiert
+
+3772    15.09.2021  dev     2.2         Andreas Feature     ROLE-Rechte-Löschung muss jetzt bestätigt werden
+
+3803    15.09.2021  dev     2.2         Moe     Feature     Meine Umfragen Startseite ändern
+
+3771    15.09.2021  dev     2.2         David   Feature     Workflow: Sicherheitsabfrage beim Löschen eines Workflows fehlt
+
+3768    15.09.2021  dev     2.2         Andreas Bug         Merkmal Teilnahme konnte nicht entfernt werden
+
+3754    15.09.2021  dev     2.2         David   Feature     Dashboard-Workflow-Tab: Paginierung einführen
+
+3582    15.09.2021  dev     2.2         Andreas Feature     Umbruch der xEditable-Werte nach 50 Zeichen
+
+3461    15.09.2021  dev     2.2         Andreas Bug         umständliche Abfragelogik bei Identifikatorensuche entstrickt
+
+3501    14.09.2021  dev     2.2         Moe     Feature     Bulkoperation für Vollnutzer zur Massenverlängerung
+
+3783    14.09.2021  dev     2.2         Andreas Feature     Status der Aufgaben grafisch dargestellt
+
+3796    14.09.2021  dev     2.2         David   Feature     Reporting: Datepicker für Datumsgrenzen
+
+3793    13.09.2021  dev     2.2         Andreas Bug         Merkmalswertlöschung bei Ja/Nein/Unbekannt angepasst
+
+3792    13.09.2021  dev     2.2         Andreas Bug         fehlende Identifier-URL-Präfixes nachgetragen
+
+3791    13.09.2021  dev     2.2         Andreas Feature     Bestand, Umfrage und Workflow-Bubbles im Lizenzfinanzmenü nachgetragen
+
+3789    13.09.2021  dev     2.2         Andreas Bug         Session-Mismatch behoben
+
+3788    13.09.2021  dev     2.2         David   Feature     'Workflows verwalten' überarbeiten
+
+3790    10.09.2021  dev     2.2         Andreas Bug         Passwörter mit HTML-relevanten Zeichen wurden inkorrekt dargestellt
+
+3776    09.09.2021  dev     2.2         Moe     Feature     Lizenzverwaltung 
+
+3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
+
+3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert
+
+3784    08.09.2021  dev     2.2         Andreas Bug         fehlende Kontrollstruktur bei ungültigem Schlüsselpaar nachgereicht
+
+3347    08.09.2021  dev     2.2         Andreas Feature     Vertragsexport per PDF
+
+1900    06.09.2021  dev     2.2         Andreas Feature     Mailtemplate der fälligen Termine angepasst
+
+1884    03.09.2021  dev     2.2         Moe     Feature     Kosten in neue Lizenz kopieren ermöglichen?
+
+3778    02.09.2021  dev     2.2         Moe     Feature     Umfrage-Merkmale: Pflichtmerkmale
+
+3774    02.09.2021  dev     2.2         Andreas Bug         Paginierung auf Dashboard korrigiert
+
+3699    02.09.2021  dev     2.2         Andreas Feature     Laderoutine für COUNTER-Statistiken implementiert
+
+3666    02.09.2021  dev     2.2         Andreas Feature     Umsetzung des Ladens und der Darstellung von COUNTER-Statistiken
+
+3751    01.09.2021  dev     2.2         Moe     Feature     Umfrage-Dashboard-Tab: Paginierung einführen
+
+3775    01.09.2021  dev     2.2         Andreas Feature     Verhalten des Kuratorengruppendropdowns umgestellt
+
+3773    31.08.2021  dev     2.2         Moe     Feature     Titelumfrage Überarbeitung
+
+3684    31.08.2021  dev     2.2         Andreas Feature     Filter für Kundennummer eingebaut
+
+3747    30.08.2021  dev     2.2         Moe     Feature/Bug Click me excel - nicht vererbte merkmale
+
+3692    30.08.2021  dev     2.2         Andreas Feature     Umstellung der Kuratorengruppenabfrage auf scharfe Suche
+
+3607    27.08.2021  dev     2.2         Andreas Feature     Vorgänger-Nachfolger-Beziehung für Einrichtungen implementiert
+
+3761    27.08.2021  dev     2.2         David   Feature     Reporting: QueryCache bzgl. CSV-Export überarbeiten
+
+3750    26.08.2021  dev     2.2         David   Feature     Reporting: Zeitleisteninformationen als CSV exportieren
+
+3758    25.08.2021  dev     2.2         Moe     Bug         Renewal-Export
+
+3504    25.08.2021  dev     2.2         David   Feature     csv Export auch bei Mikroreporting
+
+3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
+
+3752    25.08.2021  dev     2.2         Andreas Bug         Default-Einstellung für Änderungs-Subtab definiert
+
+3745    25.08.2021  dev     2.2         Andreas Feature     Filterfeld Umfang für Titelfilter eingeführt
+
+3738    25.08.2021  dev     2.2         Andreas Feature     Lizenzfilteroptionen auf Mehrfachauswahl umgestellt
+
+3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
+
+3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit
+
+2765    24.08.2021  dev     2.2         Moe     Feature     Index Update für einzelne Objekttypen triggern
+
+3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
+
+3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden
+
+3739    24.08.2021  dev     2.2         Andreas Feature     neue Lizenzform eingefügt
+
+3730    24.08.2021  dev     2.2         Andreas Feature     neue Option für Nutzerzahlen eingefügt
+
+3728    24.08.2021  dev     2.2         Andreas Bug         Preisangaben wurden nicht mit Bestandsangaben angelegt
+
+3727    24.08.2021  dev     2.2         Andreas Bug         Als Zielobjekt konnte das Quellobjekt ausgewählt werden
+
+3314    24.08.2021  dev     2.2         Andreas Feature     Titelname gehört zu den überwachten Eigenschaften
+
+3741    23.08.2021  dev     2.2         Moe     Feature     Export Renewal
+
+3032    23.08.2021  dev     2.2         Moe     Feature      Titelumfrage: Auswahl-Box über mehrere Seiten speichern bei Bestandsauswahl
+
+3742    23.08.2021  dev     2.2         David   Feature     Reporting: Kontaktdaten exportieren
+
+3736    20.08.2021  dev     2.2         David   Feature     Workflows: Erweiterte Editierfunktion für INST-Admins
+
+3712    13.08.2021  dev     2.2         David   Feature     Workflows: Detailansicht für Lizenzen
+
+3711    13.08.2021  dev     2.2         David   Feature     Workflows: Übersichts- und Verwaltungsseiten
+
+3534    11.08.2021  dev     2.2         Moe     Feature     SurveyResult finishDate löschen
+
+3661    11.08.2021  dev     2.2         Moe     Feature     Umfrage unterjährige Einstiege farbl. markieren Kosten
+
+3714    10.08.2021  dev     2.2         Moe     Bug         ClickMe-Excel Meine Einrichtungen nicht auf eigene "Eigene Merkmale" abgesichert
+
+3706    10.08.2021  dev     2.2         Moe     Feature     Typo in Betreff Umfragebestätigungsmail
+
+3376    10.08.2021  dev     2.2         Andreas Feature     Ausbau von Start- und Enddatum aus den Preisangaben
+
+3369    10.08.2021  dev     2.2         Andreas Feature     Umstellung der Ladelogik der Titel in der Titelumfrage
+
+2906    10.08.2021  dev     2.2         Andreas Feature     Code-Duplikate entfernen
+
+3722    09.08.2021  dev     2.2         Andreas Bug         irreführende Anzeige einer Zeichenbegrenzung ausgeblendet
+
+3721    09.08.2021  dev     2.2         Andreas Bug         falsche Darstellung der Kontaktnamen bei der Merkmalsverwaltung korrigiert
+
+3720    09.08.2021  dev     2.2         Andreas Bug         "Titel hinzufügen" korrigiert Titel mit falschem Status
+
+3719    06.08.2021  dev     2.2         Andreas Bug         Verarbeitungsfehler bei der Vererbung von Merkmalen behoben
+
+3718    06.08.2021  dev     2.2         Andreas Bug         Tippfehler in Merkmalsdefinition korrigiert
+
+3715    06.08.2021  dev     2.2         Andreas Feature     teilweise Umstrukturierung des Dashboards auf AJAX
+
+3276    03.08.2021  dev     2.2         Andreas Bug         Sortierspalten der Abdeckung angepasst
+
+3710    02.08.2021  dev     2.2         Andreas Feature     allgemeines Merkmal Kostenträger auf mehrfach vergebbar geschaltet
+
+3581    02.08.2021  dev     2.2         Andreas Feature     Adressen direkt bei Anlegen von Kontakten anlegen
+
+3709    30.07.2021  dev     2.2         Andreas Bug         Inkonsistenz bei der Befüllug des Titelgruppendropdowns behoben
+
+3708    30.07.2021  dev     2.2         Andreas Bug         Legacy-Spalte aus Lizenzbestandstabelle entfernt
+
+3707    30.07.2021  dev     2.2         Andreas Bug         entfallenen Funktionstyp bei Anbieter wieder hergestellt
+
+3689    30.07.2021  dev     2.2         Andreas Bug         technischen Support nach Absprache wieder eingeblendet
+
+3694    30.07.2021  dev     2.2         David   Feature     Workflows: Generische Datenkomponente erstellen
+
+3705    29.07.2021  dev     2.2         Andreas Bug         Zählvariable inkorrekt gesetzt
+
+3704    29.07.2021  dev     2.2         Andreas Bug         Sortierung der Lizenzkosten bei Nichtkonsortialsichten wurde nicht durchgereicht
+
+3703    29.07.2021  dev     2.2         Andreas Bug         Referenzfehler beim Teilen von Dokumenten über die Tabelle behoben
+
+3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
+
+3700    28.07.2021  dev     2.2         Andreas Bug         Lizenzexport berücksichtigte Merkmale nicht, die von der Konsortialstelle eingetragen wurden
+
+3676    28.07.2021  dev     2.2         Andreas Feature     Umstrukturierungen bei Titel hinzufügen
+
+3691    26.07.2021  dev     2.2         Andreas Bug         verschiedene Ausbesserungen an Titel- und Anbieterdaten und am we:kb-Sync
+
+3669    26.07.2021  dev     2.2         Andreas Bug         Übertragung eigener Merkmale hakte wegen Legacy-Brücke
+
+3654    26.07.2021  dev     2.2         Andreas Bug         Fehlermeldung bei fehlender Position/Funktion nachgereicht
+
+3697    23.07.2021  rc2.1   2.1.2       Andreas Bug         Umfragekosten waren nicht übertragbar, wenn mindestens eine Auftragsnummer belegt ist
+
+3689    23.07.2021  dev     2.2         Andreas Bug         technischer Support und Service-Support aus Einrichtungen abgeblendet
+
+3683    23.07.2021  dev     2.2         Andreas Bug         Zugriffsfehler unter "Alle Plattformen" korrigiert
+
+3682    23.07.2021  dev     2.2         Andreas Bug         gelöscht markierte und erloschene Organisationen waren in kontrollierter Liste
+
+3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
+
+3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
+
+3663    13.07.2021  dev     2.2         David   Feature     Workflows: Datenmodell und Strukturen
+
+3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
+
+3257    12.07.2021  dev     2.2         Andreas Bug         verschiedene Fehlfunktionen ausgebessert
+
+3668    09.07.2021  dev     2.2         Andreas Bug         Email-Validierung bei Nutzerverwaltung aufgenommen
+
+3667    08.07.2021  dev     2.2         Andreas Bug         Zählfehler und Filterinkonsistenz behoben
+
+3460    08.07.2021  dev     2.2         Andreas Feature     Nachladen von DDCs, Sprachen und Identifiern per Massenoperation
+
+3657    06.07.2021  dev     2.2         Andreas Bug         falsche Befüllung der Dropdown-Listen
+
+3656    06.07.2021  dev     2.2         Andreas Bug         falsche Zahlen an die Reiter gegeben
+
+3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
+
+3285    06.07.2021  dev     2.2         Andreas Bug         irrtümliches Überschreiben von Konsortiallizenzparameter für Vollnutzer unterbunden
+
+3655    05.07.2021  dev     2.2         Andreas Bug         Vererbung von Identifier korrigiert
+
+3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt
+
+3597    05.07.2021  dev     2.2         Andreas Feature     Bearbeitungsfelder für Sprache eines Kontakts hinzugefügt
+
+3419    05.07.2021  dev     2.2         Andreas Feature     neue Sichten "Alle Konsortien" und "Meine Konsortien" eingeführt
+
+3257    05.07.2021  dev     2.2         Andreas Feature     generische Filtersuche von ODER auf UND-Verknüpfung umgestellt
+
+2931    05.07.2021  dev     2.2         Andreas Feature     Anbieter/Lieferant per Teilnehmer verwalten verknüpfen
+
+3600    02.07.2021  dev     2.2         Andreas Feature     PSQL-Skript zum manuellen Vereinigen von Organisationsdaten
+
 3647    02.07.2021  rc2.1   2.1.1       Andreas Feature     Icon für Anbieter eingeführt
 
 3646    01.07.2021  rc2.1   2.1.1       Andreas Feature     Unschärfe bei der Suche von Freitextmerkmalen aufgehoben

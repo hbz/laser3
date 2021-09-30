@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl"
-       value="${survey.surveyConfigs[0].pickAndChoose ? "/myInstitution/surveyInfosIssueEntitlements/${survey.surveyConfigs[0].id}" : "/myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
+       value="${"/myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
 <g:set var="renewalSurvey" value="${survey.type == RDStore.SURVEY_TYPE_RENEWAL}"/>
 <g:set var="linkToSurvey" value="${grailsApplication.config.grails.serverURL + raw(surveyUrl)}"/>
 

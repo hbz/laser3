@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
@@ -14,13 +15,18 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
  
 import de.laser.exceptions.CleanupException
-import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -41,21 +47,23 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
+    def cacheService
+    def contextService
+    def dataConsistencyService
     def dataloadService
+    def deletionService
     def statsSyncService
     StatusUpdateService statusUpdateService
     def messageService
     def changeNotificationService
+    def workflowService
     def yodaService
+
     def sessionFactory
     def genericOIDService
-    def deletionService
     def filterService
-
-    def contextService
     def refdataService
     def propertyService
-    def dataConsistencyService
     def organisationService
     def apiService
 
@@ -405,6 +413,38 @@ class AdminController  {
   }
 
     @Secured(['ROLE_ADMIN'])
+    def manageWorkflows() {
+        Map<String, Object> result = [:]
+
+        if (params.cmd) {
+            result = workflowService.cmd(params)
+        }
+        if (params.tab) {
+            result.tab = params.tab
+        }
+
+        result.wfpIdTable = [:] as Map<Long, Integer>
+        result.tpIdTable  = [:] as Map<Long, Integer>
+        result.cpIdTable  = [:] as Map<Long, Integer>
+
+        result.wfpList = WfWorkflowPrototype.executeQuery('select wfp from WfWorkflowPrototype wfp order by id')
+        result.tpList  = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')
+        result.cpList  = WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')
+
+        result.wfpList.eachWithIndex { wfp, i -> result.wfpIdTable.put( wfp.id, i+1 ) }
+        result.tpList.eachWithIndex { tp, i -> result.tpIdTable.put( tp.id, i+1 ) }
+        result.cpList.eachWithIndex { cp, i -> result.cpIdTable.put( cp.id, i+1 ) }
+
+        EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
+        cache.put( 'wfpIdTable', result.wfpIdTable )
+        cache.put( 'tpIdTable', result.tpIdTable )
+        cache.put( 'cpIdTable', result.cpIdTable )
+
+        log.debug( result.toMapString() )
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -443,10 +483,9 @@ class AdminController  {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 300
+        params.max =    params.max ?: 200
 
         result.events = SystemEvent.list(params)
-
         result
     }
 
@@ -468,13 +507,6 @@ class AdminController  {
         }
         else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
         redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def statsSync() {
-        log.debug("statsSync()")
-        statsSyncService.doSync()
-        redirect(controller:'home')
     }
 
   @Secured(['ROLE_ADMIN'])

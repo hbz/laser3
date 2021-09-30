@@ -9,12 +9,17 @@ import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
 import de.laser.system.SystemEvent
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -73,6 +78,7 @@ class SurveyService {
 
     }
 
+    @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
         if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
@@ -190,13 +196,13 @@ class SurveyService {
                     }
                 }
 
-                surveyConfig.surveyProperties.each {
+                surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }.each {
                     titles.addAll([messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
+                                   messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale())])
                 }
 
             } else {
@@ -301,7 +307,7 @@ class SurveyService {
                         }
                     }
 
-                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.name}.each { surResult ->
+                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.getI10n('name')}.each { surResult ->
                         row.add([field: surResult.type?.getI10n('name') ?: '', style: null])
                         row.add([field: PropertyDefinition.getLocalizedValue(surResult.type.type) ?: '', style: null])
 
@@ -397,7 +403,7 @@ class SurveyService {
                              [field: messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()), style: 'bold'],
                              [field: messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()), style: 'bold'],
                              [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, LocaleContextHolder.getLocale()), style: 'bold'],
-                             [field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
+                             [field: messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
                 surveyData.add(row2)
 
                 SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
@@ -794,7 +800,7 @@ class SurveyService {
                            messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
+                           messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale())])
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(participant, surveyConfigs)
 
@@ -1106,36 +1112,23 @@ class SurveyService {
         }
     }
 
-    def addSubMembers(SurveyConfig surveyConfig) {
+    void addSubMembers(SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
 
-        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo.owner.id == result.institution.id)
-
-        if (!result.editable) {
-            return
-        }
-
-        List orgs = []
         List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
 
-        currentMembersSubs.each{ sub ->
-            orgs.addAll(sub.getAllSubscribers())
-        }
-
-        if (orgs) {
-
-            orgs.each { org ->
+        currentMembersSubs.each { Subscription subChild ->
+                Org org = subChild.getSubscriber()
 
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 
                     boolean existsMultiYearTerm = false
-                    Subscription sub = surveyConfig.subscription
-                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                    if (!surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+
+
+                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
@@ -1152,19 +1145,21 @@ class SurveyService {
                             if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
                                 surveyConfig.surveyProperties.each { property ->
 
-                                    SurveyResult surveyResult = new SurveyResult(
-                                            owner: result.institution,
-                                            participant: org ?: null,
-                                            startDate: surveyConfig.surveyInfo.startDate,
-                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
-                                            type: property.surveyProperty,
-                                            surveyConfig: surveyConfig
-                                    )
+                                    if(!SurveyResult.findBySurveyConfigAndParticipantAndTypeAndOwner(surveyConfig, org, property.surveyProperty, result.institution)) {
+                                        SurveyResult surveyResult = new SurveyResult(
+                                                owner: result.institution,
+                                                participant: org ?: null,
+                                                startDate: surveyConfig.surveyInfo.startDate,
+                                                endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                                type: property.surveyProperty,
+                                                surveyConfig: surveyConfig
+                                        )
 
-                                    if (surveyResult.save()) {
-                                        log.debug( surveyResult.toString() )
-                                    } else {
-                                        log.error("Not create surveyResult: " + surveyResult)
+                                        if (surveyResult.save()) {
+                                            log.debug(surveyResult.toString())
+                                        } else {
+                                            log.error("Not create surveyResult: " + surveyResult)
+                                        }
                                     }
                                 }
 
@@ -1176,7 +1171,7 @@ class SurveyService {
                     }
                 }
             }
-        }
+
     }
 
     void copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
@@ -1307,8 +1302,8 @@ class SurveyService {
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
 
-        fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
-        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
+        fsq = filterService.getParticipantSurveyQuery_New(cloneParameterMap, sdFormat, participant)
+        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).groupBy { it.id[1] }.size()
 
         return result
 
@@ -1334,4 +1329,259 @@ class SurveyService {
         return result
     }
 
-}
+    Map<String, Object> getStatsForParticipant(Map<String, Object> result, GrailsParameterMap params, Subscription subscription, Org participant, List<Long> titles){
+        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+
+        if(!subscribedPlatforms) {
+            subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription.instanceOf])
+        }
+
+        List count4check = [], count5check = [], monthsInRing = []
+        if(!params.tabStat)
+            params.tabStat = 'total'
+        if(subscribedPlatforms && titles) {
+            String sort, dateRange
+            Map<String, Object> queryParams = [customer: participant, platforms: subscribedPlatforms]
+
+            if(params.tabStat == 'total'){
+                if (params.sort) {
+                    sort = "${params.sort} ${params.order}"
+                } else {
+                    sort = "reportCount ${params.order ?: 'asc'}"
+                }
+            }else {
+                if (params.sort) {
+                    String secondarySort
+                    switch (params.sort) {
+                        case 'reportType': secondarySort = ", title.name asc, r.reportFrom desc"
+                            break
+                        case 'title.name': secondarySort = ", r.reportType asc, r.reportFrom desc"
+                            break
+                        case 'reportFrom': secondarySort = ", title.name asc, r.reportType asc"
+                            break
+                        default: secondarySort = ", title.name asc, r.reportType asc, r.reportFrom desc"
+                            break
+                    }
+                    sort = "${params.sort} ${params.order} ${secondarySort}"
+                } else {
+                    sort = "title.name asc, r.reportType asc, r.reportFrom desc"
+                }
+            }
+            Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
+
+            Date newStartDate
+            Date newEndDate
+
+            use(TimeCategory) {
+                newStartDate = new Date()-12.months
+                newEndDate = new Date()+1.months
+            }
+
+            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            if (params.tabStat != 'total') {
+                Calendar filterTime = GregorianCalendar.getInstance()
+                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tabStat)
+                filterTime.setTime(filterDate)
+                queryParams.startDate = filterDate
+                filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+                queryParams.endDate = filterTime.getTime()
+            } else {
+                queryParams.startDate = newStartDate
+                queryParams.endDate = newEndDate
+            }
+            startTime.setTime(newStartDate)
+            endTime.setTime(newEndDate)
+
+
+            while(startTime.before(endTime)) {
+                monthsInRing << startTime.getTime()
+                startTime.add(Calendar.MONTH, 1)
+            }
+            String filter = ""
+            if(params.series_names) {
+                filter += " and title.seriesName in (:seriesName) "
+                queryParams.seriesName = params.list("series_names")
+            }
+            if(params.subject_references) {
+                filter += " and title.subjectReference in (:subjectReference) "
+                queryParams.subjectReference = params.list("subject_references")
+            }
+            if(params.ddcs && params.list("ddcs").size() > 0) {
+                filter += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
+                queryParams.ddcs = []
+                params.list("ddcs").each { String ddc ->
+                    queryParams.ddcs << Long.parseLong(ddc)
+                }
+            }
+            if(params.languages && params.list("languages").size() > 0) {
+                filter += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
+                queryParams.languages = []
+                params.list("languages").each { String lang ->
+                    queryParams.languages << Long.parseLong(lang)
+                }
+            }
+
+            if (params.filter) {
+                filter += "and ( ( lower(title.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) or ((lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+                queryParams.title = "%${params.filter.trim().toLowerCase()}%"
+                queryParams.identifier = "%${params.filter}%"
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            }
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                filter += " and title.pkg.id = :pkgId "
+                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            if(params.summaryOfContent) {
+                filter += " and lower(title.summaryOfContent) like :summaryOfContent "
+                queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                filter += " and (lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            }
+
+            if(params.yearsFirstOnline) {
+                filter += " and (Year(title.dateFirstOnline) in (:yearsFirstOnline)) "
+                queryParams.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            }
+
+            if (params.identifier) {
+                filter += "and ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) "
+                queryParams.identifier = "${params.identifier}"
+            }
+
+            if (params.publishers) {
+                filter += "and lower(title.publisherName) in (:publishers) "
+                queryParams.publishers = params.list('publishers').collect { it.toLowerCase() }
+            }
+
+
+            if (params.title_types && params.title_types != "" && params.list('title_types')) {
+                filter += " and lower(title.titleType) in (:title_types)"
+                queryParams.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            }
+
+
+            if(params.metricType && params.list("metricType").size() > 0) {
+                filter += " and r.metricType in (:metricType) "
+                queryParams.metricType = params.metricType
+            }
+
+            if(titles.size() > 0) {
+                filter += " and title.id in (:titles) "
+                queryParams.titles = titles
+            }
+
+            Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms]
+            if(dateRange) {
+                c5CheckParams.startDate = queryParams.startDate
+                c5CheckParams.endDate = queryParams.endDate
+            }
+            count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
+            if(count5check.get(0) == 0) {
+                Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
+                result.reportTypes = availableReportTypes
+                if(!params.reportType) {
+                    if(availableReportTypes)
+                        params.reportType = availableReportTypes[0]
+                    else params.reportType = Counter4ApiSource.BOOK_REPORT_1
+                }
+                filter += " and r.reportType in (:reportType) "
+                queryParams.reportType = params.reportType
+                Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType)', [customer: queryParams.customer, platforms: queryParams.platforms, reportType: params.reportType])
+                result.metricTypes = availableMetricTypes
+                if(!params.metricType) {
+                    if(availableMetricTypes)
+                        params.metricType = availableMetricTypes[0]
+                    else params.metricType = 'ft_total'
+                }
+                filter += " and r.metricType = :metricType "
+                queryParams.metricType = params.metricType
+                if(params.tabStat == 'total') {
+                    result.total = Counter4Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams).size()
+                    result.usages = Counter4Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+                }
+                else {
+                    result.usages = Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+
+                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
+                    result.total = count4check.size() > 0 ? count4check[0] as int : 0
+                }
+
+            }
+            else {
+                Set availableReportTypes = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
+                result.reportTypes = availableReportTypes
+                if(!params.reportType) {
+                    if(availableReportTypes)
+                        params.reportType = availableReportTypes[0].toLowerCase()
+                    else params.reportType = Counter5ApiSource.TITLE_MASTER_REPORT.toLowerCase()
+                }
+                filter += " and lower(r.reportType) in (:reportType) "
+                queryParams.reportType = params.reportType
+                Set availableMetricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType)', [customer: queryParams.customer, platforms: queryParams.platforms, reportType: params.reportType])
+                result.metricTypes = availableMetricTypes
+                if(!params.metricType) {
+                    if(availableMetricTypes)
+                        params.metricType = availableMetricTypes[0]
+                    else params.metricType = 'Total_Item_Investigations'
+                }
+                filter += " and r.metricType = :metricType "
+                queryParams.metricType = params.metricType
+                if(params.tabStat == 'total') {
+                    result.total = Counter5Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams).size()
+                    result.usages = Counter5Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+                }else {
+                    result.usages = Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+                    result.total = count5check.size() > 0 ? count5check[0] as int : 0
+                }
+
+            }
+        }
+        result.monthsInRing = monthsInRing
+
+        result
+    }
+
+    boolean hasParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+
+        List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
+
+        if(orgRoles) {
+            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL)
+
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippInListAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipps, true)
+            if(issueEntitlementList && issueEntitlementList.size() > 0){
+                return true
+            }else {
+                return false
+            }
+        }else {
+            return false
+        }
+    }
+
+    IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
+
+        IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
+    }
+
+    boolean showStatisticByParticipant(Subscription subscription, Org org) {
+        Map<String, Object> result = [:]
+
+        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+
+        List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(org, subscribedPlatforms)
+
+        if(customerIdentifiers.size() > 0){
+            return true
+        }else {
+            return false
+        }
+
+    }
+
+    }

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.OrgRole" %>
-
+<laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 
 <div class="ui divided items">
@@ -17,20 +17,12 @@
                 <div class="ui header">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                         <g:link controller="survey" action="show" params="[surveyConfigID: surveyConfig.id]"
-                                id="${surveyInfo.id}">${surveyConfig.getSurveyName()}
+                                id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:if test="${!surveyConfig.pickAndChoose}">
                         <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: surveyConfig.id]"
-                                              id="${surveyInfo.id}">${surveyConfig.getSurveyName()}</g:link>
-                        </g:if>
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                    params="${[targetObjectId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
-                                ${surveyConfig.getSurveyName()}
-                            </g:link>
-                        </g:if>
+                                              id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}</g:link>
                     </g:else>
 
                     <span class="ui label survey-${surveyInfo.type.value}">
@@ -54,33 +46,19 @@
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <strong>${message(code: 'surveyParticipants.label')}:</strong>
                                 <span class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
-                                    ${surveyConfig.orgs?.size() ?: 0}
+                                    ${surveyConfig.orgs.size()}
                                 </span>
                             </g:link>
 
                             <span class="la-float-right">
-                                <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT && surveyConfig.pickAndChoose}">
-
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
-                                        data-content="${message(code: "surveyTitlesEvaluation.label")} anzeigen">
-                                            <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
-                                                    params="[surveyConfigID: surveyConfig.id]"
-                                                    class="ui icon button">
-                                                <i class="icon blue chart pie"></i>
-                                            </g:link>
-                                    </span>
-                                </g:if>
-                                <g:else>
-
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
-                                        data-content="${message(code: "surveyEvaluation.label")} anzeigen">
+                                        data-content="${message(code: "surveyResult.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
-                                                    class="ui icon button">
-                                                <i class="icon blue chart pie"></i>
+                                                    class="ui icon blue button la-modern-button">
+                                                <i class="icon chart pie"></i>
                                             </g:link>
                                     </span>
-                                </g:else>
                             </span>
                         </g:if>
                         <g:else>
@@ -113,4 +91,9 @@
 
     </g:each>
 
+    <semui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getDefaultPageSize()}" params="${[view:'Surveys']}" total="${countSurvey}"/>
+
 </div>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [countSurvey])}")
+</laser:script>

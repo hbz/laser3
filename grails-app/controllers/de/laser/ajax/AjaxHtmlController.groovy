@@ -1,10 +1,12 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.ApiSource
+import de.laser.CacheService
 import de.laser.ContextService
-import de.laser.FinanceService
 import de.laser.GokbService
 import de.laser.License
 import de.laser.LinksGenerationService
@@ -12,39 +14,51 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.ReportingService
+import de.laser.ReportingGlobalService
+import de.laser.ReportingLocalService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
+import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
+import de.laser.SurveyConfigProperties
 import de.laser.SurveyInfo
 import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
-import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.reporting.export.AbstractExport
-import de.laser.reporting.export.QueryExport
-import de.laser.reporting.export.ExportHelper
+import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SwissKnife
+import de.laser.reporting.ReportingCache
+import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
+import de.laser.reporting.export.base.BaseQueryExport
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
-import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.ss.usermodel.Workbook
 
 import javax.servlet.ServletOutputStream
-import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -56,18 +70,20 @@ class AjaxHtmlController {
      */
 
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
+    MyInstitutionControllerService myInstitutionControllerService
+    PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
     TaskService taskService
     LinksGenerationService linksGenerationService
     AccessService accessService
-    GokbService gokbService
-    ReportingService reportingService
+    ReportingGlobalService reportingGlobalService
+    ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
     CustomWkhtmltoxService wkhtmltoxService // custom
+    GokbService gokbService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -84,6 +100,47 @@ class AjaxHtmlController {
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    //-------------------------------------------------- myInstitution/dashboard ---------------------------------------
+
+    @Secured(['ROLE_USER'])
+    def getChanges() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
+        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        changes.max = result.max
+        changes.editable = result.editable
+        render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSurveys() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
+                " order by surConfig.surveyInfo.endDate",
+                [org: result.institution,
+                 status: RDStore.SURVEY_SURVEY_STARTED])
+
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.endDate",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
+        result.surveys = activeSurveyConfigs.groupBy {it?.id}
+        result.countSurvey = result.surveys.size()
+        result.surveys = result.surveys.drop((int) result.offset).take((int) result.max)
+
+        result.surveysOffset = result.offset
+
+        render template: '/myInstitution/surveys', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -122,6 +179,30 @@ class AjaxHtmlController {
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getGeneralPackageData() {
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
+
+        result.packages = []
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.subscription.packages.each { SubscriptionPackage subscriptionPackage ->
+            Map packageInfos = [:]
+
+            packageInfos.packageInstance = subscriptionPackage.pkg
+
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${subscriptionPackage.pkg.gokbId}")
+            if (queryResult.error && queryResult.error == 404) {
+                flash.error = message(code: 'wekb.error.404')
+            } else if (queryResult.warning) {
+                List records = queryResult.warning.records
+                packageInfos.packageInstanceRecord = records ? records[0] : [:]
+            }
+            result.packages << packageInfos
+        }
+
+        render template: '/survey/packages', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -261,6 +342,8 @@ class AjaxHtmlController {
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
+        result.showAddresses = params.showAddresses == "true" ? true : ''
+        result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
@@ -280,7 +363,7 @@ class AjaxHtmlController {
                 break
             case 'contactPersonForProviderAgency':
                 result.isPublic    = false
-                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.org) {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
@@ -388,9 +471,13 @@ class AjaxHtmlController {
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
         boolean allResultHaveValue = true
+        List<String> notProcessedMandatoryProperties = []
         surveyResults.each { SurveyResult surre ->
-            if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
+            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
                 allResultHaveValue = false
+                notProcessedMandatoryProperties << surre.type.getI10n('name')
+            }
         }
         boolean noParticipation = false
         if(surveyInfo.isMandatory) {
@@ -398,10 +485,13 @@ class AjaxHtmlController {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
-        if(noParticipation || allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.survey")
-        else if(!noParticipation && !allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+            if(notProcessedMandatoryProperties.size() > 0){
+                render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+            }
+            else if(noParticipation || allResultHaveValue)
+                render message(code: "confirm.dialog.concludeBinding.survey")
+            else if(!noParticipation && !allResultHaveValue)
+                render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----
@@ -411,15 +501,16 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartDetails() {
+        // TODO - SESSION TIMEOUTS
+
         Map<String, Object> result = [
             token:  params.token,
             query:  params.query
         ]
         result.id = params.id ? params.id as Long : ''
 
-        // TODO
         if (params.context == BaseConfig.KEY_MYINST) {
-            reportingService.doGlobalChartDetails( result, params ) // manipulates result
+            reportingGlobalService.doChartDetails( result, params ) // manipulates result
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
             if (params.idx) {
@@ -427,7 +518,7 @@ class AjaxHtmlController {
                 params.idx = params.idx.replaceFirst(params.id + ':', '') // TODO !!!!
                 // TODO !!!!
             }
-            reportingService.doLocalChartDetails( result, params ) // manipulates result
+            reportingLocalService.doChartDetails( result, params ) // manipulates result
         }
 
         render template: result.tmpl, model: result
@@ -439,57 +530,122 @@ class AjaxHtmlController {
     })
     def chartDetailsExport() {
 
-        Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('cde:') }
+        Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('cde:') }
         Map<String, Object> selectedFields = [:]
-        selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
+        selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
-        String filename = params.filename ?: ExportHelper.getFileName(['Reporting'])
+        String filename = params.filename ?: BaseExportHelper.getFileName()
+        ReportingCache rCache
+        BaseExport export
+        Map<String, Object> detailsCache
 
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        AbstractExport export = DetailsExportManager.createExport( params.token, selectedFields )
+        if (params.context == BaseConfig.KEY_MYINST) {
+            rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
-        if (params.fileformat == 'csv') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
-            response.contentType = 'text/csv'
-
-            List<String> rows = DetailsExportManager.export( export, 'csv', detailsCache.idList )
-
-            ServletOutputStream out = response.outputStream
-            out.withWriter { w ->
-                rows.each { r ->
-                    w.write( r + '\n')
-                }
+            if (rCache.exists()) {
+                detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
-            out.close()
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
-        else if (params.fileformat == 'pdf') {
-            List<List<String>> content = DetailsExportManager.export( export, 'pdf', detailsCache.idList )
-            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
 
-            def pdf = wkhtmltoxService.makePdf(
-                    view: '/myInstitution/reporting/export/pdf/generic_details',
-                    model: [
-                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+            if (rCache.exists()) {
+                detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
+        }
+
+        if (export && detailsCache) {
+
+            if (params.fileformat == 'csv') {
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+                response.contentType = 'text/csv'
+
+                List<String> rows = DetailsExportManager.exportAsList(export, 'csv', detailsCache.idList as List<Long>)
+
+                ServletOutputStream out = response.outputStream
+                out.withWriter { w ->
+                    rows.each { r ->
+                        w.write(r + '\n')
+                    }
+                }
+                out.close()
+            }
+            else if (params.fileformat == 'xlsx') {
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
+                response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+                Workbook wb = DetailsExportManager.exportAsWorkbook(export, 'xlsx', detailsCache.idList as List<Long>)
+
+                ServletOutputStream out = response.outputStream
+                wb.write(out)
+                out.close()
+            }
+            else if (params.fileformat == 'pdf') {
+
+                List<List<String>> content = DetailsExportManager.exportAsList(export, 'pdf', detailsCache.idList as List<Long>)
+                Map<String, Object> struct = [:]
+
+                String view = ''
+                Map<String, Object> model = [:]
+
+                if (params.context == BaseConfig.KEY_MYINST) {
+
+                    struct  = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    view    = '/myInstitution/reporting/export/pdf/generic_details'
+                    model   = [
+                            filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
                             struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
-                    ],
-                    // header: '',
-                    // footer: '',
-                    pageSize: struct.pageSize,
-                    orientation: struct.orientation,
-                    marginLeft: 10,
-                    marginTop: 15,
-                    marginBottom: 15,
-                    marginRight: 10
-            )
+                    ]
+                }
+                else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.setContentType('application/pdf')
-            response.outputStream.withStream { it << pdf }
+                    struct  = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    view    = '/subscription/reporting/export/pdf/generic_details'
+                    model   = [
+                            //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
+                            header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                    ]
+                }
+
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: view,
+                        model: model,
+                        // header: '',
+                        // footer: '',
+                        pageSize: struct.pageSize,
+                        orientation: struct.orientation,
+                        marginLeft: 10,
+                        marginTop: 15,
+                        marginBottom: 15,
+                        marginRight: 10
+                )
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+            }
         }
     }
 
@@ -498,16 +654,47 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartQueryExport() {
-        QueryExport export = QueryExportManager.createExport( params.token )
 
-        List<String> queryLabels = ExportHelper.getIncompleteQueryLabels( params.token )
-        String filename = ExportHelper.getFileName( queryLabels )
+        ReportingCache rCache
+        BaseQueryExport export
+        List<String> queryLabels = []
+        String filename = params.filename ?: BaseExportHelper.getFileName()
+
+        if (params.context == BaseConfig.KEY_MYINST) {
+            rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+            if (rCache.exists()) {
+                export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
+                queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
+                //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
+        }
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION ) // TODO
+
+            if (rCache.exists()) {
+                export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
+                queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
+                //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
+        }
 
         if (params.fileformat == 'csv') {
+
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
 
-            List<String> rows = QueryExportManager.export( export, 'csv' )
+            List<String> rows = QueryExportManager.exportAsList( export, 'csv' )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -517,8 +704,23 @@ class AjaxHtmlController {
             }
             out.close()
         }
+        else if (params.fileformat == 'xlsx') {
+
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
+            response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+            Workbook wb = QueryExportManager.exportAsWorkbook( export, 'xlsx' )
+
+            ServletOutputStream out = response.outputStream
+            wb.write(out)
+            out.close()
+        }
         else if (params.fileformat == 'pdf') {
-            List<List<String>> content = QueryExportManager.export(export, 'pdf')
+            // TODO
+            // TODO
+            // TODO
+            // TODO
+            List<List<String>> content = QueryExportManager.exportAsList(export, 'pdf')
 
             Map<String, Object> struct = [:]
 
@@ -546,8 +748,8 @@ class AjaxHtmlController {
 
             Map<String, Object> model = [
                     token:        params.token,
-                    filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                    filterResult: ExportHelper.getCachedFilterResult(params.token),
+                    filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                    filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
                     //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),
@@ -558,7 +760,7 @@ class AjaxHtmlController {
                     struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
             ]
 
-            def pdf = wkhtmltoxService.makePdf(
+            byte[] pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_query',
                     model: model,
                     // header: '',
@@ -576,6 +778,234 @@ class AjaxHtmlController {
             response.outputStream.withStream { it << pdf }
 
 //                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def createWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd: 'create',
+                tmplModalTitle: g.message(code: 'default.create.label', args: [ g.message(code: 'workflow.object.' + params.key) ]),
+                tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows'),
+                prefix: params.key
+        ]
+
+        if (params.tab) { result.tmplTab = params.tab }
+
+        if (params.key in [WfWorkflow.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfWorkflow'
+        }
+        else if (params.key in [WfTask.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+        }
+        else if (params.key in [WfCondition.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfCondition'
+        }
+        else if (params.key in [WfWorkflowPrototype.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfWorkflow'
+
+            // not: * used as tp.next * used as tp.child
+            result.dd_taskList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'order by id'
+            )
+        }
+        else if (params.key in [WfTaskPrototype.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+
+            // not: * used as tp.child * used as wp.task
+            result.dd_nextList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id'
+            )
+            // not: * used as tp.next * used as wp.task
+            result.dd_childList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id'
+            )
+
+            result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
+        }
+        else if (params.key in [WfConditionPrototype.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfCondition'
+        }
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def useWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+
+            result.prefix = key[2]
+
+            if (key[0] == 'subscription') {
+                result.subscription = Subscription.get( key[1] )
+                result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            else if (key[0] == 'myInstitution') {
+                result.workflow = WfWorkflow.get (key[1] ) // TODO
+            }
+            else if (key[0] == 'dashboard') {
+                result.workflow = WfWorkflow.get (key[1] )
+                result.tmplFormUrl  = createLink(controller: 'myInstitution', action: 'dashboard')
+            }
+
+            if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[3] )
+                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
+
+            }
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[3] )
+                result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
+            }
+        }
+
+        if (params.info) {
+            result.info = params.info
+        }
+
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def editWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd : 'edit',
+                tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows')
+        ]
+
+        if (params.tab) { result.tmplTab = params.tab }
+        if (params.info) { result.tmplInfo = params.info }
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+
+            // WF_X:id
+            String prefix = key[0]
+            Long wfObjId = key[1] as Long
+
+            // subscription:id:WF_X:id
+            if (prefix == 'subscription') {
+                prefix = key[2]
+                wfObjId = key[3] as Long
+                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+
+            result.prefix = prefix
+            result.tmplModalTitle = g.message(code: 'default.edit.label', args: [ g.message(code: 'workflow.object.' + result.prefix) ]) + ': '
+
+            if (result.prefix == WfWorkflowPrototype.KEY) {
+                result.workflow       = WfWorkflowPrototype.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+
+                if (result.workflow) {
+                    // not: * used as tp.next * used as tp.child
+                    result.dd_taskList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'order by id'
+                    )
+                }
+            }
+            else if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
+
+//                if (result.workflow) {
+//                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
+//                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
+//                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
+//                }
+            }
+            else if (result.prefix == WfTaskPrototype.KEY) {
+                result.task           = WfTaskPrototype.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + result.task.title
+
+                if (result.task) {
+//                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: wfObjId]
+
+                    // not: * self * used as tp.child * used as wp.task
+                    result.dd_nextList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+                    // not: * self * used as tp.next * used as wp.task
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+//                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
+//                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
+
+                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
+                }
+            }
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + result.task.title
+
+                if (result.task) {
+
+                    result.dd_nextList      = result.task.next ? [ result.task.next ] : []
+                    result.dd_childList     = result.task.child ? [ result.task.child ] : []
+                    result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
+//                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
+
+//                    String sql = 'select wft from WfTask wft where id != :id order by id'
+//                    Map<String, Object> sqlParams = [id: key[1] as Long]
+
+//                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
+//                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
+                }
+            }
+            else if (result.prefix == WfConditionPrototype.KEY) {
+                result.condition      = WfConditionPrototype.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + result.condition.title
+
+//                if (result.condition) {
+//                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
+//                }
+            }
+            else if (result.prefix == WfCondition.KEY) {
+                result.condition      = WfCondition.get( wfObjId )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + result.condition.title
+
+//                if (result.condition) {
+//                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
+//                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
+//                }
+            }
+
+            EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
+            result.wfpIdTable = cache.get( 'wfpIdTable') ?: [:]
+            result.tpIdTable  = cache.get( 'tpIdTable')  ?: [:]
+            result.cpIdTable  = cache.get( 'cpIdTable')  ?: [:]
+
+            render template: '/templates/workflow/forms/modalWrapper', model: result
         }
     }
 }

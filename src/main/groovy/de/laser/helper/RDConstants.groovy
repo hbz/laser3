@@ -34,6 +34,7 @@ class RDConstants {
     public static final String COST_ITEM_ELEMENT      = 'cost.item.element'
     public static final String COST_ITEM_STATUS       = 'cost.item.status'
     public static final String COUNTRY                = 'country'
+    public static final String COVERAGE_DEPTH         = 'coverage.depth'
     public static final String CREATOR_TYPE           = 'creator.type'
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE   = 'customer.identifier.type'
@@ -131,9 +132,15 @@ class RDConstants {
     public static final String REMINDER_TRIGGER       = 'reminder.trigger'
     public static final String REMINDER_UNIT          = 'reminder.unit'
 
+    public static final String REPORTING_CONTACT_TYPE   = 'reporting.contact.type'
+
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
     public static final String SIM_USER_NUMBER        = 'sim.user.number'
+    public static final String SIS_USER_GROUP_BASE    = "sis.user.group.base"
+    public static final String SIS_USER_GROUP_ATTR1   = "sis.user.group.attr1"
+    public static final String SIS_USER_GROUP_ATTR2   = "sis.user.group.attr2"
+    public static final String SIS_BUSINESS_MODEL_BASE = "sis.business.model.base"
     public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
@@ -164,6 +171,18 @@ class RDConstants {
     public static final String USAGE_STATUS               = 'usage.status'
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
+
+    public static final String WF_WORKFLOW_STATE    = 'workflow.workflow.state'
+    public static final String WF_WORKFLOW_STATUS   = 'workflow.workflow.status'
+
+    public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
+
+    public static final String WF_TASK_PRIORITY     = 'workflow.task.priority'
+    public static final String WF_TASK_STATUS       = 'workflow.task.status'
+    //public static final String WF_TASK_TYPE         = 'workflow.task.type'
+
+    //public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
+    //public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
 
     public static final String Y_N                    = 'y.n'
     public static final String Y_N_O                  = 'y.n.o'

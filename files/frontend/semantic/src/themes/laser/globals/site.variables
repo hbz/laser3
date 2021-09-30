@@ -138,7 +138,7 @@
        Links
 --------------------*/
 
-@linkColor           : #275480;
+@linkColor           : #015591;
 @linkUnderline       : none;
 @linkHoverColor      : @lightBlue;
 @linkHoverUnderline  : none;
@@ -212,7 +212,9 @@
 @mobileBreakpoint            : 320px;
 @tabletBreakpoint            : 768px;
 @computerBreakpoint          : 992px;
+
 @largeMonitorBreakpoint      : 1200px;
+@laser-breakpoint            : 1290px;
 @widescreenMonitorBreakpoint : 1920px;
 
 /*-------------------
@@ -223,14 +225,14 @@
 @red              : #BB1600;
 @orange           : #fa820a; /* hbz-orange */
 @yellow           : #FBBD08;
-@olive            : #B5CC18;
+@olive            : #B5CC18; /* yellowish green */
 @green            : #98B500; /* light green */
 @teal             : #00B5AD;
 @blue             : #004678; /* hbz-blue */
 @violet           : #76007A;
-@purple           : #A333C8;
+@purple           : #2185d0; /* light blue */
 @pink             : #E03997;
-@brown            : #A5673F;
+@brown            : #6b1d1d;
 @grey             : #767676;
 @black            : #1B1C1D; /* laser-black -matching the blue */
 

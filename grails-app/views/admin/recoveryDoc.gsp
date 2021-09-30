@@ -62,7 +62,7 @@
                                                 link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="ui icon external alternate"></i>' }
                                     }
                                     if (dc.pkg) {
-                                        println "Package ${dc.pkg.id} - ${dc.pkg.name} ${dc.pkg.sortName} &nbsp;&nbsp; " +
+                                        println "Package ${dc.pkg.id} - ${dc.pkg.name} ${dc.pkg.sortname} &nbsp;&nbsp; " +
                                                 link(action: 'show', controller: 'package', id: dc.pkg.id) { '<i class="ui icon external alternate"></i>' }
                                     }
                                     if (dc.org) {
@@ -138,7 +138,7 @@
                                                         link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="ui icon external alternate"></i>' }
                                             }
                                             if (dc.pkg) {
-                                                println "Package ${dc.pkg.id} - ${dc.pkg.name} ${dc.pkg.sortName} &nbsp;&nbsp; " +
+                                                println "Package ${dc.pkg.id} - ${dc.pkg.name} ${dc.pkg.sortname} &nbsp;&nbsp; " +
                                                         link(action: 'show', controller: 'package', id: dc.pkg.id) { '<i class="ui icon external alternate"></i>' }
                                             }
                                             if (dc.org) {

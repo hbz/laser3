@@ -22,6 +22,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
+import java.util.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
@@ -90,7 +91,8 @@ class SubscriptionService {
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+                params.status = defaultStatus
                 result.defaultSet = true
             }
             else {
@@ -249,15 +251,25 @@ class SubscriptionService {
             qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
         }
 
+        String statusQuery = ""
         if (params.status?.size() > 0) {
-            query += " and subT.status.id = :status "
+            statusQuery = " and subT.status.id = :status "
             qarams.put('status',params.long('status'))
         } else if(!params.filterSet) {
-            query += " and subT.status.id = :status "
+            statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
             result.defaultSet = true
         }
+        if(params.status == RDStore.SUBSCRIPTION_CURRENT.id.toString() && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+            statusQuery = " and (subT.status.id = :status or (subT.status.id = :expired and subT.hasPerpetualAccess = true)) "
+            qarams.put('expired', RDStore.SUBSCRIPTION_EXPIRED.id)
+        }
+        else if (params.hasPerpetualAccess) {
+            query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+        query += statusQuery
 
         if (params.filterPropDef?.size() > 0) {
             def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
@@ -284,13 +296,8 @@ class SubscriptionService {
         }
 
         if (params.isPublicForApi) {
-            query += "and subT.isPublicForApi = :isPublicForApi "
+            query += " and subT.isPublicForApi = :isPublicForApi "
             qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.hasPerpetualAccess) {
-            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -383,23 +390,28 @@ class SubscriptionService {
     List getMySubscriptions_readRights(Map params){
         List result = []
         List tmpQ
+        String queryStart = "select s "
+        if(params.forDropdown) {
+            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id "
+            params.joinQuery = "join s.orgRelations so"
+        }
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
         } else {
-           /* tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))*/
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -471,8 +483,10 @@ class SubscriptionService {
         if (params?.status) {
             queryParams.status = params.status
         }
+        queryParams.showParentsAndChildsSubs = params.showSubscriber
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
         result
     }
 
@@ -484,7 +498,8 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
     //Lokallizenzen
@@ -495,7 +510,8 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
     List getValidSubChilds(Subscription subscription) {
@@ -527,11 +543,11 @@ class SubscriptionService {
                  RDStore.SUBSCRIPTION_ORDERED]
         )
         if(validSubChilds) {
-            validSubChilds = validSubChilds?.sort { a, b ->
+            /*validSubChilds = validSubChilds?.sort { a, b ->
                 def sa = a.getSubscriber()
                 def sb = b.getSubscriber()
                 (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-            }
+            }*/
         }
         validSubChilds
     }
@@ -560,7 +576,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
                         [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
     }
     @Deprecated
@@ -594,7 +610,7 @@ class SubscriptionService {
                     qry_params.startDate = date_filter
                     qry_params.endDate = date_filter
                 }
-                base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
+                base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.identifier = "%${params.filter}%"
             } else {
@@ -667,13 +683,13 @@ class SubscriptionService {
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += "order by ie.${params.sort} ${params.order} "
             } else {
-                base_qry += "order by lower(ie.tipp.sortName) asc"
+                base_qry += "order by lower(ie.sortname) asc"
             }
 
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
 
-            ies.sort { it.tipp.sortName }
+            ies.sort { it.sortname }
             ies
         }else{
             List<IssueEntitlement> ies = []
@@ -688,7 +704,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
     }
     //In Verhandlung
@@ -697,7 +713,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
     }
 
@@ -706,24 +722,23 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
     }
 
-    List getIssueEntitlementIDsNotFixed(Subscription subscription) {
+    Integer countIssueEntitlementsNotFixed(Subscription subscription) {
+        Integer iesCount = subscription?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0
+        iesCount
+    }
+
+    List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.tipp.sortName",
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies
-    }
-
-    List getSelectedIssueEntitlementsBySurvey(Subscription subscription, SurveyInfo surveyInfo) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -732,8 +747,32 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
+    }
+
+    Integer countIssueEntitlementsFixed(Subscription subscription) {
+        Integer countIes = subscription?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0
+        countIes
+    }
+
+    List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
+        List<Long> ies = subscription?
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies
+    }
+
+    List<Long> getTippIDsFixed(Subscription subscription) {
+        List<Long> tipps = subscription?
+                IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        tipps
     }
 
     List getCurrentIssueEntitlements(Subscription subscription) {
@@ -741,8 +780,16 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
                         [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortName}
+        ies.sort {it.sortname}
         ies
+    }
+
+    List getCurrentIssueEntitlementIDs(Subscription subscription) {
+        List<Long> ieIDs = subscription?
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
+                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ieIDs
     }
 
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
@@ -784,9 +831,12 @@ class SubscriptionService {
                             status: tipp.status,
                             subscription: subscription,
                             tipp: tipp,
+                            name: tipp.name,
+                            medium: tipp.medium,
                             accessStartDate:tipp.accessStartDate,
                             accessEndDate:tipp.accessEndDate,
                             acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
+                    new_ie.generateSortTitle()
                     if(new_ie.save()) {
                         log.debug("${new_ie} saved")
                         TIPPCoverage.findAllByTipp(tipp).each { TIPPCoverage covStmt ->
@@ -842,10 +892,13 @@ class SubscriptionService {
                         status: statusCurrent,
                         subscription: target,
                         tipp: ie.tipp,
+                        name: ie.name,
+                        medium: ie.medium ?: ie.tipp.medium,
                         accessStartDate: ie.tipp.accessStartDate,
                         accessEndDate: ie.tipp.accessEndDate,
                         acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                 )
+                newIe.generateSortTitle()
                 if(newIe.save()) {
                     ie.tipp.coverages.each { TIPPCoverage covStmt ->
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
@@ -994,22 +1047,60 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus){
+        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, false)
+    }
+
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
-        } else {
+        }
+        else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
+            IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
+            expected.status = RDStore.TIPP_STATUS_CURRENT
+            if(!expected.save())
+                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
+        }
+        else {
             IssueEntitlement new_ie = new IssueEntitlement(
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
-                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
+                    name: tipp.name,
+                    medium: tipp.medium,
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
+            new_ie.generateSortTitle()
+
+            if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                new_ie.perpetualAccessBySub = sub
+            }
+
+            Date accessStartDate, accessEndDate
+            if(issueEntitlementOverwrite) {
+                if(issueEntitlementOverwrite.accessStartDate) {
+                    if(issueEntitlementOverwrite.accessStartDate instanceof String)
+                        accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
+                    else if(issueEntitlementOverwrite instanceof Date)
+                        accessStartDate = issueEntitlementOverwrite.accessStartDate
+                    else accessStartDate = tipp.accessStartDate
+                }
+                if(issueEntitlementOverwrite.accessEndDate) {
+                    if(issueEntitlementOverwrite.accessEndDate instanceof String) {
+                        accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
+                    }
+                    else if(issueEntitlementOverwrite.accessEndDate instanceof Date) {
+                        accessEndDate = issueEntitlementOverwrite.accessEndDate
+                    }
+                    else accessEndDate = tipp.accessEndDate
+                }
+            }
+            new_ie.accessStartDate = accessStartDate
+            new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
                 Set coverageStatements
                 Set fallback = tipp.coverages
@@ -1037,7 +1128,7 @@ class SubscriptionService {
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
-                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItems) {
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement) {
                         issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
                             PriceItem pi = new PriceItem(
                                     startDate: priceItem.startDate ?: null,
@@ -1058,7 +1149,6 @@ class SubscriptionService {
 
                     }
                     else {
-
                         PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
                                 listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
@@ -1986,7 +2076,7 @@ class SubscriptionService {
         prop.save()
     }
 
-    void updateProperty(SubscriptionController controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
+    void updateProperty(def controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
 
         String field = prop.type.getImplClassValueProperty()
 

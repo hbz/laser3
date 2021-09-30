@@ -53,23 +53,6 @@
 }
 
 /*******************************
-        Sticky Footer
-        see
-        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
-*******************************/
-
-body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-}
-
-main {
-    flex: 1;
-}
-
-
-/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 .la-float-right{
@@ -271,7 +254,8 @@ aside.ui.accordion .title:not(.ui) {
 .la-inline-flexbox{
     display:inline-flex;
 }
-.la-list-icon{
+i.icon.la-list-icon{
+    margin: -0.2rem 0.5rem 0 0;
     &:before{
         display:inline-flex;
         text-decoration: none;
@@ -409,10 +393,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 // most important object in table
 
-.la-main-object {
-    font-weight: bold;
-}
-.la-minor-object {
+.la-minor-object a{
     font-weight: normal;
 }
 // clearing afecting the elements before the element with class 'la-clear-before'
@@ -422,4 +403,23 @@ aside.ui.accordion .title:not(.ui) {
 .la-readmore[data-readmore] {
     transition: height 500ms;
     overflow: hidden;
+}
+/*********************************** Responsive Behavior *******************/
+// Light Grey Sub Menu
+@media only screen and (max-width: @computerBreakpoint) {
+    .ui.menu.la-contextBar {
+        top:0!important;
+    }
+}
+@media only screen and (max-width: @largeMonitorBreakpoint) {
+    .ui.menu.la-contextBar {
+        .ui.container {
+            width: 100%;
+        }
+    }
+}
+@media only screen and (max-width: @tabletBreakpoint  ) {
+    body {
+        margin-left: 0.4em;
+    }
 }

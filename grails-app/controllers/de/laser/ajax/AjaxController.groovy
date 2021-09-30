@@ -38,6 +38,7 @@ class AjaxController {
     def formService
     def dashboardDueDatesService
     IdentifierService identifierService
+    FilterService filterService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -435,27 +436,75 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
+      SessionCacheWrapper sessionCache = contextService.getSessionCache()
+      String sub = params.sub ?: params.id
+      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+
+      if(!cache) {
+          sessionCache.put("/subscription/${params.referer}/${sub}",["checked":[:]])
+          cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+      }
+
       Map checked = cache.get('checked')
+
       if(params.index == 'all') {
 		  Map<String, String> newChecked = checked ?: [:]
-          Set<Long> pkgFilter = []
-          if(params.pkgFilter)
-              pkgFilter << params.long('pkgFilter')
-          else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub',[sub:params.long("sub")]))
-          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter)',[pkgFilter:pkgFilter])
-		  tippUUIDs.each { String e ->
-			  newChecked[e] = params.checked == 'true' ? 'checked' : null
-		  }
+          if(params.referer == 'renewEntitlementsWithSurvey'){
+
+              Subscription baseSub = Subscription.get(params.baseSubID)
+              Subscription newSub = Subscription.get(params.newSubID)
+
+              List<Long> sourceTipps
+
+              Map query = filterService.getIssueEntitlementQuery(params, baseSub)
+              List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
+
+              Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+              List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
+
+              Map query3 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], newSub)
+              List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
+
+              List<IssueEntitlement> sourceIEs
+              if(params.tab == 'allIEs') {
+                  sourceTipps = allIETipps
+                  sourceTipps = sourceTipps.minus(selectedIETipps)
+                  sourceTipps = sourceTipps.minus(targetIETipps)
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatus(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), baseSub, RDStore.TIPP_STATUS_CURRENT) : []
+              }
+              if(params.tab == 'selectedIEs') {
+                  sourceTipps = selectedIETipps
+                  sourceTipps = sourceTipps.minus(targetIETipps)
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_DELETED) : []
+              }
+
+              sourceIEs.each { IssueEntitlement ie ->
+                  newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
+              }
+
+          }
+          else {
+              Set<Long> pkgFilter = []
+              if (params.pkgFilter)
+                  pkgFilter << params.long('pkgFilter')
+              else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
+              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)', [pkgFilter: pkgFilter, sub: params.long("sub")])
+              tippUUIDs.each { String e ->
+                  newChecked[e] = params.checked == 'true' ? 'checked' : null
+              }
+          }
           cache.put('checked',newChecked)
+          success.checkedCount = params.checked == 'true' ? newChecked.size() : 0
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
 		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',newChecked))
-			  success.success = true
-	  }
+		  if(cache.put('checked',newChecked)){
+              success.success = true
+          }
+          success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
 
+	  }
       render success as JSON
   }
 
@@ -817,7 +866,7 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if(params.withoutRender == "false"){
+        if(Boolean.valueOf(params.withoutRender)){
             if(params.url){
                 redirect(url: params.url)
             }else {
@@ -1059,7 +1108,14 @@ class AjaxController {
                             members.each { m ->
                                 if(m[prop] instanceof Boolean)
                                     m.setProperty(prop, false)
-                                else m.setProperty(prop, null)
+                                else {
+                                    if(m[prop] instanceof RefdataValue) {
+                                        if(m[prop].owner.desc == RDConstants.Y_N_U)
+                                            m.setProperty(prop, RDStore.YNU_UNKNOWN)
+                                    }
+                                    else
+                                        m.setProperty(prop, null)
+                                }
                                 m.save()
                             }
                         }
@@ -1112,10 +1168,10 @@ class AjaxController {
                         memberType = 'lic'
                 if(memberType) {
                     owner.getClass().findAllByInstanceOf(owner).each { member ->
-                        Identifier existingProp = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
-                        if (! existingProp) {
+                        Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
+                        if (! existingIdentifier) {
                             //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
-                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.ns = :ns',[member: member, ns: identifier.ns])
+                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
                             // unbound prop found with matching type, set backref
                             if (matchingIds) {
                                 matchingIds.each { Identifier memberId ->
@@ -1125,7 +1181,7 @@ class AjaxController {
                             }
                             else {
                                 // no match found, creating new prop with backref
-                                Identifier.constructWithFactoryResult([value: identifier.value, parent: identifier, reference: member, namespace: identifier.ns])
+                                Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
                             }
                         }
                     }
@@ -1513,7 +1569,7 @@ class AjaxController {
         String value = params.value?.trim()
 
         if (owner && namespace && value) {
-            FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
+            FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, note: params.note.trim(), namespace: namespace])
 
             fr.setFlashScopeByStatus(flash)
         }

@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.ReportingCache" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -48,8 +48,8 @@
                         <label for="filter-chooser">${message(code:'reporting.filter.base')}</label>
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
-                                  optionKey="key"
-                                  optionValue="value"
+                                  optionKey="${{it}}"
+                                  optionValue="${{BaseConfig.getMessage('base.filter.' + it)}}"
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>
@@ -62,9 +62,9 @@
 
         <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
-            <g:if test="${!filter || filter == filterItem.key}">
-                <div id="filter-${filterItem.key}" class="filter-form-wrapper ${hidden}">
-                    <g:render template="/myInstitution/reporting/filter/${filterItem.key}" />
+            <g:if test="${!filter || filter == filterItem}">
+                <div id="filter-${filterItem}" class="filter-form-wrapper ${hidden}">
+                    <g:render template="/myInstitution/reporting/filter/${filterItem}" />
                 </div>
             </g:if>
         </g:each>
@@ -72,6 +72,10 @@
         <g:render template="/templates/reporting/helper" />
 
         <g:if test="${filterResult}">
+
+            %{-- <sec:ifAnyGranted roles="ROLE_YODA">
+                <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
@@ -120,7 +124,7 @@
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
                             $('#loadingIndicator').show();
-                            $('#query-export-button').attr('disabled', 'disabled');
+                            $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
@@ -154,7 +158,11 @@
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
+
                             $('#query-export-button').removeAttr('disabled');
+                            if (JSPC.app.reporting.current.request.query.indexOf('-x-') >=0) {
+                                $('#query-help-button').removeAttr('disabled');
+                            }
                         }
                     })
                     .fail( function (data) {

@@ -52,8 +52,8 @@ class ControlledListService {
             }
         }
         else {
-            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes)'
-            LinkedHashMap filter = [providerTypes:providerAgency]
+            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes) and o.status = :current'
+            LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
             if(params.query && params.query.length() > 0) {
                 filter.put("query",params.query)
                 queryString += " and genfunc_filter_matcher(o.name,:query) = true "
@@ -62,6 +62,27 @@ class ControlledListService {
             providers.each { p ->
                 result.results.add([name:p.name,value:genericOIDService.getOID(p)])
             }
+        }
+        result
+    }
+
+    /**
+     * Retrieves a list of organisations
+     * @param params - eventual request params
+     * @return a map containing a sorted list of organisations, an empty one if no orgainsations match the filter
+     */
+    Map getOrgs(Map params) {
+        LinkedHashMap result = [results:[]]
+        Org org = genericOIDService.resolveOID(params.ctx)
+        String queryString = 'select o from Org o where o.status != :deleted and o != :context'
+        LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",params.query)
+            queryString += " and genfunc_filter_matcher(o.name,:query) = true " //taking also sortname and shortname into consideration causes GC overhead
+        }
+        Set<Org> orgs = Org.executeQuery(queryString+" order by o.name asc",filter)
+        orgs.each { Org o ->
+            result.results.add([name:o.name,value:o.id])
         }
         result
     }
@@ -254,15 +275,15 @@ class ControlledListService {
             }
         }
         if(params.query && params.query.length() > 0) {
-            filter += ' and genfunc_filter_matcher(ie.tipp.name,:query) = true '
+            filter += ' and genfunc_filter_matcher(ie.name,:query) = true '
             filterParams.put('query',params.query)
         }
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.tipp.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
             }
         }
         issueEntitlements
@@ -536,6 +557,53 @@ class ControlledListService {
         return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
+    Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<String> titleTypes = []
+
+        titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
+
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
+    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> titleTypes = []
+
+        if(subscription.packages){
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
+        }
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
+    Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<RefdataValue> coverageDepths = []
+
+        coverageDepths.addAll(RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) ", [pkg: pkg, status: tippStatus]))
+
+        coverageDepths
+    }
+
+    Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<RefdataValue> coverageDepths = []
+
+        if(subscription.packages){
+            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) ", [pkg: subscription.packages.pkg])
+        }
+
+        coverageDepths
+    }
+
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -562,42 +630,42 @@ class ControlledListService {
         seriesName
     }
 
-    Set<DeweyDecimalClassification> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
+    Set<RefdataValue> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<DeweyDecimalClassification> ddcs = []
+        Set<RefdataValue> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
 
-    Set<DeweyDecimalClassification> getAllPossibleDdcsBySub(Subscription subscription) {
+    Set<RefdataValue> getAllPossibleDdcsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<DeweyDecimalClassification> ddcs = []
+        Set<RefdataValue> ddcs = []
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
         }
         ddcs
     }
 
-    Set<Language> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
+    Set<RefdataValue> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<Language> languages = []
+        Set<RefdataValue> languages = []
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         languages
     }
 
-    Set<Language> getAllPossibleLanguagesBySub(Subscription subscription) {
+    Set<RefdataValue> getAllPossibleLanguagesBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<Language> languages = []
+        Set<RefdataValue> languages = []
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
         }
         languages
     }

@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
+import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -8,7 +9,6 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -28,15 +28,15 @@ class ExportClickMeService {
                             label: 'Survey',
                             message: 'survey.label',
                             fields: [
-                                    'survey.participantComment'   : [field: 'resultOfParticipation.comment', label: 'Participant Comment', message: 'surveyResult.participantComment', defaultChecked: 'true'],
-                                    'survey.participationProperty': [field: 'resultOfParticipation.result', label: 'Participation', message: 'surveyResult.participationProperty', defaultChecked: 'true'],
+                                    'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                    'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                     'survey.period'               : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
                                     'survey.periodComment'        : [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'],
                                     'survey.costBeforeTax'        : [field: 'resultOfParticipation.costItem.costInBillingCurrency', label: 'Cost Before Tax', message: 'renewalEvaluation.costBeforeTax', defaultChecked: 'true'],
                                     'survey.costAfterTax'         : [field: 'resultOfParticipation.costItem.costInBillingCurrencyAfterTax', label: 'Cost After Tax', message: 'renewalEvaluation.costAfterTax', defaultChecked: 'true'],
                                     'survey.costTax'              : [field: 'resultOfParticipation.costItem.taxKey.taxRate', label: 'Cost Tax', message: 'renewalEvaluation.costTax', defaultChecked: 'true'],
                                     'survey.currency'             : [field: 'resultOfParticipation.costItem.billingCurrency', label: 'Cost Before Tax', message: 'renewalEvaluation.currency', defaultChecked: 'true'],
-                                    'survey.allOtherProperties'   : [field: null, label: 'All other Properties', message: 'renewalEvaluation.allOtherProperties', defaultChecked: 'true'],
+                                    'survey.costPeriod'           : [field: 'resultOfParticipation.costPeriod', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
                             ]
                     ],
 
@@ -44,8 +44,6 @@ class ExportClickMeService {
                             label: 'Participant',
                             message: 'surveyParticipants.label',
                             fields: [
-                            'participant.sortname'          : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
@@ -56,6 +54,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                     ]
                     ],
                     participantAccessPoints : [
@@ -94,10 +93,9 @@ class ExportClickMeService {
                                     'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                     ]
                     ]
-
     ]
 
-    static Map<String, Object> EXPORT_SUBSCRIPTION_CONFIG = [
+    static Map<String, Object> EXPORT_SUBSCRIPTION_MEMBERS_CONFIG = [
             subscription: [
                     label: 'Subscription',
                     message: 'subscription.label',
@@ -131,6 +129,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantAccessPoints : [
@@ -157,6 +156,210 @@ class ExportClickMeService {
                     fields: [:]
             ],
 
+            participantSubCostItems : [
+                    label: 'Cost Items',
+                    message: 'subscription.costItems.label',
+                    fields: [
+                            'costItemsElements' : [:],
+                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
+                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                    ]
+            ],
+
+    ]
+
+    static Map<String, Object> EXPORT_SUBSCRIPTION_CONFIG = [
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                            'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                            'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                            'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                            'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                            'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                    ]
+            ],
+
+            licenses: [
+                    label: 'License',
+                    message: 'license.label',
+                    fields: [
+                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                            'license.openEnded'         : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                    ]
+            ],
+
+            providers: [
+                    label: 'Provider',
+                    message: 'default.provider.label',
+                    fields: [
+                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
+                            'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
+                            'provider.platforms.url'         : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
+                    ]
+            ],
+
+            agencies: [
+                    label: 'Agency',
+                    message: 'default.agency.label',
+                    fields: [
+                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                    ]
+            ],
+
+
+            subProperties : [
+                    label: 'Properties',
+                    message: 'default.object.properties',
+                    fields: [:]
+            ],
+
+            subCostItems : [
+                    label: 'Cost Items',
+                    message: 'subscription.costItems.label',
+                    fields: [
+                            'costItemsElements' : [:],
+                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
+                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                    ]
+            ],
+
+    ]
+
+    static Map<String, Object> EXPORT_COST_ITEM_CONFIG = [
+            costItem : [
+                    label: 'Cost Item',
+                    message: 'costItem.label',
+                    fields: [
+                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
+                            'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
+                            'costItem.reference'                        : [field: 'reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                            'costItem.budgetCodes'                      : [field: 'budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
+                            'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
+                            'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency', defaultChecked: 'true'],
+                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
+                            'costItem.currencyRate'                     : [field: 'currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                            'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
+                            'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
+                            'costItem.costInLocalCurrency'              : [field: 'costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency', defaultChecked: 'true'],
+                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax', defaultChecked: 'true'],
+
+                            'costItem.datePaid'                         : [field: 'datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                            'costItem.financialYear'                    : [field: 'financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.invoiceDate'                      : [field: 'invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                            'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                            'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                            'costItem.invoiceNumber'                    : [field: 'invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                            'costItem.orderNumber'                      : [field: 'order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                    ]
+            ],
+
+            org : [
+                    label: 'Organisation',
+                    message: 'org.label',
+                    fields: [
+                            'participant.sortname'          : [field: 'sub.subscriber.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'              : [field: 'sub.subscriber.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'participant.funderType'        : [field: 'sub.subscriber.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'sub.subscriber.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'sub.subscriber.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                            'participant.eInvoice'          : [field: 'sub.subscriber.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'sub.subscriber.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                    ]
+            ],
+
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                    ]
+            ],
+            participantIdentifiersCustomerIdentifier : [
+                    label: 'Identifiers/Customer Identifier',
+                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    fields: [:]
+            ],
+
     ]
 
     static Map<String, Object> EXPORT_ORG_CONFIG = [
@@ -176,6 +379,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantAccessPoints : [
@@ -201,9 +405,117 @@ class ExportClickMeService {
 
     ]
 
-    Map<String, Object> getExportRenewalFields() {
+    static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
+            //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
+            // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
+            survey      : [
+                    label: 'Survey',
+                    message: 'survey.label',
+                    fields: [
+                            'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                    ]
+            ],
+
+            participant : [
+                    label: 'Participant',
+                    message: 'surveyParticipants.label',
+                    fields: [
+                            'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                    ]
+            ],
+            participantAccessPoints : [
+                    label: 'Participants Access Points',
+                    message: 'exportClickMe.participantAccessPoints',
+                    fields: [
+                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                    ]
+            ],
+            participantIdentifiersCustomerIdentifier : [
+                    label: 'Identifiers/Customer Identifier',
+                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    fields: [
+                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
+                    ],
+
+            ],
+
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                    ]
+            ],
+
+            participantSurveyCostItems : [
+                    label: 'Cost Items',
+                    message: 'surveyCostItems.label',
+                    fields: [
+                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
+                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
+                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                    ]
+            ],
+
+    ]
+
+    Map<String, Object> getExportRenewalFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
 
         EXPORT_RENEWAL_CONFIG.keySet().each {
             EXPORT_RENEWAL_CONFIG.get(it).fields.each {
@@ -211,29 +523,142 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
+            exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
+        }
+
+        if(!(RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) && !(RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id)){
+            exportFields.remove('survey.period')
+            exportFields.remove('survey.periodComment')
         }
 
         exportFields
     }
 
-    Map<String, Object> getExportRenewalFieldsForUI() {
+    Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
+            fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
+        }
+
+        if(!(RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id)){
+            fields.survey.fields.remove('survey.period')
+            fields.survey.fields.remove('survey.periodComment')
         }
 
         fields
     }
 
-    Map<String, Object> getExportSubscriptionFields(Subscription subscription, Org institution) {
+    Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription, Org institution) {
 
         Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.keySet().each {
+            EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+        if(childSubs) {
+            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+
+            memberProperties.each {PropertyDefinition propertyDefinition ->
+                exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+            }
+
+            CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+                exportFields.put("participantSubCostItem."+it.key, [field: null, label: RefdataValue.get(it.key).getI10n('value')])
+            }
+        }
+
+        exportFields
+    }
+
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription, Org institution) {
+
+        Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        fields.participantSubProperties.fields.clear()
+        fields.participantSubCostItems.fields.costItemsElements.clear()
+
+        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+        if(childSubs) {
+            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+
+            memberProperties.each {PropertyDefinition propertyDefinition ->
+                fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+            }
+
+            CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+                fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
+            }
+        }
+
+        fields
+    }
+
+    Map<String, Object> getExportSubscriptionFields(Org institution) {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        String localizedValue
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                localizedValue = "value_de"
+                break
+            default: localizedName = "name_en"
+                localizedValue = "value_en"
+                break
+        }
 
         EXPORT_SUBSCRIPTION_CONFIG.keySet().each {
             EXPORT_SUBSCRIPTION_CONFIG.get(it).fields.each {
@@ -241,57 +666,102 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
-        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
-        if(childSubs) {
-            String localizedName
-            switch (LocaleContextHolder.getLocale()) {
-                case Locale.GERMANY:
-                case Locale.GERMAN: localizedName = "name_de"
-                    break
-                default: localizedName = "name_en"
-                    break
-            }
-            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
 
-            memberProperties.each {PropertyDefinition propertyDefinition ->
-                exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition.getI10n('name')])
-            }
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+        }
+
+        String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
+        RefdataValue.executeQuery(query, [category: RDConstants.COST_ITEM_ELEMENT]).each { RefdataValue refdataValue ->
+            exportFields.put("subCostItem." + refdataValue.id, [field: null, label: refdataValue."${localizedValue}"])
         }
 
         exportFields
     }
 
-    Map<String, Object> getExportSubscriptionFieldsForUI(Subscription subscription, Org institution) {
+    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
-
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        String localizedValue
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                localizedValue = "value_de"
+                break
+            default: localizedName = "name_en"
+                localizedValue = "value_en"
+                break
         }
 
-        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
-        if(childSubs) {
-            String localizedName
-            switch (LocaleContextHolder.getLocale()) {
-                case Locale.GERMANY:
-                case Locale.GERMAN: localizedName = "name_de"
-                    break
-                default: localizedName = "name_en"
-                    break
-            }
-            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+        fields.subProperties.fields.clear()
+        fields.subCostItems.fields.costItemsElements.clear()
 
-            memberProperties.each {PropertyDefinition propertyDefinition ->
-                fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition.getI10n('name'), privateProperty: (propertyDefinition.tenant != null)]]
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
+
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+        }
+
+        String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
+        RefdataValue.executeQuery(query, [category: RDConstants.COST_ITEM_ELEMENT]).each { RefdataValue refdataValue ->
+            fields.subCostItems.fields.costItemsElements << ["subCostItem.${refdataValue.id}": [field: null, label: refdataValue."${localizedValue}"]]
+        }
+
+        fields
+    }
+
+    Map<String, Object> getExportCostItemFields() {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_COST_ITEM_CONFIG.keySet().each {
+            EXPORT_COST_ITEM_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
             }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        exportFields
+    }
+
+    Map<String, Object> getExportCostItemFieldsForUI() {
+
+        Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
         fields
@@ -301,19 +771,29 @@ class ExportClickMeService {
 
         Map<String, Object> exportFields = [:]
 
+        Locale locale = LocaleContextHolder.getLocale()
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
         EXPORT_ORG_CONFIG.keySet().each {
             EXPORT_ORG_CONFIG.get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).each { PropertyDefinition propertyDefinition ->
-            exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition.getI10n('name')])
+        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
 
         }
 
@@ -324,13 +804,97 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_ORG_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        Locale locale = LocaleContextHolder.getLocale()
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
         }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).each { PropertyDefinition propertyDefinition ->
-            fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition.getI10n('name'), privateProperty: (propertyDefinition.tenant != null)]]
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        fields.participantProperties.fields.clear()
+
+        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+        }
+
+        fields
+    }
+
+    Map<String, Object> getExportSurveyEvaluationFields(SurveyConfig surveyConfig) {
+
+        Map<String, Object> exportFields = [:]
+
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_SURVEY_EVALUATION.keySet().each {
+            EXPORT_SURVEY_EVALUATION.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
+            exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
+        }
+
+        if(!surveyConfig.subscription){
+            exportFields.remove('subscription')
+        }
+
+        if(surveyConfig.pickAndChoose){
+            exportFields.remove('participantSurveyCostItems')
+        }
+
+
+        exportFields
+    }
+
+    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
+
+        Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
+            fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
+        }
+
+        if(!surveyConfig.subscription){
+            fields.remove('subscription')
+        }
+
+        if(surveyConfig.pickAndChoose){
+            fields.remove('participantSurveyCostItems')
         }
 
         fields
@@ -340,9 +904,18 @@ class ExportClickMeService {
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
 
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportRenewalFields()
+        Map<String, Object> configFields = getExportRenewalFields(renewalResult.surveyConfig)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -350,14 +923,14 @@ class ExportClickMeService {
             }
         }
 
-        List titles = exportTitles(selectedExportFields, renewalResult.properties, locale)
+        List titles = exportTitles(selectedExportFields, locale)
 
         List renewalData = []
 
         renewalData.add([[field: messageSource.getMessage('renewalEvaluation.continuetoSubscription.label', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.sort { it.participant.sortname }.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -369,7 +942,7 @@ class ExportClickMeService {
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
 
             sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
 
             }
         }
@@ -382,7 +955,7 @@ class ExportClickMeService {
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
             sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
             }
         }
 
@@ -393,7 +966,7 @@ class ExportClickMeService {
 
 
         renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -403,7 +976,7 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -413,7 +986,7 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithoutResult.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
         }
 
 
@@ -440,12 +1013,12 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    def exportSubscriptions(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution) {
+    def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution) {
        Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionFields(subscription, institution)
+        Map<String, Object> configFields = getExportSubscriptionMembersFields(subscription, institution)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -453,12 +1026,48 @@ class ExportClickMeService {
             }
         }
 
-        List titles = exportTitles(selectedExportFields, null, locale)
+        List<RefdataValue> selectedCostItemElements = []
+        List<String> removeSelectedCostItemElements = []
+        selectedExportFields.keySet().findAll {it.startsWith('participantSubCostItem.')}.each {
+            selectedCostItemElements << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
+            removeSelectedCostItemElements << it
+        }
+        Map selectedCostItemFields = [:]
+        if(selectedCostItemElements){
+            selectedExportFields.keySet().findAll {it.startsWith('costItem.')}.each {
+                selectedCostItemFields.put(it, selectedExportFields.get(it))
+            }
+            selectedCostItemFields.each {
+                selectedExportFields.remove(it.key)
+            }
+            removeSelectedCostItemElements.each {
+                selectedExportFields.remove(it)
+            }
+            selectedExportFields.put('participantSubCostItem', [:])
+        }
+
+        Integer maxCostItemsElements = 0
+
+        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+        if(childSubs) {
+            maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
+        }
+
+        List titles = exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
 
         List exportData = []
         List orgList = []
         result.each { memberResult ->
-            setSubRow(memberResult, selectedExportFields, exportData)
+            setSubRow(memberResult, selectedExportFields, exportData, localizedName, selectedCostItemElements, selectedCostItemFields)
             orgList << memberResult.orgs
         }
 
@@ -466,6 +1075,106 @@ class ExportClickMeService {
         sheetData[messageSource.getMessage('subscriptionDetails.members.members', null, locale)] = [titleRow: titles, columnData: exportData]
 
         sheetData =  exportAccessPoints(orgList, sheetData, selectedExportFields, locale)
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportSubscriptionFields(institution)
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List<RefdataValue> selectedCostItemElements = []
+        List<String> removeSelectedCostItemElements = []
+        selectedExportFields.keySet().findAll {it.startsWith('subCostItem.')}.each {
+            selectedCostItemElements << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
+            removeSelectedCostItemElements << it
+        }
+        Map selectedCostItemFields = [:]
+        if(selectedCostItemElements){
+            selectedExportFields.keySet().findAll {it.startsWith('costItem.')}.each {
+                selectedCostItemFields.put(it, selectedExportFields.get(it))
+            }
+            selectedCostItemFields.each {
+                selectedExportFields.remove(it.key)
+            }
+            removeSelectedCostItemElements.each {
+                selectedExportFields.remove(it)
+            }
+            selectedExportFields.put('subCostItem', [:])
+        }
+
+        Integer maxCostItemsElements = 0
+
+        maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result])[0]
+
+        List titles = exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        List exportData = []
+        result.each { Subscription subscription ->
+            setSubRow(subscription, selectedExportFields, exportData, localizedName, selectedCostItemElements, selectedCostItemFields)
+        }
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('myinst.currentSubscriptions.label', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    def exportCostItems(Map result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportCostItemFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+        Map sheetData = [:]
+
+        List titles = exportTitles(selectedExportFields, locale)
+
+        result.cost_item_tabs.entrySet().each { cit ->
+            String sheettitle
+            String viewMode = cit.getKey()
+            switch (viewMode) {
+                case "own": sheettitle = messageSource.getMessage('financials.header.ownCosts', null, locale)
+                    break
+                case "cons": sheettitle = messageSource.getMessage('financials.header.consortialCosts', null, locale)
+                    break
+                case "subscr": sheettitle = messageSource.getMessage('financials.header.subscriptionCosts', null, locale)
+                    break
+            }
+
+            List exportData = []
+
+            if (cit.getValue().count > 0) {
+                cit.getValue().costItems.eachWithIndex { ci, int i ->
+                    setCostItemRow(ci, selectedExportFields, exportData)
+                }
+            }
+            sheetData[sheettitle] = [titleRow: titles, columnData: exportData]
+        }
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
@@ -483,7 +1192,7 @@ class ExportClickMeService {
             }
         }
 
-        List titles = exportTitles(selectedExportFields, null, locale)
+        List titles = exportTitles(selectedExportFields, locale)
 
         List exportData = []
         result.each { Org org ->
@@ -498,6 +1207,92 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportSurveyEvaluationFields(result.surveyConfig)
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = exportTitles(selectedExportFields, locale)
+
+        Map selectedCostItemFields = [:]
+        selectedExportFields.keySet().findAll { it.startsWith('costItem.') }.each {
+            selectedCostItemFields.put(it, selectedExportFields.get(it))
+        }
+        selectedCostItemFields.each {
+            selectedExportFields.remove(it.key)
+        }
+
+        selectedExportFields.put('participantSurveyCostItem', [:])
+
+
+        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+        List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+
+        List exportData = []
+
+        exportData.add([[field: messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", style: 'positive']])
+
+        participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+            Map participantResult = [:]
+            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+            participantResult.sub = [:]
+            if(result.surveyConfig.subscription) {
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+            }
+
+            participantResult.participant = surveyOrg.org
+            participantResult.surveyCostItem = CostItem.findBySurveyOrg(surveyOrg)
+            participantResult.surveyConfig = result.surveyConfig
+
+            setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields)
+        }
+
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", style: 'negative']])
+
+
+        participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+            Map participantResult = [:]
+            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+            participantResult.sub = [:]
+            if(result.surveyConfig.subscription) {
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+            }
+
+            participantResult.participant = surveyOrg.org
+            participantResult.surveyCostItem = CostItem.findBySurveyOrg(surveyOrg)
+            participantResult.surveyConfig = result.surveyConfig
+
+            setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields)
+        }
+
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        if (participantsFinish) {
+            sheetData = exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale)
+        }
+
+        if (participantsNotFinish) {
+            sheetData = exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale)
+        }
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
     private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -505,18 +1300,16 @@ class ExportClickMeService {
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey == 'survey.allOtherProperties') {
-                        if (onlySubscription) {
-                            participantResult.properties?.sort { it.name }.each { PropertyDefinition propertyDefinition ->
-                                row.add([field: '', style: null])
-                                row.add([field: '', style: null])
-                            }
-                        } else {
-                            participantResult.properties?.sort { it.type.name }.each { SurveyResult participantResultProperty ->
-                                row.add([field: participantResultProperty.getResult() ?: "", style: null])
-                                row.add([field: participantResultProperty.comment ?: "", style: null])
-                            }
-                        }
+                if (fieldKey.startsWith('surveyProperty.')) {
+                    if (onlySubscription) {
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                    } else {
+                        Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                        SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
+                        row.add([field: participantResultProperty.getResult() ?: "", style: null])
+                        row.add([field: participantResultProperty.comment ?: "", style: null])
+                    }
                 } else if (fieldKey == 'survey.period') {
                     String period = ""
                     if (multiYearTermTwoSurvey) {
@@ -529,7 +1322,16 @@ class ExportClickMeService {
                         period = participantResult.newSubPeriodThreeEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodThreeEndDate) : ""
                     }
                     row.add([field: period ?: '', style: null])
-                } else if (fieldKey == 'survey.periodComment') {
+                } else if (fieldKey == 'survey.costPeriod') {
+                    String period = ""
+                    if (participantResult.resultOfParticipation && participantResult.resultOfParticipation.costItem) {
+                        period = participantResult.resultOfParticipation.costItem.startDate ? sdf.format(participantResult.resultOfParticipation.costItem.startDate) : ""
+                        period = participantResult.resultOfParticipation.costItem.endDate ? period + " - " + sdf.format(participantResult.resultOfParticipation.costItem.endDate) : ""
+                    }
+
+                    row.add([field: period ?: '', style: null])
+                }
+                else if (fieldKey == 'survey.periodComment') {
                     if (multiYearTermTwoSurvey) {
                         row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
                     }
@@ -552,20 +1354,23 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
-                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }
+                else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else {
                     if (onlySubscription) {
                         if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
                             def fieldValue = getFieldValue(participantResult, field, sdf)
-                            row.add([field: fieldValue ?: '', style: null])
+                            row.add([field: fieldValue != null ? fieldValue : '', style: null])
                         } else {
                             row.add([field: '', style: null])
                         }
 
                     } else {
                         def fieldValue = getFieldValue(participantResult, field, sdf)
-                        row.add([field: fieldValue ?: '', style: null])
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
                     }
                 }
             }
@@ -574,9 +1379,17 @@ class ExportClickMeService {
 
     }
 
-    private void setSubRow(Map result, Map<String, Object> selectedFields, List exportData){
+    private void setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+
+        Subscription subscription = result instanceof Subscription ? result : result.sub
+
+        List<CostItem> costItems
+        if(selectedCostItemElements){
+           costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqual(subscription, selectedCostItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+        }
+
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -593,25 +1406,83 @@ class ExportClickMeService {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
-                    setOrgFurtherInformation(result.orgs, row, fieldKey, result.sub)
+                    setOrgFurtherInformation(result.orgs, row, fieldKey, subscription)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
-                }else if (fieldKey.startsWith('participantSubProperty.')) {
+                }else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery("select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)",[sub:result.sub, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery(query,[sub:subscription, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(subscriptionProperties){
                         row.add([field:  subscriptionProperties.collect { it.getValueInI10n()}.join(";") , style: null])
                     }else{
                         row.add([field:  '' , style: null])
                     }
                 }
+                else if (fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem') {
+                    if(costItems){
+                        costItems.each { CostItem costItem ->
+                            row.add([field: costItem.costItemElement ? costItem.costItemElement.getI10n('value') : '', style: null])
+                            selectedCostItemFields.each {
+                                def fieldValue = getFieldValue(costItem, it.value.field.replace('costItem.', ''), sdf)
+                                row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                            }
+                        }
+                    }else {
+                            row.add([field:  '' , style: null])
+                            selectedCostItemFields.each {
+                                row.add([field:  '' , style: null])
+                            }
+                    }
+                }
                 else {
                         def fieldValue = getFieldValue(result, field, sdf)
-                        row.add([field: fieldValue ?: '', style: null])
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
                     }
                 }
             }
+        exportData.add(row)
+
+    }
+
+    private void setCostItemRow(CostItem costItem, Map<String, Object> selectedFields, List exportData){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+
+        Org org = costItem.sub ? costItem.sub.getSubscriber() : null
+
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey == 'participant.generalContact') {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }else if (fieldKey == 'participant.billingContact') {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.billingAdress') {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.postAdress') {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.customerIdentifier') {
+                    setOrgFurtherInformation(org, row, fieldKey, costItem.sub)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }
+                else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    setOrgFurtherInformation(org, row, fieldKey)
+                }
+                else {
+                    def fieldValue = getFieldValue(costItem, field, sdf)
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
         exportData.add(row)
 
     }
@@ -633,8 +1504,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.postAdress') {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }
-                else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantProperty.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
@@ -661,7 +1533,56 @@ class ExportClickMeService {
 
     }
 
-    private def getFieldValue(Map map, String field, SimpleDateFormat sdf){
+    private void setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, Map selectedCostItemFields){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('surveyProperty.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
+                    row.add([field: participantResultProperty.getResult() ?: "", style: null])
+                    row.add([field: participantResultProperty.comment ?: "", style: null])
+                } else if (fieldKey == 'participant.generalContact') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.billingContact') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.billingAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.postAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.customerIdentifier') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participantSurveyCostItem') {
+                    if(participantResult.surveyCostItem){
+                            selectedCostItemFields.each {
+                                def fieldValue = getFieldValue(participantResult.surveyCostItem, it.value.field.replace('costItem.', ''), sdf)
+                                row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                            }
+                    }else {
+                        selectedCostItemFields.each {
+                            row.add([field:  '' , style: null])
+                        }
+                    }
+                }else {
+                        def fieldValue = getFieldValue(participantResult, field, sdf)
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
+        exportData.add(row)
+
+    }
+
+
+    private def getFieldValue(def map, String field, SimpleDateFormat sdf){
         def fieldValue
         field.split('\\.').eachWithIndex { Object entry, int i ->
             if(i == 0) {
@@ -681,6 +1602,10 @@ class ExportClickMeService {
 
         if(fieldValue instanceof Date){
             fieldValue = sdf.format(fieldValue)
+        }
+
+        if(fieldValue instanceof List){
+            fieldValue = fieldValue.join('; ')
         }
 
         return fieldValue
@@ -736,107 +1661,234 @@ class ExportClickMeService {
     private void setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null){
 
         if (fieldKey == 'participant.generalContact') {
-            RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-            List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",[org:org, functionTypes:[generalContact], type: RDStore.CCT_EMAIL])
+            if (org) {
+                RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true", [org: org, functionTypes: [generalContact], type: RDStore.CCT_EMAIL])
 
-            if(contactList){
-                row.add([field:  contactList.content.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-
-        }else if (fieldKey == 'participant.billingContact') {
-            RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
-            List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",[org:org, functionTypes:[billingContact], type: RDStore.CCT_EMAIL])
-
-            if(contactList){
-                row.add([field:  contactList.content.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-
-        }else if (fieldKey == 'participant.billingAdress') {
-            RefdataValue billingAdress = RDStore.ADRESS_TYPE_BILLING
-            LinkedHashSet<Address> adressList = org.addresses.findAll {Address adress -> adress.type.findAll {it == billingAdress}}
-
-            if(adressList){
-                row.add([field:  adressList.collect {Address address -> address.zipcode + ' ' + address.city + ', ' + address.street_1 + ' ' + address.street_2}.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-
-        }else if (fieldKey == 'participant.postAdress') {
-            RefdataValue postAdress = RDStore.ADRESS_TYPE_POSTAL
-            LinkedHashSet<Address> adressList = org.addresses.findAll {Address adress -> adress.type.findAll {it == postAdress}}
-
-            if(adressList){
-                row.add([field:  adressList.collect {it.zipcode + ' ' + it.city + ', ' + it.street_1 + ' ' + it.street_2}.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-
-        }
-        else if (fieldKey.startsWith('participantIdentifiers.')) {
-            Long id = Long.parseLong(fieldKey.split("\\.")[1])
-            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces)",[org:org,namespaces:[id]])
-            if(identifierList){
-                row.add([field:  identifierList.value.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-        }
-        else if (fieldKey == 'participant.customerIdentifier') {
-            if(subscription && subscription.packages){
-                List<Platform> platformList = Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg: subscription.packages.pkg])
-                List<CustomerIdentifier> customerIdentifierList = CustomerIdentifier.findAllByCustomerAndIsPublicAndPlatformInList(org, false, platformList)
-                if(customerIdentifierList){
-                    row.add([field:  customerIdentifierList.value.join(";") , style: null])
-                }else {
-                    row.add([field:  '' , style: null])
+                if (contactList) {
+                    row.add([field: contactList.content.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
                 }
+            } else {
+                row.add([field: '', style: null])
             }
-            else{
-                row.add([field:  '' , style: null])
+
+        } else if (fieldKey == 'participant.billingContact') {
+            if (org) {
+                RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true", [org: org, functionTypes: [billingContact], type: RDStore.CCT_EMAIL])
+
+                if (contactList) {
+                    row.add([field: contactList.content.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
             }
-        }
-        else if (fieldKey.startsWith('participantProperty.')) {
-            Long id = Long.parseLong(fieldKey.split("\\.")[1])
-            List<OrgProperty> orgProperties = OrgProperty.executeQuery("select prop from OrgProperty prop where (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)",[org:org, propertyDefs:[id], contextOrg: contextService.getOrg()])
-            if(orgProperties){
-                row.add([field:  orgProperties.collect { it.getValueInI10n()}.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
+
+        } else if (fieldKey == 'participant.billingAdress') {
+            if (org) {
+                RefdataValue billingAdress = RDStore.ADRESS_TYPE_BILLING
+                LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
+
+                if (adressList) {
+                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
+            }
+
+        } else if (fieldKey == 'participant.postAdress') {
+            if (org) {
+
+                RefdataValue postAdress = RDStore.ADRESS_TYPE_POSTAL
+                LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
+
+                if (adressList) {
+                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
+            }
+
+        } else if (fieldKey.startsWith('participantIdentifiers.')) {
+            if (org) {
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces)", [org: org, namespaces: [id]])
+                if (identifierList) {
+                    row.add([field: identifierList.value.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
+            }
+        } else if (fieldKey == 'participant.customerIdentifier') {
+            if (org) {
+                if (subscription && subscription.packages) {
+                    List<Platform> platformList = Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: subscription.packages.pkg])
+                    List<CustomerIdentifier> customerIdentifierList = CustomerIdentifier.findAllByCustomerAndIsPublicAndPlatformInList(org, false, platformList)
+                    if (customerIdentifierList) {
+                        row.add([field: customerIdentifierList.value.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
+            }
+        } else if (fieldKey.startsWith('participantProperty.')) {
+            if (org) {
+
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<OrgProperty> orgProperties = OrgProperty.executeQuery("select prop from OrgProperty prop where (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)", [org: org, propertyDefs: [id], contextOrg: contextService.getOrg()])
+                if (orgProperties) {
+                    row.add([field: orgProperties.collect { it.getValueInI10n() }.join(";"), style: null])
+                } else {
+                    row.add([field: '', style: null])
+                }
+            } else {
+                row.add([field: '', style: null])
+            }
+        }else if (fieldKey == 'participant.readerNumbers') {
+            if (org) {
+
+                RefdataValue currentSemester = RefdataValue.getCurrentSemester()
+
+                ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
+                ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
+
+                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
+                    row.add([field: currentSemester.getI10n('value'), style: null])
+                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                }else{
+                    boolean nextSemester = false
+
+                    List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
+                    for(def count = 0; count < refdataValueList.size(); count = count + 1) {
+                        if (refdataValueList[count] == currentSemester) {
+                            nextSemester = true
+                        }
+                        if (nextSemester) {
+                            readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
+                            readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
+                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
+                                row.add([field: refdataValueList[count].getI10n('value'), style: null])
+                                row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                                row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                                break
+                            }
+                        }
+                    }
+                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                    }
+                }
+
+                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER.value_de, org, [sort: 'dueDate', order: 'desc'])
+
+
+                row.add([field: readerNumberPeople ? readerNumberPeople.value : '', style: null])
+                row.add([field: readerNumberUser ? readerNumberUser.value : '', style: null])
+
+                BigDecimal sum = 0
+                if(readerNumberStudents){
+                    sum = sum + readerNumberStudents.value
+                }
+                if(readerNumberStaff){
+                    sum = sum + readerNumberStaff.value
+                }
+                if(readerNumberFTE){
+                    sum = sum + readerNumberFTE.value
+                }
+                row.add([field: sum, style: null])
+
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : ''))
+
+                row.add([field: note, style: null])
+
+            } else {
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
             }
         }
     }
 
-    private List exportTitles(Map<String, Object> selectedExportFields, List<PropertyDefinition> propertyDefinitionList, Locale locale){
+    private List exportTitles(Map<String, Object> selectedExportFields, Locale locale, Map selectedCostItemFields = null, Integer maxCostItemsElements = null){
         List titles = []
-        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
 
-        RefdataValue billingAdress =RDStore.ADRESS_TYPE_BILLING
-        RefdataValue postAdress =RDStore.ADRESS_TYPE_POSTAL
+        String localizedValue
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedValue = "value_de"
+                break
+            default: localizedValue = "value_en"
+                break
+        }
 
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
             if(!fields.separateSheet) {
                 if (fieldKey == 'participant.generalContact') {
-                    titles << generalContact.getI10n('value')
+                    titles << RDStore.PRS_FUNC_GENERAL_CONTACT_PRS."${localizedValue}"
                 }else if (fieldKey == 'participant.billingContact') {
-                    titles << billingContact.getI10n('value')
+                    titles << RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"
                 }
                 else if (fieldKey == 'participant.billingAdress') {
-                    titles << billingAdress.getI10n('value')
+                    titles << RDStore.ADRESS_TYPE_BILLING."${localizedValue}"
                 }else if (fieldKey == 'participant.postAdress') {
-                    titles << postAdress.getI10n('value')
+                    titles << RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
+                    titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_FTE."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_USER."${localizedValue}"
+                    titles << messageSource.getMessage('readerNumber.sum.label', null, locale)
+                    titles << messageSource.getMessage('readerNumber.note.label', null, locale)
+
+
                 }
-                else if (fieldKey != 'survey.allOtherProperties') {
+                else if (fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem') {
+                            for(int i = 0; i < maxCostItemsElements; i++) {
+                                titles << messageSource.getMessage("financials.costItemElement", null, locale)
+                                selectedCostItemFields.each {
+                                    titles << (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
+                                }
+                            }
+                }
+                else if (fieldKey == 'participantSurveyCostItem') {
+                        selectedCostItemFields.each {
+                            titles << (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
+                        }
+                }
+                else {
                     titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
-                } else {
-                    propertyDefinitionList.each { surveyProperty ->
-                        titles << (surveyProperty?.getI10n('name'))
-                        titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + surveyProperty?.getI10n('name'))
+                    if (fieldKey.startsWith('surveyProperty.')) {
+                        titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))
                     }
                 }
             }

@@ -48,7 +48,7 @@
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
-            <div class="ui two stackable cards">
+            <div class="ui two doubling stackable cards">
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
@@ -114,6 +114,17 @@
                                 <dt class="control-label">${message(code: 'surveyconfig.subSurveyUseForTransfer.label')}</dt>
                                 <dd>
                                     ${surveyInfo.surveyConfigs[0].subSurveyUseForTransfer ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
+                                </dd>
+
+                            </dl>
+
+                        </g:if>
+
+                        <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</dt>
+                                <dd>
+                                    ${surveyInfo.surveyConfigs[0].pickAndChoosePerpetualAccess ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
                                 </dd>
 
                             </dl>

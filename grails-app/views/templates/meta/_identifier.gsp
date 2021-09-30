@@ -37,6 +37,10 @@
                             <input name="value" id="value" type="text" class="ui" />
                         </div>
                         <div class="field">
+                            <label for="note">${message(code:'default.note.label')}</label>
+                            <input name="note" id="note" type="text" class="ui" />
+                        </div>
+                        <div class="right aligned field">
                             <label>&nbsp;</label>
                             <button type="submit" class="ui button">${message(code:'default.button.add.label')}</button>
                         </div>

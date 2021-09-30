@@ -30,12 +30,7 @@ class LicenseControllerService {
         }
         else {
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
-            result.taskInstanceCount = result.taskInstanceList.size()
-            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
-            result.myTaskInstanceCount = result.myTaskInstanceList.size()
-            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, (License) result.license))
             [result:result,status:STATUS_OK]
         }
     }
@@ -84,6 +79,10 @@ class LicenseControllerService {
     }
 
     boolean showConsortiaFunctions(License license) {
-        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+        showConsortiaFunctions(contextService.getOrg(), license)
+    }
+
+    boolean showConsortiaFunctions(Org contextOrg, License license) {
+        return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 }

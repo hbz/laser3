@@ -44,6 +44,7 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
                 <semui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
                 <semui:actionsDropdownItem data-semui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
+                <semui:actionsDropdownItem data-semui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
             </g:if>
 
         </g:if>
@@ -62,7 +63,7 @@
         <g:if test="${actionName == 'show'}">
             <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.org')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
             </sec:ifAnyGranted>
         </g:if>
     </semui:actionsDropdown>
@@ -110,7 +111,7 @@
 <%-- secure against listInstitution, where no orgId is given --%>
 <g:if test="${createModal}">
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
-        <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
+        <g:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org', validResponsibleUsers: taskService.getUserDropdown(institution)]}"/>
         <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>
     <g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">

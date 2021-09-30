@@ -64,7 +64,7 @@
 <semui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus', 'subValidOn'], ['subPerpetualAccess']]
-        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+        List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
     <semui:filter showFilterButton="true">
@@ -78,7 +78,7 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal']" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
             <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,

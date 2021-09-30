@@ -9,12 +9,10 @@
         <thead>
         <tr>
             <th>
-                <g:if test="${editable}">
-                    <input class="select-all" type="checkbox" name="chkall">
-                </g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName"
+            <g:sortableColumn class="ten wide" params="${params}" property="sortname"
                               title="${message(code: 'title.label')}"/>
             <th class="two wide"><g:message code="tipp.price"/></th>
             <th class="two wide"><g:message code="default.actions.label"/></th>
@@ -24,40 +22,63 @@
 
         <g:each in="${ies.sourceIEs}" var="ie">
             <g:set var="tipp" value="${ie.tipp}"/>
-            <g:set var="isContainedByTarget"
-                   value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_STATUS_DELETED }}"/>
-            <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp }}"/>
-            <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
+            <g:set var="ieInNewSub"
+                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
+            <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                <g:set var="participantPerpetualAccessToTitle"
+                       value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
+                <g:set var="allowedToSelect"
+                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
+            </g:if>
+            <g:else>
+                <g:set var="allowedToSelect"
+                       value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
+            </g:else>
+            <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
-                    <g:if test="${params.tab == 'selectedIEs' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                        <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
+
+                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
-                    <g:elseif test="${!isContainedByTarget && editable}">
-                        <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
+                    <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:elseif>
 
                 </td>
                 <td>${counter++}</td>
                 <td class="titleCell">
 
-                    <g:if test="${targetIE}">
-                        <semui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
-                    </g:if>
-                    <g:else>
-                        <div class="la-inline-flexbox la-popup-tooltip la-delay">
-                            <i class="icon"></i>
+                    <g:if test="${ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate yellow"></i>
                         </div>
-                    </g:else>
+                    </g:if>
+
+                    <g:if test="${participantPerpetualAccessToTitle}">
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate red"></i>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate orange"></i>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${ieInNewSub}">
+                        <semui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
+                    </g:if>
 
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title"
                                   model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
+                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <td>
-                    <g:if test="${targetIE?.priceItems}">
-                            <g:each in="${targetIE.priceItems}" var="priceItem" status="i">
+                    <g:if test="${ieInNewSub?.priceItems}">
+                            <g:each in="${ieInNewSub.priceItems}" var="priceItem" status="i">
                                 <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                      owner="${priceItem}"
                                                                                      format=""/> <semui:xEditableRefData
@@ -67,11 +88,11 @@
                                                                                       owner="${priceItem}"/> <semui:xEditableRefData
                                     field="localCurrency" owner="${priceItem}"
                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                <semui:xEditable field="startDate" type="date"
-                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                    field="endDate" type="date"
-                                    owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
-                                <g:if test="${i < targetIE.priceItems.size() - 1}"><hr></g:if>
+                            <%--<semui:xEditable field="startDate" type="date"
+                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                field="endDate" type="date"
+                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                <g:if test="${i < ieInNewSub.priceItems.size() - 1}"><hr></g:if>
                                 <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
                             </g:each>
@@ -88,10 +109,10 @@
                                                                                       owner="${priceItem}"/> <semui:xEditableRefData
                                     field="localCurrency" owner="${priceItem}"
                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                <semui:xEditable field="startDate" type="date"
-                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                    field="endDate" type="date"
-                                    owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                            <%--<semui:xEditable field="startDate" type="date"
+                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                field="endDate" type="date"
+                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                 <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
@@ -100,22 +121,24 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                        <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && allowedToSelect}">
+                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
-                                params="${[id: newSub.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                            <i class="minus icon"></i>
+                            <i class="check icon"></i>
                         </g:link>
                     </g:if>
-                    <g:elseif test="${!isContainedByTarget && editable}">
-                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
+
+
+                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs') && editable && !ieInNewSub && allowedToSelect }">
+                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                             <i class="plus icon"></i>
                         </g:link>
-                    </g:elseif>
+                    </g:if>
                 </td>
             </tr>
 

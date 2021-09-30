@@ -95,9 +95,18 @@
         <div class="field"></div>
 
         <div class="field">
-            <input type="submit"
-                   value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-                   class="fluid ui button"/>
+            <g:if test="${!blockSubmit}">
+                <input type="submit"
+                       value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
+                       class="fluid ui button"/>
+            </g:if>
+            <g:else>
+                <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                    <input type="submit" disabled="disabled"
+                           value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
+                           class="fluid ui button"/>
+                </div>
+            </g:else>
         </div>
         <div class="field"></div>
     </div>
@@ -115,7 +124,7 @@
                 <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName" title="${message(code: 'title.label')}"/>
+            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname" title="${message(code: 'title.label')}"/>
             <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
             <g:if test="${uploadPriceInfo}">
@@ -149,7 +158,7 @@
                 <!-- START TEMPLATE -->
                 <g:render template="/templates/title"
                           model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                 <!-- END TEMPLATE -->
             </td>
 
@@ -222,11 +231,21 @@
                 </td>
             </g:if>
             <td>
-                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
-                        params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
-                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                    <i class="plus icon"></i>
-                </g:link>
+                <g:if test="${!blockSubmit}">
+                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
+                            params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
+                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                        <i class="plus icon"></i>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                        <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
+                            <i class="plus icon"></i>
+                        </g:link>
+                    </div>
+                </g:else>
             </td>
             </tr>
         </g:each>
@@ -234,9 +253,18 @@
     </table>
 
     <div class="paginateButtons" style="text-align:center">
-        <input type="submit"
-               value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-               class="ui button"/>
+        <g:if test="${!blockSubmit}">
+            <input type="submit"
+                   value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
+                   class="ui button"/>
+        </g:if>
+        <g:else>
+            <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                <input type="submit" disabled="disabled"
+                       value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
+                       class="ui button"/>
+            </div>
+        </g:else>
     </div>
 
 

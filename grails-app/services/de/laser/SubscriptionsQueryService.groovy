@@ -5,6 +5,7 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -14,7 +15,7 @@ class SubscriptionsQueryService {
     def propertyService
     def accessService
 
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
 
         def date_restriction
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -57,22 +58,22 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = "${providerSort} from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            base_qry = "${providerSort} from Subscription as s ${joinQuery} where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
             qry_params << ['roleType1':role_sub, 'roleType2':[role_subCons], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageMembers') {
-                base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
                 if (params.showParentsAndChildsSubs) {
-                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
-                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                                 " AND s.instanceOf is null "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 }
@@ -102,40 +103,40 @@ class SubscriptionsQueryService {
             // globalUID based
             if (params.identifier.startsWith('org:')) {
 
-                base_qry += "AND ( exists ( select idMatch from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('license:')) {
 
-                base_qry += "AND ( exists ( select idMatch from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
                 qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
             }
             else if (params.identifier.startsWith('subscription:')) {
 
-                base_qry += "AND ( exists ( select idMatch from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('package:')) {
 
-                base_qry += "AND ( exists ( select idMatch from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
             }
             // identifier based
             else {
-                String tmpBaseQuery1 = "( exists ( select ident from Identifier ident"
-                String tmpBaseQuery2 = "and ident.value = :identifier ) )"
+                base_qry += "AND ( exists ( select ident.id from Identifier ident"
 
-                base_qry += "AND ("
-                base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
+                base_qry += " where ( ident.sub.id = s.id or "
 
-                base_qry += tmpBaseQuery1 + ", Links li where ident.lic = li.sourceLicense.id and li.destinationSubscription = s.id and li.linkType = :linkType " + tmpBaseQuery2 + " or "
-
-                base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where ident.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
-
-                base_qry += tmpBaseQuery1 + ", TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
-                        " where ident.tipp = tipp.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2  + " or "
-
-                base_qry += tmpBaseQuery1 + ", OrgRole ro where ident.org = ro.org and ro.sub = s " + tmpBaseQuery2
-
-                base_qry += ")"
+                //base_qry += "ident.lic.id in (select li.sourceLicense.id from Links li where li.destinationSubscription.id = s.id and li.linkType = :linkType) "
+                base_qry += "ident.lic.id in (select li.sourceLicense.id from Links li where li.destinationSubscription.id = s.id and li.linkType = :linkType) or "
                 qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
+
+                //base_qry += "ident.pkg.id in (select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = s.id) "
+                base_qry += "ident.pkg.id in (select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = s.id) or "
+
+                //base_qry += "ident.tipp.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription.id = s.id) "
+                base_qry += "ident.tipp.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription.id = s.id) or "
+
+                base_qry += "ident.org.id in (select ro.org.id from OrgRole ro where ro.sub.id = s.id) "
+
+                base_qry += ") and ident.value = :identifier ) )"
             }
 
             qry_params.put('identifier', params.identifier.trim())
@@ -248,7 +249,7 @@ class SubscriptionsQueryService {
         if (params.status) {
 
             if (params.status != 'FETCH_ALL') {
-                if(params.status instanceof List){
+                if(params.status instanceof List || params.status instanceof String[]){
                     base_qry += " and s.status.id in (:status) "
                     qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
                     filterSet = true
@@ -262,14 +263,14 @@ class SubscriptionsQueryService {
 
 
         if (params.form) {
-            base_qry += "and s.form.id = :form "
-            qry_params.put('form', (params.form as Long))
+            base_qry += "and s.form.id in (:form) "
+            qry_params.put('form', params.list("form").collect { Long.parseLong(it) })
             filterSet = true
         }
 
         if (params.resource) {
-          base_qry += "and s.resource.id = :resource "
-          qry_params.put('resource', (params.resource as Long))
+          base_qry += "and s.resource.id in (:resources) "
+          qry_params.put('resources', params.list("resource").collect { Long.parseLong(it) })
             filterSet = true
         }
 
@@ -304,7 +305,9 @@ class SubscriptionsQueryService {
             else
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
-            base_qry += " order by lower(trim(s.name)) asc"
+            base_qry += " order by lower(trim(s.name)) asc, s.instanceOf desc"
+            if(joinQuery)
+                base_qry += ", so.org.sortname asc"
         }
 
         //log.debug("query: ${base_qry} && params: ${qry_params}")

@@ -15,7 +15,7 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                        <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
@@ -27,7 +27,7 @@
                 <g:if test="${editable}">
 
                     <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="ui mini icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_F"
                                value="Funktionen">
                         <g:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -38,7 +38,7 @@
                                                                           message:'person.function_new.label',
                                                                           presetOrgId: personContext.id ]"/>
 
-                        <input class="ui mini icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_P"
                                value="Positionen">
                         <g:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -51,7 +51,7 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddContacts}">
-                        <input class="ui mini icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${personRole.id}"
                                value="${message(code: 'person.contacts.label')}">
                         <g:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
@@ -63,7 +63,7 @@
                         model.typeId = RDStore.ADRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.hideType = true%>
-                        <input class="ui mini icon button" type="button"
+                        <input class="ui icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
                                onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>
@@ -106,7 +106,7 @@
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRoleLink.class.name}:${personRoleLink.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
-                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -116,7 +116,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button js-open-confirm-modal"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"
@@ -124,11 +124,11 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person.id}" />--}%
-                                        %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
+                                        %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                              %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person.toString()])}"--}%
                                              %{--data-confirm-term-how="delete"--}%
                                              %{--data-confirm-id="${person.id}" --}%
@@ -159,7 +159,7 @@
                                 <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
 
                                 <g:if test="${person.roleLinks.size() > 1}">
-                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -169,7 +169,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button js-open-confirm-modal"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"
@@ -177,7 +177,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -200,7 +200,7 @@
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-                                <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -220,7 +220,7 @@
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
             <g:set var="oid" value="${tmplUnlinkedObj.class.name}:${tmplUnlinkedObj.id}"/>
-            <g:link class="ui icon negative button js-open-confirm-modal"
+            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"

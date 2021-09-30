@@ -64,6 +64,8 @@ class SystemEvent {
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SUB_RENEW_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SUB_RENEW_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUS_SEND_MAIL_ERROR'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.ERROR],
             'SURVEY_UPDATE_JOB_START'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SURVEY_UPDATE_JOB_COMPLETE'    : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
@@ -106,10 +108,10 @@ class SystemEvent {
         id          column:'se_id'
         version     false
         token       column:'se_token'
-        payload     column:'se_payload', type: 'text'
+        payload     column:'se_payload',   type: 'text'
         category    column:'se_category'
         relevance   column:'se_relevance'
-        created     column:'se_created'
+        created     column:'se_created',   index: 'se_created_idx'
     }
 
     static constraints = {

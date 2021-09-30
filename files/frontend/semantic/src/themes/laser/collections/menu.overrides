@@ -33,6 +33,7 @@
   .la-context-org {
     font-size: 0.87em;
     color: @grey;
+    flex: 0 0 200px;
   }
   .ui.sub.header.item {
     border-left: none!important;
@@ -106,4 +107,44 @@
 }
 #mainMenue {
   z-index: 102;
+}
+
+.la-ctrls .ui.dropdown .menu {
+  z-index: 101;
+}
+/*--------------
+    Stackable
+---------------*/
+
+@media only screen and (max-width: @largeMonitorBreakpoint) {
+  .ui.stackable.menu {
+    flex-direction: column;
+  }
+  .ui.stackable.menu .item {
+    width: 100% !important;
+  }
+  .ui.stackable.menu .item:before {
+    position: absolute;
+    content: '';
+    top: auto;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: @dividerSize;
+    background: @verticalDividerBackground;
+  }
+
+  .ui.stackable.menu .left.menu,
+  .ui.stackable.menu .left.item {
+    margin-right: 0 !important;
+  }
+  .ui.stackable.menu .right.menu,
+  .ui.stackable.menu .right.item {
+    margin-left: 0 !important;
+  }
+
+  .ui.stackable.menu .right.menu,
+  .ui.stackable.menu .left.menu {
+    flex-direction: column;
+  }
 }

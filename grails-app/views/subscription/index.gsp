@@ -153,7 +153,7 @@
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
                 <span class="ui circular label">
-                    ${num_ies}
+                    ${num_ies_rows}
                 </span>
             </g:link>
 
@@ -199,10 +199,10 @@
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
                                           title="${message(code: 'title.label')}"/>
-                        <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <%-- legacy ??? <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>--%>
+                        <th class="four wide">${message(code: 'subscription.details.date_header')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices"/></th>
                         <g:if test="${subscription.ieGroups.size() > 0}">
@@ -211,17 +211,28 @@
                         <th class="one wide"></th>
                     </tr>
                     <tr>
-                        <th rowspan="2" colspan="4"></th>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                          title="${message(code: 'default.from')}"/>
+                        <th rowspan="2" colspan="3"></th>
+                        <g:if test="${journalsOnly}">
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
+                                              title="${message(code: 'default.from')}"/>
+                        </g:if>
+                        <g:else>
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
+                                              title="${message(code: 'tipp.dateFirstInPrint')}"/>
+                        </g:else>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
                                           title="${message(code: 'default.from')}"/>
-
                         <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
-                        <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                                          title="${message(code: 'default.to')}"/>
+                        <g:if test="${journalsOnly}">
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
+                                              title="${message(code: 'default.to')}"/>
+                        </g:if>
+                        <g:else>
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
+                                              title="${message(code: 'tipp.dateFirstOnline')}"/>
+                        </g:else>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
                                           title="${message(code: 'default.to')}"/>
                     </tr>
@@ -253,10 +264,11 @@
                                 </select>
                                 -->
                             </th>
+                            <%-- legacy??
                             <th>
                                 <semui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
                                                          category="${RDConstants.IE_MEDIUM}"/>
-                            </th>
+                            </th>--%>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
@@ -330,10 +342,11 @@
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
-
+                                <%-- legacy???
                                 <td>
-                                    ${ie.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
+                                    ${ie.tipp.medium}
                                 </td>
+                                --%>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
                                     <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
@@ -373,10 +386,10 @@
                                                                                               owner="${priceItem}"/> <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                        <semui:xEditable field="startDate" type="date"
-                                                         owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                            field="endDate" type="date"
-                                            owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                    <%--<semui:xEditable field="startDate" type="date"
+                                                     owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                        field="endDate" type="date"
+                                        owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
 
                                         <g:if test="${editable}">
                                             <span class="right floated" >
@@ -386,7 +399,7 @@
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                     </g:each>
                                     <g:if test="${editable && ie.priceItems.size() < 1 }">
-                                        <g:link action="addEmptyPriceItem" class="ui icon positive button"
+                                        <g:link action="addEmptyPriceItem" class="ui icon blue button la-modern-button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
@@ -427,23 +440,23 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
-                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
                                                     data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate icon"></i>
+                                                <i class="trash alternate outline icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="removeEntitlement" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlement" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
-                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
                                                     data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate icon"></i>
+                                                <i class="trash alternate outline icon"></i>
                                             </g:link>
                                         </g:else>
                                     </g:if>

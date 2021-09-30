@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig?.getConfigNameShort()}"/>
@@ -71,7 +71,7 @@
                 ${SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
+                <div class="ui floating circular label">${config?.getCurrentDocs().size() ?: 0}</div>
             </g:link>
         </g:each>
     </div>
@@ -82,7 +82,7 @@
         <semui:form>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button right floated" data-semui="modal"
+                <button type="button" class="ui icon button blue la-modern-button right floated" data-semui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
@@ -101,7 +101,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx" status="i">
+                <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx" status="i">
                     <tr>
                         <td>${i + 1}</td>
                         <td>
@@ -124,7 +124,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
+                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -136,7 +136,7 @@
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>
@@ -146,7 +146,7 @@
                 </tbody>
             </table>
 
-            <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx">
+            <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx">
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>

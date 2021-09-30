@@ -11,17 +11,21 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <semui:crumb message="surveyEvaluation.label" class="active"/>
+    <semui:crumb message="surveyResult.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+
+            %{--<semui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
             </semui:exportDropdownItem>
@@ -31,7 +35,7 @@
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
             </semui:exportDropdownItem>
-            </g:if>
+            </g:if>--}%
         </semui:exportDropdown>
     </g:if>
 
@@ -64,7 +68,7 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyEvaluation.label')}
+    : ${message(code: 'surveyResult.label')}
 </h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
@@ -104,10 +108,13 @@
             </div>
 
 
-            <g:render template="evaluationParticipantsView"/>
+            <g:render template="evaluationParticipantsView" model="[showCheckbox: false,
+                                                                    tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
         </div>
     </div>
+
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 </g:else>
 

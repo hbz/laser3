@@ -9,18 +9,19 @@ class OrganisationConsCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_ORGANISATION
                     ],
                     source : [
-                            'all-org'               : 'Alle Organisationen',
-                            'all-inst'              : 'Alle Einrichtungen',
-                            'all-provider'          : 'Alle Anbieter',
-                            'all-agency'            : 'Alle Lieferanten',
-                            'all-providerAndAgency' : 'Alle Anbieter und Lieferanten',
-                            'my-inst'               : 'Meine Einrichtungen',
-                            'my-provider'           : 'Meine Anbieter',
-                            'my-agency'             : 'Meine Lieferanten',
-                            'my-providerAndAgency'  : 'Meine Anbieter und Lieferanten'
+                            'all-org',
+                            'all-inst',
+                            'all-provider',
+                            'all-agency',
+                            'all-providerAndAgency',
+                            'my-inst',
+                            'my-provider',
+                            'my-agency',
+                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -49,48 +50,40 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Organisation' : [ // TODO ..
-                                            'org-orgType'           : 'Organisationstyp',
-                                            'org-customerType'      : 'Kundentyp',
-                                            'org-libraryType'       : 'Bibliothekstyp',
-                                            'org-region'            : 'Bundesländer',
-                                            'org-subjectGroup'      : 'Fächergruppen',
-                                            'org-libraryNetwork'    : 'Verbundzugehörigkeit',
-                                            'org-funderType'        : 'Unterhaltsträger',
-                                            'org-funderHskType'     : 'Trägerschaft',
-                                            'org-*'                 : 'Alle'
+                                    'org' : [
+                                            'org-orgType',
+                                            'org-customerType',
+                                            'org-libraryType',
+                                            'org-region',
+                                            'org-subjectGroup',
+                                            'org-libraryNetwork',
+                                            'org-funderType',
+                                            'org-funderHskType',
+                                            'org-*'
                                     ]
                             ],
                             providerAndAgency : [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                                    'org' : [ 'org-orgType' ]
                             ],
                             provider : [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                                    'org' : [ 'org-orgType' ]
                             ],
                             agency : [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                                    'org' : [ 'org-orgType' ]
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
-                                     'org-x-identifier' : [
-                                             label               : 'Identifikatoren → Organisation',
+                            'distribution' : [
+                                    'org-x-identifier' : [
                                              detailsTemplate     : 'organisation',
                                              chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'Organisationen', 'Vergebene Identifikatoren' ]
-                                     ],
+                                             chartLabels         : [ 'base', 'x.identifiers' ]
+                                    ],
                                     'org-x-property' : [
-                                            label               : 'Merkmale (eigene/allgemeine) → Organisation',
                                             detailsTemplate     : 'organisation',
                                             chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                    ]
+                                            chartLabels         : [ 'base', 'x.properties' ]
+                                   ]
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]

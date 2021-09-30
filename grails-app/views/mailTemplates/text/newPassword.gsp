@@ -6,7 +6,7 @@ ${serverURL}
 
 Benutzername: ${raw(user.username)}
 
-Passwort: ${newPass}
+Passwort: ${raw(newPass)}
 
 Sie können das Passwort im Nutzerprofil ändern.
 

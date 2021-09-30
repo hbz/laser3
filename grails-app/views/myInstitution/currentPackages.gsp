@@ -30,7 +30,7 @@
                 <div class="ui input">
                     <input type="text" id="search-title" name="q"
                            placeholder="${message(code: 'default.search.ph')}"
-                           value="${params.pkg_q}"/>
+                           value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->

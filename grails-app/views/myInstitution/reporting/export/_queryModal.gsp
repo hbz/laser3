@@ -1,8 +1,8 @@
-<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport;" %>
 <laser:serviceInjection />
-<!-- _queryChartModal.gsp -->
+<!-- _queryModal.gsp -->
 
-    <semui:modal id="${modalID}" text="Ergebnis exportieren" msgSave="Exportieren">
+    <semui:modal id="${modalID}" message="reporting.modal.export" msgSave="${message(code: 'default.button.export.label')}">
 
         <g:form controller="ajaxHtml" action="chartQueryExport" method="POST" target="_blank">
 
@@ -12,20 +12,29 @@
                     <div class="fields">
 
                         <div id="fileformat-csv" class="wide eight field">
-                            <label>CSV-Konfiguration</label>
+                            <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                             <p>
-                                Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
-                                Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
-                                Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
+                                ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
+                            </p>
+                        </div>
+                        <div id="fileformat-xlsx" class="wide eight field">
+                            <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
+                            <p>
+                                ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
+                                <br />
+                                <br />
+                                <span class="ui label orange">Funktionalität in Entwicklung</span>
                             </p>
                         </div>
 
-                        <%-- ERMS-3614
+                        %{-- ERMS-3614
                         <div id="fileformat-pdf" class="wide eight field">
                             <label>PDF-Konfiguration</label>
                             <p>
-                                Seitenformat: <span class="ui circular label">auto</span> <br />
-                                Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                             </p>
                             <p>
                                 <g:select name="contentType" class="ui selection dropdown la-not-clearable"
@@ -34,25 +43,27 @@
                                 />
                             </p>
                         </div>
-                        --%>
+                        --}%
 
                         <div class="wide eight field">
                             <div class="field" style="margin-bottom: 1em !important;">
-                                <label for="fileformat">Dateiformat</label>
+                                <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
                                 <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                           optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV']}"
+                                          from="${[csv:'CSV', xlsx: 'XLSX']}"
                                 />
-                                <%-- ERMS-3614
-                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
-                                          optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV', pdf:'PDF']}"
-                                />
-                                --%>
+                                %{-- ERMS-3614
+                                <semui:dropdownWithI18nExplanations name="fileformat"
+                                        class="ui dropdown la-not-clearable"
+                                        from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
+                                        optionKey="key"
+                                        optionValue="${{it.value[0]}}"
+                                        optionExpl="${{it.value[1]}}" />
+                                --}%
                             </div>
                             <div class="field">
-                                <label for="filename">Dateiname</label>
-                                <input name="filename" id="filename" value="Wird automatisch generiert.." disabled/>
+                                <label for="filename">${message(code: 'default.fileName.label')}</label>
+                                <input name="filename" id="filename" value="${BaseExportHelper.getFileName()}" />
                             </div>
                         </div>
 
@@ -62,10 +73,11 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
-            <%-- ERMS-3614
+            <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
+            %{-- ERMS-3614
             <input type="hidden" name="imageData" value="" />
             <input type="hidden" name="imageSize" value="" />
-            --%>
+            --}%
     </g:form>
 
 </semui:modal>
@@ -91,5 +103,5 @@
     });
 </laser:script>
 
-<!-- _queryChartModal.gsp -->
+<!-- _queryModal.gsp -->
 

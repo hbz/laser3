@@ -7,70 +7,83 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
+import java.text.Normalizer
 
 class IssueEntitlement extends AbstractBase implements Comparable {
 
     def deletionService
 
-  Date coreStatusStart
-  Date coreStatusEnd
-  Date accessStartDate
-  Date accessEndDate
+    Date coreStatusStart
+    Date coreStatusEnd
+    Date accessStartDate
+    Date accessEndDate
 
-  String ieReason
+    String name
+    String sortname
 
-  //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
-  @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
-  RefdataValue status
+    String ieReason
 
-  @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
-  RefdataValue coreStatus // core Status is really core Medium.. dont ask
+    Subscription perpetualAccessBySub
 
-  @RefdataAnnotation(cat = RDConstants.IE_MEDIUM)
-  RefdataValue medium
-    
-  @RefdataAnnotation(cat = RDConstants.IE_ACCEPT_STATUS)
-  RefdataValue acceptStatus
+    //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
+    @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
+    RefdataValue status
 
-  Date dateCreated
-  Date lastUpdated
+    @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
+    RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
-  static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
+    @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+    RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
-  static hasMany = [coverages: IssueEntitlementCoverage,
-                    ieGroups: IssueEntitlementGroupItem,
-                    priceItems: PriceItem]
+    @RefdataAnnotation(cat = RDConstants.IE_ACCEPT_STATUS)
+    RefdataValue acceptStatus
 
-  static mappedBy = [priceItems: 'issueEntitlement']
+    Date dateCreated
+    Date lastUpdated
 
-  @Transient
-  def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
-'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
+    static Log static_logger = LogFactory.getLog(IssueEntitlement)
 
-  int compareTo(obj) {
-    int cmp
-    if(tipp.sortName && obj.tipp.sortName)
-        cmp = tipp.sortName <=> obj.tipp.sortName
-    else if(tipp.name && obj.tipp.name) cmp = tipp.name <=> obj.tipp.name
-    if(cmp == 0)
-      return tipp.id.compareTo(obj.tipp.id)
-    return cmp
-  }
+    static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
+
+    static hasMany = [coverages: IssueEntitlementCoverage,
+                      ieGroups: IssueEntitlementGroupItem,
+                      priceItems: PriceItem]
+
+    static mappedBy = [priceItems: 'issueEntitlement']
+
+    @Transient
+    def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
+    'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
+
+    int compareTo(obj) {
+        int cmp
+        if(sortname && obj.sortname)
+            cmp = sortname <=> obj.sortname
+        else if(name && obj.name) cmp = name <=> obj.name
+        if(cmp == 0)
+            return id.compareTo(obj.id)
+        return cmp
+    }
 
     static transients = ['derivedAccessStartDate', 'derivedAccessEndDate', 'availabilityStatus'] // mark read-only accessor methods
 
-  static mapping = {
+    static mapping = {
                 id column:'ie_id'
          globalUID column:'ie_guid'
            version column:'ie_version'
+              name column:'ie_name', type: 'text'
+          sortname column:'ie_sortname', type: 'text'
             status column:'ie_status_rv_fk'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
           ieReason column:'ie_reason'
+        perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
             medium column:'ie_medium_rv_fk'
-   accessStartDate column:'ie_access_start_date'
+    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
       acceptStatus column:'ie_accept_status_rv_fk'
@@ -78,37 +91,47 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
 
-  }
+    }
 
-  static constraints = {
-    globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
-    status         (nullable:true)
-    ieReason       (nullable:true, blank:true)
-    medium         (nullable:true)
-    accessStartDate(nullable:true)
-    accessEndDate  (nullable:true)
-    coreStatus     (nullable:true)
-    coreStatusStart(nullable:true)
-    coreStatusEnd  (nullable:true)
-    acceptStatus   (nullable:true)
+    static constraints = {
+        globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
+        status         (nullable:true)
+        ieReason       (nullable:true, blank:true)
+        name           (nullable:true)
+        sortname       (nullable:true)
+        medium         (nullable:true)
+        accessStartDate(nullable:true)
+        accessEndDate  (nullable:true)
+        coreStatus     (nullable:true)
+        coreStatusStart(nullable:true)
+        coreStatusEnd  (nullable:true)
+        acceptStatus   (nullable:true)
 
-    // Nullable is true, because values are already in the database
-    lastUpdated (nullable: true)
-    dateCreated (nullable: true)
-  }
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
+        perpetualAccessBySub (nullable: true)
+    }
 
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
-        println "creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}"
+        static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
       if(!ie) {
-        ie = new IssueEntitlement(subscription: subscription,tipp: tipp, status:tipp.status, acceptStatus: configMap.acceptStatus)
+          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus, name: tipp.name)
+          ie.generateSortTitle()
       }
       if(ie.save()) {
-        if(tipp.coverages) {
-          tipp.coverages.each { TIPPCoverage tc ->
+
+          if(subscription.hasPerpetualAccess){
+              ie.perpetualAccessBySub = subscription
+          }
+
+          Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
+        if(tippCoverages) {
+          tippCoverages.each { TIPPCoverage tc ->
             IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
             ic.startDate = tc.startDate
             ic.startVolume = tc.startVolume
@@ -122,6 +145,20 @@ class IssueEntitlement extends AbstractBase implements Comparable {
             if(!ic.save())
               throw new EntitlementCreationException(ic.errors)
           }
+        }
+          static_logger.debug("creating price items for ${tipp}")
+          Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
+        if(tippPriceItems) {
+            tippPriceItems.each { PriceItem tp ->
+                PriceItem ip = new PriceItem(issueEntitlement: ie)
+                ip.startDate = tp.startDate
+                ip.endDate = tp.endDate
+                ip.listPrice = tp.listPrice
+                ip.listCurrency = tp.listCurrency
+                ip.setGlobalUID()
+                if(!ip.save())
+                    throw new EntitlementCreationException(ip.errors)
+            }
         }
       }
       else
@@ -145,8 +182,21 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
   void afterDelete() {
-    deletionService.deleteDocumentFromIndex(this.globalUID)
+    deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
+
+    void generateSortTitle() {
+        if ( name ) {
+            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+            sortname = sortname.replaceFirst('^copy of ', '')
+            sortname = sortname.replaceFirst('^the ', '')
+            sortname = sortname.replaceFirst('^a ', '')
+            sortname = sortname.replaceFirst('^der ', '')
+            sortname = sortname.replaceFirst('^die ', '')
+            sortname = sortname.replaceFirst('^das ', '')
+        }
+    }
+
   @Deprecated
   Date getDerivedAccessStartDate() {
       if(accessStartDate)

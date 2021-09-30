@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.SurveyResult; de.laser.Org; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 
 <g:if test="${surveyConfig}">
 
@@ -116,18 +116,19 @@
     </semui:filter>
 
     <br><br>
-    <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+
+    <g:form action="${processAction}" controller="survey" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
 
         <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
         <g:set var="surveyParticipantsHasAccess"
-               value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
+               value="${participants.findAll { it.org.hasAccessOrg() }}"/>
 
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasAccess}">
                 <a data-semui="modal" class="ui icon button right floated"
-                   data-orgIdList="${(surveyParticipantsHasAccess.participant.id)?.join(',')}"
+                   data-orgIdList="${(surveyParticipantsHasAccess.org.id)?.join(',')}"
                    href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                 </a>
@@ -142,189 +143,200 @@
             <tr>
                 <g:if test="${showCheckbox}">
                     <th>
-                        <g:if test="${surveyResult}">
+                        <g:if test="${surveyParticipantsHasAccess}">
                             <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </g:if>
                     </th>
                 </g:if>
-                <th class="center aligned">
-                    ${message(code: 'sidewide.number')}
-                </th>
-                <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}"
-                                  property="surResult.participant.sortname"/>
-            </th>
-                <g:each in="${surveyParticipantsHasAccess.groupBy {
-                    it.type.id
-                }.sort { it.value[0].type.name }}" var="property">
-                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
-                        <g:if test="${surveyProperty.getI10n('expl')}">
+
+                <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+                        <th>${message(code: 'sidewide.number')}</th>
+                    </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
+                        <th>${message(code: 'default.name.label')}</th>
+                    </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                        <g:if test="${surveyConfig.surveyProperties}">
+                            <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                                <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
+                                    <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                              data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                                <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                            </g:if>
+
+                        <g:each in="${propList.sort { it.name }}" var="surveyProperty">
+                            <th>${surveyProperty.getI10n('name')}
+                                <g:if test="${surveyProperty.getI10n('expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${surveyProperty.getI10n('expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+                            </th>
+                        </g:each>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
+                        <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty.getI10n('expl')}">
+                                  data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                                 <i class="question circle icon"></i>
                             </span>
-                        </g:if>
-                    </g:sortableColumn>
+                        </th>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                    <th>
+                        ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
+                    </th>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
+                    <th>
+                        ${message(code: 'surveyInfo.finishedDate')}
+                    </th>
+                    </g:if>
                 </g:each>
-                <th>${message(code: 'surveyResult.commentOnlyForOwner')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                          data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </th>
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasAccess.groupBy { it.participant.id }}" var="result" status="i">
+            <g:each in="${surveyParticipantsHasAccess}" var="surveyOrg" status="i">
 
-                <g:set var="participant" value="${Org.get(result.key)}"/>
+                <g:set var="participant"
+                       value="${surveyOrg.org}"/>
+                <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
+                    <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                        <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
+                        <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                    </g:if>
+                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                </g:if>
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
                             <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                         </td>
                     </g:if>
-                    <td>
-                        ${i + 1}
-                    </td>
-                    <td>
-                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
-                            ${participant.sortname}
-                        </g:link>
-                        <br />
-                        <g:link controller="organisation" action="show" id="${participant.id}">
-                            (${fieldValue(bean: participant, field: "name")})
-                        </g:link>
+                    <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
-                        <div class="ui grid">
-                            <div class="right aligned wide column">
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+                            <td>
+                                ${i + 1}
+                            </td>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
+                            <td>
+                                <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                        id="${participant.id}">
+                                    ${participant.sortname}
+                                </g:link>
+                                <br/>
+                                <g:link controller="organisation" action="show" id="${participant.id}">
+                                    (${fieldValue(bean: participant, field: "name")})
+                                </g:link>
 
-                                <g:if test="${!surveyConfig.pickAndChoose}">
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                        <g:link controller="survey" action="evaluationParticipant"
-                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                                class="ui icon button">
-                                            <i class="chart pie icon"></i>
-                                        </g:link>
-                                    </span>
+                                <div class="ui grid">
+                                    <div class="right aligned wide column">
+
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                            <g:link controller="survey" action="evaluationParticipant"
+                                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                                    class="ui icon button">
+                                                <i class="chart pie icon"></i>
+                                            </g:link>
+                                        </span>
+
+                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.newOrg')}">
+                                                <i class="star black large  icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.processedOrg')}">
+                                                <i class="edit green icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                                                <i class="edit red icon"></i>
+                                            </span>
+                                        </g:else>
+
+                                        <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.finishOrg')}">
+                                                <i class="check green icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                                                <i class="x red icon"></i>
+                                            </span>
+                                        </g:else>
+
+                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                                <i class="exclamation triangle yellow large icon"></i>
+                                            </span>
+                                        </g:if>
+                                    </div>
+                                </div>
+                            </td>
+                        </g:if>
+
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
                                 </g:if>
-
-                                <g:if test="${surveyConfig.pickAndChoose}">
-                                    <g:link controller="survey" action="surveyTitlesSubscriber"
-                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                            class="ui icon button"><i
-                                            class="chart pie icon"></i>
-                                    </g:link>
-                                </g:if>
-
-                                <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.newOrg')}">
-                                        <i class="star black large  icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.processedOrg')}">
-                                        <i class="edit green icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                        <i class="edit red icon"></i>
-                                    </span>
-                                </g:else>
-
-                                <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.finishOrg')}">
-                                        <i class="check green icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                        <i class="x red icon"></i>
-                                    </span>
-                                </g:else>
-
-                                <g:if test="${participant in propertiesChangedByParticipant}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                        <i class="exclamation triangle yellow large icon"></i>
-                                    </span>
-                                </g:if>
-                            </div>
-                        </div>
-                    </td>
-
-                    <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
-                        <td>
-                            <g:set var="surveyOrg"
-                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
-
-                            <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
-
-                                <g:message code="surveyOrg.perennialTerm.available"/>
-
-                                <g:if test="${resultProperty.comment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${resultProperty.comment}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
+                                <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
                             </g:if>
-                            <g:else>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
+                            <td>
+                                <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            </td>
+                        </g:if>
 
-                                <g:if test="${resultProperty.type.isIntegerType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
-                                </g:if>
-                                <g:elseif test="${resultProperty.type.isStringType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isBigDecimalType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isDateType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isURLType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
-                                                     overwriteEditable="${overwriteEditable}"
-                                                     class="la-overflow la-ellipsis"/>
-                                    <g:if test="${resultProperty.urlValue}">
-                                        <semui:linkIcon/>
-                                    </g:if>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isRefdataValueType()}">
-                                    <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
-                                                            config="${resultProperty.type.refdataCategory}"/>
-                                </g:elseif>
-                                <g:if test="${resultProperty.comment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${resultProperty.comment}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                            <td class="center aligned">
+                                <g:set var="subParticipant"
+                                       value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                </div>
 
-                                <g:if test="${resultProperty.type.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty.getResult() == RDStore.YN_NO.getI10n('value')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                          data-variation="tiny"
-                                          data-content="${message(code: 'surveyResult.particiption.terminated')}">
-                                        <i class="minus circle big red icon"></i>
-                                    </span>
-                                </g:if>
-
-                            </g:else>
-
-                        </td>
+                            </td>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
+                            <td>
+                                <semui:surveyFinishDate participant="${participant}"
+                                                        surveyConfig="${surveyConfig}"/>
+                            </td>
+                        </g:if>
                     </g:each>
-                    <td>
-                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
-                    </td>
                 </tr>
 
             </g:each>
@@ -334,12 +346,12 @@
         <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
         <g:set var="surveyParticipantsHasNotAccess"
-               value="${surveyResult.findAll { !it.participant.hasAccessOrg() }}"/>
+               value="${participants.findAll { !it.org.hasAccessOrg() }}"/>
 
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasNotAccess}">
                 <a data-semui="modal" class="ui icon button right floated"
-                   data-orgIdList="${(surveyParticipantsHasNotAccess.participant.id)?.join(',')}"
+                   data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
                    href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                 </a>
@@ -352,184 +364,204 @@
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
-                <th class="center aligned">
-                    ${message(code: 'sidewide.number')}
-                </th>
-                <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}"
-                                  property="surResult.participant.sortname"/>
-                <g:each in="${surveyParticipantsHasNotAccess.groupBy {
-                    it.type.id
-                }.sort { it.value[0].type.name }}" var="property">
-                    <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
-                        <g:if test="${surveyProperty.getI10n('expl')}">
+                <g:if test="${showCheckbox}">
+                    <th>
+                        <g:if test="${surveyParticipantsHasNotAccess}">
+                            <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        </g:if>
+                    </th>
+                </g:if>
+
+                <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+                        <th>${message(code: 'sidewide.number')}</th>
+                    </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
+                        <th>${message(code: 'default.name.label')}</th>
+                    </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                        <g:if test="${surveyConfig.surveyProperties}">
+                            <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                                <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
+                                    <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                              data-position="right center"
+                                              data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                                <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                            </g:if>
+                            <g:each in="${propList.sort { it.name }}" var="surveyProperty">
+                                <th>${surveyProperty.getI10n('name')}
+                                    <g:if test="${surveyProperty.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                              data-position="right center"
+                                              data-content="${surveyProperty.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                            </g:each>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
+                        <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty.getI10n('expl')}">
+                                  data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                                 <i class="question circle icon"></i>
                             </span>
-                        </g:if>
-                    </g:sortableColumn>
+                        </th>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                        <th>
+                            ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
+                        </th>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
+                        <th>
+                            ${message(code: 'surveyInfo.finishedDate')}
+                        </th>
+                    </g:if>
                 </g:each>
-                <th>${message(code: 'surveyResult.commentOnlyForOwner')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                          data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </th>
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasNotAccess.groupBy { it.participant.id }}" var="result" status="i">
+            <g:each in="${surveyParticipantsHasNotAccess}" var="surveyOrg" status="i">
 
-                <g:set var="participant" value="${Org.get(result.key)}"/>
+                <g:set var="participant"
+                       value="${surveyOrg.org}"/>
+
+                <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
+                    <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                    <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
+                        <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                    </g:if>
+                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                </g:if>
+
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
                             <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                         </td>
                     </g:if>
-                    <td>
-                        ${i + 1}
-                    </td>
-                    <td>
-                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant.id}">
-                            ${participant.sortname}
-                        </g:link>
-                        <br />
-                        <g:link controller="organisation" action="show" id="${participant.id}">
-                            (${fieldValue(bean: participant, field: "name")})
-                        </g:link>
+                    <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
-                        <div class="ui grid">
-                            <div class="right aligned wide column">
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
+                            <td>
+                                ${i + 1}
+                            </td>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
+                            <td>
+                                <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                        id="${participant.id}">
+                                    ${participant.sortname}
+                                </g:link>
+                                <br/>
+                                <g:link controller="organisation" action="show" id="${participant.id}">
+                                    (${fieldValue(bean: participant, field: "name")})
+                                </g:link>
 
-                                <g:if test="${!surveyConfig.pickAndChoose}">
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                        <g:link controller="survey" action="evaluationParticipant"
-                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                                class="ui icon button">
-                                            <i class="chart pie icon"></i>
-                                        </g:link>
-                                    </span>
+                                <div class="ui grid">
+                                    <div class="right aligned wide column">
+
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                            <g:link controller="survey" action="evaluationParticipant"
+                                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                                    class="ui icon button">
+                                                <i class="chart pie icon"></i>
+                                            </g:link>
+                                        </span>
+
+
+                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.newOrg')}">
+                                                <i class="star black large  icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.processedOrg')}">
+                                                <i class="edit green icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                                                <i class="edit red icon"></i>
+                                            </span>
+                                        </g:else>
+
+                                        <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.finishOrg')}">
+                                                <i class="check green icon"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                                                <i class="x red icon"></i>
+                                            </span>
+                                        </g:else>
+
+                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                  data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                                <i class="exclamation triangle yellow large icon"></i>
+                                            </span>
+                                        </g:if>
+                                    </div>
+                                </div>
+                            </td>
+                        </g:if>
+
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
                                 </g:if>
-
-                                <g:if test="${surveyConfig.pickAndChoose}">
-                                    <g:link controller="survey" action="surveyTitlesSubscriber"
-                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                            class="ui icon button"><i
-                                            class="chart pie icon"></i>
-                                    </g:link>
-                                </g:if>
-
-                                <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.newOrg')}">
-                                        <i class="star black large  icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.processedOrg')}">
-                                        <i class="edit green icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                        <i class="edit red icon"></i>
-                                    </span>
-                                </g:else>
-
-                                <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.finishOrg')}">
-                                        <i class="check green icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                        <i class="x red icon"></i>
-                                    </span>
-                                </g:else>
-
-                                <g:if test="${participant in propertiesChangedByParticipant}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                        <i class="exclamation triangle yellow large icon"></i>
-                                    </span>
-                                </g:if>
-
-                            </div>
-                        </div>
-                    </td>
-
-                    <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
-                        <td>
-                            <g:set var="surveyOrg"
-                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
-
-                            <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
-
-                                <g:message code="surveyOrg.perennialTerm.available"/>
-
-                                <g:if test="${resultProperty.comment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${resultProperty.comment}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
+                                <g:each in="${surResults}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
                             </g:if>
-                            <g:else>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
+                            <td>
+                                <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            </td>
+                        </g:if>
 
-                                <g:if test="${resultProperty.type.isIntegerType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
-                                </g:if>
-                                <g:elseif test="${resultProperty.type.isStringType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isBigDecimalType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isDateType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isURLType()}">
-                                    <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
-                                                     overwriteEditable="${overwriteEditable}"
-                                                     class="la-overflow la-ellipsis"/>
-                                    <g:if test="${resultProperty.urlValue}">
-                                        <semui:linkIcon/>
-                                    </g:if>
-                                </g:elseif>
-                                <g:elseif test="${resultProperty.type.isRefdataValueType()}">
-                                    <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
-                                                            config="${resultProperty.type.refdataCategory}"/>
-                                </g:elseif>
-                                <g:if test="${resultProperty.comment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${resultProperty.comment}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
+                            <td class="center aligned">
+                                <g:set var="subParticipant"
+                                       value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                <div class="ui circular label">
+                                    ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                </div>
 
-                                <g:if test="${resultProperty.type.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty.getResult() == RDStore.YN_NO.getI10n('value')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                          data-variation="tiny"
-                                          data-content="${message(code: 'surveyResult.particiption.terminated')}">
-                                        <i class="minus circle big red icon"></i>
-                                    </span>
-                                </g:if>
-
-                            </g:else>
-
-                        </td>
+                            </td>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
+                            <td>
+                                <semui:surveyFinishDate participant="${participant}"
+                                                        surveyConfig="${surveyConfig}"/>
+                            </td>
+                        </g:if>
                     </g:each>
-                    <td>
-                        <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
-                    </td>
                 </tr>
 
             </g:each>
@@ -572,6 +604,37 @@
             </div>
 
         </g:if>
+
+        <g:if test="${showOpenParticipantsAgainButtons}">
+            <div class="content">
+                <div class="ui form twelve wide column">
+                    <div class="two fields">
+                        <g:if test="${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}">
+                            <div class="eight wide field" style="text-align: left;">
+                                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.reminder')}
+                                </button>
+                            </div>
+                        </g:if>
+                        <g:else>
+
+                            <div class="eight wide field" style="text-align: left;">
+                                <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.openWithoutMail.button')}
+                                </button>
+                            </div>
+
+                            <div class="eight wide field" style="text-align: right;">
+                                <button name="openOption" type="submit" value="OpenWithMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.openWithMail.button')}
+                                </button>
+                            </div>
+                        </g:else>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+
     </g:form>
 
 </semui:form>

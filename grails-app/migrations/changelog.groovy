@@ -147,4 +147,16 @@ databaseChangeLog = {
 	include file: 'changelog-2021-06-11.groovy'
 	include file: 'changelog-2021-06-15.groovy'
 	include file: 'changelog-2021-06-25.groovy'
+	include file: 'changelog-2021-07-13.groovy'
+	include file: 'changelog-2021-07-22.groovy'
+	include file: 'changelog-2021-07-27.groovy'
+	include file: 'changelog-2021-08-02.groovy'
+    include file: 'changelog-2021-08-11.groovy'
+    include file: 'changelog-2021-08-19.groovy'
+    include file: 'changelog-2021-08-20.groovy'
+	include file: 'changelog-2021-09-09.groovy' //has to be done before August 26th because of domain model using
+    include file: 'changelog-2021-08-26.groovy'
+    include file: 'changelog-2021-09-02.groovy'
+    include file: 'changelog-2021-09-21.groovy'
+    include file: 'changelog-2021-09-27.groovy'
 }

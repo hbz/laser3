@@ -10,55 +10,53 @@ class LicenseConsCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: License
+                            class:  License,
+                            cfgKey: KEY_LICENSE
                     ],
                     source : [
-                            'consortia-lic' : 'Meine Verträge'
+                            'consortia-lic'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default : [
-                                    [ 'licenseCategory', 'status', 'annual' ],
-                                    [ 'startDate', 'endDate' /*, 'openEnded' */ ]
+                                    [ 'licenseCategory', 'status' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [
                             default : [
-                                    'Vertrag' : [ // TODO ..
-                                            'license-licenseCategory'   : 'Vertragskategorie',
-                                            //'license-type'              : 'Lizenztyp',
-                                            //'license-openEnded'         : 'Unbefristet',
-                                            'license-status'            : 'Vertragstatus',
-                                            'license-*'                 : 'Alle'
+                                    'license' : [
+                                            'license-licenseCategory',
+                                            //'license-type',
+                                            //'license-openEnded',
+                                            'license-status',
+                                            'license-*'
                                     ]
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
+                            'distribution' : [
                                      'license-x-identifier' : [
-                                             label               : 'Vertrag → Identifikatoren',
                                              detailsTemplate     : 'license',
                                              chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                             chartLabels         : [ 'base', 'x.identifiers' ]
                                      ],
                                     'license-x-property' : [
-                                            label               : 'Vertrag → Merkmale (eigene/allgemeine)',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                            chartLabels         : [ 'base', 'x.properties' ]
                                     ],
                                     'license-x-annual' : [
-                                            label               : 'Vertrag → Jahresring',
                                             detailsTemplate     : 'license',
-                                            chartTemplate       : 'generic',
+                                            chartTemplate       : 'annual',
                                             chartLabels         : []
                                     ]
                             ]
@@ -67,10 +65,11 @@ class LicenseConsCfg extends BaseConfig {
 
             licensor : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_LICENSE
                     ],
                     source : [
-                            'depending-licensor' : 'Betreffende Lizenzgeber'
+                            'depending-licensor'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -82,11 +81,11 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lizenzgeber' : [ // TODO ..
-                                            'licensor-orgType'      : 'Organisationstyp',
-                                            'licensor-country'      : 'Länder',
-                                            'licensor-region'       : 'Bundesländer',
-                                            'licensor-*'            : 'Alle'
+                                    'licensor' : [
+                                            'licensor-orgType',
+                                            'licensor-country',
+                                            'licensor-region',
+                                            'licensor-*'
                                     ]
                             ]
                     ]

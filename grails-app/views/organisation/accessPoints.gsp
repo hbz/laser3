@@ -129,18 +129,18 @@
                                 <td class="center aligned">
                                     <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                         <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
-                                                class="ui negative icon button js-open-confirm-modal"
+                                                class="ui negative icon button la-modern-button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
                                         <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
                                             <div class="ui icon button disabled">
-                                                <i class="trash alternate icon"></i>
+                                                <i class="trash alternate outline icon"></i>
                                             </div>
                                         </div>
                                     </g:else>

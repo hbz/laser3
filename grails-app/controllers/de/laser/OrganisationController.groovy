@@ -214,6 +214,22 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_USER'])
+    Map listConsortia() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM').id.toString()
+        if(!params.sort)
+            params.sort = " LOWER(o.sortname)"
+        def fsq = filterService.getOrgQuery(params)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
+        result.consortiaTotal = availableOrgs.size()
+        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+        result
+    }
+
+    @Secured(['ROLE_USER'])
     def listProvider() {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -381,7 +397,8 @@ class OrganisationController  {
             CustomerIdentifier ci = new CustomerIdentifier(
                     customer: org,
                     platform: plt,
-                    value: params.value.trim(),
+                    value: params.value?.trim(),
+                    requestorKey: params.requestorKey?.trim(),
                     note: params.note?.trim(),
                     owner: contextService.getOrg(),
                     isPublic: true,
@@ -391,7 +408,7 @@ class OrganisationController  {
                 log.error("error on inserting customer identifier: ${ci.getErrors().getAllErrors().toListString()}")
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect action: 'ids', id: params.orgid, params: [tab: 'customerIdentifiers']
     }
 
     @Transactional
@@ -466,6 +483,7 @@ class OrganisationController  {
             return
         }
         customeridentifier.value = params.value
+        customeridentifier.requestorKey = params.requestorKey?.trim()
         customeridentifier.note = params.note?.trim()
         customeridentifier.save()
 
@@ -481,7 +499,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+        List<Platform> allPlatforms = organisationService.getAllPlatforms()
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
@@ -722,6 +740,8 @@ class OrganisationController  {
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
+        if(!params.tab)
+            params.tab = 'identifier'
 
         pu.setBenchmark('editable_identifier')
 
@@ -742,11 +762,11 @@ class OrganisationController  {
                 result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
 
-      if (!result.orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-        redirect action: 'list'
-        return
-      }
+          if (!result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect action: 'list'
+            return
+          }
 
         pu.setBenchmark('create Identifiers if necessary')
 
@@ -757,7 +777,6 @@ class OrganisationController  {
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-//------------------------orgSettings --------------------
         pu.setBenchmark('orgsettings')
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -775,51 +794,38 @@ class OrganisationController  {
 
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
-
-            // collecting visible settings by customer type, role and/or combo
-            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.orgInstance)
-
-            List<OrgSetting.KEYS> ownerSet = [
-                    OrgSetting.KEYS.API_LEVEL,
-                    OrgSetting.KEYS.API_KEY,
-                    OrgSetting.KEYS.API_PASSWORD,
-                    OrgSetting.KEYS.CUSTOMER_TYPE,
-                    OrgSetting.KEYS.GASCO_ENTRY
-            ]
-            List<OrgSetting.KEYS> accessSet = [
-                    OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                    OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
-            ]
-            List<OrgSetting.KEYS> credentialsSet = [
-                    OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
-                    OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
-            ]
-
-            result.settings = []
-
-            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-                result.settings.addAll(allSettings.findAll { it.key in accessSet })
-                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-            } else if (inContextOrg) {
-                log.debug('settings for own org')
-                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-
-                if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
-                    result.settings.addAll(allSettings.findAll { it.key in accessSet })
-                    result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-                } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-                } else if (['FAKE'].contains(result.institution.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
+            if(params.tab == 'customerIdentifiers') {
+                result.allPlatforms = organisationService.getAllPlatforms()
+                Map<String, Object> queryParams = [customer: result.orgInstance]
+                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer"
+                if(params.customerIdentifier) {
+                    query += " and ci.value like (:customerIdentifier)"
+                    queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
                 }
-            } else if (isComboRelated) {
-                log.debug('settings for combo related org: consortia')
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                if(params.requestorKey) {
+                    query += " and ci.requestorKey like (:requestorKey)"
+                    queryParams.requestorKey = "%${params.requestorKey.toLowerCase()}%"
+                }
+                if(params.ciPlatform) {
+                    query += " and platform.id = :platform"
+                    queryParams.platform = params.long("ciPlatform")
+                }
+                String sort = " order by platform.name asc"
+                if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                } else if (inContextOrg) {
+
+                    if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                        result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                    } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+                        result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                    }
+                } else if (isComboRelated) {
+                    log.debug('settings for combo related org: consortia')
+                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                }
             }
+
         }
         List bm = pu.stopBenchmark()
         result.benchMark = bm
@@ -835,15 +841,8 @@ class OrganisationController  {
         }
 
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.orgInstance)
-        result.taskInstanceCount = result.taskInstanceList.size()
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+        result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.orgInstance))
 
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.orgInstance)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
-        log.debug(result.taskInstanceList.toString())
         result
     }
 
@@ -909,7 +908,7 @@ class OrganisationController  {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR)
             flash.error = ctrlResult.result.error
-        redirect action: 'ids', id: params.id
+        redirect action: 'ids', id: params.id, params: [tab: 'customerIdentifiers']
     }
 
     @DebugAnnotation(ctrlService = 2)
@@ -1197,17 +1196,17 @@ class OrganisationController  {
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
 
         TreeSet<String> semesterCols = [], dueDateCols = []
-        Map<String,Integer> dueDateSums = [:]
-        Map<String,Map<String,Integer>> semesterSums = [:]
+        Map<String,BigDecimal> dueDateSums = [:]
+        Map<String,Map<String,BigDecimal>> semesterSums = [:]
         numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
             semesters.value.each { Map.Entry<String,ReaderNumber> row ->
                 semesterCols << row.key
                 ReaderNumber rn = row.value
-                Map<String,Integer> semesterSumRow = semesterSums.get(semesters.key)
+                Map<String,BigDecimal> semesterSumRow = semesterSums.get(semesters.key)
                 if(!semesterSumRow)
                     semesterSumRow = [:]
                 if(rn.value) {
-                    Integer groupSum = semesterSumRow.get(rn.referenceGroup)
+                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup)
                     if(groupSum == null) {
                         groupSum = rn.value
                     }
@@ -1221,7 +1220,7 @@ class OrganisationController  {
             dueDates.value.each { Map.Entry<String,ReaderNumber> row ->
                 dueDateCols << row.key
                 ReaderNumber rn = row.value
-                Integer dueDateSum = dueDateSums.get(dueDates.key)
+                BigDecimal dueDateSum = dueDateSums.get(dueDates.key)
                 if(rn.value) {
                     if(dueDateSum == null) {
                         dueDateSum = rn.value
@@ -1277,6 +1276,16 @@ class OrganisationController  {
         }else {
             result
         }
+    }
+
+    def linkOrgs() {
+        organisationControllerService.linkOrgs(params)
+        redirect action: 'show', id: params.context
+    }
+
+    def unlinkOrg() {
+        organisationControllerService.unlinkOrg(params)
+        redirect action: 'show', id: params.id
     }
 
     @Transactional

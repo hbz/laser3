@@ -4,7 +4,7 @@
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="ten wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
@@ -211,36 +211,38 @@
             </div>
         </div>
     </div>
+    <aside class="six wide column la-sidekick">
+        <div class="ui one cards">
+            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <div id="container-tasks">
+                    <g:render template="/templates/tasks/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                </div>
 
-    <aside class="four wide column la-sidekick">
-        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
-            <g:render template="/templates/tasks/card"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                <div id="container-notes">
+                    <g:render template="/templates/notes/card"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
+                </div>
 
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
-            <div id="container-notes">
-                <g:render template="/templates/notes/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
+                    <g:render template="/templates/tasks/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+                </g:if>
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                    <g:render template="/templates/notes/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+                </g:if>
+            </g:if>
+
+            <div id="container-documents">
+                <g:render template="/survey/cardDocuments"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
-
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-
-                <g:render template="/templates/tasks/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-            </g:if>
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                <g:render template="/templates/notes/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-            </g:if>
-        </g:if>
-
-        <div id="container-documents">
-            <g:render template="/survey/cardDocuments"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
         </div>
-    </aside><!-- .four -->
+    </aside>
 
 </div><!-- .grid -->
 
@@ -259,12 +261,13 @@
                 <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
+                <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
                 <th></th>
             </tr>
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.name }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
@@ -306,18 +309,32 @@
                         </g:if>
 
                     </td>
+
+                    <td>
+                        <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
+
+                            <div class="ui checkbox">
+                                <input type="checkbox"
+                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' :  ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
+                                       name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
+                            </div>
+                        </g:form>
+                    </td>
+
                     <td>
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)}">
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -416,6 +433,15 @@
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${surveyResult.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+
+                        <g:set var="surveyConfigProperties"
+                               value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
+                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.mandatory.tooltip')}">
+                                <i class="info circle icon"></i>
                             </span>
                         </g:if>
 

@@ -46,7 +46,7 @@
 }
 .la-contextBar .ui.button:hover,
 .la-contextBar .ui.button:focus{
-  background-color: transparent !important;
+  //background-color: transparent !important;
 }
 /* Vertical  Style special for details show sides */
 .ui.la-vertical.buttons {
@@ -91,7 +91,7 @@
 }*/
 
 
-.ui.button.la-audit-button {
+.ui.button.la-auditButton-header {
   vertical-align: super;
 }
 
@@ -114,5 +114,51 @@
   &.la-js-filterButton {
     margin-top: 14px;
     margin-bottom: 14px;
+  }
+}
+/*---------------
+    change buttons so the background area is not visible on default
+ ----------------*/
+
+/*---------------
+    Negativ
+----------------*/
+.ui.negative.buttons .button.la-modern-button,
+.ui.negative.button.la-modern-button,
+.ui.red.buttons .button.la-modern-button,
+.ui.red.button.la-modern-button {
+  color: @negativeColor;
+  background-color: transparent;
+  &:hover {
+    background-color: @negativeColor;
+    color: @negativeTextColor;
+  }
+}
+
+/*---------------
+    Positive
+----------------*/
+.ui.positive.buttons .button.la-modern-button,
+.ui.positive.button.la-modern-button,
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: @positiveColor;
+  background-color: transparent;
+  &:hover {
+    background-color: @positiveColor;
+    color: @positiveTextColor;
+  }
+}
+
+/*---------------
+    Blue
+----------------*/
+.ui.blue.buttons .button.la-modern-button,
+.ui.blue.button.la-modern-button {
+  color: @blue;
+  background-color: transparent;
+  &:hover {
+    background-color: @blue;
+    color: @white;
   }
 }

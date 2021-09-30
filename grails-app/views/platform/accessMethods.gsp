@@ -51,7 +51,7 @@
                                 <g:formatDate format="${message(code:'default.date.format.notime')}" date="${accessMethod.validTo}" />
                             </td>
                             <td class="link">
-                                <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button"
+                                <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
