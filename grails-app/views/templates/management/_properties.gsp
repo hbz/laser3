@@ -357,7 +357,7 @@
 
 
     <div class="ui segment">
-        <g:form action="${actionName}" method="post" class="ui form"
+        <g:form action="${actionName}" method="post" class="ui form propertiesForm"
                 params="[tab: params.tab, processOption: 'changeCreateProperty']">
             <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
@@ -739,6 +739,22 @@
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+        }
+    });
+
+    $('.propertiesForm').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            noSubscription: {
+                identifier: 'selectedSubs',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
+                    }
+                ]
+            }
         }
     });
 </laser:script>
