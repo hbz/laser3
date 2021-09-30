@@ -1504,8 +1504,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.postAdress') {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }
-                else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantProperty.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
@@ -1863,6 +1864,7 @@ class ExportClickMeService {
                     titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
                     titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"
                     titles << RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_FTE."${localizedValue}"
                     titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
                     titles << RDStore.READER_NUMBER_USER."${localizedValue}"
                     titles << messageSource.getMessage('readerNumber.sum.label', null, locale)
