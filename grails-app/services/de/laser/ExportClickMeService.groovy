@@ -1810,13 +1810,13 @@ class ExportClickMeService {
 
                 BigDecimal sum = 0
                 if(readerNumberStudents){
-                    sum = sum + readerNumberStudents.value
+                    sum = sum + (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
                 }
                 if(readerNumberStaff){
-                    sum = sum + readerNumberStaff.value
+                    sum = sum + (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
                 }
                 if(readerNumberFTE){
-                    sum = sum + readerNumberFTE.value
+                    sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
                 row.add([field: sum, style: null])
 
