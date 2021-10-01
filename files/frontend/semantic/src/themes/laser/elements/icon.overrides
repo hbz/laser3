@@ -1778,6 +1778,9 @@ i.icon.la-greater-than-equal {
 i.icon.la-open {
   font-family: 'icomoon';
 }
+i.icon.la-thumbtack-regular {
+  font-family: 'icomoon';
+}
 i.icon.la-consortia {
   font-family: 'icomoon';
 }
@@ -1811,6 +1814,7 @@ i.icon.la-less-than-equal:before { content: "\e913"; }
 i.icon.la-greater-than-equal:before { content: "\e914"; }
 /**/
 i.icon.la-open:before { content: "\e915"; }
+i.icon.la-thumbtack-regular:before { content: "\e916"; }
 i.icon.la-consortia:before { content: "\e917"; }
 /*******************************
            Laser Icons

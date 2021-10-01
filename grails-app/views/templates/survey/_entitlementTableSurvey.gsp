@@ -12,7 +12,7 @@
                 <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname"
+            <g:sortableColumn class="ten wide" params="${params}" property="sortname"
                               title="${message(code: 'title.label')}"/>
             <th class="two wide"><g:message code="tipp.price"/></th>
             <th class="two wide"><g:message code="default.actions.label"/></th>

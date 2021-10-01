@@ -133,7 +133,7 @@
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${ident.instanceOf}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack grey la-rotate"></i></span>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                 </g:elseif>
                                 <g:else>
                                     <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -147,7 +147,7 @@
                             </g:if>
                         </g:if>
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack grey la-rotate"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                         </g:elseif>
                     </div>
                 </g:if><%-- hidden if org[type=institution] --%>

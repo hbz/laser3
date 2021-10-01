@@ -3,7 +3,6 @@
 
 <div class="ui card">
     <div class="content">
-        <h2 class="ui header">${message(code: 'subscription.packages.label')}</h2>
             <g:each in="${packages}" var="pkgInfo">
                 <g:if test="${pkgInfo.packageInstanceRecord}">
                     <div class="ui grid">
@@ -11,7 +10,7 @@
                         <div class="sixteen wide column">
                             <div class="la-inline-lists">
                                 <h3 class="ui icon header la-clear-before la-noMargin-top"><i aria-hidden="true" class="circular la-package icon"></i>
-                                    ${pkgInfo.packageInstance.name}
+                                    <g:link controller="package" action="show" id="${pkgInfo.packageInstance.id}"> ${pkgInfo.packageInstance.name} </g:link>
                                 </h3>
                                 <div class="ui two cards">
                                     <div class="ui card la-time-card">

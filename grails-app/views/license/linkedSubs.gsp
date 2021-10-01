@@ -149,7 +149,7 @@
 
                         <g:if test="${sub.isSlaved}">
                             <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
-                                <i class="thumbtack grey la-rotate icon"></i>
+                                <i class="grey la-thumbtack-regular icon"></i>
                             </span>
                         </g:if>
 

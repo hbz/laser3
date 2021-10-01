@@ -1567,7 +1567,7 @@ class SurveyController {
         SwissKnife.setPaginationParams(result,params,result.user)
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
         result.editable = result.surveyInfo.isEditable() ?: false
@@ -1578,7 +1578,6 @@ class SurveyController {
         }
 
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
 
         result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
 
@@ -1838,7 +1837,7 @@ class SurveyController {
             flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()])
         }
 
-        redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
+        redirect(action: 'renewEntitlements', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
 
     }
 

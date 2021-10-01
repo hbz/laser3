@@ -39,6 +39,14 @@
         </tr>
         <tr>
             <td>
+                <i class="pencil alternate blue icon" aria-hidden="true"></i>
+            </td>
+            <td>
+                Verknüpfung bearbeiten
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
             </td>
             <td>
@@ -53,6 +61,15 @@
                 Wert wird vererbt
             </td>
         </tr>
+        <tr>
+            <td>
+                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack la-thumbtack-regular"></i>
+            </td>
+            <td>
+                Wert wird automatisch geerbt
+            </td>
+        </tr>
+
         <tr>
             <td>
                 <i class="unlink icon"></i>
@@ -78,6 +95,14 @@
             </td>
         </tr>
 
+        <tr>
+            <td>
+                <i class="ui angle double down icon" aria-hidden="true"></i>
+            </td>
+            <td>
+                Anzeige der Vertragsmerkmale
+            </td>
+        </tr>
 
 
 

@@ -279,7 +279,7 @@
                                                             linkInstanceType: row.class.name,
                                                             link: row
                                                   ]}" />--%>
-                                        <g:if test="${editable}">
+                                        <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
                                                 <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
@@ -296,20 +296,22 @@
                             </g:each>
                         </table>
                     </g:if>
-                    <div class="ui la-vertical buttons">
-                        <%
-                            Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
-                                                        tmplID:'addLink',
-                                                        tmplButtonText:message(code: 'org.linking.addLink'),
-                                                        tmplModalID:'org_add_link',
-                                                        editmode: editable,
-                                                        linkInstanceType: Combo.class.name,
-                                                        context: orgInstance
-                            ]
-                        %>
-                        <g:render template="/templates/links/subLinksModal"
-                                  model="${model}" />
-                    </div>
+                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                        <div class="ui la-vertical buttons">
+                            <%
+                                Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
+                                                            tmplID:'addLink',
+                                                            tmplButtonText:message(code: 'org.linking.addLink'),
+                                                            tmplModalID:'org_add_link',
+                                                            editmode: editable,
+                                                            linkInstanceType: Combo.class.name,
+                                                            context: orgInstance
+                                ]
+                            %>
+                            <g:render template="/templates/links/subLinksModal"
+                                      model="${model}" />
+                        </div>
+                    </g:if>
                 </div>
             </div>
 
