@@ -43,7 +43,7 @@
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Lizenzen
         </p>
         <p>
-            Gruppiert werden die Lizenzen in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Lizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Lizenz auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
@@ -59,7 +59,7 @@
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Teilnehmerlizenzen
         </p>
         <p>
-            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Teilnehmerlizenzen auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
         </p>
@@ -181,7 +181,7 @@
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Verträgen
         </p>
         <p>
-            Gruppiert werden die Verträge in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Verträge in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird der Vertrag auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>

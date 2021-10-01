@@ -27,6 +27,10 @@ class QueryExportManager {
         List rows = []
         Map<String, Object> data = export.getData()
 
+        println '-------------------------'
+        println export
+        println data
+
         if (format == 'csv') {
             rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
             data.rows.each { row ->

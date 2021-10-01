@@ -8,7 +8,7 @@
             Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmer für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
             Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
@@ -23,7 +23,7 @@
             Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
             Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
@@ -37,10 +37,10 @@
             Die Abfrage visualisiert die zeitliche Entwicklung aller für diese Lizenz relevanten Teilnehmerlizenzen
         </p>
         <p>
-            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den Datumsgrenzen der jeweiligen Teilnehmerlizenzen.
+            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
         </p>
         <p>
-            Datumsangaben <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+            Start- und Enddatum <strong>in dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
             über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Teilnehmerlizenzen dagegen schon.
         </p>
     </div>

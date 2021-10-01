@@ -43,9 +43,11 @@ class QueryExport extends BaseQueryExport {
 
         result.rows = dd.collect{ Map e ->
             List entry = [e.label.toString()]
-            if (queryCache.query == 'timeline-cost') {
-                entry.add((e.value1 ?: '').toString())
-                entry.add((e.value2 ?: '').toString())
+            if (queryCache.query == 'timeline-cost') { // -- todo // -- todo // -- todo
+                entry.add((e.vnc ?: '').toString())
+                entry.add((e.vnct ?: '').toString())
+                entry.add((e.vc ?: '').toString())
+                entry.add((e.vct ?: '').toString())
             }
             else {
                 if (e.containsKey('minusIdList')) {
