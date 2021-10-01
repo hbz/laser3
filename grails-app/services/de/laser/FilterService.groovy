@@ -1148,6 +1148,14 @@ class FilterService {
             qry_params.titleGroup = Long.parseLong(params.titleGroup)
         }
 
+        if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
+            if(params.inTitleGroups == RDStore.YN_YES.id.toString()) {
+                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }else{
+                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }
+        }
+
         if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
             qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
