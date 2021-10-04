@@ -46,15 +46,17 @@ class DetailsExportManager {
         List rows = []
 
         if (format == 'csv') {
-            rows.add( buildRowCSV(
-                    export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
-            ) )
+            List<String> cols = export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
+            println cols
+            rows.add( buildRowCSV(cols) )
+
+            //List<List<String>> rows =
             rows.addAll( buildCSV(export, idList) )
         }
         else if (format == 'pdf') {
-            rows.add( buildRowPDF(
-                    export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
-            ) )
+            List<String> cols = export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
+
+            rows.add( buildRowPDF(cols) )
             rows.addAll( buildPDF(export, idList) )
         }
         rows
