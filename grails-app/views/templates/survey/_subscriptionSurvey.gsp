@@ -282,7 +282,7 @@
                     </laser:script>
                 </div>
 
-                <g:if test="${subscription.packages}">
+                <g:if test="${subscription && subscription.packages}">
 
                                 <div class="field" style="text-align: right;">
                                     <button id="package-info-toggle"
@@ -503,7 +503,7 @@
 
         </div>
 
-        <g:if test="${subscription.packages}">
+        <g:if test="${subscription && subscription.packages}">
             <div id="packages" class="la-inline-lists hidden"></div>
         </g:if>
 
@@ -1190,7 +1190,7 @@
        </g:each>
     </g:if>
 
-    <g:if test="${subscription.packages}">
+    <g:if test="${subscription && subscription.packages}">
         JSPC.app.loadPackages = function () {
                   $.ajax({
                       url: "<g:createLink controller="ajaxHtml" action="getGeneralPackageData"/>",

@@ -108,7 +108,7 @@
                                     </option>
                                 </g:each>
                                 <g:if test="${ddcs.size() == 0}">
-                                    <option value=""><g:message code="titleInstance.noDdc.label" /></option>
+                                    <option value="<g:message code="titleInstance.noDdc.label" />"><g:message code="titleInstance.noDdc.label" /></option>
                                 </g:if>
                             </select>
                         </div>
@@ -127,7 +127,7 @@
                                     </option>
                                 </g:each>
                                 <g:if test="${languages.size() == 0}">
-                                    <option value=""><g:message code="titleInstance.noLanguage.label" /></option>
+                                    <option value="<g:message code="titleInstance.noLanguage.label" />"><g:message code="titleInstance.noLanguage.label" /></option>
                                 </g:if>
                             </select>
                         </div>

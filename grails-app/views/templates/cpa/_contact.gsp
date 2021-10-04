@@ -3,7 +3,7 @@
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
         <div style="display: flex">
-            <semui:contactIcon type="${contact.contentType.('value')}" />
+            <semui:contactIcon type="${contact.contentType?.value}" />
             <div class="content la-space-right">
                 <semui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
                 <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
@@ -22,7 +22,7 @@
 
             <g:if test="${contact.contentType in [RDStore.CCT_URL]}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Diese URL aufrufen ..">
-                    <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button>
+                    <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button">
                         <i class="share square icon"></i>
                     </a>
                 </span>
