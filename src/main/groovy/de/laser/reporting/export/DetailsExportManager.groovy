@@ -4,7 +4,9 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.finance.CostItem
 import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.local.CostItemExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
@@ -196,6 +198,14 @@ class DetailsExportManager {
                     'select ie from IssueEntitlement ie where ie.subscription.id = :subId and ie.tipp.id in (:idList) order by ie.name',
                     [subId: subId, idList: idList]
             )
+        }
+        else if (export.KEY == CostItemExport.KEY) {
+//            Long subId = ExportLocalHelper.getDetailsCache( export.token ).id
+//            result = CostItem.executeQuery(
+//                    'select ci from CostItem ci where ci.sub.id = :subId and ci.id in (:idList) order by ci.id',
+//                    [subId: subId, idList: idList]
+//            )
+            result = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.id', [idList: idList])
         }
         result
     }

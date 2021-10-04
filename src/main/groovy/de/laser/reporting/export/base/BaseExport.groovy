@@ -2,12 +2,13 @@ package de.laser.reporting.export.base
 
 import de.laser.ContextService
 import de.laser.reporting.export.local.ExportLocalHelper
-import de.laser.reporting.export.local.IssueEntitlementExport
+import de.laser.reporting.export.local.CostItemExport as CostItemExportLocal
+import de.laser.reporting.export.local.IssueEntitlementExport as IssueEntitlementExportLocal
 import de.laser.reporting.export.local.OrgExport as OrgExportLocal
-import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
-import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportLocal
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
+import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 
 import grails.util.Holders
@@ -26,6 +27,8 @@ abstract class BaseExport {
     static String CSV_VALUE_SEPARATOR   = ';'
     static String CSV_FIELD_SEPARATOR   = ','
     static String CSV_FIELD_QUOTATION   = '"'
+
+    String token                    // cache token
 
     static List<String> CUSTOM_LABEL = [
 
@@ -64,10 +67,17 @@ abstract class BaseExport {
             '@ae-entitlement-tippPublisherName',
             '@ae-entitlement-tippSeriesName',
             '@ae-entitlement-tippSubjectReference',
-            '@ae-entitlement-tippTitleType'
-    ]
+            '@ae-entitlement-tippTitleType',
 
-    String token                    // cache token
+            '@ae-cost-entitlement',
+            '@ae-cost-entitlementGroup',
+            '@ae-cost-invoice',
+            '@ae-cost-member',
+            '@ae-cost-order',
+            '@ae-cost-package',
+            '@ae-cost-subscription',
+            '@ae-cost-taxKey'
+    ]
 
     Map<String, Object> selectedExportFields = [:]
 
@@ -80,13 +90,13 @@ abstract class BaseExport {
     Map<String, Object> getCurrentConfig(String key) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        if (key == LicenseExport.KEY) {
+        if (key == LicenseExportGlobal.KEY) {
 
             if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-                LicenseExport.CONFIG_ORG_CONSORTIUM
+                LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
             }
             else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-                LicenseExport.CONFIG_ORG_INST
+                LicenseExportGlobal.CONFIG_ORG_INST
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
@@ -121,9 +131,15 @@ abstract class BaseExport {
                 }
             }
         }
-        else if (key == IssueEntitlementExport.KEY) {
+        else if (key == IssueEntitlementExportLocal.KEY) {
 
-            IssueEntitlementExport.CONFIG_X
+            IssueEntitlementExportLocal.CONFIG_X
+        }
+        else if (key == CostItemExportLocal.KEY) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
+            }
         }
     }
 

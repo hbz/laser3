@@ -71,6 +71,9 @@ class GenericHelper {
             // LaserReportingTagLib:reportFilterRefdata
 
             Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)
+            if (!customRdv) {
+                println '>> ' + fieldName + ' : ' + type + ' not found!'
+            }
             label = customRdv.get('label')
         }
 

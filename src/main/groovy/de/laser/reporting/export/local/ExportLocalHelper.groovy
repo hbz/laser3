@@ -21,6 +21,9 @@ class ExportLocalHelper extends BaseExportHelper {
         else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )
         }
+        else if (tmpl == CostItemExport.KEY) {
+            return new CostItemExport( token, selectedFields )
+        }
     }
 
     // ----- Cache -----
