@@ -201,7 +201,7 @@
 
 <div id="magicArea"></div>
 
-<semui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
+<semui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
