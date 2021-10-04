@@ -85,8 +85,9 @@ class ReportingLocalService {
                 fsCifsMap.put('max', 5000)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
 
-                result.relevantCostItems = finance.cons.costItems?.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
-                result.neutralCostItems  = finance.cons.costItems?.minus( result.relevantCostItems ) ?: []
+                result.list              = finance.cons.costItems ?: []
+                result.relevantCostItems = result.list.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]}
+                result.neutralCostItems  = result.list.minus( result.relevantCostItems )
 
                 result.billingSums = finance.cons.sums?.billingSums ?: []
                 result.localSums   = finance.cons.sums?.localSums ?: []
