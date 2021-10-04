@@ -199,7 +199,7 @@
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 
-            <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && !copyCostsFromConsortia)}">
+            <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}">
                 <fieldset class="seven wide field la-modal-fieldset-no-margin">
                     <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
@@ -289,7 +289,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.titleGroup')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newTitleGroup_${idSuffix}" >
-                                <input type="hidden" name="newTitleGroup"value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -341,7 +341,7 @@
 
         </div><!-- three fields -->
 
-        <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+        <g:if test="${mode == 'copy' && copyToOtherSub}">
         <div class="fields">
             <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
                 <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
@@ -778,7 +778,7 @@
         });
     }
 
-    <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+    <g:if test="${mode == 'copy' && copyToOtherSub}">
         JSPC.app.adjustDropdown();
     </g:if>
 

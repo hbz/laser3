@@ -212,7 +212,7 @@
         </div>
 
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
                 <select name="coverageDepth" id="coverageDepth" multiple=""
@@ -238,6 +238,17 @@
                                   value="${params.hasPerpetualAccess}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
+                <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
+                    <div class="field">
+                        <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
+                        <laser:select class="ui fluid dropdown" name="inTitleGroups"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${params.inTitleGroups}"
+                                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+                </g:if>
             </g:if>
         </div>
 
