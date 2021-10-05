@@ -75,7 +75,7 @@ abstract class BaseExport {
 
     abstract String getFieldLabel(String fieldName)
 
-    abstract List<Object> getObject(Object obj, Map<String, Object> fields)
+    abstract List<Object> getObjectResult(Object obj, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

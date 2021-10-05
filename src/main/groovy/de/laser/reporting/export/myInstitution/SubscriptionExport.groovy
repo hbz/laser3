@@ -93,7 +93,7 @@ class SubscriptionExport extends BaseExport {
     }
 
     @Override
-    List<Object> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

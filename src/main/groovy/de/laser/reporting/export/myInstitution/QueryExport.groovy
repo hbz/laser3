@@ -13,7 +13,8 @@ class QueryExport extends BaseQueryExport {
         this.token = token
     }
 
-    Map<String, Object> getData() {
+    @Override
+    Map<String, Object> getDataResult() {
         Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
 
         Map<String, Object> result = [

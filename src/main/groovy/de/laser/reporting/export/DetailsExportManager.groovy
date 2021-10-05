@@ -24,6 +24,8 @@ import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.text.SimpleDateFormat
+
 class DetailsExportManager {
 
     static BaseExport createExport(String token, String context) {
@@ -77,7 +79,14 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            List<String> row = export.getObject( obj, fields ).collect{ it as String } // TODO date, double, etc
+            List<String> row = export.getObjectResult( obj, fields ).collect{ it ->
+                if (it instanceof Date) {
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    return sdf.format(it)
+                }
+                return it as String
+            } // TODO date, double, etc
+
             if (row) {
                 rows.add( buildRowCSV( row ) )
             }
@@ -135,7 +144,7 @@ class DetailsExportManager {
 
         objList.eachWithIndex { obj, idx ->
 
-            List<Object> values = export.getObject( obj, fields )
+            List<Object> values = export.getObjectResult( obj, fields )
             if (values) {
                 Row entry = sheet.createRow(idx+1)
                 values.eachWithIndex{ v, i ->
@@ -192,7 +201,14 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            List<String> row = export.getObject( obj, fields ).collect{ it as String } // TODO date, double, etc
+            List<String> row = export.getObjectResult( obj, fields ).collect{ it ->
+                if (it instanceof Date) {
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    return sdf.format(it)
+                }
+                return it as String
+            } // TODO date, double, etc
+
             if (row) {
                 rows.add( buildRowPDF( row ) )
             }

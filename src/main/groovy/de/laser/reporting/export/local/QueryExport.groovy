@@ -13,7 +13,8 @@ class QueryExport extends BaseQueryExport {
         this.token = token
     }
 
-    Map<String, Object> getData() {
+    @Override
+    Map<String, Object> getDataResult() {
 
         Map<String, Object> queryCache = ExportLocalHelper.getQueryCache( token )
 
@@ -44,18 +45,18 @@ class QueryExport extends BaseQueryExport {
         result.rows = dd.collect{ Map e ->
             List entry = [e.label.toString()]
             if (queryCache.query == 'timeline-cost') {
-                entry.add((e.value1 ?: '').toString())
-                entry.add((e.value2 ?: '').toString())
+                entry.add(e.value1)
+                entry.add(e.value2)
             }
             else {
                 if (e.containsKey('minusIdList')) {
-                    entry.add(e.minusIdList.size().toString())
+                    entry.add(e.minusIdList.size())
                 }
                 if (e.containsKey('plusIdList')) {
-                    entry.add(e.plusIdList.size().toString())
+                    entry.add(e.plusIdList.size())
                 }
                 if (e.containsKey('idList')) {
-                    entry.add(e.idList.size().toString())
+                    entry.add(e.idList.size())
                 }
             }
             entry

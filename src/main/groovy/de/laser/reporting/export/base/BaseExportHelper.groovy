@@ -36,50 +36,6 @@ abstract class BaseExportHelper {
         content
     }
 
-    /*
-    static def getPropertyFieldContent(Object obj, String field, Class type, boolean returnAsString) {
-
-        def content = obj.getProperty(field)
-
-        if (type in [boolean, Boolean]) {
-            if (obj.getProperty(field) == true) {
-                content = RDStore.YN_YES.getI10n('value')
-            }
-            else if (obj.getProperty(field) == false) {
-                content = RDStore.YN_NO.getI10n('value')
-            }
-            else {
-                content = ''
-            }
-        }
-        else if (type == Date) {
-            if (obj.getProperty(field)) {
-                if (returnAsString) {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                    content = sdf.format(obj.getProperty(field))
-                }
-                else {
-                    content = obj.getProperty(field)
-                    //content = new Date( ((Timestamp) obj.getProperty(field)).time )
-                }
-            } else {
-                content = ''
-            }
-        }
-        else if (returnAsString) {
-            if (! obj.getProperty(field)) {
-                content = ''
-            }
-            else if (type in [double, Double, int, Integer]) {
-                content = obj.getProperty(field) as String
-            }
-        }
-
-        println field + ' >> ' + content + ' : ' + content?.class
-        content
-    }
-    */
-
     static String getFileName(List<String> labels = ['Reporting']) {
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
