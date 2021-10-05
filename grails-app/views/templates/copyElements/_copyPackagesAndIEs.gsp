@@ -13,7 +13,7 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form controller="${controllerName}" action="${actionName}" id="${params.id}"
+    <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
@@ -42,7 +42,7 @@
                                 </div>
 
                                 <div>
-                                    <input type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
+                                    <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
                                 </div>
                             </div>
                         </th>
@@ -235,7 +235,7 @@
                                             </div>
                                         </div>
                                         <g:if test="${sp.pendingChangeConfig}">
-                                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deletePackageSettings"
                                                             value="${genericOIDService.getOID(sp)}"
                                                             data-pkgoid="${genericOIDService.getOID(sp.pkg)}"
@@ -249,7 +249,7 @@
 
                             %{--DELETE--}%
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}">
-                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                     <g:checkBox name="subscription.deletePackageIds"
                                                 value="${genericOIDService.getOID(sp)}"
                                                 data-pkgoid="${genericOIDService.getOID(sp.pkg)}" data-action="delete"
@@ -342,7 +342,7 @@
                                 </div>
 
                                 <div data-titleGroupoid="${genericOIDService.getOID(titleGroup)}">
-                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                         <g:checkBox name="subscription.deleteTitleGroups"
                                                     value="${genericOIDService.getOID(titleGroup)}"
                                                     data-action="delete"
@@ -373,8 +373,10 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                           data-confirm-id="copyElements"
+                           data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                           data-confirm-term-how="delete" ${submitDisabled}/>
                 </div>
             </div>
         </g:if>
@@ -387,8 +389,11 @@
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control"
+                       data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete"
+                       value="${submitButtonText}" ${submitDisabled}/>
             </div>
         </g:else>
     </g:form>
