@@ -857,6 +857,10 @@ class AjaxHtmlController {
             else if (key[0] == 'myInstitution') {
                 result.workflow = WfWorkflow.get (key[1] ) // TODO
             }
+            else if (key[0] == 'dashboard') {
+                result.workflow = WfWorkflow.get (key[1] )
+                result.tmplFormUrl  = createLink(controller: 'myInstitution', action: 'dashboard')
+            }
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )

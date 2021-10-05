@@ -70,8 +70,11 @@
                                     <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 </label>
 
+                                <div>
+                                    <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
+                                </div>
+                                <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
-
                                 <div class="ui accordion">
                                     <div class="title">
                                         <i class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
@@ -100,6 +103,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                --%>
 
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
@@ -163,12 +167,18 @@
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
-                                <i class="gift icon"></i>
-                                <g:link controller="packageDetails" action="show" target="_blank"
-                                        id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                                <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
-                                <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
-                                <br />
+                                <label>
+                                    <i class="gift icon"></i>
+                                    <g:link controller="packageDetails" action="show" target="_blank"
+                                            id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                </label>
+
+                                <div>
+                                    <g:link controller="subscription" action="index" id="${targetObject?.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
+                                </div>
+                                <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
 
                                 <div class="ui accordion">
@@ -192,6 +202,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                --%>
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
 

@@ -7,9 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
 
 3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
+
+3895    04.10.2021  rc-2.2  2.2         Moe     Bug         Adressbuch nicht aufrufbar
+
+3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
+
+--      30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Sortierung bei Titelumfrage-Auflistung korrigiert
+
+3878    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht         
+
+3873    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         500er bei Eingabe von IP-Adresse
+
+3838    30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Umstrukturierung des Titelübertrages zwischen zwei Lizenzen
+
+3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
+
+3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
+
+3863    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     neue Spakte we:kb-gepflegt in Anbieterlisten
+
+3862    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Kostendarstellung auf Lizenzübersichtsseite angepasst
+
+3855    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Titelvergleich wieder lauffähig gemacht
 
 3867    28.09.2021  rc-2.2  2.2-RC      Moe     Bug         Rechter von Benutzern in Meine Lizenzverwaltung
 

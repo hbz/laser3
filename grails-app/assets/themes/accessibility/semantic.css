@@ -6150,7 +6150,7 @@ i.icon.la-list-icon:before {
          Theme Overrides
 *******************************/
 
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-width: 1290px) {
   .ui.container {
     width: 1220px;
   }
@@ -13678,6 +13678,10 @@ i.icon.la-open {
   font-family: 'icomoon';
 }
 
+i.icon.la-thumbtack-regular {
+  font-family: 'icomoon';
+}
+
 i.icon.la-consortia {
   font-family: 'icomoon';
 }
@@ -13776,6 +13780,10 @@ i.icon.la-greater-than-equal:before {
 
 i.icon.la-open:before {
   content: "\e915";
+}
+
+i.icon.la-thumbtack-regular:before {
+  content: "\e916";
 }
 
 i.icon.la-consortia:before {
@@ -16447,6 +16455,7 @@ a.ui.basic.label:hover {
   border-radius: 0 !important;
   z-index: 999;
   padding: 0.2em;
+  font-size: 2.5rem;
 }
 /*!
  * # Semantic UI 2.4.2 - List
