@@ -89,8 +89,8 @@ class PendingChangeController  {
                 if(spID) {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
                     Set<PendingChange> pendingChanges = []
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId))",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.tippCoverage = pc.tippCoverage and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId))",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id]))
 
                     pendingChanges.each { PendingChange pc ->
                         log.info("processing change ${pc}")

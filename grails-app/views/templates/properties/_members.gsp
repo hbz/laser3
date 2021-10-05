@@ -21,7 +21,7 @@
             <tr>
                 <td>
                     <g:if test="${editable == true && subscription}">
-                        <g:link action="propertiesMembers" params="${[id:subscription.id,filterPropDef:genericOIDService.getOID(propType)]}" >
+                        <g:link controller="subscription" action="membersSubscriptionsManagement" params="${[id:subscription.id, propertiesFilterPropDef:genericOIDService.getOID(propType), tab: 'properties']}" >
                             <g:if test="${propType.getI10n('expl') != null && !propType.getI10n('expl').contains(' °')}">
                                 ${propType.getI10n('name')}
                                 <g:if test="${propType.getI10n('expl')}">

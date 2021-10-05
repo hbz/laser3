@@ -212,11 +212,11 @@ class ExportClickMeService {
                     label: 'License',
                     message: 'license.label',
                     fields: [
-                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'default.status.label'],
+                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
                             'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
-                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'license.startDate.label'],
-                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'license.endDate.label'],
+                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                             'license.openEnded'         : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                     ]
             ],
@@ -225,10 +225,10 @@ class ExportClickMeService {
                     label: 'Provider',
                     message: 'default.provider.label',
                     fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'org.url.label'],
+                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
                             'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
                             'provider.platforms.url'         : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
                     ]
@@ -238,10 +238,10 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'org.url.label'],
+                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -1504,8 +1504,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.postAdress') {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }
-                else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantProperty.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
@@ -1764,13 +1765,13 @@ class ExportClickMeService {
 
                 ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
                 ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
 
-                println(currentSemester.value_de)
-                println(readerNumberStudents)
-                if(readerNumberStudents || readerNumberStaff){
+                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                     row.add([field: currentSemester.getI10n('value'), style: null])
                     row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                     row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                 }else{
                     boolean nextSemester = false
 
@@ -1782,15 +1783,18 @@ class ExportClickMeService {
                         if (nextSemester) {
                             readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
                             readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
-                            if (readerNumberStudents || readerNumberStaff) {
+                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
                                 row.add([field: refdataValueList[count].getI10n('value'), style: null])
                                 row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                                 row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                                 break
                             }
                         }
                     }
-                    if(!readerNumberStudents && !readerNumberStaff){
+                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                        row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
@@ -1806,10 +1810,13 @@ class ExportClickMeService {
 
                 BigDecimal sum = 0
                 if(readerNumberStudents){
-                    sum = sum + readerNumberStudents.value
+                    sum = sum + (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
                 }
                 if(readerNumberStaff){
-                    sum = sum + readerNumberStaff.value
+                    sum = sum + (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
+                }
+                if(readerNumberFTE){
+                    sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
                 row.add([field: sum, style: null])
 
@@ -1857,6 +1864,7 @@ class ExportClickMeService {
                     titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
                     titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"
                     titles << RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_FTE."${localizedValue}"
                     titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
                     titles << RDStore.READER_NUMBER_USER."${localizedValue}"
                     titles << messageSource.getMessage('readerNumber.sum.label', null, locale)

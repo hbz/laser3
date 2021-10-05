@@ -4,8 +4,8 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -72,13 +72,13 @@ class IssueEntitlementExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         IssueEntitlement ie = obj as IssueEntitlement
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -90,28 +90,8 @@ class IssueEntitlementExport extends BaseExport {
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) as String )
                 }
-                else if (IssueEntitlement.getDeclaredField(key).getType() == Date) {
-                    if (ie.getProperty(key)) {
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                        content.add( sdf.format( ie.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (IssueEntitlement.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (ie.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (ie.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
                 else {
-                    content.add( ie.getProperty(key) as String )
+                    content.add( BaseExportHelper.getPropertyFieldContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
                 }
             }
             // --> generic refdata

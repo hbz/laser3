@@ -76,7 +76,7 @@
 
     <g:form action="${actionName}" params="[tab: params.tab]" data-confirm-id="processLinkPackagesMembers_form"
             method="post"
-            class="ui form">
+            class="ui form packagesForm">
         <g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -215,7 +215,7 @@
                                     <span data-position="top right"
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack grey la-rotate icon"></i>
+                                        <i class="grey la-thumbtack-regular icon"></i>
                                     </span>
                                 </g:if>
 
@@ -316,6 +316,22 @@
           }
         });
       }
+
+    $('.packagesForm').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            noSubscription: {
+                identifier: 'selectedSubs',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
+                    }
+                ]
+            }
+        }
+    });
 </laser:script>
 
 

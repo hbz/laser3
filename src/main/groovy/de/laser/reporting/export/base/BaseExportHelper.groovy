@@ -10,11 +10,31 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 
 import java.text.SimpleDateFormat
 import java.time.Year
 
 abstract class BaseExportHelper {
+
+    static def getPropertyFieldContent(Object obj, String field, Class type) {
+
+        def content = obj.getProperty(field)
+
+        if (type in [boolean, Boolean]) {
+            if (obj.getProperty(field) == true) {
+                content = RDStore.YN_YES.getI10n('value')
+            }
+            else if (obj.getProperty(field) == false) {
+                content = RDStore.YN_NO.getI10n('value')
+            }
+            else {
+                content = ''
+            }
+        }
+        // println field + ' >> ' + content + ' : ' + content?.class
+        content
+    }
 
     static String getFileName(List<String> labels = ['Reporting']) {
 

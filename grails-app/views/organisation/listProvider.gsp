@@ -69,7 +69,7 @@
                 <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: orgList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'country']
+                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'country']
                       ]"/>
             </g:if>
             <g:else>

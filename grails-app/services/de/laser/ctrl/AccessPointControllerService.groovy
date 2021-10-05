@@ -50,6 +50,8 @@ class AccessPointControllerService {
             }
             catch (InvalidRangeException e) {
                 invalidRanges << range
+            } catch (NumberFormatException e) {
+                invalidRanges << range
             }
         }
         // persist all valid ranges

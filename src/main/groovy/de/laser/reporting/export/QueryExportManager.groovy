@@ -1,15 +1,21 @@
 package de.laser.reporting.export
 
+import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.myInstitution.base.BaseConfig
+import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.SimpleDateFormat
 
 class QueryExportManager {
 
@@ -25,7 +31,7 @@ class QueryExportManager {
     static List exportAsList(BaseQueryExport export, String format) {
 
         List rows = []
-        Map<String, Object> data = export.getData()
+        Map<String, Object> data = export.getDataResult()
 
         println '-------------------------'
         println export
@@ -33,13 +39,13 @@ class QueryExportManager {
 
         if (format == 'csv') {
             rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
-            data.rows.each { row ->
+            data.rows.each { List<Object> row ->
                 rows.add( buildRowCSV( row ) )
             }
         }
         else if (format == 'pdf') {
             rows.add( data.cols )
-            data.rows.each { row ->
+            data.rows.each { List<Object> row ->
                 rows.add( buildRowPDF( row ) )
             }
         }
@@ -53,56 +59,108 @@ class QueryExportManager {
         }
     }
 
-    static String buildRowCSV(List<String> content) {
+    static String buildRowCSV(List<Object> row) {
 
-        content.collect{ it ->
+        row.collect{ col ->
             boolean enclose = false
-            if (! it) {
+            if (! col) {
                 return ''
             }
-            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
-                enclose = true
+            if (col instanceof String) {
+                if (col.contains(BaseExport.CSV_FIELD_QUOTATION)) {
+                    col = col.replaceAll(BaseExport.CSV_FIELD_QUOTATION, BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
+                    enclose = true
+                }
+                if (enclose || col.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
+                    return BaseExport.CSV_FIELD_QUOTATION + col.trim() + BaseExport.CSV_FIELD_QUOTATION
+                }
             }
-            if (enclose || it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
-                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
+            else if (col instanceof Date) {
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                return sdf.format(col)
             }
-            return it.trim()
+            else {
+                col = col.toString()
+            }
+
+            return col.trim()
         }.join( BaseExport.CSV_FIELD_SEPARATOR )
     }
 
-    static List<String> buildRowPDF(List<String> content) {
+    static List<String> buildRowPDF(List<Object> row) {
 
-        content.collect{ it ->
-            if (! it) {
+        row.collect{ col ->
+            if (! col) {
                 return ''
             }
-            return it.trim()
+            if (col instanceof String) {
+                // ..
+            }
+            else if (col instanceof Date) {
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                return sdf.format(col)
+            }
+            else {
+                col = col.toString()
+            }
+            return col.trim()
         }
     }
 
     static Workbook buildXLSX(BaseQueryExport export) {
 
-        Map<String, Object> data = export.getData()
+        Map<String, Object> data = export.getDataResult()
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
 
+        Locale locale = LocaleContextHolder.getLocale()
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+
+        CreationHelper createHelper = workbook.getCreationHelper()
+        short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )
+        short currFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( 'default.decimal.format', null, locale ) ) // ? todo check format
+
+        CellStyle wrapStyle = workbook.createCellStyle()
+        wrapStyle.setWrapText(true)
+        wrapStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+
+        CellStyle dateStyle = workbook.createCellStyle()
+        dateStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        dateStyle.setDataFormat( dateFormat )
+
+        CellStyle currStyle = workbook.createCellStyle()
+        currStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        currStyle.setDataFormat( currFormat )
 
         data.rows.eachWithIndex { row, idx ->
 
             Row entry = sheet.createRow(idx+1)
-            row.eachWithIndex{ str, i ->
+            row.eachWithIndex{ v, i ->
                 Cell cell = entry.createCell(i)
                 cell.setCellStyle(cellStyle)
 
-                if (str == null) {
+                if (v == null) {
                     cell.setCellValue('')
                 }
                 else {
-                    cell.setCellValue( str.trim() )
+                    if (v instanceof String) {
+                        cell.setCellValue(v.trim())
+                    }
+                    else if (v instanceof Date) {
+                        cell.setCellStyle(dateStyle)
+                        cell.setCellValue(v)
+                    }
+                    else if (v instanceof Double) {
+                        cell.setCellStyle(currStyle)
+                        cell.setCellValue(v)
+                    }
+                    else {
+                        cell.setCellValue( v ) // raw
+                    }
                 }
                 sheet.autoSizeColumn(i)
             }

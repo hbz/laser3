@@ -160,6 +160,19 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                        <g:if test="${surveyConfig.surveyProperties}">
+                            <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                                <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
+                                    <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                              data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                                <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                            </g:if>
+
                         <g:each in="${propList.sort { it.name }}" var="surveyProperty">
                             <th>${surveyProperty.getI10n('name')}
                                 <g:if test="${surveyProperty.getI10n('expl')}">
@@ -170,6 +183,7 @@
                                 </g:if>
                             </th>
                         </g:each>
+                        </g:if>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <th>${message(code: 'surveyResult.commentOnlyForOwner')}
@@ -197,7 +211,14 @@
 
                 <g:set var="participant"
                        value="${surveyOrg.org}"/>
-                <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
+                    <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                        <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
+                        <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                    </g:if>
+                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                </g:if>
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
@@ -278,68 +299,20 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
-                                <td>
-                                    <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
-
-                                        <g:message code="surveyOrg.perennialTerm.available"/>
-
-                                        <g:if test="${resultProperty.comment}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="right center"
-                                                  data-content="${resultProperty.comment}">
-                                                <i class="question circle icon"></i>
-                                            </span>
-                                        </g:if>
-                                    </g:if>
-                                    <g:else>
-
-                                        <g:if test="${resultProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
-                                        </g:if>
-                                        <g:elseif test="${resultProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
-                                                             overwriteEditable="${overwriteEditable}"
-                                                             class="la-overflow la-ellipsis"/>
-                                            <g:if test="${resultProperty.urlValue}">
-                                                <semui:linkIcon/>
-                                            </g:if>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${resultProperty}" type="text"
-                                                                    field="refValue"
-                                                                    config="${resultProperty.type.refdataCategory}"/>
-                                        </g:elseif>
-                                        <g:if test="${resultProperty.comment}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="right center"
-                                                  data-content="${resultProperty.comment}">
-                                                <i class="question circle icon"></i>
-                                            </span>
-                                        </g:if>
-
-                                        <g:if test="${resultProperty.type.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty.getResult() == RDStore.YN_NO.getI10n('value')}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="top right"
-                                                  data-variation="tiny"
-                                                  data-content="${message(code: 'surveyResult.particiption.terminated')}">
-                                                <i class="minus circle big red icon"></i>
-                                            </span>
-                                        </g:if>
-
-                                    </g:else>
-
-                                </td>
-                            </g:each>
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:if>
+                                <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
+                            </g:if>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                             <td>
@@ -410,16 +383,31 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                        <g:each in="${propList.sort { it.name }}" var="surveyProperty">
-                            <th>${surveyProperty.getI10n('name')}
-                                <g:if test="${surveyProperty.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${surveyProperty.getI10n('expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
-                            </th>
-                        </g:each>
+                        <g:if test="${surveyConfig.surveyProperties}">
+                            <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                                <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
+                                    <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                              data-position="right center"
+                                              data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                                <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                            </g:if>
+                            <g:each in="${propList.sort { it.name }}" var="surveyProperty">
+                                <th>${surveyProperty.getI10n('name')}
+                                    <g:if test="${surveyProperty.getI10n('expl')}">
+                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                              data-position="right center"
+                                              data-content="${surveyProperty.getI10n('expl')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </g:if>
+                                </th>
+                            </g:each>
+                        </g:if>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <th>${message(code: 'surveyResult.commentOnlyForOwner')}
@@ -447,7 +435,15 @@
 
                 <g:set var="participant"
                        value="${surveyOrg.org}"/>
-                <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+
+                <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
+                    <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
+                    <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
+                        <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
+                    </g:if>
+                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                </g:if>
 
                 <tr>
                     <g:if test="${showCheckbox}">
@@ -530,68 +526,18 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
-                                <td>
-                                    <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
-
-                                        <g:message code="surveyOrg.perennialTerm.available"/>
-
-                                        <g:if test="${resultProperty.comment}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="right center"
-                                                  data-content="${resultProperty.comment}">
-                                                <i class="question circle icon"></i>
-                                            </span>
-                                        </g:if>
-                                    </g:if>
-                                    <g:else>
-
-                                        <g:if test="${resultProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
-                                        </g:if>
-                                        <g:elseif test="${resultProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
-                                                             overwriteEditable="${overwriteEditable}"
-                                                             class="la-overflow la-ellipsis"/>
-                                            <g:if test="${resultProperty.urlValue}">
-                                                <semui:linkIcon/>
-                                            </g:if>
-                                        </g:elseif>
-                                        <g:elseif test="${resultProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${resultProperty}" type="text"
-                                                                    field="refValue"
-                                                                    config="${resultProperty.type.refdataCategory}"/>
-                                        </g:elseif>
-                                        <g:if test="${resultProperty.comment}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="right center"
-                                                  data-content="${resultProperty.comment}">
-                                                <i class="question circle icon"></i>
-                                            </span>
-                                        </g:if>
-
-                                        <g:if test="${resultProperty.type.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && resultProperty.getResult() == RDStore.YN_NO.getI10n('value')}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="top right"
-                                                  data-variation="tiny"
-                                                  data-content="${message(code: 'surveyResult.particiption.terminated')}">
-                                                <i class="minus circle big red icon"></i>
-                                            </span>
-                                        </g:if>
-
-                                    </g:else>
-
-                                </td>
-                            </g:each>
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:if>
+                                <g:each in="${surResults}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
+                            </g:if>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                             <td>

@@ -583,6 +583,27 @@ class ControlledListService {
         titleTypes
     }
 
+    Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<RefdataValue> coverageDepths = []
+
+        coverageDepths.addAll(RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) ", [pkg: pkg, status: tippStatus]))
+
+        coverageDepths
+    }
+
+    Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<RefdataValue> coverageDepths = []
+
+        if(subscription.packages){
+            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) ", [pkg: subscription.packages.pkg])
+        }
+
+        coverageDepths
+    }
+
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)

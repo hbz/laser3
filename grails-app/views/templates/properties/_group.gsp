@@ -247,10 +247,10 @@
                         <g:else>
                             <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack grey la-rotate"></i></span>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class=icon thumbtack grey"></i></span>
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
                                 </g:else>
                             </g:if>
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
