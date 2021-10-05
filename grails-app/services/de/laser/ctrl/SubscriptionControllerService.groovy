@@ -1897,13 +1897,16 @@ class SubscriptionControllerService {
         RefdataValue oldStatus = ie.status
         ie.status = RDStore.TIPP_STATUS_DELETED
         if(ie.save()){
-            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
-            {
-                return [result:null,status:STATUS_OK]
-            }else {
-                ie.status = oldStatus
-                ie.save()
-                return [result:null,status:STATUS_ERROR]
+            if(IssueEntitlementGroupItem.findByIe(ie)) {
+                if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
+                    return [result: null, status: STATUS_OK]
+                } else {
+                    ie.status = oldStatus
+                    ie.save()
+                    return [result: null, status: STATUS_ERROR]
+                }
+            }else{
+                return [result: null, status: STATUS_OK]
             }
         }
         else {

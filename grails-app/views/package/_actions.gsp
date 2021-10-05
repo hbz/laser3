@@ -26,7 +26,7 @@
 </semui:actionsDropdown>
 
 <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-    <semui:modal id="linkToSubModal" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
+    <semui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
 
