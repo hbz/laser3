@@ -157,6 +157,7 @@ class DetailsExportManager {
             }
         }
         cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
+        ici = ici.reverse()
 
         List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
         if (hideEmptyResults) {
