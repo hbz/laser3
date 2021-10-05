@@ -99,7 +99,7 @@
                         </p>
                         <p>
                             <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults" id="hideEmptyResults-csv" />
+                                <input type="checkbox" name="hideEmptyResults-csv" id="hideEmptyResults-csv" />
                                 <label for="hideEmptyResults-csv">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
                         </p>
@@ -111,7 +111,7 @@
                         </p>
                         <p>
                             <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults" id="hideEmptyResults-xlsx" />
+                                <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
                                 <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
                             <br />
@@ -127,7 +127,7 @@
                         </p>
                         <p>
                             <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults" id="hideEmptyResults-pdf" />
+                                <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
                                 <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
                         </p>

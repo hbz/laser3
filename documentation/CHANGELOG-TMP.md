@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
+
+3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
+
 3867    28.09.2021  rc-2.2  2.2-RC      Moe     Bug         Rechter von Benutzern in Meine Lizenzverwaltung
 
 3866    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Menüpunkt "Merkmale in Objekten verwalten" war für INST_USERs erreichbar
