@@ -95,13 +95,25 @@
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
                             ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
-                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
+                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span> <br />
+                        </p>
+                        <p>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-csv" id="hideEmptyResults-csv" />
+                                <label for="hideEmptyResults-csv">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
                         </p>
                     </div>
                     <div id="fileformat-xlsx" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
                         <p>
-                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
+                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')} <br />
+                        </p>
+                        <p>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
+                                <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
                             <br />
                             <br />
                             <span class="ui label orange">Funktionalität in Entwicklung</span>
@@ -112,6 +124,12 @@
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
                             ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
+                        </p>
+                        <p>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
+                                <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
                         </p>
                     </div>
 

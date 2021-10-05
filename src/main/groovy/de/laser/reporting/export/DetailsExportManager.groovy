@@ -41,49 +41,81 @@ class DetailsExportManager {
         ExportLocalHelper.createExport( token, selectedFields )
     }
 
-    static List exportAsList(BaseExport export, String format, List<Long> idList) {
+    static List exportAsList(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
 
         List rows = []
 
+        List objList = resolveObjectList( export, idList )
+        Map<String, Object> fields = export.getSelectedFields()
+        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
+
         if (format == 'csv') {
-            rows.add( buildRowCSV(
-                    export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
-            ) )
-            rows.addAll( buildCSV(export, idList) )
+            List<List<String>> csv
+            List<Integer> ici
+            (csv, ici) = buildCSV(export, objList, fields)
+
+            if (hideEmptyResults) {
+                ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
+            }
+            rows.add( cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+
+            csv.each { row ->
+                if (hideEmptyResults) {
+                    ici.each { i -> row.removeAt(i) }
+                }
+                rows.add( row.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+            }
         }
         else if (format == 'pdf') {
-            rows.add( buildRowPDF(
-                    export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
-            ) )
-            rows.addAll( buildPDF(export, idList) )
-        }
-        rows
-    }
+            List<List<List<String>>> pdf
+            List<Integer> ici
+            (pdf, ici) = buildPDF(export, objList, fields)
 
-    static Workbook exportAsWorkbook(BaseExport export, String format, List<Long> idList) {
+            if (hideEmptyResults) {
+                ici.each { i -> /* println 'Export PDF ignored: ' + cols[i]; */ cols.removeAt(i) }
+            }
+            rows.add( buildRowAsPDF(cols) )
 
-        if (format == 'xlsx') {
-            buildXLSX(export, idList)
-        }
-    }
-
-    static List<String> buildCSV(BaseExport export, List<Long> idList) {
-
-        List<String> rows = []
-        Map<String, Object> fields = export.getSelectedFields()
-
-        List objList = resolveIdList( export, idList )
-
-        objList.eachWithIndex { obj, i ->
-            List<String> row = export.getObject( obj, fields )
-            if (row) {
-                rows.add( buildRowCSV( row ) )
+            pdf.each { row ->
+                if (hideEmptyResults) {
+                    ici.each { i -> row.removeAt(i) }
+                }
+                rows.add( row )
             }
         }
         rows
     }
 
-    static String buildRowCSV(List<String> content) {
+    static Workbook exportAsWorkbook(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+
+        List objList = resolveObjectList( export, idList )
+
+        if (format == 'xlsx') {
+            buildXLSX(export, objList, export.getSelectedFields(), hideEmptyResults)
+        }
+    }
+
+    static List buildCSV(BaseExport export, List objList, Map<String, Object> fields) {
+
+        List<List<String>> rows = []
+        List<Integer> ici = []
+
+        Integer[] cc = new Integer[fields.size()].collect{ 0 }
+
+        objList.each{ obj ->
+            List<String> row = export.getObject( obj, fields )
+            if (row) {
+                List<String> cols = buildRowAsCSV( row )
+                cols.eachWithIndex{ c, i -> if (c) { cc[i]++ } }
+                rows.add( cols )
+            }
+        }
+        cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
+
+        [rows, ici.reverse()]
+    }
+
+    static List<String> buildRowAsCSV(List<String> content) {
 
         content.collect{it ->
             boolean enclose = false
@@ -98,13 +130,10 @@ class DetailsExportManager {
                 return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
-        }.join( BaseExport.CSV_FIELD_SEPARATOR )
+        }
     }
 
-    static Workbook buildXLSX(BaseExport export, List<Long> idList) {
-
-        Map<String, Object> fields = export.getSelectedFields()
-        List objList = resolveIdList( export, idList )
+    static Workbook buildXLSX(BaseExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
@@ -116,24 +145,53 @@ class DetailsExportManager {
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
 
-        objList.eachWithIndex { obj, idx ->
+        List<List<String>> rows = []
+        List<Integer> ici = []
+        Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
-            List<String> strList = export.getObject(obj, fields)
-            if (strList) {
-                Row entry = sheet.createRow(idx+1)
-                strList.eachWithIndex{ str, i ->
+        objList.each{ obj ->
+            List<String> row = export.getObject(obj, fields)
+            if (row) {
+                rows.add( row )
+                row.eachWithIndex{ col, i -> if (col) { cc[i]++ } }
+            }
+        }
+        cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
+        ici = ici.reverse()
+
+        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
+        if (hideEmptyResults) {
+            ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
+        }
+
+        Row header = sheet.createRow(0)
+        cols.eachWithIndex{ col, idx ->
+            Cell headerCell = header.createCell(idx)
+            headerCell.setCellStyle(cellStyle)
+            headerCell.setCellValue(col)
+            sheet.autoSizeColumn(idx)
+        }
+
+        rows.eachWithIndex { row, idx ->
+            if (hideEmptyResults) {
+                ici.each { i -> row.removeAt(i) }
+            }
+            if (row) {
+                Row entry = sheet.createRow(idx + 1)
+                row.eachWithIndex { col, i ->
                     Cell cell = entry.createCell(i)
                     cell.setCellStyle(cellStyle)
 
-                    if (str == null) {
+                    if (col == null) {
                         cell.setCellValue('')
                     }
                     else {
-                        if (str.contains( BaseExport.CSV_VALUE_SEPARATOR )) {
-                            cell.setCellValue( str.split( BaseExport.CSV_VALUE_SEPARATOR ).collect {it.trim() }.join('\r\n') )
+                        if (col.contains(BaseExport.CSV_VALUE_SEPARATOR)) {
+                            cell.setCellValue(col.split(BaseExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
                             cell.setCellStyle(wrapStyle)
-                        } else {
-                            cell.setCellValue( str.trim() )
+                        }
+                        else {
+                            cell.setCellValue(col.trim())
                         }
                     }
                     sheet.autoSizeColumn(i)
@@ -141,35 +199,30 @@ class DetailsExportManager {
             }
         }
 
-        Row header = sheet.createRow(0)
-
-        fields.collect{it -> export.getFieldLabel(it.key as String) }.eachWithIndex{ row, idx ->
-            Cell headerCell = header.createCell(idx)
-            headerCell.setCellStyle(cellStyle)
-            headerCell.setCellValue(row)
-            sheet.autoSizeColumn(idx)
-        }
-
         workbook
     }
 
-    static List<List<List<String>>> buildPDF(BaseExport export, List<Long> idList) {
+    static List buildPDF(BaseExport export, List objList, Map<String, Object> fields) {
 
         List<List<List<String>>> rows = []
-        Map<String, Object> fields = export.getSelectedFields()
+        List<Integer> ici = []
 
-        List objList = resolveIdList( export, idList )
+        Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
-        objList.eachWithIndex { obj, i ->
+        objList.each{ obj ->
             List<String> row = export.getObject(obj, fields)
             if (row) {
-                rows.add( buildRowPDF( row ) )
+                List<List<String>> cols = buildRowAsPDF( row )
+                cols.eachWithIndex{ c, i -> if (c.first()) { cc[i]++ } }
+                rows.add( cols )
             }
         }
-        rows
+        cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
+
+        [rows, ici.reverse()]
     }
 
-    static List<List<String>> buildRowPDF(List<String> content) {
+    static List<List<String>> buildRowAsPDF(List<String> content) {
 
         content.collect{it ->
             if (it == null) {
@@ -179,7 +232,7 @@ class DetailsExportManager {
         }
     }
 
-    static List<Object> resolveIdList(BaseExport export, List<Long> idList) {
+    static List<Object> resolveObjectList(BaseExport export, List<Long> idList) {
 
         List<Object> result = []
 

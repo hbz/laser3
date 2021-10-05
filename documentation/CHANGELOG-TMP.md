@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
+
+3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
+
 3895    04.10.2021  rc-2.2  2.2         Moe     Bug         Adressbuch nicht aufrufbar
 
 3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns

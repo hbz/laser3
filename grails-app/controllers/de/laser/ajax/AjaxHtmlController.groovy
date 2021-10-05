@@ -571,7 +571,7 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
-                List<String> rows = DetailsExportManager.exportAsList(export, 'csv', detailsCache.idList as List<Long>)
+                List<String> rows = DetailsExportManager.exportAsList(export, detailsCache.idList as List<Long>, 'csv', params.containsKey('hideEmptyResults-csv'))
 
                 ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
@@ -586,7 +586,7 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
                 response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-                Workbook wb = DetailsExportManager.exportAsWorkbook(export, 'xlsx', detailsCache.idList as List<Long>)
+                Workbook wb = DetailsExportManager.exportAsWorkbook(export, detailsCache.idList as List<Long>, 'xlsx', params.containsKey('hideEmptyResults-xlsx'))
 
                 ServletOutputStream out = response.outputStream
                 wb.write(out)
@@ -594,7 +594,7 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
 
-                List<List<String>> content = DetailsExportManager.exportAsList(export, 'pdf', detailsCache.idList as List<Long>)
+                List<List<String>> content = DetailsExportManager.exportAsList(export, detailsCache.idList as List<Long>, 'pdf', params.containsKey('hideEmptyResults-pdf'))
                 Map<String, Object> struct = [:]
 
                 String view = ''
