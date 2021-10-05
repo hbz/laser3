@@ -1005,7 +1005,7 @@ class DataloadService {
                                     log.debug("processed ${total} records (${domain.name})")
                                     latest_ft_record.lastTimestamp = highest_timestamp
                                     latest_ft_record.save()
-                                    session.flush()
+                                    //session.flush()
                                 }
                             }
 

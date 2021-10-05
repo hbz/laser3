@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
+
+3891    04.10.2021  rc-2.2  2.2.1         Moe   Bug         Titel löschen aus Bestand Fehler
+
 3895    04.10.2021  rc-2.2  2.2         Moe     Bug         Adressbuch nicht aufrufbar
 
 3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
