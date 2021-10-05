@@ -4,6 +4,7 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
@@ -12,13 +13,16 @@ import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.myInstitution.base.BaseConfig
+import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
 
 class DetailsExportManager {
 
@@ -73,7 +77,7 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            List<String> row = export.getObject( obj, fields )
+            List<String> row = export.getObject( obj, fields ).collect{ it as String } // TODO date, double, etc
             if (row) {
                 rows.add( buildRowCSV( row ) )
             }
@@ -107,6 +111,13 @@ class DetailsExportManager {
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
 
+        Locale locale = LocaleContextHolder.getLocale()
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+
+        CreationHelper createHelper = workbook.getCreationHelper()
+        short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )
+        short currFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( 'default.decimal.format', null, locale ) ) // ? todo check format
+
         CellStyle wrapStyle = workbook.createCellStyle()
         wrapStyle.setWrapText(true)
         wrapStyle.setVerticalAlignment( VerticalAlignment.CENTER )
@@ -114,24 +125,46 @@ class DetailsExportManager {
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
 
+        CellStyle dateStyle = workbook.createCellStyle()
+        dateStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        dateStyle.setDataFormat( dateFormat )
+
+        CellStyle currStyle = workbook.createCellStyle()
+        currStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        currStyle.setDataFormat( currFormat )
+
         objList.eachWithIndex { obj, idx ->
 
-            List<String> strList = export.getObject(obj, fields)
-            if (strList) {
+            List<Object> values = export.getObject( obj, fields )
+            if (values) {
                 Row entry = sheet.createRow(idx+1)
-                strList.eachWithIndex{ str, i ->
+                values.eachWithIndex{ v, i ->
                     Cell cell = entry.createCell(i)
                     cell.setCellStyle(cellStyle)
 
-                    if (str == null) {
+                    if (v == null) {
                         cell.setCellValue('')
                     }
                     else {
-                        if (str.contains( BaseExport.CSV_VALUE_SEPARATOR )) {
-                            cell.setCellValue( str.split( BaseExport.CSV_VALUE_SEPARATOR ).collect {it.trim() }.join('\r\n') )
-                            cell.setCellStyle(wrapStyle)
-                        } else {
-                            cell.setCellValue( str.trim() )
+                        if (v instanceof String) {
+                            if (v.contains(BaseExport.CSV_VALUE_SEPARATOR)) {
+                                cell.setCellStyle(wrapStyle)
+                                cell.setCellValue(v.split(BaseExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
+                            }
+                            else {
+                                cell.setCellValue(v.trim())
+                            }
+                        }
+                        else if (v instanceof Date) {
+                            cell.setCellStyle(dateStyle)
+                            cell.setCellValue(v)
+                        }
+                        else if (v instanceof Double) {
+                            cell.setCellStyle(currStyle)
+                            cell.setCellValue(v)
+                        }
+                        else {
+                            cell.setCellValue(v) // raw
                         }
                     }
                     sheet.autoSizeColumn(i)
@@ -159,7 +192,7 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            List<String> row = export.getObject(obj, fields)
+            List<String> row = export.getObject( obj, fields ).collect{ it as String } // TODO date, double, etc
             if (row) {
                 rows.add( buildRowPDF( row ) )
             }

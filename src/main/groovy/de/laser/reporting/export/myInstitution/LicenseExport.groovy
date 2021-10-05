@@ -3,14 +3,13 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
-import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
-import java.text.SimpleDateFormat
 
 class LicenseExport extends BaseExport {
 
@@ -83,13 +82,13 @@ class LicenseExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         License lic = obj as License
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -101,28 +100,8 @@ class LicenseExport extends BaseExport {
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
                 }
-                else if (License.getDeclaredField(key).getType() == Date) {
-                    if (lic.getProperty(key)) {
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                        content.add( sdf.format( lic.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (License.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (lic.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (lic.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
                 else {
-                    content.add( lic.getProperty(key) as String )
+                    content.add( BaseExportHelper.getPropertyFieldContent(lic, key, License.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -155,8 +134,8 @@ class LicenseExport extends BaseExport {
                     content.add( count as String )
                 }
                 else if (key == '@ae-license-memberCount') {
-                    Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-                    content.add( count as String )
+                    int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                    content.add( count )
                 }
             }
             // --> custom query depending filter implementation

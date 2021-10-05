@@ -5,14 +5,13 @@ import de.laser.Identifier
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
-import java.text.SimpleDateFormat
 
 class SubscriptionExport extends BaseExport {
 
@@ -98,14 +97,14 @@ class SubscriptionExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         LinksGenerationService linksGenerationService = (LinksGenerationService) Holders.grailsApplication.mainContext.getBean('linksGenerationService')
 
         Subscription sub = obj as Subscription
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -117,28 +116,8 @@ class SubscriptionExport extends BaseExport {
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
                 }
-                else if (Subscription.getDeclaredField(key).getType() == Date) {
-                    if (sub.getProperty(key)) {
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                        content.add( sdf.format( sub.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (Subscription.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (sub.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (sub.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
                 else {
-                    content.add( sub.getProperty(key) as String)
+                    content.add( BaseExportHelper.getPropertyFieldContent(sub, key, Subscription.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
