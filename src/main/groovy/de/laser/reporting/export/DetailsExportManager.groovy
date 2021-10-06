@@ -176,11 +176,6 @@ class DetailsExportManager {
         cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
         ici = ici.reverse()
 
-        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
-        if (hideEmptyResults) {
-            ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
-        }
-
         rows.eachWithIndex { row, idx ->
             if (hideEmptyResults) {
                 ici.each { i -> row.removeAt(i) }
@@ -197,7 +192,12 @@ class DetailsExportManager {
 
         Row header = sheet.createRow(0)
 
-        fields.collect{it -> export.getFieldLabel(it.key as String) }.eachWithIndex{ row, idx ->
+        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
+        if (hideEmptyResults) {
+            ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
+        }
+
+        cols.eachWithIndex{ row, idx ->
             Cell headerCell = header.createCell(idx)
             headerCell.setCellStyle(cellStyle)
             headerCell.setCellValue(row)

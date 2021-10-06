@@ -1,6 +1,5 @@
 package de.laser.reporting.export
 
-import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
@@ -12,8 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-
-import java.text.SimpleDateFormat
 
 class QueryExportManager {
 
@@ -30,10 +27,6 @@ class QueryExportManager {
 
         List rows = []
         Map<String, Object> data = export.getQueriedData()
-
-        println '-------------------------'
-        println export
-        println data
 
         if (format == 'csv') {
             rows.add( data.cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
@@ -73,10 +66,11 @@ class QueryExportManager {
                     return BaseDetailsExport.CSV_FIELD_QUOTATION + col.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
                 }
             }
-            else if (col instanceof Date) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                return sdf.format(col)
-            }
+//            else if (col instanceof Date) {
+//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowCSV() ' + col + ' instanceof Date'
+//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+//                return sdf.format(col)
+//            }
             else {
                 col = col.toString()
             }
@@ -94,10 +88,11 @@ class QueryExportManager {
             if (col instanceof String) {
                 // ..
             }
-            else if (col instanceof Date) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                return sdf.format(col)
-            }
+//            else if (col instanceof Date) {
+//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowPDF() ' + col + ' instanceof Date'
+//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+//                return sdf.format(col)
+//            }
             else {
                 col = col.toString()
             }
