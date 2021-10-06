@@ -150,7 +150,10 @@ class User {
     }
 
     // TODO -> rename to getAffiliations() -> remove
-    @Deprecated
+    /**
+     * Gets all affiliations the user is authorised to
+     * @return unlike {@link #getAuthorizedOrgs}, this method delivers a {@link List} of {@link UserOrg} entries
+     */
     List<UserOrg> getAuthorizedAffiliations() {
         UserOrg.findAllByUser(this)
     }
