@@ -7,7 +7,8 @@ import javax.persistence.Transient
 
 /**
  * This M to N domain is being used to represent the different budget codes
- * Cost item has many budget codes and budget codes have many cost items
+ * {@link CostItem} has many {@link BudgetCode}s and budget codes have many cost items
+ * It is thus a grouping unit for {@link CostItem}s
  */
 class CostItemGroup {
 
@@ -26,8 +27,14 @@ class CostItemGroup {
       costItem    nullable: true
     }
 
+    /**
+     * Retrieves a list of {@link BudgetCode}s for dropdown selection
+     * @param params the query params passed for lookup
+     * @return a {@link List} of {@link Map}s[id: text] containing role ids and names
+     */
     @Transient
     static def refdataFind(GrailsParameterMap params) {
+        //used in AjaxJsonController.lookup() by generic access method
         List<Map<String, Object>> result = []
         Org owner = Org.findByShortcode(params.shortcode)
 
