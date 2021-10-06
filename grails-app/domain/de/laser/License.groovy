@@ -49,7 +49,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
     RefdataValue licenseCategory
 
+    /**
+     * the actual name of the license
+     */
     String reference
+    /**
+     * the sortable name of the license
+     */
     String sortableReference
 
     String noticePeriod
