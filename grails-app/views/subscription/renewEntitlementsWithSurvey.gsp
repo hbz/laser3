@@ -129,7 +129,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
                     counts="${countCurrentIEs}"/>
 
-    <g:if test="${surveyService.showStatisticByParticipant(subscription, subscriber)}">
+    <g:if test="${showStatisticByParticipant}">
         <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']"
                         text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"/>

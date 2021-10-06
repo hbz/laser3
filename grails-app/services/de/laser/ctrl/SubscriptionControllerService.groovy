@@ -1085,6 +1085,15 @@ class SubscriptionControllerService {
             }
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+            result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+            result.subscriberSubs = []
+            List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(result.subscriber, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
+            if(orgRoles){
+                result.subscriberSubs = orgRoles.sub
+            }
+
 
             if (result.editable) {
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
