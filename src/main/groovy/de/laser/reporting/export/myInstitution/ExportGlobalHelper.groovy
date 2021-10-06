@@ -3,19 +3,17 @@ package de.laser.reporting.export.myInstitution
 import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
 import de.laser.reporting.ReportingCache
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 
 
 
 class ExportGlobalHelper extends BaseExportHelper {
 
-    static BaseExport createExport(String token, Map<String, Object> selectedFields) {
+    static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
 
         String tmpl = getCachedExportStrategy( token )
 
@@ -102,11 +100,11 @@ class ExportGlobalHelper extends BaseExportHelper {
 
     // -----
 
-    static String getFieldLabel(BaseExport export, String fieldName) {
+    static String getFieldLabel(BaseDetailsExport export, String fieldName) {
 
         if ( isFieldMultiple(fieldName) ) {
-            //String label = BaseExport.CUSTOM_LABEL.get(fieldName)
-            String label = BaseExport.getMessage(fieldName)
+            //String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
+            String label = BaseDetailsExport.getMessage(fieldName)
 
             if (fieldName == 'x-identifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
@@ -135,8 +133,8 @@ class ExportGlobalHelper extends BaseExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseExport.CUSTOM_LABEL.contains(fieldName)) {
-            return BaseExport.getMessage(fieldName)
+        else if (BaseDetailsExport.CUSTOM_LABEL.contains(fieldName)) {
+            return BaseDetailsExport.getMessage(fieldName)
         }
 
         // --- adapter ---

@@ -4,16 +4,14 @@ import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-import java.text.SimpleDateFormat
-
-class OrgExport extends BaseExport {
+class OrgExport extends BaseDetailsExport {
 
     static String KEY = 'organisation'
 
@@ -74,7 +72,7 @@ class OrgExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -88,7 +86,7 @@ class OrgExport extends BaseExport {
     }
 
     @Override
-    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

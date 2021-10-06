@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport;" %>
+<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection />
 <!-- _queryModal.gsp -->
 
@@ -14,9 +14,9 @@
                         <div id="fileformat-csv" class="wide eight field">
                             <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                             <p>
-                                ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
-                                ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
-                                ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
+                                ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_SEPARATOR}</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_QUOTATION}</span> <br />
+                                ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_VALUE_SEPARATOR}</span>
                             </p>
                         </div>
                         <div id="fileformat-xlsx" class="wide eight field">

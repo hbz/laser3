@@ -4,14 +4,14 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.helper.DateUtils
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class IssueEntitlementExport extends BaseExport {
+class IssueEntitlementExport extends BaseDetailsExport {
 
     static String KEY = 'entitlement'
 
@@ -58,7 +58,7 @@ class IssueEntitlementExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -72,7 +72,7 @@ class IssueEntitlementExport extends BaseExport {
     }
 
     @Override
-    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

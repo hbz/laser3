@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.local.CostItemExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 
 class DetailsExportManager {
 
-    static BaseExport createExport(String token, String context) {
+    static BaseDetailsExport createExport(String token, String context) {
         if (context == BaseConfig.KEY_MYINST) {
             createGlobalExport(token, [:])
         }
@@ -39,15 +39,15 @@ class DetailsExportManager {
         }
     }
 
-    static BaseExport createGlobalExport(String token, Map<String, Object> selectedFields) {
+    static BaseDetailsExport createGlobalExport(String token, Map<String, Object> selectedFields) {
         ExportGlobalHelper.createExport( token, selectedFields )
     }
 
-    static BaseExport createLocalExport(String token, Map<String, Object> selectedFields) {
+    static BaseDetailsExport createLocalExport(String token, Map<String, Object> selectedFields) {
         ExportLocalHelper.createExport( token, selectedFields )
     }
 
-    static List exportAsList(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
 
         List rows = []
 
@@ -63,13 +63,13 @@ class DetailsExportManager {
             if (hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
-            rows.add( cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
                 if (hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
-                rows.add( row.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+                rows.add( row.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
             }
         }
         else if (format == 'pdf') {
@@ -92,7 +92,7 @@ class DetailsExportManager {
         rows
     }
 
-    static Workbook exportAsWorkbook(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static Workbook exportAsWorkbook(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
 
         List objList = resolveObjectList( export, idList )
 
@@ -101,7 +101,7 @@ class DetailsExportManager {
         }
     }
 
-    static List buildCSV(BaseExport export, List objList, Map<String, Object> fields) {
+    static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
         List<List<String>> rows = []
         List<Integer> ici = []
@@ -109,7 +109,7 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObjectResult( obj, fields ).collect{ it ->
+            List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
                 if (it instanceof Date) {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     return sdf.format(it)
@@ -135,18 +135,18 @@ class DetailsExportManager {
             if (! it) {
                 return ''
             }
-            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
+            if (it.contains( BaseDetailsExport.CSV_FIELD_QUOTATION )) {
+                it = it.replaceAll( BaseDetailsExport.CSV_FIELD_QUOTATION , BaseDetailsExport.CSV_FIELD_QUOTATION + BaseDetailsExport.CSV_FIELD_QUOTATION) // !
                 enclose = true
             }
-            if (enclose || it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
-                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
+            if (enclose || it.contains( BaseDetailsExport.CSV_FIELD_SEPARATOR )) {
+                return BaseDetailsExport.CSV_FIELD_QUOTATION + it.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
         }
     }
 
-    static Workbook buildXLSX(BaseExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
+    static Workbook buildXLSX(BaseDetailsExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
@@ -178,7 +178,7 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObject(obj, fields)
+            List<String> row = export.getDetailedObject(obj, fields)
             if (row) {
                 rows.add( row )
                 row.eachWithIndex{ col, i -> if (col) { cc[i]++ } }
@@ -207,9 +207,9 @@ class DetailsExportManager {
                     }
                     else {
                         if (v instanceof String) {
-                            if (v.contains(BaseExport.CSV_VALUE_SEPARATOR)) {
+                            if (v.contains(BaseDetailsExport.CSV_VALUE_SEPARATOR)) {
                                 cell.setCellStyle(wrapStyle)
-                                cell.setCellValue(v.split(BaseExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
+                                cell.setCellValue(v.split(BaseDetailsExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
                             }
                             else {
                                 cell.setCellValue(v.trim())
@@ -244,7 +244,7 @@ class DetailsExportManager {
         workbook
     }
 
-    static List buildPDF(BaseExport export, List objList, Map<String, Object> fields) {
+    static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
         List<List<List<String>>> rows = []
         List<Integer> ici = []
@@ -252,7 +252,7 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObjectResult( obj, fields ).collect{ it ->
+            List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
                 if (it instanceof Date) {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     return sdf.format(it)
@@ -277,11 +277,11 @@ class DetailsExportManager {
             if (it == null) {
                 return ['']
             }
-            return it.split(BaseExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
+            return it.split(BaseDetailsExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
         }
     }
 
-    static List<Object> resolveObjectList(BaseExport export, List<Long> idList) {
+    static List<Object> resolveObjectList(BaseDetailsExport export, List<Long> idList) {
 
         List<Object> result = []
 

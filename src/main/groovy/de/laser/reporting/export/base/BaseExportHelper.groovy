@@ -32,7 +32,7 @@ abstract class BaseExportHelper {
                 content = ''
             }
         }
-        // println field + ' >> ' + content + ' : ' + content?.class
+        println field + ' >> ' + content + ' : ' + content?.class
         content
     }
 
@@ -80,7 +80,7 @@ abstract class BaseExportHelper {
         return false
     }
 
-    static void normalizeSelectedMultipleFields(BaseExport export) {
+    static void normalizeSelectedMultipleFields(BaseDetailsExport export) {
 
         export.selectedExportFields.each {it ->
             if ( isFieldMultiple( it.key ) ) {

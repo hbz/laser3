@@ -1,7 +1,7 @@
 package de.laser.reporting.export
 
 import de.laser.helper.DateUtils
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.util.Holders
@@ -31,14 +31,14 @@ class QueryExportManager {
     static List exportAsList(BaseQueryExport export, String format) {
 
         List rows = []
-        Map<String, Object> data = export.getDataResult()
+        Map<String, Object> data = export.getQueriedData()
 
         println '-------------------------'
         println export
         println data
 
         if (format == 'csv') {
-            rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( data.cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
             data.rows.each { List<Object> row ->
                 rows.add( buildRowCSV( row ) )
             }
@@ -67,12 +67,12 @@ class QueryExportManager {
                 return ''
             }
             if (col instanceof String) {
-                if (col.contains(BaseExport.CSV_FIELD_QUOTATION)) {
-                    col = col.replaceAll(BaseExport.CSV_FIELD_QUOTATION, BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
+                if (col.contains(BaseDetailsExport.CSV_FIELD_QUOTATION)) {
+                    col = col.replaceAll(BaseDetailsExport.CSV_FIELD_QUOTATION, BaseDetailsExport.CSV_FIELD_QUOTATION + BaseDetailsExport.CSV_FIELD_QUOTATION) // !
                     enclose = true
                 }
-                if (enclose || col.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
-                    return BaseExport.CSV_FIELD_QUOTATION + col.trim() + BaseExport.CSV_FIELD_QUOTATION
+                if (enclose || col.contains( BaseDetailsExport.CSV_FIELD_SEPARATOR )) {
+                    return BaseDetailsExport.CSV_FIELD_QUOTATION + col.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
                 }
             }
             else if (col instanceof Date) {
@@ -84,7 +84,7 @@ class QueryExportManager {
             }
 
             return col.trim()
-        }.join( BaseExport.CSV_FIELD_SEPARATOR )
+        }.join( BaseDetailsExport.CSV_FIELD_SEPARATOR )
     }
 
     static List<String> buildRowPDF(List<Object> row) {
@@ -109,7 +109,7 @@ class QueryExportManager {
 
     static Workbook buildXLSX(BaseQueryExport export) {
 
-        Map<String, Object> data = export.getDataResult()
+        Map<String, Object> data = export.getQueriedData()
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )

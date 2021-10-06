@@ -8,13 +8,14 @@ import de.laser.finance.Invoice
 import de.laser.finance.Order
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class CostItemExport extends BaseExport {
+class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
@@ -27,7 +28,7 @@ class CostItemExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
@@ -76,7 +77,7 @@ class CostItemExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -92,6 +93,11 @@ class CostItemExport extends BaseExport {
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
 
+
+//                else {
+//                    content.add( BaseExportHelper.getPropertyFieldContent(org, key, Org.getDeclaredField(key).getType()) )
+//                }
+//
                 if (CostItem.getDeclaredField(key).getType() == Date) {
                     if (ci.getProperty(key)) {
                         content.add( sdf.format( ci.getProperty(key) ) as String )

@@ -4,14 +4,14 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.RDStore
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 
-class LicenseExport extends BaseExport {
+class LicenseExport extends BaseDetailsExport {
 
     static String KEY = 'license'
 
@@ -68,7 +68,7 @@ class LicenseExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -82,7 +82,7 @@ class LicenseExport extends BaseExport {
     }
 
     @Override
-    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

@@ -14,7 +14,7 @@ class QueryExport extends BaseQueryExport {
     }
 
     @Override
-    Map<String, Object> getDataResult() {
+    Map<String, Object> getQueriedData() {
 
         Map<String, Object> queryCache = ExportLocalHelper.getQueryCache( token )
 

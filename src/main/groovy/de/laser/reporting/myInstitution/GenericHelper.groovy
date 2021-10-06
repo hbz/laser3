@@ -2,7 +2,7 @@ package de.laser.reporting.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.base.AbstractBase
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
@@ -41,7 +41,7 @@ class GenericHelper {
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseExport.FIELD_TYPE_PROPERTY] ) {
+        if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {
             // LaserReportingTagLib:reportFilterProperty
 
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
@@ -50,7 +50,7 @@ class GenericHelper {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
         }
 
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseExport.FIELD_TYPE_REFDATA] ) {
+        if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
@@ -61,13 +61,13 @@ class GenericHelper {
             label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataAnnotation
         }
 
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
+        if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)
             label = customRdv.get('label')
         }
-        if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseExport.FIELD_TYPE_CUSTOM_IMPL] ) {
+        if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)

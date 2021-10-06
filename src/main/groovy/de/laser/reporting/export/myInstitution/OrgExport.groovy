@@ -19,7 +19,7 @@ import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
@@ -27,9 +27,7 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-import java.text.SimpleDateFormat
-
-class OrgExport extends BaseExport {
+class OrgExport extends BaseDetailsExport {
 
     static String KEY = 'organisation'
 
@@ -93,7 +91,7 @@ class OrgExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -107,7 +105,7 @@ class OrgExport extends BaseExport {
     }
 
     @Override
-    List<Object> getObjectResult(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
