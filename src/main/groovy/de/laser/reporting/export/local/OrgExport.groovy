@@ -4,15 +4,14 @@ import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-import java.text.SimpleDateFormat
-
-class OrgExport extends BaseExport {
+class OrgExport extends BaseDetailsExport {
 
     static String KEY = 'organisation'
 
@@ -73,7 +72,7 @@ class OrgExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -87,14 +86,14 @@ class OrgExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
 
         Org org = obj as Org
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -106,28 +105,8 @@ class OrgExport extends BaseExport {
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
-                else if (Org.getDeclaredField(key).getType() == Date) {
-                    if (org.getProperty(key)) {
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                        content.add( sdf.format( org.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (Org.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (org.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (org.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
                 else {
-                    content.add( org.getProperty(key) as String )
+                    content.add( BaseExportHelper.getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata

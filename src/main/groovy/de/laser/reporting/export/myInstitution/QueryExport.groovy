@@ -13,7 +13,8 @@ class QueryExport extends BaseQueryExport {
         this.token = token
     }
 
-    Map<String, Object> getData() {
+    @Override
+    Map<String, Object> getQueriedData() {
         Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
 
         Map<String, Object> result = [
@@ -28,13 +29,13 @@ class QueryExport extends BaseQueryExport {
 
             result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) )
             result.rows = data.collect{ e ->
-                [e.label.toString(), e.idList.size().toString()]
+                [e.label.toString(), e.idList.size()]
             }
         }
         else {
             result.cols.addAll( chart )
             result.rows = data.collect{ e ->
-                [e.label.toString(), e.value2.toString(), e.value1.toString()] // changed order
+                [e.label.toString(), e.value2, e.value1] // changed order
             }
         }
         result

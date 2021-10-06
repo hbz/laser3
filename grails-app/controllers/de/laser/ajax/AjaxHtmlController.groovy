@@ -39,7 +39,7 @@ import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.reporting.ReportingCache
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.export.local.ExportLocalHelper
@@ -536,7 +536,7 @@ class AjaxHtmlController {
 
         String filename = params.filename ?: BaseExportHelper.getFileName()
         ReportingCache rCache
-        BaseExport export
+        BaseDetailsExport export
         Map<String, Object> detailsCache
 
         if (params.context == BaseConfig.KEY_MYINST) {
@@ -602,7 +602,7 @@ class AjaxHtmlController {
 
                 if (params.context == BaseConfig.KEY_MYINST) {
 
-                    struct  = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/myInstitution/reporting/export/pdf/generic_details'
                     model   = [
                             filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
@@ -616,7 +616,7 @@ class AjaxHtmlController {
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
-                    struct  = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/subscription/reporting/export/pdf/generic_details'
                     model   = [
                             //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),

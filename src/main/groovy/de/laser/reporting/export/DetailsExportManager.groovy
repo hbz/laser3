@@ -5,7 +5,9 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
-import de.laser.reporting.export.base.BaseExport
+import de.laser.helper.DateUtils
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.local.CostItemExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
@@ -14,17 +16,24 @@ import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.myInstitution.base.BaseConfig
+import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.SimpleDateFormat
+import java.time.Year
 
 class DetailsExportManager {
 
-    static BaseExport createExport(String token, String context) {
+    static BaseDetailsExport createExport(String token, String context) {
         if (context == BaseConfig.KEY_MYINST) {
             createGlobalExport(token, [:])
         }
@@ -33,15 +42,15 @@ class DetailsExportManager {
         }
     }
 
-    static BaseExport createGlobalExport(String token, Map<String, Object> selectedFields) {
+    static BaseDetailsExport createGlobalExport(String token, Map<String, Object> selectedFields) {
         ExportGlobalHelper.createExport( token, selectedFields )
     }
 
-    static BaseExport createLocalExport(String token, Map<String, Object> selectedFields) {
+    static BaseDetailsExport createLocalExport(String token, Map<String, Object> selectedFields) {
         ExportLocalHelper.createExport( token, selectedFields )
     }
 
-    static List exportAsList(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
 
         List rows = []
 
@@ -57,13 +66,13 @@ class DetailsExportManager {
             if (hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
-            rows.add( cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
                 if (hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
-                rows.add( row.join( BaseExport.CSV_FIELD_SEPARATOR ) )
+                rows.add( row.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
             }
         }
         else if (format == 'pdf') {
@@ -86,7 +95,7 @@ class DetailsExportManager {
         rows
     }
 
-    static Workbook exportAsWorkbook(BaseExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static Workbook exportAsWorkbook(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
 
         List objList = resolveObjectList( export, idList )
 
@@ -95,7 +104,9 @@ class DetailsExportManager {
         }
     }
 
-    static List buildCSV(BaseExport export, List objList, Map<String, Object> fields) {
+    static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
+
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
         List<List<String>> rows = []
         List<Integer> ici = []
@@ -103,7 +114,17 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObject( obj, fields )
+            List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
+                if (it instanceof Date) {
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    return sdf.format(it)
+                }
+                else if (it instanceof Double) {
+                    return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
+                }
+                return it as String
+            } // TODO date, double, etc
+
             if (row) {
                 List<String> cols = buildRowAsCSV( row )
                 cols.eachWithIndex{ c, i -> if (c) { cc[i]++ } }
@@ -122,25 +143,21 @@ class DetailsExportManager {
             if (! it) {
                 return ''
             }
-            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
+            if (it.contains( BaseDetailsExport.CSV_FIELD_QUOTATION )) {
+                it = it.replaceAll( BaseDetailsExport.CSV_FIELD_QUOTATION , BaseDetailsExport.CSV_FIELD_QUOTATION + BaseDetailsExport.CSV_FIELD_QUOTATION) // !
                 enclose = true
             }
-            if (enclose || it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
-                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
+            if (enclose || it.contains( BaseDetailsExport.CSV_FIELD_SEPARATOR )) {
+                return BaseDetailsExport.CSV_FIELD_QUOTATION + it.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
         }
     }
 
-    static Workbook buildXLSX(BaseExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
+    static Workbook buildXLSX(BaseDetailsExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
-
-        CellStyle wrapStyle = workbook.createCellStyle()
-        wrapStyle.setWrapText(true)
-        wrapStyle.setVerticalAlignment( VerticalAlignment.CENTER )
 
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
@@ -150,7 +167,7 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObject(obj, fields)
+            List<String> row = export.getDetailedObject(obj, fields)
             if (row) {
                 rows.add( row )
                 row.eachWithIndex{ col, i -> if (col) { cc[i]++ } }
@@ -159,50 +176,40 @@ class DetailsExportManager {
         cc.eachWithIndex{ c, i -> if (c == 0) { ici.add(i) } }
         ici = ici.reverse()
 
-        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
-        if (hideEmptyResults) {
-            ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
-        }
-
-        Row header = sheet.createRow(0)
-        cols.eachWithIndex{ col, idx ->
-            Cell headerCell = header.createCell(idx)
-            headerCell.setCellStyle(cellStyle)
-            headerCell.setCellValue(col)
-            sheet.autoSizeColumn(idx)
-        }
-
         rows.eachWithIndex { row, idx ->
             if (hideEmptyResults) {
                 ici.each { i -> row.removeAt(i) }
             }
             if (row) {
                 Row entry = sheet.createRow(idx + 1)
-                row.eachWithIndex { col, i ->
-                    Cell cell = entry.createCell(i)
-                    cell.setCellStyle(cellStyle)
+                row.eachWithIndex { v, i ->
 
-                    if (col == null) {
-                        cell.setCellValue('')
-                    }
-                    else {
-                        if (col.contains(BaseExport.CSV_VALUE_SEPARATOR)) {
-                            cell.setCellValue(col.split(BaseExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
-                            cell.setCellStyle(wrapStyle)
-                        }
-                        else {
-                            cell.setCellValue(col.trim())
-                        }
-                    }
+                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
                     sheet.autoSizeColumn(i)
                 }
             }
         }
 
+        Row header = sheet.createRow(0)
+
+        List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
+        if (hideEmptyResults) {
+            ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
+        }
+
+        cols.eachWithIndex{ row, idx ->
+            Cell headerCell = header.createCell(idx)
+            headerCell.setCellStyle(cellStyle)
+            headerCell.setCellValue(row)
+            sheet.autoSizeColumn(idx)
+        }
+
         workbook
     }
 
-    static List buildPDF(BaseExport export, List objList, Map<String, Object> fields) {
+    static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
+
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
         List<List<List<String>>> rows = []
         List<Integer> ici = []
@@ -210,7 +217,17 @@ class DetailsExportManager {
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getObject(obj, fields)
+            List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
+                if (it instanceof Date) {
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    return sdf.format(it)
+                }
+                else if (it instanceof Double) {
+                    return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
+                }
+                return it as String
+            } // TODO date, double, etc
+
             if (row) {
                 List<List<String>> cols = buildRowAsPDF( row )
                 cols.eachWithIndex{ c, i -> if (c.first()) { cc[i]++ } }
@@ -228,11 +245,11 @@ class DetailsExportManager {
             if (it == null) {
                 return ['']
             }
-            return it.split(BaseExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
+            return it.split(BaseDetailsExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
         }
     }
 
-    static List<Object> resolveObjectList(BaseExport export, List<Long> idList) {
+    static List<Object> resolveObjectList(BaseDetailsExport export, List<Long> idList) {
 
         List<Object> result = []
 

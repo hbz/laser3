@@ -8,13 +8,14 @@ import de.laser.finance.Invoice
 import de.laser.finance.Order
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class CostItemExport extends BaseExport {
+class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
@@ -27,7 +28,7 @@ class CostItemExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        BaseExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
@@ -76,14 +77,14 @@ class CostItemExport extends BaseExport {
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         CostItem ci = obj as CostItem
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -92,35 +93,17 @@ class CostItemExport extends BaseExport {
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
 
-                if (CostItem.getDeclaredField(key).getType() == Date) {
+                if (CostItem.getDeclaredField(key).getType() == Double) {
                     if (ci.getProperty(key)) {
-                        content.add( sdf.format( ci.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (CostItem.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (ci.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (ci.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (CostItem.getDeclaredField(key).getType() == Double) {
-                    if (ci.getProperty(key)) {
-                        content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim()  as String )
+                        content.add( ci.getProperty(key ) )
+                        //content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim() )
                     }
                     else {
                         content.add( '' )
                     }
                 }
                 else {
-                    content.add( ci.getProperty(key) as String )
+                    content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -174,7 +157,7 @@ class CostItemExport extends BaseExport {
                 else if (key == '@ae-cost-order') {
                     Order ord = ci.order
                     if (ord?.orderNumber) {
-                        content.add( ord.orderNumber.toString() )
+                        content.add( ord.orderNumber )
                     } else {
                         content.add('')
                     }
@@ -182,7 +165,7 @@ class CostItemExport extends BaseExport {
                 else if (key == '@ae-cost-invoice') {
                     Invoice inv = ci.invoice
                     if (inv?.invoiceNumber) {
-                        content.add( inv.invoiceNumber.toString() )
+                        content.add( inv.invoiceNumber )
                     } else {
                         content.add('')
                     }

@@ -1,6 +1,7 @@
 package de.laser.reporting.export
 
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 import org.apache.poi.ss.usermodel.Cell
@@ -25,21 +26,17 @@ class QueryExportManager {
     static List exportAsList(BaseQueryExport export, String format) {
 
         List rows = []
-        Map<String, Object> data = export.getData()
-
-        println '-------------------------'
-        println export
-        println data
+        Map<String, Object> data = export.getQueriedData()
 
         if (format == 'csv') {
-            rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
-            data.rows.each { row ->
+            rows.add( data.cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
+            data.rows.each { List<Object> row ->
                 rows.add( buildRowCSV( row ) )
             }
         }
         else if (format == 'pdf') {
             rows.add( data.cols )
-            data.rows.each { row ->
+            data.rows.each { List<Object> row ->
                 rows.add( buildRowPDF( row ) )
             }
         }
@@ -53,37 +50,59 @@ class QueryExportManager {
         }
     }
 
-    static String buildRowCSV(List<String> content) {
+    static String buildRowCSV(List<Object> row) {
 
-        content.collect{ it ->
+        row.collect{ col ->
             boolean enclose = false
-            if (! it) {
+            if (! col) {
                 return ''
             }
-            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
-                enclose = true
+            if (col instanceof String) {
+                if (col.contains(BaseDetailsExport.CSV_FIELD_QUOTATION)) {
+                    col = col.replaceAll(BaseDetailsExport.CSV_FIELD_QUOTATION, BaseDetailsExport.CSV_FIELD_QUOTATION + BaseDetailsExport.CSV_FIELD_QUOTATION) // !
+                    enclose = true
+                }
+                if (enclose || col.contains( BaseDetailsExport.CSV_FIELD_SEPARATOR )) {
+                    return BaseDetailsExport.CSV_FIELD_QUOTATION + col.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
+                }
             }
-            if (enclose || it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
-                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
+//            else if (col instanceof Date) {
+//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowCSV() ' + col + ' instanceof Date'
+//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+//                return sdf.format(col)
+//            }
+            else {
+                col = col.toString()
             }
-            return it.trim()
-        }.join( BaseExport.CSV_FIELD_SEPARATOR )
+
+            return col.trim()
+        }.join( BaseDetailsExport.CSV_FIELD_SEPARATOR )
     }
 
-    static List<String> buildRowPDF(List<String> content) {
+    static List<String> buildRowPDF(List<Object> row) {
 
-        content.collect{ it ->
-            if (! it) {
+        row.collect{ col ->
+            if (! col) {
                 return ''
             }
-            return it.trim()
+            if (col instanceof String) {
+                // ..
+            }
+//            else if (col instanceof Date) {
+//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowPDF() ' + col + ' instanceof Date'
+//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+//                return sdf.format(col)
+//            }
+            else {
+                col = col.toString()
+            }
+            return col.trim()
         }
     }
 
     static Workbook buildXLSX(BaseQueryExport export) {
 
-        Map<String, Object> data = export.getData()
+        Map<String, Object> data = export.getQueriedData()
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
@@ -94,16 +113,9 @@ class QueryExportManager {
         data.rows.eachWithIndex { row, idx ->
 
             Row entry = sheet.createRow(idx+1)
-            row.eachWithIndex{ str, i ->
-                Cell cell = entry.createCell(i)
-                cell.setCellStyle(cellStyle)
+            row.eachWithIndex{ v, i ->
 
-                if (str == null) {
-                    cell.setCellValue('')
-                }
-                else {
-                    cell.setCellValue( str.trim() )
-                }
+                Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
                 sheet.autoSizeColumn(i)
             }
         }

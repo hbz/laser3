@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
@@ -37,7 +37,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${ExportGlobalHelper.reorderFieldsForUI( formFields.findAll { !ExportGlobalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -68,7 +68,7 @@
                     <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${ExportGlobalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${BaseExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
@@ -93,9 +93,9 @@
                     <div id="fileformat-csv" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
-                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
-                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
-                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_QUOTATION}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_VALUE_SEPARATOR}</span> <br />
                         </p>
                         <p>
                             <span class="ui checkbox">
