@@ -1546,22 +1546,20 @@ class SurveyService {
         result
     }
 
-    boolean hasParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+    boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp){
 
-        List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
+            Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.hostPlatformURL = :hostPlatformURL ' +
+                    'and tipp.status = :tippStatus and ie.subscription in (:subs) and ie.acceptStatus = :acceptStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null ',
+                [hostPlatformURL: tipp.hostPlatformURL,
+                 tippStatus: RDStore.TIPP_STATUS_CURRENT,
+                 subs: subscriptions,
+                 acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
 
-        if(orgRoles) {
-            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL)
-
-            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippInListAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipps, true)
-            if(issueEntitlementList && issueEntitlementList.size() > 0){
+            if(countIes > 0){
                 return true
             }else {
                 return false
             }
-        }else {
-            return false
-        }
     }
 
     IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
