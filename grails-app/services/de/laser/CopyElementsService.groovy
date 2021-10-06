@@ -744,7 +744,7 @@ class CopyElementsService {
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each { Thread thread ->
-                if (thread.name == 'PackageTransfer_'+sourceObject.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                if (thread.name == 'PackageTransfer_'+sourceObject.id) {
                     flash.message = messageSource.getMessage('subscription.details.copyPackage.thread.running',null, LocaleContextHolder.getLocale())
                     lock = true
                 }
@@ -785,6 +785,7 @@ class CopyElementsService {
                         deleteIssueEntitlementGroupItem(deleteTitleGroups)
 
                     }
+                    lock = false
                 })
             }
 
