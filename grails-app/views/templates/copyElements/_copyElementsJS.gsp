@@ -1,10 +1,14 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     $(".setDeletionConfirm").click( function() {
-        $("#copyElementsSubmit").toggleClass("js-open-confirm-modal");
-        if($("#copyElementsSubmit").hasClass("js-open-confirm-modal"))
-            r2d2.initDynamicSemuiStuff('form');
-        else
+        console.log($('[data-action="delete"]:checked'));
+        if($('[data-action="delete"]:checked').length === 0){
+            $("#copyElementsSubmit").removeClass("js-open-confirm-modal");
             $("#copyElementsSubmit").off("click");
+        }
+        else if(!$("#copyElementsSubmit").hasClass("js-open-confirm-modal")) {
+            $("#copyElementsSubmit").addClass("js-open-confirm-modal");
+            r2d2.initDynamicSemuiStuff('form');
+        }
     });
     // FOR ALL THE OTHER TABLES THEN PROPERTIES
     JSPC.app.toggleAllCheckboxes = function (source) {

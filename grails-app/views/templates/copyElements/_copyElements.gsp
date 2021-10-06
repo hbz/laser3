@@ -746,8 +746,8 @@
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
                 $takeIdentifier: $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
                 $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
-                takeLinks: $('input:checkbox[name="copyObject.takeLinks"]'),
-                deleteLinks: $('input:checkbox[name="copyObject.deleteLinks"]')
+                $takeLinks: $('input:checkbox[name="copyObject.takeLinks"]'),
+                $deleteLinks: $('input:checkbox[name="copyObject.deleteLinks"]')
             },
 
             init: function () {
@@ -793,11 +793,11 @@
                     JSPC.app.subCopyController.deleteIdentifier(this);
                 }).trigger('change');
 
-                ref.$takeIdentifier.change(function (event) {
+                ref.$takeLinks.change(function (event) {
                     JSPC.app.subCopyController.takeLinks(this);
                 }).trigger('change');
 
-                ref.$deleteIdentifier.change(function (event) {
+                ref.$deleteLinks.change(function (event) {
                     JSPC.app.subCopyController.deleteLinks(this);
                 }).trigger('change');
 
@@ -805,7 +805,11 @@
                     JSPC.app.subCopyController.checkCheckBoxesOfProperties(this);
                 }).trigger('change');
 
-
+                console.log($('[data-action="delete"]:checked'));
+                if($('[data-action="delete"]:checked').length > 0){
+                    $("#copyElementsSubmit").addClass("js-open-confirm-modal");
+                    r2d2.initDynamicSemuiStuff('form');
+                }
             },
 
             takeLicenses: function (elem) {
@@ -912,6 +916,7 @@
             checkCheckBoxesOfProperties: function (elem) {
                 var $input = $(elem);
                 var checkBoxID = $input.attr("id");
+                console.log("eee");
                 if (checkBoxID.includes("copyObject.take")) {
 
                     if ($input.prop("checked") == true) {
