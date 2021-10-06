@@ -14,7 +14,7 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -58,7 +58,7 @@
                     </th>
                     <th class="one wide center aligned">
                         <g:if test="${targetObject}">
-                            <input type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
+                            <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
                         </g:if>
                     </th>
                 </g:if>
@@ -124,7 +124,7 @@
 
                         <td>
                             <g:if test="${targetObject.hasProperty("${objProperty}") && !isRenewSub}">
-                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                     <g:checkBox name="copyObject.delete" id="copyObject.delete${objProperty}"
                                                 value="${objProperty}" data-action="delete"/>
                                 </div>
@@ -240,7 +240,7 @@
 
                         <td>
                             <g:each in="${targetLicenses}" var="license">
-                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                     <g:checkBox name="copyObject.deleteLicenses" data-action="delete"
                                                 value="${genericOIDService.getOID(license)}" checked="${false}"/>
                                 </div>
@@ -343,7 +343,7 @@
                     <td>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
-                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                     <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete"
                                                 value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
@@ -518,7 +518,7 @@
                                     <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}">
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
-                                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
                                                             value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
@@ -531,7 +531,7 @@
                                     <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
-                                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
                                                             value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
@@ -603,7 +603,7 @@
                         <td>
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div class="la-element">
-                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                         <g:checkBox name="copyObject.deleteIdentifierIds" value="${genericOIDService.getOID(ident)}"
                                                     data-action="delete" checked="${false}"/>
                                     </div>
@@ -678,7 +678,7 @@
                         <td>
                             <g:each in="${targetLinks}" var="link">
                                 <div class="la-element">
-                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                         <g:checkBox name="copyObject.deleteLinks" value="${genericOIDService.getOID(link)}"
                                                     data-action="delete" checked="${false}"/>
                                     </div>
@@ -707,8 +707,10 @@
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled"
                            value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                           onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                           data-confirm-id="copyElements"
+                           data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                           data-confirm-term-how="delete" ${submitDisabled}/>
                 </div>
             </div>
         </g:if>
@@ -721,8 +723,10 @@
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                       data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:else>
     </g:form>
