@@ -1089,9 +1089,9 @@ class SubscriptionControllerService {
             result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
             result.subscriberSubs = []
-            List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(result.subscriber, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
-            if(orgRoles){
-                result.subscriberSubs = orgRoles.sub
+            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            if(subscriptions) {
+                result.subscriberSubs = subscriptions
             }
 
 
