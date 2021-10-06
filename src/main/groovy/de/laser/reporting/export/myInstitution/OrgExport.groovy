@@ -125,7 +125,7 @@ class OrgExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyFieldContent(org, key, Org.getDeclaredField(key).getType()) )
+                    content.add( BaseExportHelper.getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -158,7 +158,7 @@ class OrgExport extends BaseDetailsExport {
                     )
                 }
                 else if (key == 'subjectGroup') {
-                    List osg = OrgSubjectGroup.findAllByOrg(org)
+                    List<OrgSubjectGroup> osg = OrgSubjectGroup.findAllByOrg(org)
                     if (osg) {
                         content.add( osg.collect{it.subjectGroup.getI10n('value')}.join( CSV_VALUE_SEPARATOR ))
                     }

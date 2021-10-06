@@ -7,6 +7,7 @@ import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.local.CostItemExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
@@ -24,9 +25,11 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 class DetailsExportManager {
 
@@ -103,6 +106,8 @@ class DetailsExportManager {
 
     static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+
         List<List<String>> rows = []
         List<Integer> ici = []
 
@@ -113,6 +118,9 @@ class DetailsExportManager {
                 if (it instanceof Date) {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     return sdf.format(it)
+                }
+                else if (it instanceof Double) {
+                    return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
                 }
                 return it as String
             } // TODO date, double, etc
@@ -151,27 +159,8 @@ class DetailsExportManager {
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
 
-        Locale locale = LocaleContextHolder.getLocale()
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-
-        CreationHelper createHelper = workbook.getCreationHelper()
-        short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )
-        short currFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( 'default.decimal.format', null, locale ) ) // ? todo check format
-
-        CellStyle wrapStyle = workbook.createCellStyle()
-        wrapStyle.setWrapText(true)
-        wrapStyle.setVerticalAlignment( VerticalAlignment.CENTER )
-
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
-
-        CellStyle dateStyle = workbook.createCellStyle()
-        dateStyle.setVerticalAlignment( VerticalAlignment.CENTER )
-        dateStyle.setDataFormat( dateFormat )
-
-        CellStyle currStyle = workbook.createCellStyle()
-        currStyle.setVerticalAlignment( VerticalAlignment.CENTER )
-        currStyle.setDataFormat( currFormat )
 
         List<List<String>> rows = []
         List<Integer> ici = []
@@ -199,34 +188,8 @@ class DetailsExportManager {
             if (row) {
                 Row entry = sheet.createRow(idx + 1)
                 row.eachWithIndex { v, i ->
-                    Cell cell = entry.createCell(i)
-                    cell.setCellStyle(cellStyle)
 
-                    if (v == null) {
-                        cell.setCellValue('')
-                    }
-                    else {
-                        if (v instanceof String) {
-                            if (v.contains(BaseDetailsExport.CSV_VALUE_SEPARATOR)) {
-                                cell.setCellStyle(wrapStyle)
-                                cell.setCellValue(v.split(BaseDetailsExport.CSV_VALUE_SEPARATOR).collect { it.trim() }.join('\r\n'))
-                            }
-                            else {
-                                cell.setCellValue(v.trim())
-                            }
-                        }
-                        else if (v instanceof Date) {
-                            cell.setCellStyle(dateStyle)
-                            cell.setCellValue(v)
-                        }
-                        else if (v instanceof Double) {
-                            cell.setCellStyle(currStyle)
-                            cell.setCellValue(v)
-                        }
-                        else {
-                            cell.setCellValue(v) // raw
-                        }
-                    }
+                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
                     sheet.autoSizeColumn(i)
                 }
             }
@@ -246,6 +209,8 @@ class DetailsExportManager {
 
     static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+
         List<List<List<String>>> rows = []
         List<Integer> ici = []
 
@@ -256,6 +221,9 @@ class DetailsExportManager {
                 if (it instanceof Date) {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     return sdf.format(it)
+                }
+                else if (it instanceof Double) {
+                    return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
                 }
                 return it as String
             } // TODO date, double, etc

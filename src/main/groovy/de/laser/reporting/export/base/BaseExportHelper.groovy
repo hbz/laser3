@@ -11,13 +11,20 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import grails.util.Holders
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.CreationHelper
+import org.apache.poi.ss.usermodel.VerticalAlignment
+import org.apache.poi.ss.usermodel.Workbook
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.time.Year
 
 abstract class BaseExportHelper {
 
-    static def getPropertyFieldContent(Object obj, String field, Class type) {
+    static def getPropertyContent(Object obj, String field, Class type) {
 
         def content = obj.getProperty(field)
 
@@ -32,8 +39,75 @@ abstract class BaseExportHelper {
                 content = ''
             }
         }
-        println field + ' >> ' + content + ' : ' + content?.class
+        // println 'BEH.getPropertyContent() --> ' + field + ' - ' + content + ' : ' + content?.class
         content
+    }
+
+    static Cell updateCell(Workbook workbook, Cell cell, def value) {
+
+        CreationHelper createHelper = workbook.getCreationHelper()
+        Locale locale = LocaleContextHolder.getLocale()
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+
+        short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )
+        short currFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( 'default.decimal.format', null, locale ) ) // ? todo check format
+
+        CellStyle wrapStyle = workbook.createCellStyle()
+        wrapStyle.setWrapText(true)
+        wrapStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+
+        CellStyle cellStyle = workbook.createCellStyle()
+        cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+
+        CellStyle dateStyle = workbook.createCellStyle()
+        dateStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        dateStyle.setDataFormat( dateFormat )
+
+        CellStyle currStyle = workbook.createCellStyle()
+        currStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+        currStyle.setDataFormat( currFormat )
+
+        cell.setCellStyle(cellStyle)
+
+        // println 'BEH.updateCell() --> ' + value + ' ' + value?.class
+
+        if (value == null) {
+            cell.setCellValue('')
+        }
+        else {
+            if (value instanceof String) {
+                cell.setCellValue(value.trim())
+            }
+            else if (value instanceof Boolean) {
+                cell.setCellValue(value ? '1' : '0')
+            }
+            else if (value instanceof Date) {
+                cell.setCellStyle(dateStyle)
+                cell.setCellValue(value)
+            }
+            else if (value instanceof Double) {
+                cell.setCellStyle(currStyle)
+                cell.setCellValue(value)
+            }
+            else if (value instanceof Integer) {
+                cell.setCellValue(value)
+            }
+            else if (value instanceof Long) {
+                if (value > Integer.MAX_VALUE) {
+                    cell.setCellValue(value.toString())
+                } else {
+                    cell.setCellValue(value.toInteger())
+                }
+            }
+            else if (value instanceof Year) {
+                cell.setCellValue(value.getValue())
+            }
+            else {
+                cell.setCellValue(value.toString())
+            }
+        }
+
+        cell
     }
 
     static String getFileName(List<String> labels = ['Reporting']) {

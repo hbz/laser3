@@ -101,7 +101,7 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyFieldContent(lic, key, License.getDeclaredField(key).getType()) )
+                    content.add( BaseExportHelper.getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -127,11 +127,11 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-license-subscriptionCount') { // TODO: query
-                    Long count = License.executeQuery(
+                    int count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
-                    content.add( count as String )
+                    content.add( count )
                 }
                 else if (key == '@ae-license-memberCount') {
                     int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]

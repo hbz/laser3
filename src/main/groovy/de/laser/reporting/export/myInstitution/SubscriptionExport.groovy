@@ -112,7 +112,7 @@ class SubscriptionExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyFieldContent(sub, key, Subscription.getDeclaredField(key).getType()))
+                    content.add( BaseExportHelper.getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()))
                 }
             }
             // --> generic refdata

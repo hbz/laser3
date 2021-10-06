@@ -84,7 +84,7 @@ class CostItemExport extends BaseDetailsExport {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         CostItem ci = obj as CostItem
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -93,40 +93,17 @@ class CostItemExport extends BaseDetailsExport {
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
 
-
-//                else {
-//                    content.add( BaseExportHelper.getPropertyFieldContent(org, key, Org.getDeclaredField(key).getType()) )
-//                }
-//
-                if (CostItem.getDeclaredField(key).getType() == Date) {
+                if (CostItem.getDeclaredField(key).getType() == Double) {
                     if (ci.getProperty(key)) {
-                        content.add( sdf.format( ci.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (CostItem.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (ci.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (ci.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (CostItem.getDeclaredField(key).getType() == Double) {
-                    if (ci.getProperty(key)) {
-                        content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim()  as String )
+                        content.add( ci.getProperty(key ) )
+                        //content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim() )
                     }
                     else {
                         content.add( '' )
                     }
                 }
                 else {
-                    content.add( ci.getProperty(key) as String )
+                    content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -180,7 +157,7 @@ class CostItemExport extends BaseDetailsExport {
                 else if (key == '@ae-cost-order') {
                     Order ord = ci.order
                     if (ord?.orderNumber) {
-                        content.add( ord.orderNumber.toString() )
+                        content.add( ord.orderNumber )
                     } else {
                         content.add('')
                     }
@@ -188,7 +165,7 @@ class CostItemExport extends BaseDetailsExport {
                 else if (key == '@ae-cost-invoice') {
                     Invoice inv = ci.invoice
                     if (inv?.invoiceNumber) {
-                        content.add( inv.invoiceNumber.toString() )
+                        content.add( inv.invoiceNumber )
                     } else {
                         content.add('')
                     }

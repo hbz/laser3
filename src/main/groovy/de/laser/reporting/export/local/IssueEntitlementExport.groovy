@@ -91,7 +91,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyFieldContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
+                    content.add( BaseExportHelper.getPropertyContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
                 }
             }
             // --> generic refdata

@@ -106,7 +106,7 @@ class OrgExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyFieldContent(org, key, Org.getDeclaredField(key).getType()) )
+                    content.add( BaseExportHelper.getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
