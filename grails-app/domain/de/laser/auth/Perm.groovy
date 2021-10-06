@@ -5,7 +5,10 @@ package de.laser.auth
  */
 class Perm {
 
-    String code //the perm being granted
+    /**
+     * the perm being granted
+     */
+    String code
 
     static mapping = {
         cache   true
