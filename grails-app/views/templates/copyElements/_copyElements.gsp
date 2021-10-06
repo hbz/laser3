@@ -916,7 +916,6 @@
             checkCheckBoxesOfProperties: function (elem) {
                 var $input = $(elem);
                 var checkBoxID = $input.attr("id");
-                console.log("eee");
                 if (checkBoxID.includes("copyObject.take")) {
 
                     if ($input.prop("checked") == true) {
