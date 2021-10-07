@@ -1206,12 +1206,12 @@ class OrganisationController  {
                 if(!semesterSumRow)
                     semesterSumRow = [:]
                 if(rn.value) {
-                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup)
+                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup.getI10n("value"))
                     if(groupSum == null) {
                         groupSum = rn.value
                     }
                     else groupSum += rn.value
-                    semesterSumRow.put(rn.referenceGroup,groupSum)
+                    semesterSumRow.put(rn.referenceGroup.getI10n("value"),groupSum)
                 }
                 semesterSums.put(semesters.key,semesterSumRow)
             }

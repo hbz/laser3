@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
+
 3901    06.10.2021  dev     2.3         David   Feature     Reporting: XLSX-Export - Datentypen
 
 3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern

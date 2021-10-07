@@ -280,7 +280,7 @@ class OrganisationService {
             if(!numberRow) {
                 numberRow = [:]
             }
-            numberRow.put(number.referenceGroup,number)
+            numberRow.put(number.referenceGroup.getI10n("value"),number)
             result.put(number[keyProp],numberRow)
         }
         result

@@ -1,6 +1,5 @@
 package de.laser.helper
 
-import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -130,11 +129,11 @@ class RDStore {
     public static final REPORTING_CONTACT_TYPE_CONTACTS     = getRefdataValue('contacts', RDConstants.REPORTING_CONTACT_TYPE)
     public static final REPORTING_CONTACT_TYPE_ADDRESSES    = getRefdataValue('addresses', RDConstants.REPORTING_CONTACT_TYPE)
 
-    public static final READER_NUMBER_USER              = getRefdataValue(ReaderNumber.READER_NUMBER_USER, RDConstants.NUMBER_TYPE)
-    public static final READER_NUMBER_PEOPLE            = getRefdataValue(ReaderNumber.READER_NUMBER_PEOPLE, RDConstants.NUMBER_TYPE)
-    public static final READER_NUMBER_SCIENTIFIC_STAFF  = getRefdataValue(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF, RDConstants.NUMBER_TYPE)
-    public static final READER_NUMBER_STUDENTS          = getRefdataValue(ReaderNumber.READER_NUMBER_STUDENTS, RDConstants.NUMBER_TYPE)
-    public static final READER_NUMBER_FTE               = getRefdataValue(ReaderNumber.READER_NUMBER_FTE, RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_USER              = getRefdataValue('User', RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_PEOPLE            = getRefdataValue('Population', RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_SCIENTIFIC_STAFF  = getRefdataValue('Scientific staff', RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_STUDENTS          = getRefdataValue('Students', RDConstants.NUMBER_TYPE)
+    public static final READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
 
 
     public static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)

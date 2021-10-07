@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
 
@@ -20,7 +21,7 @@ class ReaderNumberController  {
 				rnData.dueDate = sdf.parse(params.dueDate)
 
 			rnData.org = Org.get(params.orgid)
-			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
+			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
 			rnData.value = new BigDecimal(params.value)
 			ReaderNumber numbersInstance = new ReaderNumber(rnData)
 			if (! numbersInstance.save()) {
@@ -41,7 +42,7 @@ class ReaderNumberController  {
 				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			}
 			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
+			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
 			if(params.dueDate)
 				rnData.dueDate = sdf.parse(params.dueDate)
 			rnData.value = new BigDecimal(params.value)
@@ -73,7 +74,7 @@ class ReaderNumberController  {
 				numbersToDelete.addAll(ReaderNumber.findAllBySemesterAndOrg(semester,org).collect{ ReaderNumber rn -> rn.id })
 			}
 			else if(params.referenceGroup) {
-				numbersToDelete.addAll(ReaderNumber.findAllByReferenceGroupAndOrg(params.referenceGroup,org).collect{ ReaderNumber rn -> rn.id })
+				numbersToDelete.addAll(ReaderNumber.findAllByReferenceGroupAndOrg(RefdataValue.get(params.referenceGroup),org).collect{ ReaderNumber rn -> rn.id })
 			}
 			if (numbersToDelete) {
 				RefdataValue.executeUpdate('delete from ReaderNumber rn where rn.id in (:ids)',[ids:numbersToDelete])
