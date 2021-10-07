@@ -4,6 +4,10 @@ import de.laser.Platform
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 
+/**
+ * Represents the connection between an organisation access configuration and a platform or a subscription package and indicates that a platform or a subscription package may be conditioned by access conditions.
+ * Thos access conditions are specified by the {@link OrgAccessPoint} class.
+ */
 class OrgAccessPointLink extends AbstractBase {
 
     OrgAccessPoint oap

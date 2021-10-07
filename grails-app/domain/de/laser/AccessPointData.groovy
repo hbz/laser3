@@ -7,6 +7,9 @@ import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 
+/**
+ * Container class for the access configuration.
+ */
 @Slf4j
 class AccessPointData extends AbstractBase {
     

@@ -2,6 +2,9 @@ package de.laser.oap
 
 import groovy.util.logging.Slf4j
 
+/**
+ * An OpenAthens (https://www.openathens.net/) configuration.
+ */
 @Slf4j
 class OrgAccessPointOA extends OrgAccessPoint{
 
