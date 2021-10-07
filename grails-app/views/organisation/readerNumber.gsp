@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.ReaderNumber;de.laser.helper.DateUtils" %>
+<%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.helper.RDStore;de.laser.helper.DateUtils" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -63,7 +63,7 @@
                     <tbody>
                     <g:each in="${numbersWithSemester}" var="numbersInstance">
                         <tr>
-                            <td>${numbersInstance.getKey().getI10n('value')}</td>
+                            <td>${numbersInstance.getKey().getI10n("value")}</td>
                             <g:each in="${semesterCols}" var="column">
                                 <td>
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
@@ -73,12 +73,11 @@
                                 </td>
                             </g:each>
                             <%
-                                Map<String,Integer> sumRow = semesterSums.get(numbersInstance.getKey())
-                                BigDecimal students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                BigDecimal FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                BigDecimal staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                boolean missing = students == 0 || FTEs == 0 || staff == 0
-                                //int allOthers = sumRow.findAll { row -> !RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect { rdv -> rdv.getI10n("value") }.contains(row.key) }.collect { row -> row.value }.sum()
+                                Map<String,BigDecimal> sumRow = semesterSums.get(numbersInstance.getKey())
+                                BigDecimal students = sumRow.get(RDStore.READER_NUMBER_STUDENTS.getI10n("value")) ?: 0.0
+                                BigDecimal FTEs = sumRow.get(RDStore.READER_NUMBER_FTE.getI10n("value")) ?: 0.0
+                                BigDecimal staff = sumRow.get(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.getI10n("value")) ?: 0.0
+                                boolean missing = students == 0.0 || FTEs == 0.0 || staff == 0.0
                             %>
                             <td>
                                 <g:if test="${FTEs > 0}">
