@@ -3460,6 +3460,20 @@ join sub.orgRelations or_sub where
                     pd.save()
                 }
                 break
+            case 'replacePropertyDefinition':
+                PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                if (pdFrom && pdTo) {
+                    try {
+                        int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+                        flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, params.xcgPdFrom, params.xcgPdTo])
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace()
+                        flash.error = message(code: 'menu.institutions.replace_prop.error', args: [params.xcgPdFrom, params.xcgPdTo])
+                    }
+                }
+                break
             case 'delete': flash.message = deletePrivatePropertyDefinition(params)
                 break
         }

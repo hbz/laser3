@@ -1506,25 +1506,17 @@ SELECT * FROM (
                     }
                     break
                 case 'replacePropertyDefinition':
-                    if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                        PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-                        PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-
-                        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
-
-                            try {
-                                def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-
-                                flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace()
-                                flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
-                            }
-
+                    PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                    PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                    if (pdFrom && pdTo) {
+                        try {
+                            int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, params.xcgPdFrom, params.xcgPdTo])
                         }
-                    } else {
-                        flash.error = "Keine ausreichenden Rechte!"
+                        catch (Exception e) {
+                            e.printStackTrace()
+                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [params.xcgPdFrom, params.xcgPdTo])
+                        }
                     }
                     break
             }

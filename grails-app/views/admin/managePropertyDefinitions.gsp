@@ -196,67 +196,7 @@
 			</g:each>
         </div>
 
-
-        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
-            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
-                <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
-                <input type="hidden" name="xcgPdFrom" value=""/>
-
-                <p>
-                    <strong>WARNUNG</strong>
-                </p>
-
-                <p>
-                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgende Eigenschaft ersetzen:
-                </p>
-
-                <div class="field">
-                    <label for="xcgPdTo">&nbsp;</label>
-                    <select id="xcgPdTo"></select>
-                </div>
-
-                <p>
-                    Die gesetzten Werte bleiben erhalten!
-                </p>
-
-            </g:form>
-
-            <laser:script file="${this.getGroovyPageFileName()}">
-                        $('button[data-xcg-pd]').on('click', function(){
-
-                            var pd = $(this).attr('data-xcg-pd');
-                            //var type = $(this).attr('data-xcg-type');
-                            //var rdc = $(this).attr('data-xcg-rdc');
-
-                            $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
-                            $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
-
-                            $.ajax({
-                                url: '<g:createLink controller="ajaxJson" action="searchPropertyAlternativesByOID"/>' + '?oid=' + pd,
-                                success: function (data) {
-                                    var select = '<option></option>';
-                                    for (var index = 0; index < data.length; index++) {
-                                        var option = data[index];
-                                        if (option.value != pd) {
-                                            select += '<option value="' + option.value + '">' + option.text + '</option>';
-                                        }
-                                    }
-                                    select = '<select id="xcgPdTo" name="xcgPdTo" class="ui search selection dropdown">' + select + '</select>';
-
-                                    $('label[for=xcgPdTo]').next().replaceWith(select);
-
-                                    $('#xcgPdTo').dropdown({
-                                        duration: 150,
-                                        transition: 'fade'
-                                    });
-
-                                }, async: false
-                            });
-                        })
-            </laser:script>
-
-        </semui:modal>
-
+        <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
