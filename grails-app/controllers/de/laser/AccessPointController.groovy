@@ -292,7 +292,7 @@ class AccessPointController  {
             Boolean activeChecksOnly = (params.checked == 'false')
             Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
             List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
-            orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
+            RefdataCategory.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
                 String qry2 = """

@@ -2,6 +2,9 @@ package de.laser.oap
 
 import groovy.util.logging.Slf4j
 
+/**
+ * An EZProxy (https://www.oclc.org/en/ezproxy.html) configuration.
+ */
 @Slf4j
 class OrgAccessPointEzproxy extends OrgAccessPoint{
 

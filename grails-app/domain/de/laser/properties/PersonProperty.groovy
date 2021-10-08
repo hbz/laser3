@@ -5,7 +5,10 @@ import de.laser.Person
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
-/**Person private properties are used to store Person related settings and options only for specific memberships**/
+/**
+ * The class's name is what it does: a property (implicitly private) to a {@link de.laser.Person}.
+ * Unlike other properties, they are only visible by the owner organisation itself.
+ */
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
@@ -89,6 +92,13 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         super.afterDeleteHandler()
     }
 
+    /**
+     * Retrieves properties by their date value in the range between two given dates and a given organisation to whom the property's contact is linked
+     * @param dateValueFrom the range start date
+     * @param dateValueTo the range end date
+     * @param org the {@link Org} to whom the contact is linked
+     * @return a {@link List} of person properties matching the date range and owner org
+     */
     static findAllByDateValueBetweenForOrgAndIsNotPulbic(java.sql.Date dateValueFrom, java.sql.Date dateValueTo, Org org){
         executeQuery("SELECT distinct(s) FROM PersonProperty as s " +
             "WHERE (dateValue >= :fromDate and dateValue <= :toDate) " +

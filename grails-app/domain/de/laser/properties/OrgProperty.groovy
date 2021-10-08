@@ -4,7 +4,11 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
-/**Org custom properties are used to store Org related settings and options**/
+/**
+ * The class's name is what it does: a property (implicitly general) to a {@link de.laser.Org}.
+ * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
+ * This flag is particularly important here because organisations are accessible by everyone.
+ */
 class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type
