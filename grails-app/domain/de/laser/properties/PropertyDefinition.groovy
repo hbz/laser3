@@ -448,7 +448,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             OrgProperty.class.name
         else if (descr.contains("Survey"))
             SurveyResult.class.name
-        else 'de.laser.'+descr.replace(" ","")
+        else 'de.laser.properties.'+descr.replace(" ","")
     }
 
     int countUsages() {

@@ -297,16 +297,16 @@ class PropertyService {
         objMap
     }
 
-    def replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {
+    int replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {
 
         log.debug("replacing: ${pdFrom} with: ${pdTo}")
-        def count = 0
+        int count = 0
 
         PropertyDefinition.executeUpdate("update PropertyDefinitionGroupItem set propDef = :pdTo where propDef = :pdFrom", [pdTo: pdTo, pdFrom: pdFrom])
 
         def implClass = pdFrom.getImplClass()
         def customPropDef = Class.forName(implClass)
-        Set customProps = customPropDef.findAllWhere(type: pdFrom)
+        Set customProps = customPropDef.findAllByType(pdFrom)
         customProps.each{ cp ->
             log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
             cp.type = pdTo

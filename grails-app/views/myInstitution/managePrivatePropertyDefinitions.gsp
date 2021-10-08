@@ -161,10 +161,14 @@
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <%-- hidden fake button to keep the other button in place --%>
-                                                    <div class="ui icon button la-hidden">
-                                                        <i class="coffe icon"></i>
-                                                    </div>
+                                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                                data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                                data-xcg-type="${pd.type}"
+                                                                data-xcg-rdc="${pd.refdataCategory}"
+                                                                data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                        ><i class="exchange icon"></i></button>
+                                                    </span>
                                                 </g:else>
                                             </td>
                                         </g:if>
@@ -178,6 +182,7 @@
         </div>
      </g:if>
 
+    <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
