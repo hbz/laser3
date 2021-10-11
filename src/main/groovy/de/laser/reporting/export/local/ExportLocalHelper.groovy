@@ -1,7 +1,7 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
-import de.laser.reporting.ReportingCache
+import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper

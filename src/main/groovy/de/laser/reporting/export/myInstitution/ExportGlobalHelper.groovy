@@ -2,7 +2,7 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
-import de.laser.reporting.ReportingCache
+import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper

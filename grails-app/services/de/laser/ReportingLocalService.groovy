@@ -1,9 +1,8 @@
 package de.laser
 
 import de.laser.helper.RDStore
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.ReportingCacheHelper
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.ReportingCacheHelper
 import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.local.SubscriptionReporting
 import grails.gorm.transactions.Transactional

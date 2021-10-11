@@ -1,10 +1,9 @@
-package de.laser.reporting.local
+package de.laser.reporting.report.local
 
 import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
-import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
@@ -21,7 +20,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
-import java.time.Year
 
 class SubscriptionReporting {
 

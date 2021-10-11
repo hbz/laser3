@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.reporting.ReportingCache
+import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.myInstitution.*
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
