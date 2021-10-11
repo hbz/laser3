@@ -72,7 +72,7 @@ class OrgExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -106,16 +106,16 @@ class OrgExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
+                    content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                content.add( BaseExportHelper.getRefdataContent(org, key) )
+                content.add( getRefdataContent(org, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                content.add( BaseExportHelper.getJointableRefdataContent(org, key) )
+                content.add( getJointableRefdataContent(org, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

@@ -102,7 +102,7 @@ class GlobalExportHelper extends BaseExportHelper {
 
     static String getFieldLabel(BaseDetailsExport export, String fieldName) {
 
-        if ( isFieldMultiple(fieldName) ) {
+        if ( BaseDetailsExport.isFieldMultiple(fieldName) ) {
             //String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
             String label = BaseDetailsExport.getMessage(fieldName)
 

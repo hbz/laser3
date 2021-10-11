@@ -68,7 +68,7 @@ class LicenseExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -101,16 +101,16 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
+                    content.add( getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                content.add( BaseExportHelper.getRefdataContent(lic, key) )
+                content.add( getRefdataContent(lic, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                content.add( BaseExportHelper.getJointableRefdataContent(lic, key) )
+                content.add( getJointableRefdataContent(lic, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

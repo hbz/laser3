@@ -28,7 +28,7 @@ class CostItemExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
@@ -92,15 +92,15 @@ class CostItemExport extends BaseDetailsExport {
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
-                content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
+                content.add( getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                content.add( BaseExportHelper.getRefdataContent(ci, key) )
+                content.add( getRefdataContent(ci, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                content.add( BaseExportHelper.getJointableRefdataContent(ci, key) )
+                content.add( getJointableRefdataContent(ci, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

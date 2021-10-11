@@ -58,7 +58,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -91,16 +91,16 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
+                    content.add( getPropertyContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                content.add( BaseExportHelper.getRefdataContent(ie, key) )
+                content.add( getRefdataContent(ie, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                content.add( BaseExportHelper.getJointableRefdataContent(ie, key) )
+                content.add( getJointableRefdataContent(ie, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

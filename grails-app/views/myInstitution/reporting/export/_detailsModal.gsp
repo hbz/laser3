@@ -37,7 +37,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseDetailsExport.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -68,7 +68,7 @@
                     <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${BaseExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${BaseDetailsExport.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"

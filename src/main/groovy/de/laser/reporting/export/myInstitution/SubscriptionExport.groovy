@@ -79,7 +79,7 @@ class SubscriptionExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -112,16 +112,16 @@ class SubscriptionExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()))
+                    content.add( getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()))
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                content.add( BaseExportHelper.getRefdataContent(sub, key) )
+                content.add( getRefdataContent(sub, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                content.add( BaseExportHelper.getJointableRefdataContent(sub, key) )
+                content.add( getJointableRefdataContent(sub, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

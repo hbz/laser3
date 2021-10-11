@@ -1,6 +1,16 @@
 package de.laser.reporting.export.base
 
 import de.laser.ContextService
+import de.laser.IdentifierNamespace
+import de.laser.IssueEntitlement
+import de.laser.License
+import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
+import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.reporting.export.local.LocalExportHelper
 import de.laser.reporting.export.local.CostItemExport as CostItemExportLocal
 import de.laser.reporting.export.local.IssueEntitlementExport as IssueEntitlementExportLocal
@@ -14,6 +24,8 @@ import de.laser.reporting.export.myInstitution.SubscriptionExport as Subscriptio
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
+import java.time.Year
 
 abstract class BaseDetailsExport {
 
@@ -166,6 +178,132 @@ abstract class BaseDetailsExport {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
+
+    // -----
+
+    static def getPropertyContent(Object obj, String field, Class type) {
+
+        def content = obj.getProperty(field)
+
+        if (type in [boolean, Boolean]) {
+            if (obj.getProperty(field) == true) {
+                content = RDStore.YN_YES.getI10n('value')
+            }
+            else if (obj.getProperty(field) == false) {
+                content = RDStore.YN_NO.getI10n('value')
+            }
+            else {
+                content = ''
+            }
+        }
+        content
+    }
+
+    static String getRefdataContent(Object obj, String field) {
+
+        String rdv = obj.getProperty(field)?.getI10n('value') ?: ''
+        rdv
+    }
+
+    static String getJointableRefdataContent(Object obj, String field) {
+
+        Set refdata = obj.getProperty(field) as Set
+        refdata.collect{ it.getI10n('value') }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR )
+    }
+
+    // -----
+
+    static boolean isFieldMultiple(String fieldName) {
+
+        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-contact', '@ae-org-readerNumber', '@ae-entitlement-tippIdentifier']) {
+            return true
+        }
+        return false
+    }
+
+    static void normalizeSelectedMultipleFields(BaseDetailsExport export) {
+
+        export.selectedExportFields.each {it ->
+            if ( isFieldMultiple( it.key ) ) {
+                if ( it.key == '@ae-org-readerNumber' ) {
+                    export.selectedExportFields[it.key] = it.value instanceof String ? [ it.value ] : it.value.collect { it }
+                }
+                else {
+                    export.selectedExportFields[it.key] = it.value instanceof String ? [Long.parseLong(it.value)] : it.value.collect { Long.parseLong(it) }
+                }
+            }
+        }
+    }
+
+    static List getMultipleFieldListForDropdown(String key, Map<String, Object> cfg) {
+
+        if (key == 'x-identifier') {
+            getIdentifierNamespacesForDropdown( cfg )
+        }
+        else if (key == '@ae-org-accessPoint') {
+            getAccessPointMethodsforDropdown()
+        }
+        else if (key == '@ae-org-contact') {
+            getContactOptionsforDropdown()
+        }
+        else if (key == '@ae-org-readerNumber') {
+            getReaderNumberSemesterAndDueDatesForDropdown()
+        }
+        else if (key == '@ae-entitlement-tippIdentifier') {
+            getIdentifierNamespacesForDropdown( cfg )
+        }
+    }
+
+    static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
+        List<IdentifierNamespace> idnsList = []
+
+        if (cfg.base.meta.class == Org) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
+        }
+        else if (cfg.base.meta.class == License) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: License.class.name] )
+        }
+        else if (cfg.base.meta.class == Subscription) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Subscription.class.name] )
+        }
+        else if (cfg.base.meta.class == IssueEntitlement) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: TitleInstancePackagePlatform.class.name] )
+        }
+
+        idnsList.collect{ it ->
+            [ it.id, it.getI10n('name') ?: it.ns + ' *' ]
+        }.sort { a,b -> a[1] <=> b[1] }
+    }
+
+    static List getAccessPointMethodsforDropdown() {
+        List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
+
+        aptList.collect{ it ->
+            [ it.id, it.getI10n('value') ]
+        }
+    }
+    static List getContactOptionsforDropdown() {
+        List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.REPORTING_CONTACT_TYPE )
+
+        aptList.collect{ it ->
+            [ it.id, it.getI10n('value') ]
+        }
+    }
+
+    static List getReaderNumberSemesterAndDueDatesForDropdown() {
+        List<RefdataValue> semList = RefdataCategory.getAllRefdataValuesWithOrder( RDConstants.SEMESTER )
+
+        List result = semList.collect{ it ->
+            [ 'sem-' + it.id, it.getI10n('value') ]
+        }
+
+        int y = Year.now().value
+        result.addAll( (y+2..y-4).collect{[ 'dd-' + it, 'Stichtage für ' + it ]} )
+
+        result
+    }
+
+    // -----
 
     static String getMessage(String token) {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
