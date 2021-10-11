@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3925    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage kopieren nicht möglich
+
 3919    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage: Mehrjahreszeitraum wird bei ClickMeExcel nicht angezeigt
 
 3923    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Lizenzverwaltung Bugs
