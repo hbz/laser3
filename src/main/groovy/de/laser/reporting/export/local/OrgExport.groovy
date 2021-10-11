@@ -5,7 +5,6 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
@@ -35,10 +34,10 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
@@ -47,7 +46,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
                             agency: [
@@ -56,7 +55,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
@@ -154,7 +153,7 @@ class OrgExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-org-contact') {
+                else if (key == '@-org-contact') {
 
                     List coList = []
 
@@ -214,7 +213,7 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( coList.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-readerNumber') {
+                else if (key == '@-org-readerNumber') {
 
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
 
@@ -255,7 +254,7 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( entries.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-accessPoint') {
+                else if (key == '@-org-accessPoint') {
 
                     List oapList = []
 

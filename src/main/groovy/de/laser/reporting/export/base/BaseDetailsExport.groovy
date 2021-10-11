@@ -52,43 +52,43 @@ abstract class BaseDetailsExport {
 
             // virtual; without XY.CONFIG.base.x
 
-            '@ae-subscription-member',
-            '@ae-subscription-memberCount',
-            '@ae-subscription-prevNext',
+            '@-subscription-member',
+            '@-subscription-memberCount',
+            '@-subscription-prevNext',
 
-            '@ae-license-subscriptionCount',
-            '@ae-license-memberCount',
+            '@-license-subscriptionCount',
+            '@-license-memberCount',
 
-            '@ae-org-accessPoint',      // dyn.value
-            '@ae-org-contact',          // dyn.value
-            '@ae-org-readerNumber',     // dyn.value
+            '@-org-accessPoint',      // dyn.value
+            '@-org-contact',          // dyn.value
+            '@-org-readerNumber',     // dyn.value
 
-            '@ae-entitlement-priceItem',
-            '@ae-entitlement-tippName',
-            '@ae-entitlement-tippDeweyDecimalClassification',
-            '@ae-entitlement-tippEditionStatement',
-            '@ae-entitlement-tippFirstAuthor',
-            '@ae-entitlement-tippFirstEditor',
-            '@ae-entitlement-tippHostPlatformURL',
-            '@ae-entitlement-tippIdentifier',            // dyn.value
-            '@ae-entitlement-tippLanguage',
-            '@ae-entitlement-tippOpenAccessX',
-            '@ae-entitlement-tippPackage',
-            '@ae-entitlement-tippPlatform',
-            '@ae-entitlement-tippProvider',
-            '@ae-entitlement-tippPublisherName',
-            '@ae-entitlement-tippSeriesName',
-            '@ae-entitlement-tippSubjectReference',
-            '@ae-entitlement-tippTitleType',
+            '@-entitlement-priceItem',
+            '@-entitlement-tippName',
+            '@-entitlement-tippDeweyDecimalClassification',
+            '@-entitlement-tippEditionStatement',
+            '@-entitlement-tippFirstAuthor',
+            '@-entitlement-tippFirstEditor',
+            '@-entitlement-tippHostPlatformURL',
+            '@-entitlement-tippIdentifier',            // dyn.value
+            '@-entitlement-tippLanguage',
+            '@-entitlement-tippOpenAccessX',
+            '@-entitlement-tippPackage',
+            '@-entitlement-tippPlatform',
+            '@-entitlement-tippProvider',
+            '@-entitlement-tippPublisherName',
+            '@-entitlement-tippSeriesName',
+            '@-entitlement-tippSubjectReference',
+            '@-entitlement-tippTitleType',
 
-            '@ae-cost-entitlement',
-            '@ae-cost-entitlementGroup',
-            '@ae-cost-invoice',
-            '@ae-cost-member',
-            '@ae-cost-order',
-            '@ae-cost-package',
-            '@ae-cost-subscription',
-            '@ae-cost-taxKey'
+            '@-cost-entitlement',
+            '@-cost-entitlementGroup',
+            '@-cost-invoice',
+            '@-cost-member',
+            '@-cost-order',
+            '@-cost-package',
+            '@-cost-subscription',
+            '@-cost-taxKey'
     ]
 
     Map<String, Object> selectedExportFields = [:]
@@ -215,7 +215,7 @@ abstract class BaseDetailsExport {
 
     static boolean isFieldMultiple(String fieldName) {
 
-        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-contact', '@ae-org-readerNumber', '@ae-entitlement-tippIdentifier']) {
+        if (fieldName in [ 'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier']) {
             return true
         }
         return false
@@ -225,7 +225,7 @@ abstract class BaseDetailsExport {
 
         export.selectedExportFields.each {it ->
             if ( isFieldMultiple( it.key ) ) {
-                if ( it.key == '@ae-org-readerNumber' ) {
+                if ( it.key == '@-org-readerNumber' ) {
                     export.selectedExportFields[it.key] = it.value instanceof String ? [ it.value ] : it.value.collect { it }
                 }
                 else {
@@ -240,16 +240,16 @@ abstract class BaseDetailsExport {
         if (key == 'x-identifier') {
             getIdentifierNamespacesForDropdown( cfg )
         }
-        else if (key == '@ae-org-accessPoint') {
+        else if (key == '@-org-accessPoint') {
             getAccessPointMethodsforDropdown()
         }
-        else if (key == '@ae-org-contact') {
+        else if (key == '@-org-contact') {
             getContactOptionsforDropdown()
         }
-        else if (key == '@ae-org-readerNumber') {
+        else if (key == '@-org-readerNumber') {
             getReaderNumberSemesterAndDueDatesForDropdown()
         }
-        else if (key == '@ae-entitlement-tippIdentifier') {
+        else if (key == '@-entitlement-tippIdentifier') {
             getIdentifierNamespacesForDropdown( cfg )
         }
     }

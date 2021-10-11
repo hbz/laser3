@@ -5,7 +5,6 @@ import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -29,8 +28,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@ae-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -124,14 +123,14 @@ class LicenseExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-license-subscriptionCount') { // TODO: query
+                else if (key == '@-license-subscriptionCount') { // TODO: query
                     int count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
                     content.add( count )
                 }
-                else if (key == '@ae-license-memberCount') {
+                else if (key == '@-license-memberCount') {
                     int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count )
                 }

@@ -77,13 +77,15 @@ class CostItemFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'ci.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'ci.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -95,7 +97,7 @@ class CostItemFilter extends BaseFilter {
                     whereParts.add( 'ci.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {

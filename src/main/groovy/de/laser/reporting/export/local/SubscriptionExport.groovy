@@ -7,7 +7,6 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -33,8 +32,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
-                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -62,7 +61,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -146,14 +145,14 @@ class SubscriptionExport extends BaseDetailsExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-subscription-member') {
+                else if (key == '@-subscription-member') {
                     List<Org> members = Subscription.executeQuery(
                             'select distinct oo.org from Subscription sub join sub.orgRelations oo where sub = :sub and oo.roleType in :subscriberRoleTypes',
                             [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )
                     content.add( members.collect{ it.name }.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-subscription-prevNext') {
+                else if (key == '@-subscription-prevNext') {
 
                     Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
                     content.add(

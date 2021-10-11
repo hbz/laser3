@@ -69,9 +69,9 @@ class LicenseFilter extends BaseFilter {
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
-            if (params.get(key)) {
-                //println key + " >> " + params.get(key)
+            //println key + " >> " + params.get(key)
 
+            if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base, p)
 
@@ -89,13 +89,15 @@ class LicenseFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (License.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'lic.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'lic.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -107,7 +109,7 @@ class LicenseFilter extends BaseFilter {
                     whereParts.add( 'lic.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -233,13 +235,15 @@ class LicenseFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'org.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'org.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
@@ -253,7 +257,7 @@ class LicenseFilter extends BaseFilter {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -263,7 +267,7 @@ class LicenseFilter extends BaseFilter {
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                 }
                 // --> custom filter implementation
@@ -283,7 +287,7 @@ class LicenseFilter extends BaseFilter {
                         queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
 
                         whereParts.add('oss.roleValue = :p' + (++pCount))
-                        queryParams.put('p' + pCount, Role.get(params.get(key)))
+                        queryParams.put('p' + pCount, Role.get(params.long(key)))
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de

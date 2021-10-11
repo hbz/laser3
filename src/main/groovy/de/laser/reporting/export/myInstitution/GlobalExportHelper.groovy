@@ -10,7 +10,6 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 
 
-
 class GlobalExportHelper extends BaseExportHelper {
 
     static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
@@ -113,15 +112,15 @@ class GlobalExportHelper extends BaseExportHelper {
                     idns.getI10n('name') ?: idns.ns + ' *'
                 }.join(', ') : '')
             }
-            else if (fieldName == '@ae-org-accessPoint') {
+            else if (fieldName == '@-org-accessPoint') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
-            else if (fieldName == '@ae-org-contact') {
+            else if (fieldName == '@-org-contact') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
-            else if (fieldName == '@ae-org-readerNumber') {
+            else if (fieldName == '@-org-readerNumber') {
                 List selList = export.getSelectedFields().get(fieldName)
                 List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }
                 List ddList  = selList.findAll{ it.startsWith('dd-') }.collect{ it.replace('dd-', 'Stichtage ') }

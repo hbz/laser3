@@ -91,13 +91,15 @@ class SubscriptionFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'sub.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'sub.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -109,7 +111,7 @@ class SubscriptionFilter extends BaseFilter {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -221,13 +223,15 @@ class SubscriptionFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'mbr.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'mbr.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -239,7 +243,7 @@ class SubscriptionFilter extends BaseFilter {
                     whereParts.add( 'mbr.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -355,13 +359,15 @@ class SubscriptionFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'org.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'org.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
@@ -375,7 +381,7 @@ class SubscriptionFilter extends BaseFilter {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -384,7 +390,7 @@ class SubscriptionFilter extends BaseFilter {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                 }
                 // --> custom filter implementation
@@ -395,7 +401,7 @@ class SubscriptionFilter extends BaseFilter {
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_LEGAL_INFO) {
                         long li = params.long(key)
@@ -411,7 +417,7 @@ class SubscriptionFilter extends BaseFilter {
                         queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
 
                         whereParts.add('oss.roleValue = :p' + (++pCount))
-                        queryParams.put('p' + pCount, Role.get(params.get(key)))
+                        queryParams.put('p' + pCount, Role.get(params.long(key)))
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
