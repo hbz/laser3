@@ -86,7 +86,7 @@
                 <g:set var="subscr"
                        value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
-                    <td>${i + 1}</td>
+                    <td>${(offset ?: 0) + i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
                         <td>
                             ${subscr.sortname}
