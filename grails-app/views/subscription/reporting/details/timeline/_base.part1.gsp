@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
+<%@ page import="de.laser.reporting.export.local.LocalExportHelper;" %>
 <br />
 
 <div style="text-align: right">

@@ -21,7 +21,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
-class SubscriptionReporting {
+class SubscriptionReport {
 
     static String KEY = 'subscription'
     static String NO_DATE = 'Keine Angabe'
@@ -88,7 +88,7 @@ class SubscriptionReporting {
         if (sub.getConsortia()) {
             if (! sub.getAllSubscribers()) {
 //                println '- consortium @ subscriptionCons'
-                return SubscriptionReporting.CONFIG.base.query2.consAtcons
+                return SubscriptionReport.CONFIG.base.query2.consAtcons
             }
             else {
 //                println '- consortium @ subscriptionMember'
@@ -98,7 +98,7 @@ class SubscriptionReporting {
         else {
 //            println '- locals'
         }
-        SubscriptionReporting.CONFIG.base.query2.default
+        SubscriptionReport.CONFIG.base.query2.default
     }
 
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {

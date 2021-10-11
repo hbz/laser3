@@ -73,7 +73,7 @@ class CostItemExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportLocalHelper.getFieldLabel( this, fieldName )
+        LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override

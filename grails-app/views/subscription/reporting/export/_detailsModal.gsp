@@ -1,12 +1,12 @@
-<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.local.LocalExportHelper; de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
-    <g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />
+    %{--<g:set var="filterLabels" value="${LocalExportHelper.getCachedFilterLabels( token )}" />--}%
+    <g:set var="queryLabels" value="${LocalExportHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="Export" msgSave="${message(code: 'default.button.export.label')}">
 
@@ -22,7 +22,7 @@
             </div>
     --}%
 
-        <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}

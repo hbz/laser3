@@ -3,8 +3,6 @@ package de.laser.ctrl
 import com.k_int.kbplus.*
 import de.laser.*
 import de.laser.auth.User
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -15,7 +13,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.report.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
 import de.laser.workflow.WfWorkflow
@@ -23,7 +21,6 @@ import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
@@ -2657,8 +2654,8 @@ class SubscriptionControllerService {
         Subscription sub = Subscription.get(params.id)
 
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
-        result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
-        result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
+        result.cfgQueryList  = SubscriptionReport.CONFIG.base.query.default
+        result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

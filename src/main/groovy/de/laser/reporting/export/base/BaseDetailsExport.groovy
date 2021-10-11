@@ -1,12 +1,12 @@
 package de.laser.reporting.export.base
 
 import de.laser.ContextService
-import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.local.LocalExportHelper
 import de.laser.reporting.export.local.CostItemExport as CostItemExportLocal
 import de.laser.reporting.export.local.IssueEntitlementExport as IssueEntitlementExportLocal
 import de.laser.reporting.export.local.OrgExport as OrgExportLocal
 import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportLocal
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
@@ -149,12 +149,12 @@ abstract class BaseDetailsExport {
         String pkg = this.class.package.toString()
 
         if (pkg.endsWith('.myInstitution')) {
-            cfg   = ExportGlobalHelper.getCachedConfigStrategy( token )
-            field = ExportGlobalHelper.getCachedFieldStrategy( token )
+            cfg   = GlobalExportHelper.getCachedConfigStrategy( token )
+            field = GlobalExportHelper.getCachedFieldStrategy( token )
         }
         else if (pkg.endsWith('.local')) {
-            cfg   = ExportLocalHelper.getCachedConfigStrategy( token )
-            field = ExportLocalHelper.getCachedFieldStrategy( token )
+            cfg   = LocalExportHelper.getCachedConfigStrategy( token )
+            field = LocalExportHelper.getCachedFieldStrategy( token )
         }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map

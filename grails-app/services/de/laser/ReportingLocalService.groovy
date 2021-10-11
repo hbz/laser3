@@ -4,7 +4,7 @@ import de.laser.helper.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.ReportingCacheHelper
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import de.laser.reporting.report.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReport
 import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -31,15 +31,15 @@ class ReportingLocalService {
             Subscription sub = Subscription.get( params.id )
 
             if (prefix in ['timeline']) {
-                Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
-                result.putAll( SubscriptionReporting.query(clone) )
+                Map<String, Object> queryCfg = SubscriptionReport.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
+                result.putAll( SubscriptionReport.query(clone) )
                 //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
-                result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReporting.getMessage('timeline.chartLabel.' + it) } // TODO
+                result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReport.getMessage('timeline.chartLabel.' + it) } // TODO
                 result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
             }
             else {
-                result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+                result.putAll( SubscriptionReport.query(clone) )
+                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone).get(1)
                 result.tmpl = '/subscription/reporting/chart/default'
             }
 
@@ -75,7 +75,7 @@ class ReportingLocalService {
             }
 
             if (params.query == 'timeline-cost') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
@@ -93,7 +93,7 @@ class ReportingLocalService {
                 result.tmpl        = '/subscription/reporting/details/timeline/cost'
             }
             else if (params.query in ['timeline-entitlement', 'timeline-member']) {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 if (params.query == 'timeline-entitlement') {
                     String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name'
@@ -113,7 +113,7 @@ class ReportingLocalService {
                 }
             }
             else if (params.query == 'timeline-annualMember-subscription') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabelsForAnnual(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabelsForAnnual(params)
 
                 result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
                 result.tmpl = '/subscription/reporting/details/timeline/subscription'
@@ -122,7 +122,7 @@ class ReportingLocalService {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('label', label) // todo
 
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }

@@ -6,7 +6,7 @@ import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.myInstitution.GenericHelper
 
-class ExportLocalHelper extends BaseExportHelper {
+class LocalExportHelper extends BaseExportHelper {
 
     static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
 

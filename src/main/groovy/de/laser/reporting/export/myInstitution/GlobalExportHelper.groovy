@@ -11,7 +11,7 @@ import de.laser.reporting.report.myInstitution.base.BaseQuery
 
 
 
-class ExportGlobalHelper extends BaseExportHelper {
+class GlobalExportHelper extends BaseExportHelper {
 
     static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
 

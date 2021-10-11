@@ -93,7 +93,7 @@ class SubscriptionExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportLocalHelper.getFieldLabel( this, fieldName )
+        LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -167,7 +167,7 @@ class SubscriptionExport extends BaseDetailsExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = ExportLocalHelper.getDetailsCache(token).id as Long
+                    Long pdId = LocalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

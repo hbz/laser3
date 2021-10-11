@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.report.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReport
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -61,7 +61,7 @@ class BaseQuery {
             it.value.get('query')?.default?.each { it2 ->
                 if (it2.value.contains(query)) {
                     if (cfgKey == 'SubscriptionReporting') {
-                        meta = [SubscriptionReporting.getMessage(it2.key), SubscriptionReporting.getMessage('query.' + query) ]
+                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query) ]
                     } else {
                         meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
                     }
@@ -71,7 +71,7 @@ class BaseQuery {
             it.value.get('query2')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
                     if (cfgKey == 'SubscriptionReporting') {
-                        meta = [SubscriptionReporting.getMessage(it2.key), SubscriptionReporting.getMessage('timeline.' + query) ]
+                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
                     } else {
                         meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
                     }
