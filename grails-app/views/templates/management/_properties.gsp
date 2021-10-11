@@ -465,7 +465,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <td>${i + 1}</td>
+                        <td>${(offset ?: 0) + i + 1}</td>
                         <g:if test="${controllerName == "subscription"}">
                             <td>
                                 ${subscr.sortname}
@@ -704,7 +704,7 @@
 
     <g:if test="${controllerName == "myInstitution"}">
         <g:if test="${filteredSubscriptions}">
-            <semui:paginate action="${actionName}" controller="${controllerNamr}" params="${params}"
+            <semui:paginate action="${actionName}" controller="${controllerName}" params="${params+[propertiesFilterPropDef: propertiesFilterPropDef]}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${num_sub_rows}"/>
