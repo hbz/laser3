@@ -1,9 +1,9 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.report.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.base.AbstractBase
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 

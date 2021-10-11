@@ -11,8 +11,8 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.SubscriptionQuery
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.reporting.report.myInstitution.SubscriptionQuery
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.web.taglib.ApplicationTagLib

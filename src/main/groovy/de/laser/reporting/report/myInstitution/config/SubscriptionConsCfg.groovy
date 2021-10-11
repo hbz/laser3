@@ -1,8 +1,8 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionConsCfg extends BaseConfig {
 

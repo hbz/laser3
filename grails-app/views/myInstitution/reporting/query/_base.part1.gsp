@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">

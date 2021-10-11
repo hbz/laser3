@@ -1,7 +1,7 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.finance.CostItem
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class CostItemXCfg extends BaseConfig {
 

@@ -1,9 +1,9 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
-class OrganisationConsCfg extends BaseConfig {
+class OrganisationInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
@@ -13,12 +13,11 @@ class OrganisationConsCfg extends BaseConfig {
                             cfgKey: KEY_ORGANISATION
                     ],
                     source : [
-                            'all-org',
-                            'all-inst',
+                            'all-consortium',
                             'all-provider',
                             'all-agency',
                             'all-providerAndAgency',
-                            'my-inst',
+                            'my-consortium',
                             'my-provider',
                             'my-agency',
                             'my-providerAndAgency'
@@ -39,10 +38,8 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'country', 'region', 'subjectGroup', 'libraryType' ],
-                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
-                                    [ 'orgType', 'eInvoice' ],
-                                    [ 'customerType', 'legalInfo' ]
+                                    [ 'country', 'region' ],
+                                    [ 'libraryNetwork',  'orgType' ]
                             ],
                             provider : [ // TODO : provider != agency
                                     // all disabled
@@ -51,15 +48,15 @@ class OrganisationConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'org' : [
-                                            'org-orgType',
-                                            'org-customerType',
-                                            'org-libraryType',
-                                            'org-region',
-                                            'org-subjectGroup',
-                                            'org-libraryNetwork',
-                                            'org-funderType',
-                                            'org-funderHskType',
-                                            'org-*'
+                                           'org-orgType',
+                                           'org-customerType',
+                                           'org-libraryType',
+                                           'org-region',
+                                           'org-subjectGroup',
+                                           'org-libraryNetwork',
+                                           'org-funderType',
+                                           'org-funderHskType',
+                                           'org-*'
                                     ]
                             ],
                             providerAndAgency : [
@@ -74,17 +71,17 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'distribution' : [
-                                    'org-x-identifier' : [
-                                             detailsTemplate     : 'organisation',
-                                             chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'base', 'x.identifiers' ]
-                                    ],
-                                    'org-x-property' : [
-                                            detailsTemplate     : 'organisation',
-                                            chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'base', 'x.properties' ]
-                                   ]
-                                    //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
+                                     'org-x-identifier' : [
+                                             detailsTemplate    : 'organisation',
+                                             chartTemplate      : '2axis2values_nonMatches',
+                                             chartLabels        : [ 'base', 'x.identifiers' ]
+                                     ],
+                                     'org-x-property' : [
+                                             detailsTemplate    : 'organisation',
+                                             chartTemplate      : '2axis2values',
+                                             chartLabels        : [ 'base', 'x.properties' ]
+                                     ]
+                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]
             ]

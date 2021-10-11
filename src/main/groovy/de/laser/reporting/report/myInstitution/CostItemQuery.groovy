@@ -1,9 +1,8 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.report.myInstitution
 
-import de.laser.ContextService
-import de.laser.reporting.myInstitution.base.BaseFilter
-import de.laser.reporting.myInstitution.base.BaseQuery
-import grails.util.Holders
+
+import de.laser.reporting.report.myInstitution.base.BaseFilter
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class CostItemQuery extends BaseQuery {

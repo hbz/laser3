@@ -15,7 +15,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReporting
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
 import de.laser.workflow.WfWorkflow

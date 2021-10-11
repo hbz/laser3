@@ -4,7 +4,7 @@ import de.laser.*
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.report.myInstitution.GenericHelper
 
 class ExportLocalHelper extends BaseExportHelper {
 

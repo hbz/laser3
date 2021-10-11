@@ -1,4 +1,4 @@
-package de.laser.reporting.myInstitution.base
+package de.laser.reporting.report.myInstitution.base
 
 import de.laser.I10nTranslation
 import de.laser.IdentifierNamespace
@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReporting
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource

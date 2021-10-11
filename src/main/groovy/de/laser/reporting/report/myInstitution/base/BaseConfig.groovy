@@ -1,16 +1,16 @@
-package de.laser.reporting.myInstitution.base
+package de.laser.reporting.report.myInstitution.base
 
 import de.laser.ContextService
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
-import de.laser.reporting.myInstitution.config.CostItemXCfg
-import de.laser.reporting.myInstitution.config.LicenseConsCfg
-import de.laser.reporting.myInstitution.config.LicenseInstCfg
-import de.laser.reporting.myInstitution.config.OrganisationConsCfg
-import de.laser.reporting.myInstitution.config.OrganisationInstCfg
-import de.laser.reporting.myInstitution.config.SubscriptionConsCfg
-import de.laser.reporting.myInstitution.config.SubscriptionInstCfg
+import de.laser.reporting.report.myInstitution.config.CostItemXCfg
+import de.laser.reporting.report.myInstitution.config.LicenseConsCfg
+import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
+import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
+import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
+import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
+import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder

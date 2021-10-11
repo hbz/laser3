@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.myInstitution.base.BaseConfig;" %>
+<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection />
 <!-- _queryModal.gsp -->
 

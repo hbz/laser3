@@ -5,9 +5,9 @@ import de.laser.RefdataValue
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.GenericHelper
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.reporting.report.myInstitution.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 
 
 
