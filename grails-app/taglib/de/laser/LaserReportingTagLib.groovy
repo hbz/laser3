@@ -138,7 +138,7 @@ class LaserReportingTagLib {
     def reportFilterRefdataRelTable = { attrs, body ->
 
         //println 'reportFilterRefdataRelTable'
-        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(attrs.refdata)
+        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

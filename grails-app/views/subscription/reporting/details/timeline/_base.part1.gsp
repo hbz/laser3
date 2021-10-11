@@ -10,7 +10,7 @@
 <div class="ui tiny steps">
     <g:each in="${labels}" var="lbl" status="i">
         <g:if test="${i+1 == labels.size()}">
-            <div class="step active">
+            <div class="step">
         </g:if>
         <g:else>
             <div class="step">

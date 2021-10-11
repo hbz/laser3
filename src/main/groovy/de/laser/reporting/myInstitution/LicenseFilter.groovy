@@ -116,7 +116,7 @@ class LicenseFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_KEY_ANNUAL) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ANNUAL) {
                         List tmpList = []
 
                         params.list(key).each { pk ->
@@ -130,17 +130,17 @@ class LicenseFilter extends BaseFilter {
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
-                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
-                    else if (p == BaseConfig.CUSTOM_KEY_STARTDATE_LIMIT) {
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(lic.startDate) >= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CUSTOM_KEY_ENDDATE_LIMIT) {
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
                         whereParts.add( '(YEAR(lic.endDate) <= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
@@ -258,7 +258,7 @@ class LicenseFilter extends BaseFilter {
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == BaseConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
@@ -269,14 +269,14 @@ class LicenseFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
-                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
                         queryBase = queryBase + ' , OrgSetting oss'
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
@@ -285,7 +285,7 @@ class LicenseFilter extends BaseFilter {
                         whereParts.add('oss.roleValue = :p' + (++pCount))
                         queryParams.put('p' + pCount, Role.get(params.get(key)))
 
-                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                 }

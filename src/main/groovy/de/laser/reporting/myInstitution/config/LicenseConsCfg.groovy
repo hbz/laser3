@@ -17,12 +17,12 @@ class LicenseConsCfg extends BaseConfig {
                             'consortia-lic'
                     ],
                     fields : [
-                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
+                            'annual'                : FIELD_TYPE_CUSTOM_IMPL,
+                            'endDateLimit'          : FIELD_TYPE_CUSTOM_IMPL,
+                            'licenseCategory'       : FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
+                            'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
+                            'status'                : FIELD_TYPE_REFDATA,
                             //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
@@ -72,9 +72,9 @@ class LicenseConsCfg extends BaseConfig {
                             'depending-licensor'
                     ],
                     fields : [
-                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'   : FIELD_TYPE_REFDATA,
+                            'region'    : FIELD_TYPE_REFDATA,
+                            'orgType'   : FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
                             default: []

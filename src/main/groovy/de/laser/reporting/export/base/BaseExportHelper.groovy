@@ -43,6 +43,18 @@ abstract class BaseExportHelper {
         content
     }
 
+    static String getRefdataContent(Object obj, String field) {
+
+        String rdv = obj.getProperty(field)?.getI10n('value') ?: ''
+        rdv
+    }
+
+    static String getJointableRefdataContent(Object obj, String field) {
+
+        Set refdata = obj.getProperty(field) as Set
+        refdata.collect{ it.getI10n('value') }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR )
+    }
+
     static Cell updateCell(Workbook workbook, Cell cell, def value) {
 
         CreationHelper createHelper = workbook.getCreationHelper()

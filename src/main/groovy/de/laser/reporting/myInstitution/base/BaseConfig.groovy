@@ -37,13 +37,13 @@ class BaseConfig {
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
 
-    static String CUSTOM_KEY_SUBJECT_GROUP      = 'subjectGroup'
-    static String CUSTOM_KEY_ORG_TYPE           = 'orgType'
-    static String CUSTOM_KEY_CUSTOMER_TYPE      = 'customerType'
-    static String CUSTOM_KEY_LEGAL_INFO         = 'legalInfo'
-    static String CUSTOM_KEY_ANNUAL             = 'annual'
-    static String CUSTOM_KEY_STARTDATE_LIMIT    = 'startDateLimit'
-    static String CUSTOM_KEY_ENDDATE_LIMIT      = 'endDateLimit'
+    static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
+    static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
+    static String CUSTOM_IMPL_KEY_CUSTOMER_TYPE     = 'customerType'
+    static String CUSTOM_IMPL_KEY_LEGAL_INFO        = 'legalInfo'
+    static String CUSTOM_IMPL_KEY_ANNUAL            = 'annual'
+    static String CUSTOM_IMPL_KEY_STARTDATE_LIMIT   = 'startDateLimit'
+    static String CUSTOM_IMPL_KEY_ENDDATE_LIMIT     = 'endDateLimit'
 
     static List<String> FILTER = [
             'organisation', 'subscription', 'license' // 'costItem'
@@ -110,25 +110,25 @@ class BaseConfig {
         }
     }
 
-    static Map<String, Object> getCustomRefdata(String key) {
+    static Map<String, Object> getCustomImplRefdata(String key) {
 
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.cfg.base.custom'
 
-        if (key == CUSTOM_KEY_SUBJECT_GROUP) {
+        if (key == CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
             return [
                     label: messageSource.getMessage('org.subjectGroup.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
             ]
         }
-        else if (key == CUSTOM_KEY_ORG_TYPE) {
+        else if (key == CUSTOM_IMPL_KEY_ORG_TYPE) {
             return [
                     label: messageSource.getMessage('org.orgType.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
             ]
         }
-        else if (key == CUSTOM_KEY_CUSTOMER_TYPE) {
+        else if (key == CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
@@ -138,7 +138,7 @@ class BaseConfig {
                     ] }
             ]
         }
-        else if (key == CUSTOM_KEY_LEGAL_INFO) {
+        else if (key == CUSTOM_IMPL_KEY_LEGAL_INFO) {
             Locale localeDe = new Locale.Builder().setLanguage("de").build()
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
@@ -163,21 +163,21 @@ class BaseConfig {
                         ]   // ui icon red question mark
             ]]
         }
-        else if (key == CUSTOM_KEY_ANNUAL) {
+        else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
             int y = Year.now().value
             return [
                     label: messageSource.getMessage(ck + '.annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
-        else if (key == CUSTOM_KEY_STARTDATE_LIMIT) {
+        else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
             int y = Year.now().value
             return [
                     label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
-        else if (key == CUSTOM_KEY_ENDDATE_LIMIT) {
+        else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
             int y = Year.now().value
             return [
                     label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),

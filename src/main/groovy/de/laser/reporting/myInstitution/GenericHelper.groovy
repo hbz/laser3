@@ -64,13 +64,13 @@ class GenericHelper {
         if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
-            Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)
+            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             label = customRdv.get('label')
         }
         if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
-            Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)
+            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             if (!customRdv) {
                 println '>> ' + fieldName + ' : ' + type + ' not found!'
             }

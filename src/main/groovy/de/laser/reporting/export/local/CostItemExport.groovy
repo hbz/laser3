@@ -92,29 +92,15 @@ class CostItemExport extends BaseDetailsExport {
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
-
-                if (CostItem.getDeclaredField(key).getType() == Double) {
-                    if (ci.getProperty(key)) {
-                        content.add( ci.getProperty(key ) )
-                        //content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim() )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else {
-                    content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
-                }
+                content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = ci.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( BaseExportHelper.getRefdataContent(ci, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = ci.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( BaseExportHelper.getJointableRefdataContent(ci, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {

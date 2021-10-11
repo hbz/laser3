@@ -19,17 +19,14 @@ import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.grails.plugins.web.taglib.ApplicationTagLib
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
-import java.time.Year
 
 class DetailsExportManager {
 

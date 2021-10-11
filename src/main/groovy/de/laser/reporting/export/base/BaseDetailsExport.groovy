@@ -30,7 +30,7 @@ abstract class BaseDetailsExport {
 
     String token                    // cache token
 
-    static List<String> CUSTOM_LABEL = [
+    static List<String> CUSTOM_FIELD_KEY = [
 
             'globalUID',
 

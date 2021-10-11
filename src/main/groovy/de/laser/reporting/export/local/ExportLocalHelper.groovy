@@ -124,7 +124,7 @@ class ExportLocalHelper extends BaseExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseDetailsExport.CUSTOM_LABEL.contains(fieldName)) {
+        else if (BaseDetailsExport.CUSTOM_FIELD_KEY.contains(fieldName)) {
             return BaseDetailsExport.getMessage(fieldName)
         }
 
