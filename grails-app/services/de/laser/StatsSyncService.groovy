@@ -439,7 +439,8 @@ class StatsSyncService {
                                         //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c5asPlatform, customer: keyPair.customer, reportID: reportId, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                         boolean more = true
                                         while(more) {
-                                            String url = statsUrl+reportId+params+"&begin_date=${monthFormatter.format(startTime.getTime())}&end_date=${monthFormatter.format(currentYearEnd.getTime())}"
+                                            String reportReqId = statsUrl.endsWith("/") ? reportId : '/'+reportId
+                                            String url = statsUrl+reportReqId+params+"&begin_date=${monthFormatter.format(startTime.getTime())}&end_date=${monthFormatter.format(currentYearEnd.getTime())}"
                                             Map<String, Object> report = fetchJSONData(url)
                                             if(report.header) {
                                                 List<Map> exceptions = report.header.Exceptions

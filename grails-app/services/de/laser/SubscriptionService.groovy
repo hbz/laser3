@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovyx.gpars.GParsPool
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -881,7 +882,8 @@ class SubscriptionService {
 
             RefdataValue statusCurrent = RDStore.TIPP_STATUS_CURRENT
 
-            new SubscriptionPackage(subscription:target, pkg: pkg).save()
+            SubscriptionPackage newSp = new SubscriptionPackage(subscription: target, pkg: pkg)
+            newSp.save()
 
             IssueEntitlement.executeQuery(
                     "select ie from IssueEntitlement ie join ie.tipp tipp " +

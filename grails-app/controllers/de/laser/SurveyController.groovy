@@ -30,6 +30,7 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -55,6 +56,7 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     ExportClickMeService exportClickMeService
     CustomWkhtmltoxService wkhtmltoxService
+    ExecutorService executorService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
@@ -4093,14 +4095,14 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                         }
                             countNewSubs++
-                            result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params)
+                            result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     } else {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
 
                 }
@@ -4114,7 +4116,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     }
                     else {
                         use(TimeCategory) {
@@ -4122,7 +4124,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
                 }else {
                     use(TimeCategory) {
@@ -4130,7 +4132,7 @@ class SurveyController {
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                     }
                     countNewSubs++
-                    result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                    result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
@@ -4142,7 +4144,7 @@ class SurveyController {
                     if (!(org in result.parentSuccessortParticipantsList)) {
 
                         countNewSubs++
-                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params)
+                        result.newSubs.addAll(processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
                     }
                 }
             }
@@ -4277,13 +4279,6 @@ class SurveyController {
                         }
                     }
 
-                    packagesToProcess.each { pkg ->
-                        if(params.linkWithEntitlements)
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
-                        else
-                            subscriptionService.addToSubscription(memberSub, pkg, false)
-                    }
-
                     licensesToProcess.each { License lic ->
                         subscriptionService.setOrgLicRole(memberSub,lic,false)
                     }
@@ -4299,6 +4294,19 @@ class SurveyController {
                     return memberSub
                 }
             }
+
+            newParentSub.getDerivedSubscriptions().each { Subscription memberSub ->
+                packagesToProcess.each { pkg ->
+                    if(params.linkWithEntitlements) {
+                        executorService.execute({
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
+                        })
+                    }
+                    else
+                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                }
+            }
+
         }
     }
 

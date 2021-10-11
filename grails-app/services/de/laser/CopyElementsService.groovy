@@ -49,6 +49,8 @@ class CopyElementsService {
     static final String WORKFLOW_PROPERTIES = '4'
     static final String WORKFLOW_END = '6'
 
+    boolean bulkOperationRunning = false
+
     List<String> allowedProperties(Object obj) {
         List<String> result = []
         switch (obj.class.simpleName) {
@@ -740,16 +742,8 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            boolean lock = false
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageTransfer_'+sourceObject.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    flash.message = messageSource.getMessage('subscription.details.copyPackage.thread.running',null, LocaleContextHolder.getLocale())
-                    lock = true
-                }
-            }
-            if(!lock) {
+            if(!bulkOperationRunning) {
+                bulkOperationRunning = true
                 executorService.execute({
                     Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
                     if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
@@ -785,6 +779,7 @@ class CopyElementsService {
                         deleteIssueEntitlementGroupItem(deleteTitleGroups)
 
                     }
+                    bulkOperationRunning = false
                 })
             }
 
@@ -1254,9 +1249,9 @@ class CopyElementsService {
                         if (ie.status != RDStore.TIPP_STATUS_DELETED && ie.tipp.status != RDStore.TIPP_STATUS_DELETED) {
                             boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_DELETED }
                             if (check) {
-                                // mich gibts schon! Fehlermeldung ausgeben!
+                                // mich gibts schon! Da aber der Prozeß asynchron läuft, kann keine Fehlermeldung (mehr) ausgegeben werden!
                                 Object[] args = [ie.name]
-                                flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
+                                //flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                             } else {
                                 def properties = ie.properties
                                 properties.globalUID = null

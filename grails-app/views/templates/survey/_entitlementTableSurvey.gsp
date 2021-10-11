@@ -26,7 +26,7 @@
                    value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
-                       value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
+                       value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)}"/>
                 <g:set var="allowedToSelect"
                        value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
             </g:if>
@@ -72,7 +72,7 @@
 
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title"
-                                  model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                  model="${[ie: ie, tipp: ie.tipp, apisources: apisources,
                                             showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>

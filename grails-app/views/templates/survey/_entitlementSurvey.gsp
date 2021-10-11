@@ -34,7 +34,7 @@
         </span>
     </a>
 
-    <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
+    <g:if test="${showStatisticByParticipant}">
         <a class="item" data-tab="stats"><g:message code="default.stats.label"/></a>
     </g:if>
 </div>
@@ -89,7 +89,7 @@
 
 </div>
 
-<g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
+<g:if test="${showStatisticByParticipant}">
     <div class="ui bottom attached tab segment" data-tab="stats">
 
         <g:link controller="subscription" action="renewEntitlementsWithSurvey"

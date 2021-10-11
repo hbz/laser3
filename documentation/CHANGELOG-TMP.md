@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
+
+3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
+
 3901    06.10.2021  dev     2.3         David   Feature     Reporting: XLSX-Export - Datentypen
 
 3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
@@ -15,7 +19,7 @@
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 
-3891    04.10.2021  rc-2.2  2.2.1         Moe   Bug         Titel löschen aus Bestand Fehler
+3891    04.10.2021  rc-2.2  2.2.1       Moe     Bug         Titel löschen aus Bestand Fehler
 
 3895    04.10.2021  rc-2.2  2.2         Moe     Bug         Adressbuch nicht aufrufbar
 

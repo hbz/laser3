@@ -806,7 +806,7 @@ select distinct oap from OrgAccessPoint oap
 
         if(isMultiYear) {
             result.startDate = startDate
-            result.endDate = (endDate == instanceOf.endDate) ? endDate : instanceOf.endDate
+            result.endDate = instanceOf ? ((endDate == instanceOf.endDate) ? endDate : instanceOf.endDate) : endDate
         }
         else {
             result.startDate = startDate
