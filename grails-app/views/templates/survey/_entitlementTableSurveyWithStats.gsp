@@ -7,7 +7,7 @@
         <thead>
         <tr>
             <th>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
+                %{--<g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>--}%
             </th>
             <th>${message(code: 'sidewide.number')}</th>
             <g:if test="${params.tabStat != 'total'}">

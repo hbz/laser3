@@ -1563,8 +1563,16 @@ class SurveyService {
     }
 
     IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
+        IssueEntitlement ie
+        if(subscription.packages && tipp.pkg in subscription.packages.pkg) {
+            ie = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
+        }else {
+            TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL).each {TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                ie = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, titleInstancePackagePlatform)
+            }
+        }
 
-        IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
+        return ie
     }
 
     boolean showStatisticByParticipant(Subscription subscription, Org org) {

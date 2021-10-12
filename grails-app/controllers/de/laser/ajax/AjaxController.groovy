@@ -453,11 +453,9 @@ class AjaxController {
 
               Subscription baseSub = Subscription.get(params.baseSubID)
               Subscription newSub = Subscription.get(params.newSubID)
+              Subscription previousSubscription = newSub._getCalculatedPrevious()
 
               List<Long> sourceTipps
-
-              Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-              List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
 
               Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
               List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
@@ -466,7 +464,18 @@ class AjaxController {
               List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
 
               List<IssueEntitlement> sourceIEs
+
+              if(params.tab == 'currentIEs') {
+                  Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
+                  List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_DELETED) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_DELETED) : [])
+
+              }
+
               if(params.tab == 'allIEs') {
+                  Map query = filterService.getIssueEntitlementQuery(params, baseSub)
+                  List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
                   sourceTipps = allIETipps
                   sourceTipps = sourceTipps.minus(selectedIETipps)
                   sourceTipps = sourceTipps.minus(targetIETipps)
