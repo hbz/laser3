@@ -1508,14 +1508,16 @@ SELECT * FROM (
                 case 'replacePropertyDefinition':
                     PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
                     PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                    String oldName = pdFrom.tenant ? "${pdFrom.name} (priv.)" : pdFrom.name
+                    String newName = pdTo.tenant ? "${pdTo.name} (priv.)" : pdTo.name
                     if (pdFrom && pdTo) {
                         try {
                             int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, params.xcgPdFrom, params.xcgPdTo])
+                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
                         }
                         catch (Exception e) {
                             e.printStackTrace()
-                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [params.xcgPdFrom, params.xcgPdTo])
+                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
                         }
                     }
                     break
