@@ -6,6 +6,7 @@ import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.export.local.LocalQueryExport
 import de.laser.reporting.export.myInstitution.GlobalQueryExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
+import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Row
@@ -13,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class QueryExportManager {
 
@@ -53,6 +55,7 @@ class QueryExportManager {
     }
 
     static String buildRowCSV(List<Object> row) {
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
         row.collect{ col ->
             boolean enclose = false
@@ -68,11 +71,9 @@ class QueryExportManager {
                     return BaseDetailsExport.CSV_FIELD_QUOTATION + col.trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
                 }
             }
-//            else if (col instanceof Date) {
-//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowCSV() ' + col + ' instanceof Date'
-//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-//                return sdf.format(col)
-//            }
+            else if (col instanceof Double) {
+                return BaseDetailsExport.CSV_FIELD_QUOTATION + g.formatNumber( number: col, type: 'currency',  currencySymbol: '' ).trim() + BaseDetailsExport.CSV_FIELD_QUOTATION
+            }
             else {
                 col = col.toString()
             }
@@ -82,6 +83,7 @@ class QueryExportManager {
     }
 
     static List<String> buildRowPDF(List<Object> row) {
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
         row.collect{ col ->
             if (! col) {
@@ -90,11 +92,9 @@ class QueryExportManager {
             if (col instanceof String) {
                 // ..
             }
-//            else if (col instanceof Date) {
-//                println '!?? >>>>>>>>>>>>>>>>>>>>>>>>>>>> QueryExportManager.buildRowPDF() ' + col + ' instanceof Date'
-//                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-//                return sdf.format(col)
-//            }
+            else if (col instanceof Double) {
+                col = g.formatNumber( number: col, type: 'currency',  currencySymbol: '' ).trim()
+            }
             else {
                 col = col.toString()
             }
@@ -116,7 +116,6 @@ class QueryExportManager {
 
             Row entry = sheet.createRow(idx+1)
             row.eachWithIndex{ v, i ->
-
                 Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
                 sheet.autoSizeColumn(i)
             }
