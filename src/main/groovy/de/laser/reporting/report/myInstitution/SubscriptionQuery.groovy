@@ -23,7 +23,7 @@ class SubscriptionQuery extends BaseQuery {
 
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
-        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
+        List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
@@ -101,7 +101,7 @@ class SubscriptionQuery extends BaseQuery {
                 }
 
                 List<Long> nonMatchingIdList = memberSubIdList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List nonList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+                List<Long> nonList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (nonList) {
                     result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL), nonList.size()])
@@ -133,7 +133,7 @@ class SubscriptionQuery extends BaseQuery {
                 }
 
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
                     result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL), noDataList.size()])
@@ -185,7 +185,7 @@ class SubscriptionQuery extends BaseQuery {
                 }
 
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
                     result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL), noDataList.size()])
@@ -288,7 +288,7 @@ class SubscriptionQuery extends BaseQuery {
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,

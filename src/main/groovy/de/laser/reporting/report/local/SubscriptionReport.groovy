@@ -334,7 +334,7 @@ class SubscriptionReport {
 
             else if (prefix == 'tipp') {
 
-                List<TitleInstancePackagePlatform> idList = TitleInstancePackagePlatform.executeQuery(
+                List<Long> idList = TitleInstancePackagePlatform.executeQuery(
                         'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status and ie.acceptStatus = :acceptStatus',
                         [id: id, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
                 )
@@ -381,7 +381,7 @@ class SubscriptionReport {
                     }
 
                     List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                    List<Long> noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
@@ -418,7 +418,7 @@ class SubscriptionReport {
                     }
 
                     List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                    List<Long> noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 

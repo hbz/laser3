@@ -26,7 +26,7 @@ class OrganisationQuery extends BaseQuery {
 
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
-        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
+        List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
@@ -142,7 +142,7 @@ class OrganisationQuery extends BaseQuery {
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,

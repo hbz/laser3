@@ -81,10 +81,10 @@ class BaseQuery {
         meta
     }
 
-    static Object getDataDetailsByIdAndKey(Long id, String key, List<Map<String, Object>> idList) {
+    static Object getDataDetailsByIdAndKey(Long id, String key, List<Map<String, Object>> ddList) {
         def result
 
-        idList.each{ it ->
+        ddList.each{ it ->
             if (it.id == id) {
                 result = it.get(key)
                 return
@@ -93,7 +93,7 @@ class BaseQuery {
         result
     }
 
-    static void handleGenericQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
@@ -110,7 +110,7 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
-    static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+    static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
@@ -126,7 +126,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
@@ -143,9 +143,9 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
-    static void handleGenericNonMatchingData(String query, String hql, List idList, Map<String, Object> result) {
+    static void handleGenericNonMatchingData(String query, String hql, List<Long> idList, Map<String, Object> result) {
 
-        List noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
+        List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
         if (noDataList) {
             result.data.add( [null, getMessage(NO_DATA_LABEL), noDataList.size()] )
@@ -159,7 +159,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericBooleanQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+    static void handleGenericBooleanQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
@@ -176,7 +176,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericDateQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericDateQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
@@ -197,7 +197,7 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
-    static void handleGenericIdentifierXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericIdentifierXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
@@ -222,7 +222,7 @@ class BaseQuery {
         }
 
         List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
-        List noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
+        List<Long> noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
         if (noDataList) {
             result.data.add( [null, getMessage(NO_IDENTIFIER_LABEL), noDataList.size()] )
@@ -238,7 +238,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
+    static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
 
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
@@ -265,7 +265,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericAnnualXQuery(String query, String domainClass, List idList, Map<String, Object> result) {
+    static void handleGenericAnnualXQuery(String query, String domainClass, List<Long> idList, Map<String, Object> result) {
 
         List dd = Org.executeQuery( 'select min(YEAR(dc.startDate)), max(YEAR(dc.endDate)) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] )
         dd[0][1] = dd[0][1] ? Math.min( dd[0][1] as int, Year.now().value + 5 ) : Year.now().value
