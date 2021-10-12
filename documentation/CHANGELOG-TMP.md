@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3919    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage: Mehrjahreszeitraum wird bei ClickMeExcel nicht angezeigt
+
+3923    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Lizenzverwaltung Bugs
+
+3918    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage-Merkmale falsch sortiert in Reiter Ergebnis
+
 3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
 
 3833    08.10.2021  dev     2.3         Andreas Feature     Merkmale können durch andere Merkmale ersetzt werden

@@ -552,7 +552,7 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             if (rCache.exists()) {
                 detailsCache = LocalExportHelper.getDetailsCache(params.token)
@@ -675,7 +675,7 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION ) // TODO
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )

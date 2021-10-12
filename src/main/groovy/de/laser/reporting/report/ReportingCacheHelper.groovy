@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat
 
 class ReportingCacheHelper {
 
-    static void initSubscriptionCache(long id) {
-        println 'initSubscriptionCache( ' + id + ' )'
+    static void initSubscriptionCache(long id, String token) {
+        println 'initSubscriptionCache( ' + token + ' )'
 
         Subscription sub = Subscription.get(id)
         String filterResult = sub.name
@@ -18,7 +18,7 @@ class ReportingCacheHelper {
             filterResult += ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + ' - ' + (sub.endDate ? sdf.format(sub.endDate) : '')  + ')'
         }
 
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         rCache.put( [
                 filterCache: [:],
                 queryCache: [:]

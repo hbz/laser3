@@ -298,14 +298,14 @@ class SubscriptionReport {
                         ]
                         result.data.add(data)
                         result.dataDetails.add([
-                                query : params.query,
-                                id    : s.id,
-                                label : data[6],
-                                idList: finance.cons.costItems.collect{ it.id },
-                                vnc:  g.formatNumber( number: data[2], type: 'currency',  currencySymbol: '' ).trim(),
-                                vnct: g.formatNumber( number: data[3], type: 'currency',  currencySymbol: '' ).trim(),
-                                vc:   g.formatNumber( number: (finance.cons?.sums?.localSums?.localSum ?: 0), type: 'currency',  currencySymbol: '' ).trim(),
-                                vct:  g.formatNumber( number: (finance.cons?.sums?.localSums?.localSumAfterTax ?: 0), type: 'currency',  currencySymbol: '' ).trim()
+                                query   : params.query,
+                                id      : s.id,
+                                label   : data[6],
+                                idList  : finance.cons.costItems.collect{ it.id },
+                                vnc     : ( Math.round(data[2] * 100) / 100 ).doubleValue(),
+                                vnct    : ( Math.round(data[3] * 100) / 100 ).doubleValue(),
+                                vc      : ( Math.round(data[4] * 100) / 100 ).doubleValue(),
+                                vct     : ( Math.round(data[5] * 100) / 100 ).doubleValue()
                         ])
                     }
                 }
