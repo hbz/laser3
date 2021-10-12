@@ -20,6 +20,7 @@ import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import groovyx.gpars.GParsPool
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
@@ -4151,6 +4152,33 @@ class SurveyController {
 
         }
 
+        Set<Package> packagesToProcess = []
+
+        //copy package data
+        if(params.linkAllPackages) {
+            result.parentSuccessorSubscription.packages.each { sp ->
+                packagesToProcess << sp.pkg
+            }
+        }else if(params.packageSelection) {
+            List packageIds = params.list("packageSelection")
+            packageIds.each { spId ->
+                packagesToProcess << SubscriptionPackage.get(spId).pkg
+            }
+        }
+
+        boolean linkWithEntitlements = params.linkWithEntitlements == 'on'
+        executorService.execute({
+            result.newSubs.each { Subscription memberSub ->
+                packagesToProcess.each { pkg ->
+                    if (linkWithEntitlements) {
+                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.parentSuccessorSubscription, pkg)
+                    }
+                    else
+                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                }
+            }
+        })
+
         result.countNewSubs = countNewSubs
         if(result.newSubs) {
             result.parentSuccessorSubscription.syncAllShares(result.newSubs)
@@ -4174,20 +4202,8 @@ class SurveyController {
 
                 //def subLicense = newParentSub.owner
 
-                Set<Package> packagesToProcess = []
                 List<License> licensesToProcess = []
 
-                //copy package data
-                if(params.linkAllPackages) {
-                    newParentSub.packages.each { sp ->
-                        packagesToProcess << sp.pkg
-                    }
-                }else if(params.packageSelection) {
-                    List packageIds = params.list("packageSelection")
-                    packageIds.each { spId ->
-                        packagesToProcess << SubscriptionPackage.get(spId).pkg
-                    }
-                }
                 if(params.generateSlavedLics == "all") {
                     String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
                     licensesToProcess.addAll(License.executeQuery(query, [subscription:newParentSub, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -4294,19 +4310,6 @@ class SurveyController {
                     return memberSub
                 }
             }
-
-            newParentSub.getDerivedSubscriptions().each { Subscription memberSub ->
-                packagesToProcess.each { pkg ->
-                    if(params.linkWithEntitlements) {
-                        executorService.execute({
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
-                        })
-                    }
-                    else
-                        subscriptionService.addToSubscription(memberSub, pkg, false)
-                }
-            }
-
         }
     }
 
