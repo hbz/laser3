@@ -333,6 +333,9 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
+            }
             Subscription refSub = subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0 ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -524,12 +527,12 @@ class SubscriptionControllerService {
                 endTime.setTime(result.subscription.endDate)
         }
         else if(result.subscription.startDate) {
-            dateRange = " and r.reportFrom >= :startDate "
+            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
+                queryParams.endDate = new Date()
             }
             else {
-                dateRange += "and r.reportTo <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
                 Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                 filterTime.setTime(filterDate)
@@ -538,6 +541,7 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.setTime(result.subscription.startDate)
+            endTime.setTime(new Date())
         }
         else {
             if(params.tab != 'total') {
@@ -553,6 +557,7 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.set(2018, 0, 1)
+            endTime.setTime(new Date())
         }
         while(startTime.before(endTime)) {
             monthsInRing << startTime.getTime()
