@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
+<%@ page import="de.laser.reporting.export.local.LocalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <semui:infoModal id="${modalID}">

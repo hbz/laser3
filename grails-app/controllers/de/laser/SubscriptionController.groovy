@@ -5,8 +5,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
-import de.laser.reporting.ReportingCacheHelper
+import de.laser.reporting.report.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory

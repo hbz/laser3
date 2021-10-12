@@ -9,27 +9,24 @@ import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.local.CostItemExport
-import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.local.LocalExportHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
-import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.grails.plugins.web.taglib.ApplicationTagLib
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
-import java.time.Year
 
 class DetailsExportManager {
 
@@ -43,11 +40,11 @@ class DetailsExportManager {
     }
 
     static BaseDetailsExport createGlobalExport(String token, Map<String, Object> selectedFields) {
-        ExportGlobalHelper.createExport( token, selectedFields )
+        GlobalExportHelper.createExport( token, selectedFields )
     }
 
     static BaseDetailsExport createLocalExport(String token, Map<String, Object> selectedFields) {
-        ExportLocalHelper.createExport( token, selectedFields )
+        LocalExportHelper.createExport( token, selectedFields )
     }
 
     static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
@@ -263,14 +260,14 @@ class DetailsExportManager {
             result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
         }
         else if (export.KEY == IssueEntitlementExport.KEY) {
-            Long subId = ExportLocalHelper.getDetailsCache( export.token ).id
+            Long subId = LocalExportHelper.getDetailsCache( export.token ).id
             result = IssueEntitlement.executeQuery(
                     'select ie from IssueEntitlement ie where ie.subscription.id = :subId and ie.tipp.id in (:idList) order by ie.name',
                     [subId: subId, idList: idList]
             )
         }
         else if (export.KEY == CostItemExport.KEY) {
-//            Long subId = ExportLocalHelper.getDetailsCache( export.token ).id
+//            Long subId = LocalExportHelper.getDetailsCache( export.token ).id
 //            result = CostItem.executeQuery(
 //                    'select ci from CostItem ci where ci.sub.id = :subId and ci.id in (:idList) order by ci.id',
 //                    [subId: subId, idList: idList]

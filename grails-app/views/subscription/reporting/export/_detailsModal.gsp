@@ -1,12 +1,12 @@
-<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.local.LocalExportHelper; de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
-    <g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />
+    %{--<g:set var="filterLabels" value="${LocalExportHelper.getCachedFilterLabels( token )}" />--}%
+    <g:set var="queryLabels" value="${LocalExportHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="Export" msgSave="${message(code: 'default.button.export.label')}">
 
@@ -22,7 +22,7 @@
             </div>
     --}%
 
-        <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}
@@ -40,7 +40,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseDetailsExport.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -68,10 +68,10 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber', '@ae-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@-org-accessPoint','@-org-contact','@-org-readerNumber', '@-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${BaseExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${BaseDetailsExport.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"

@@ -3,7 +3,9 @@ package de.laser.reporting.export
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.export.local.LocalQueryExport
+import de.laser.reporting.export.myInstitution.GlobalQueryExport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Row
@@ -16,10 +18,10 @@ class QueryExportManager {
 
     static BaseQueryExport createExport(String token, String context) {
         if (context == BaseConfig.KEY_MYINST) {
-            new de.laser.reporting.export.myInstitution.QueryExport( token )
+            new GlobalQueryExport( token )
         }
         else if (context in [ BaseConfig.KEY_SUBSCRIPTION ]) {
-            new de.laser.reporting.export.local.QueryExport( token )
+            new LocalQueryExport( token )
         }
     }
 

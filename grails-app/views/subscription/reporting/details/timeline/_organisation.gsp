@@ -3,37 +3,48 @@
 
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
-<div class="ui segment">
-    <table class="ui table la-table compact">
-        <thead>
-        <tr>
-            <th></th>
-            <th>${message(code:'org.sortname.label')}</th>
-            <th>${message(code:'default.name.label')}</th>
-        </tr>
-        </thead>
-        <tbody>
-            <g:each in="${list}" var="org" status="i">
-                <g:if test="${plusList.contains(org)}">
-                    <tr>
-                        <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
-                </g:if>
-                <g:else>
-                    <tr>
-                        <td style="text-align: center">${i + 1}.</td>
-                </g:else>
-                    <td>${org.sortname}</td>
-                    <td>
-                        <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
-                    </td>
-                </tr>
-            </g:each>
-        </tbody>
-    </table>
-</div>
+<g:if test="${minusList}">
+    <div class="ui top attached tabular menu">
+        <a data-tab="positive" class="item active">${message(code:'reporting.local.subscription.timeline.chartLabel.member.3')}</a>
+        <a data-tab="minus" class="item">${message(code:'reporting.local.subscription.timeline.chartLabel.member.1')}</a>
+    </div>
+    <div data-tab="positive" class="ui bottom attached tab segment active">
+</g:if>
+<g:else>
+    <div class="ui segment">
+</g:else>
+
+        <table class="ui table la-table compact">
+            <thead>
+            <tr>
+                <th></th>
+                <th>${message(code:'org.sortname.label')}</th>
+                <th>${message(code:'default.name.label')}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <g:each in="${list}" var="org" status="i">
+                    <g:if test="${plusList.contains(org)}">
+                        <tr>
+                            <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
+                    </g:if>
+                    <g:else>
+                        <tr>
+                            <td style="text-align: center">${i + 1}.</td>
+                    </g:else>
+                        <td>${org.sortname}</td>
+                        <td>
+                            <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
+                        </td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+    </div>
 
 <g:if test="${minusList}">
-    <div class="ui segment">
+
+    <div data-tab="minus" class="ui bottom attached tab segment">
         <table class="ui table la-table compact">
             <thead>
             <tr>
@@ -44,7 +55,7 @@
             </thead>
             <tbody>
                 <g:each in="${minusList}" var="org" status="i">
-                    <tr class="negative">
+                    <tr>
                         <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
                         <td>${org.sortname}</td>
                         <td>

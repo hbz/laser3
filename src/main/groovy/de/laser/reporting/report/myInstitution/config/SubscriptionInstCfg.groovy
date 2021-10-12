@@ -1,8 +1,8 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionInstCfg extends BaseConfig {
 
@@ -19,17 +19,17 @@ class SubscriptionInstCfg extends BaseConfig {
                             'inst-sub-local'
                     ],
                     fields : [
-                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
-                            'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
-                            'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
+                            'annual'                : FIELD_TYPE_CUSTOM_IMPL,
+                            'endDateLimit'          : FIELD_TYPE_CUSTOM_IMPL,
+                            'form'                  : FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                            'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : FIELD_TYPE_PROPERTY,
+                            'kind'                  : FIELD_TYPE_REFDATA,
+                            'resource'              : FIELD_TYPE_REFDATA,
+                            'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
+                            'status'                : FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
@@ -95,18 +95,18 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-consortium'
                     ],
                     fields : [
-                            'country'           : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'            : BaseConfig.FIELD_TYPE_REFDATA,
-                            //'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
-                            'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
-                            'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
-                            //'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'           : FIELD_TYPE_REFDATA,
+                            'region'            : FIELD_TYPE_REFDATA,
+                            //'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : FIELD_TYPE_REFDATA,
+                            'funderType'        : FIELD_TYPE_REFDATA,
+                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                            'libraryType'       : FIELD_TYPE_REFDATA,
+                            //'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
                             default : [
@@ -141,9 +141,9 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-provider'
                     ],
                     fields : [
-                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                            'country'   : FIELD_TYPE_REFDATA,
+                            'region'    : FIELD_TYPE_REFDATA,
+                            'orgType'   : FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
                             default : []
@@ -169,9 +169,9 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-agency'
                     ],
                     fields : [
-                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                            'country'   : FIELD_TYPE_REFDATA,
+                            'region'    : FIELD_TYPE_REFDATA,
+                            'orgType'   : FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
                             default : []

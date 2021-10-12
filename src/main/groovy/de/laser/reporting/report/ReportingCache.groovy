@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.report
 
 import de.laser.helper.SessionCacheWrapper
 

@@ -5,17 +5,17 @@ import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-class QueryExport extends BaseQueryExport {
+class GlobalQueryExport extends BaseQueryExport {
 
     String token
 
-    QueryExport(String token) {
+    GlobalQueryExport(String token) {
         this.token = token
     }
 
     @Override
     Map<String, Object> getQueriedData() {
-        Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
+        Map<String, Object> queryCache = GlobalExportHelper.getQueryCache( token )
 
         Map<String, Object> result = [
                 cols: [ queryCache.labels.tooltip ],

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 <g:if test="${data}">
     JSPC.app.reporting.current.chart.option = {
         title: {

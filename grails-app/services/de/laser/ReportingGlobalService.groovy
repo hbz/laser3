@@ -1,10 +1,10 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.myInstitution.*
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.myInstitution.*
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
