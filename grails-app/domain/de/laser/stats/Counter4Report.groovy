@@ -6,8 +6,14 @@ import de.laser.exceptions.CreationException
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A COUNTER report representation according to the COUNTER format, revision 4 (https://www.projectcounter.org/code-of-practice-sections/usage-reports/)
+ */
 class Counter4Report extends AbstractReport {
 
+    /**
+     * These are the header parameters for each COUNTER 4 report
+     */
     static enum EXPORTS {
         JR1 (['Journal Report 1 (R4)', 'Number of Successful Full-Text Article Requests by Month and Journal'] as LinkedHashSet<String>),
         JR1GOA (['Journal Report 1 GOA (R4)', 'Number of Successful Gold Open Access Full-Text Article Requests by Month and Journal'] as LinkedHashSet<String>),
@@ -31,6 +37,9 @@ class Counter4Report extends AbstractReport {
         public LinkedHashSet<String> header
     }
 
+    /**
+     * This are the column headers which are mandatory for the respective COUNTER 4 report
+     */
     static enum COLUMN_HEADERS {
         JR1 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Reporting Period Total', 'Reporting Period HTML', 'Reporting Period PDF'] as LinkedHashSet<String>),
         JR1GOA (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Reporting Period Total', 'Reporting Period HTML', 'Reporting Period PDF'] as LinkedHashSet<String>),
@@ -76,6 +85,11 @@ class Counter4Report extends AbstractReport {
         title(unique: ['reportType', 'platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo'])
     }
 
+    /**
+     * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.
+     * @see {@link de.laser.StatsSyncService}
+     */
+    @Deprecated
     static Counter4Report construct(Map<String, Object> configMap) throws CreationException {
         Counter4Report c4report
         //is to save performance

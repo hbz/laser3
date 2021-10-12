@@ -2,6 +2,10 @@ package de.laser.stats
 
 import de.laser.exceptions.CreationException
 
+/**
+ * This is an unused class to mark when data could not be fetched for a given customer, platform, report for a given month.
+ * It is unprobable that this class should get in use as according to the COUNTER revisions, data should not be updated after one month of reporting period, i.e. no one will update usage data dating months or years ago
+ */
 class StatsMissingPeriod implements Comparable {
 
     Date from
@@ -21,6 +25,9 @@ class StatsMissingPeriod implements Comparable {
 
     }
 
+    /**
+     * Was used to set up a missing period; generally unused and if ever, it should be done by native SQL
+     */
     static StatsMissingPeriod construct(Map<String, Object> configMap) throws CreationException {
         StatsMissingPeriod result = StatsMissingPeriod.findByFromAndToAndCursor(configMap.from, configMap.to, configMap.cursor)
         if(!result)

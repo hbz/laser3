@@ -5,10 +5,14 @@ import de.laser.exceptions.CreationException
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-
+/**
+ * A COUNTER report representation according to the COUNTER format, revision 5 (https://www.projectcounter.org/code-of-practice-five-sections/5-delivery-counter-reports/)
+ */
 class Counter5Report extends AbstractReport {
 
-
+    /**
+     * These are the header parameters for each COUNTER 5 report
+     */
     static enum EXPORT_HEADERS {
         PR ('Platform Master Report'),
         PR_P1 ('Platform Usage'),
@@ -34,6 +38,9 @@ class Counter5Report extends AbstractReport {
         String header
     }
 
+    /**
+     * These are the filter lists being displayed on the COUNTER 5 export
+     */
     static enum EXPORT_CONTROLLED_LISTS {
         PR ('as selected', 'as selected', 'as selected'),
         PR_P1 ('Searches_Platform; Total_Item_Requests; Unique_Item_Requests; Unique_Title_Requests', 'Access_Method=Regular', ''), //when multiple platforms are being supported, consider: If a Platform filter is used (see Section 3.3.8 for details), it MUST be included in Report_Filters.
@@ -63,6 +70,9 @@ class Counter5Report extends AbstractReport {
         String reportAttributes
     }
 
+    /**
+     * This are the column headers which are mandatory for the respective COUNTER 5 report
+     */
     static enum COLUMN_HEADERS {
         PR (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         PR_P1 (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
@@ -116,6 +126,10 @@ class Counter5Report extends AbstractReport {
         title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
     }
 
+    /**
+     * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.
+     * @see {@link de.laser.StatsSyncService}
+     */
     static Counter5Report construct(Map<String, Object> configMap) throws CreationException {
         Counter5Report c5report
         if(configMap.title)
