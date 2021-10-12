@@ -5,8 +5,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
-import de.laser.reporting.ReportingCacheHelper
+import de.laser.reporting.report.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -93,10 +92,8 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def stats() {
         Map<String,Object> ctrlResult
         SXSSFWorkbook wb

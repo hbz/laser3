@@ -5,18 +5,18 @@ import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-class QueryExport extends BaseQueryExport {
+class LocalQueryExport extends BaseQueryExport {
 
     String token
 
-    QueryExport(String token) {
+    LocalQueryExport(String token) {
         this.token = token
     }
 
     @Override
     Map<String, Object> getQueriedData() {
 
-        Map<String, Object> queryCache = ExportLocalHelper.getQueryCache( token )
+        Map<String, Object> queryCache = LocalExportHelper.getQueryCache( token )
 
         Map<String, Object> result = [
                 cols: [],

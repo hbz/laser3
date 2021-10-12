@@ -20,8 +20,7 @@ import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
@@ -51,11 +50,11 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
@@ -64,7 +63,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
@@ -74,7 +73,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
@@ -91,7 +90,7 @@ class OrgExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -101,7 +100,7 @@ class OrgExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportGlobalHelper.getFieldLabel( this, fieldName )
+        GlobalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -125,18 +124,16 @@ class OrgExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
+                    content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = org.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( getRefdataContent(org, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = org.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( getJointableRefdataContent(org, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
@@ -175,7 +172,7 @@ class OrgExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-org-contact') {
+                else if (key == '@-org-contact') {
                     List coList = []
 
                     if (RDStore.REPORTING_CONTACT_TYPE_CONTACTS.id in f.value) {
@@ -234,7 +231,7 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( coList.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-readerNumber') {
+                else if (key == '@-org-readerNumber') {
 
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
 
@@ -275,7 +272,7 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( entries.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-accessPoint') {
+                else if (key == '@-org-accessPoint') {
 
                     List oapList = []
 
@@ -313,7 +310,7 @@ class OrgExport extends BaseDetailsExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = ExportGlobalHelper.getDetailsCache(token).id as Long
+                    Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

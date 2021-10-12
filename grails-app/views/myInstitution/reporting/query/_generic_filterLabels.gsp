@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.GenericHelper" %>
+<%@page import="de.laser.reporting.report.myInstitution.GenericHelper" %>
 
 <g:if test="${stacked}">
 

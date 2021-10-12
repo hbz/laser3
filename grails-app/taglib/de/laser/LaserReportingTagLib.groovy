@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.GenericHelper
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -138,7 +138,7 @@ class LaserReportingTagLib {
     def reportFilterRefdataRelTable = { attrs, body ->
 
         //println 'reportFilterRefdataRelTable'
-        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(attrs.refdata)
+        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

@@ -1,4 +1,4 @@
-package de.laser.reporting.myInstitution.base
+package de.laser.reporting.report.myInstitution.base
 
 import grails.web.servlet.mvc.GrailsParameterMap
 

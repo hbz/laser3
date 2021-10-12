@@ -9,7 +9,6 @@ import de.laser.finance.Order
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -28,7 +27,7 @@ class CostItemExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
@@ -48,7 +47,7 @@ class CostItemExport extends BaseDetailsExport {
                                     'billingCurrency'               : FIELD_TYPE_REFDATA,
                                     'costInLocalCurrency'           : FIELD_TYPE_PROPERTY,
                                     'costInLocalCurrencyAfterTax'   : FIELD_TYPE_PROPERTY,
-                                    '@ae-cost-taxKey'               : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@-cost-taxKey'               : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                                     'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
                                     'costItemStatus'                : FIELD_TYPE_REFDATA,
                                     'startDate'                     : FIELD_TYPE_PROPERTY,
@@ -56,11 +55,11 @@ class CostItemExport extends BaseDetailsExport {
                                     'datePaid'                      : FIELD_TYPE_PROPERTY,
                                     'financialYear'                 : FIELD_TYPE_PROPERTY,
 
-                                    '@ae-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ],
             ]
@@ -73,7 +72,7 @@ class CostItemExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportLocalHelper.getFieldLabel( this, fieldName )
+        LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -92,34 +91,20 @@ class CostItemExport extends BaseDetailsExport {
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
-
-                if (CostItem.getDeclaredField(key).getType() == Double) {
-                    if (ci.getProperty(key)) {
-                        content.add( ci.getProperty(key ) )
-                        //content.add( g.formatNumber( number: ci.getProperty(key), type: 'currency',  currencySymbol: '' ).trim() )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else {
-                    content.add( BaseExportHelper.getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
-                }
+                content.add( getPropertyContent(ci, key, CostItem.getDeclaredField(key).getType()) )
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = ci.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( getRefdataContent(ci, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = ci.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( getJointableRefdataContent(ci, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == '@ae-cost-taxKey') {
+                if (key == '@-cost-taxKey') {
                     if (ci.taxKey) {
                         if (ci.taxKey.display) {
                             content.add( ci.taxKey.taxRate + '%' )
@@ -134,7 +119,7 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@ae-cost-subscription') {
+                else if (key == '@-cost-subscription') {
                     Subscription sub = ci.sub
                     if (sub) {
                         content.add( sub.name + ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + '-' + (sub.endDate ? sdf.format(sub.endDate) : '') + ')' )
@@ -142,11 +127,11 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@ae-cost-member') {
+                else if (key == '@-cost-member') {
                     Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
                     content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-cost-package') {
+                else if (key == '@-cost-package') {
                     de.laser.Package pkg = ci.subPkg?.pkg
                     if (pkg) {
                         content.add(pkg.toString())
@@ -154,7 +139,7 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@ae-cost-order') {
+                else if (key == '@-cost-order') {
                     Order ord = ci.order
                     if (ord?.orderNumber) {
                         content.add( ord.orderNumber )
@@ -162,7 +147,7 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@ae-cost-invoice') {
+                else if (key == '@-cost-invoice') {
                     Invoice inv = ci.invoice
                     if (inv?.invoiceNumber) {
                         content.add( inv.invoiceNumber )

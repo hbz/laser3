@@ -1,4 +1,4 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.report.myInstitution
 
 import de.laser.FinanceService
 import de.laser.Org
@@ -7,8 +7,8 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseFilter
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -77,13 +77,15 @@ class CostItemFilter extends BaseFilter {
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'ci.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'ci.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -95,7 +97,7 @@ class CostItemFilter extends BaseFilter {
                     whereParts.add( 'ci.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {

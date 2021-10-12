@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'value', 'plus', 'minus', 'annual', 'isCurrent'],

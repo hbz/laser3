@@ -1,7 +1,8 @@
-package de.laser.reporting
+package de.laser.reporting.report
 
 import de.laser.Subscription
 import de.laser.helper.DateUtils
+
 import java.text.SimpleDateFormat
 
 class ReportingCacheHelper {

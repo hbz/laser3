@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">

@@ -14,8 +14,8 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

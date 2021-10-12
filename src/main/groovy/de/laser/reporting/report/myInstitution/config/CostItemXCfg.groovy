@@ -1,7 +1,7 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.finance.CostItem
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class CostItemXCfg extends BaseConfig {
 
@@ -16,12 +16,12 @@ class CostItemXCfg extends BaseConfig {
                             'consortia-cost'
                     ],
                     fields: [
-                            'type'                          : BaseConfig.FIELD_TYPE_REFDATA,
-                            'costItemStatus'                : BaseConfig.FIELD_TYPE_REFDATA,
-                            'costItemCategory'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'costItemElement'               : BaseConfig.FIELD_TYPE_REFDATA,
-                            'costItemElementConfiguration'  : BaseConfig.FIELD_TYPE_REFDATA,
-                            'billingCurrency'               : BaseConfig.FIELD_TYPE_REFDATA,
+                            'type'                          : FIELD_TYPE_REFDATA,
+                            'costItemStatus'                : FIELD_TYPE_REFDATA,
+                            'costItemCategory'              : FIELD_TYPE_REFDATA,
+                            'costItemElement'               : FIELD_TYPE_REFDATA,
+                            'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
+                            'billingCurrency'               : FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default: [

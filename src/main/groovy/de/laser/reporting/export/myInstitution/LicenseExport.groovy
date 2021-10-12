@@ -5,8 +5,7 @@ import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -29,8 +28,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@ae-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -68,7 +67,7 @@ class LicenseExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -78,7 +77,7 @@ class LicenseExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportGlobalHelper.getFieldLabel( this, fieldName )
+        GlobalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -101,18 +100,16 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
+                    content.add( getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = lic.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( getRefdataContent(lic, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = lic.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( getJointableRefdataContent(lic, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
@@ -126,14 +123,14 @@ class LicenseExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-license-subscriptionCount') { // TODO: query
+                else if (key == '@-license-subscriptionCount') { // TODO: query
                     int count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
                     content.add( count )
                 }
-                else if (key == '@ae-license-memberCount') {
+                else if (key == '@-license-memberCount') {
                     int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count )
                 }
@@ -142,7 +139,7 @@ class LicenseExport extends BaseDetailsExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = ExportGlobalHelper.getDetailsCache(token).id as Long
+                    Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

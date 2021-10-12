@@ -7,8 +7,7 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
-import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -33,8 +32,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
-                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -62,7 +61,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -83,7 +82,7 @@ class SubscriptionExport extends BaseDetailsExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        BaseExportHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -93,7 +92,7 @@ class SubscriptionExport extends BaseDetailsExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportLocalHelper.getFieldLabel( this, fieldName )
+        LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -117,18 +116,16 @@ class SubscriptionExport extends BaseDetailsExport {
                     content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
                 }
                 else {
-                    content.add( BaseExportHelper.getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()) )
+                    content.add( getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = sub.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( getRefdataContent(sub, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = sub.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( getJointableRefdataContent(sub, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
@@ -148,14 +145,14 @@ class SubscriptionExport extends BaseDetailsExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-subscription-member') {
+                else if (key == '@-subscription-member') {
                     List<Org> members = Subscription.executeQuery(
                             'select distinct oo.org from Subscription sub join sub.orgRelations oo where sub = :sub and oo.roleType in :subscriberRoleTypes',
                             [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )
                     content.add( members.collect{ it.name }.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-subscription-prevNext') {
+                else if (key == '@-subscription-prevNext') {
 
                     Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
                     content.add(
@@ -169,7 +166,7 @@ class SubscriptionExport extends BaseDetailsExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = ExportLocalHelper.getDetailsCache(token).id as Long
+                    Long pdId = LocalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

@@ -1,12 +1,12 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
-import de.laser.reporting.ReportingCache
+import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.report.myInstitution.GenericHelper
 
-class ExportLocalHelper extends BaseExportHelper {
+class LocalExportHelper extends BaseExportHelper {
 
     static BaseDetailsExport createExport(String token, Map<String, Object> selectedFields) {
 
@@ -93,26 +93,26 @@ class ExportLocalHelper extends BaseExportHelper {
 
     static String getFieldLabel(BaseDetailsExport export, String fieldName) {
 
-        if ( isFieldMultiple(fieldName) ) {
+        if ( BaseDetailsExport.isFieldMultiple(fieldName) ) {
             // String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
             String label = BaseDetailsExport.getMessage(fieldName)
 
-            if (fieldName == 'x-identifier' || fieldName == '@ae-entitlement-tippIdentifier') {
+            if (fieldName == 'x-identifier' || fieldName == '@-entitlement-tippIdentifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
                     idns.getI10n('name') ?: idns.ns + ' *'
                 }.join(', ') : '')
             }
-            else if (fieldName == '@ae-org-accessPoint') {
+            else if (fieldName == '@-org-accessPoint') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
-            else if (fieldName == '@ae-org-contact') {
+            else if (fieldName == '@-org-contact') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
-            else if (fieldName == '@ae-org-readerNumber') {
+            else if (fieldName == '@-org-readerNumber') {
                 List selList = export.getSelectedFields().get(fieldName)
                 List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }
                 List ddList  = selList.findAll{ it.startsWith('dd-') }.collect{ it.replace('dd-', 'Stichtage ') }
@@ -124,7 +124,7 @@ class ExportLocalHelper extends BaseExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseDetailsExport.CUSTOM_LABEL.contains(fieldName)) {
+        else if (BaseDetailsExport.CUSTOM_FIELD_KEY.contains(fieldName)) {
             return BaseDetailsExport.getMessage(fieldName)
         }
 

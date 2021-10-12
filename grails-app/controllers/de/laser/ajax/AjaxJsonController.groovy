@@ -27,8 +27,8 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource

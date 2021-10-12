@@ -38,17 +38,17 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
-import de.laser.reporting.ReportingCache
+import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
-import de.laser.reporting.export.local.ExportLocalHelper
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.local.LocalExportHelper
+import de.laser.reporting.export.myInstitution.GlobalExportHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflow
@@ -543,7 +543,7 @@ class AjaxHtmlController {
             rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
             if (rCache.exists()) {
-                detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                detailsCache = GlobalExportHelper.getDetailsCache(params.token)
                 export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
             else {
@@ -555,7 +555,7 @@ class AjaxHtmlController {
             rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
 
             if (rCache.exists()) {
-                detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                detailsCache = LocalExportHelper.getDetailsCache(params.token)
                 export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }
             else {
@@ -605,9 +605,9 @@ class AjaxHtmlController {
                     struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/myInstitution/reporting/export/pdf/generic_details'
                     model   = [
-                            filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
+                            filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: GlobalExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : GlobalExportHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
@@ -619,9 +619,9 @@ class AjaxHtmlController {
                     struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/subscription/reporting/export/pdf/generic_details'
                     model   = [
-                            //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                            //filterLabels: LocalExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: LocalExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : LocalExportHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
@@ -665,8 +665,8 @@ class AjaxHtmlController {
 
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
-                queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
-                //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                queryLabels = GlobalExportHelper.getIncompleteQueryLabels( params.token )
+                //detailsCache = GlobalExportHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
             else {
@@ -679,8 +679,8 @@ class AjaxHtmlController {
 
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
-                queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
-                //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                queryLabels = LocalExportHelper.getCachedQueryLabels( params.token )
+                //detailsCache = LocalExportHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }
             else {
@@ -748,8 +748,8 @@ class AjaxHtmlController {
 
             Map<String, Object> model = [
                     token:        params.token,
-                    filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
-                    filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                    filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
+                    filterResult: GlobalExportHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
                     //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),

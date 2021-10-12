@@ -1,10 +1,9 @@
-package de.laser.reporting.local
+package de.laser.reporting.report.local
 
 import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
-import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
@@ -12,8 +11,8 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.SubscriptionQuery
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.reporting.report.myInstitution.SubscriptionQuery
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -21,9 +20,8 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
-import java.time.Year
 
-class SubscriptionReporting {
+class SubscriptionReport {
 
     static String KEY = 'subscription'
     static String NO_DATE = 'Keine Angabe'
@@ -90,7 +88,7 @@ class SubscriptionReporting {
         if (sub.getConsortia()) {
             if (! sub.getAllSubscribers()) {
 //                println '- consortium @ subscriptionCons'
-                return SubscriptionReporting.CONFIG.base.query2.consAtcons
+                return SubscriptionReport.CONFIG.base.query2.consAtcons
             }
             else {
 //                println '- consortium @ subscriptionMember'
@@ -100,7 +98,7 @@ class SubscriptionReporting {
         else {
 //            println '- locals'
         }
-        SubscriptionReporting.CONFIG.base.query2.default
+        SubscriptionReport.CONFIG.base.query2.default
     }
 
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
@@ -336,7 +334,7 @@ class SubscriptionReporting {
 
             else if (prefix == 'tipp') {
 
-                List<TitleInstancePackagePlatform> idList = TitleInstancePackagePlatform.executeQuery(
+                List<Long> idList = TitleInstancePackagePlatform.executeQuery(
                         'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status and ie.acceptStatus = :acceptStatus',
                         [id: id, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
                 )
@@ -383,7 +381,7 @@ class SubscriptionReporting {
                     }
 
                     List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                    List<Long> noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
@@ -420,7 +418,7 @@ class SubscriptionReporting {
                     }
 
                     List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                    List<Long> noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 

@@ -1,7 +1,7 @@
-package de.laser.reporting.myInstitution.config
+package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class OrganisationConsCfg extends BaseConfig {
 
@@ -24,18 +24,18 @@ class OrganisationConsCfg extends BaseConfig {
                             'my-providerAndAgency'
                     ],
                     fields : [
-                            'country'           : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'            : BaseConfig.FIELD_TYPE_REFDATA,
-                            'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
-                            'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
-                            'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
-                            'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'           : FIELD_TYPE_REFDATA,
+                            'region'            : FIELD_TYPE_REFDATA,
+                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : FIELD_TYPE_REFDATA,
+                            'funderType'        : FIELD_TYPE_REFDATA,
+                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                            'libraryType'       : FIELD_TYPE_REFDATA,
+                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL,
                     ],
                     filter : [
                             default : [

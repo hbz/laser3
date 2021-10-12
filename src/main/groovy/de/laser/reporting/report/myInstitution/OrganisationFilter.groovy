@@ -1,14 +1,13 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.report.myInstitution
 
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
-import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseFilter
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -134,13 +133,15 @@ where (consOr.roleType = :consRoleType)
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
-                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                        RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                        if (rdv == RDStore.YN_YES) {
                             whereParts.add( 'org.' + p + ' is true' )
                         }
-                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                        else if (rdv == RDStore.YN_NO) {
                             whereParts.add( 'org.' + p + ' is false' )
                         }
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = rdv.getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
@@ -152,45 +153,45 @@ where (consOr.roleType = :consRoleType)
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
-                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == BaseConfig.CUSTOM_KEY_ORG_TYPE) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
                         queryParts.add('OrgSubjectGroup osg')
                         whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
-                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
                         queryParts.add('OrgSetting oss')
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
                         queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
 
                         whereParts.add('oss.roleValue = :p' + (++pCount))
-                        queryParams.put('p' + pCount, Role.get(params.get(key)))
+                        queryParams.put('p' + pCount, Role.get(params.long(key)))
 
-                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                 }
