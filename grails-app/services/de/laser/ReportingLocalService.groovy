@@ -43,9 +43,9 @@ class ReportingLocalService {
                 result.tmpl = '/subscription/reporting/chart/default'
             }
 
-            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
             if (! rCache.exists()) {
-                ReportingCacheHelper.initSubscriptionCache(params.long('id'))
+                ReportingCacheHelper.initSubscriptionCache( params.long('id'), params.token )
             }
             rCache.writeDetailsCache( null )
             rCache.writeQueryCache(result)
@@ -59,7 +59,7 @@ class ReportingLocalService {
         // TODO : SESSION TIMEOUT
 
         if (params.query) {
-            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             List<Long> idList = [], plusIdList = [], minusIdList = []
             String label
