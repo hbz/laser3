@@ -16,6 +16,8 @@ class ReportingLocalService {
     def financeService
     def financeControllerService
 
+    static final String TMPL_PATH = '/subscription/reporting/'
+
     // ----- <X>Controller.reporting() -----
 
     // ----- 1 - filter
@@ -35,12 +37,12 @@ class ReportingLocalService {
                 result.putAll( SubscriptionReport.query(clone) )
                 //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
                 result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReport.getMessage('timeline.chartLabel.' + it) } // TODO
-                result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
+                result.tmpl = TMPL_PATH + 'chart/timeline/' + queryCfg.getAt('chart')
             }
             else {
                 result.putAll( SubscriptionReport.query(clone) )
                 result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone).get(1)
-                result.tmpl = '/subscription/reporting/chart/default'
+                result.tmpl = TMPL_PATH + 'chart/default'
             }
 
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
@@ -90,7 +92,7 @@ class ReportingLocalService {
 
                 result.billingSums = finance.cons.sums?.billingSums ?: []
                 result.localSums   = finance.cons.sums?.localSums ?: []
-                result.tmpl        = '/subscription/reporting/details/timeline/cost'
+                result.tmpl        = TMPL_PATH + 'details/timeline/cost'
             }
             else if (params.query in ['timeline-entitlement', 'timeline-member']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabels(params)
@@ -101,7 +103,7 @@ class ReportingLocalService {
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/entitlement'
+                    result.tmpl      = TMPL_PATH + 'details/timeline/entitlement'
                 }
                 else {
                     String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
@@ -109,14 +111,14 @@ class ReportingLocalService {
                     result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/organisation'
+                    result.tmpl      = TMPL_PATH + 'details/timeline/organisation'
                 }
             }
             else if (params.query == 'timeline-annualMember-subscription') {
                 result.labels = SubscriptionReport.getTimelineQueryLabelsForAnnual(params)
 
                 result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
-                result.tmpl = '/subscription/reporting/details/timeline/subscription'
+                result.tmpl = TMPL_PATH + 'details/timeline/subscription'
             }
             else {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
@@ -124,7 +126,7 @@ class ReportingLocalService {
 
                 result.labels = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
-                result.tmpl   = '/subscription/reporting/details/entitlement'
+                result.tmpl   = TMPL_PATH + 'details/entitlement'
             }
 
             Map<String, Object> currentLabels = rCache.readQueryCache().labels as Map<String, Object>
