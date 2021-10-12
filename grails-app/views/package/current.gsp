@@ -105,7 +105,7 @@
 <g:if test="${titlesList}">
     <semui:paginate action="current" controller="package" params="${params}"
                     next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
-                    maxsteps="${max}" total="${num_tipp_rows}"/>
+                    max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
