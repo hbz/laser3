@@ -94,7 +94,7 @@
             <div class="ui vertical segment">
                 <div class="fields">
 
-                    <div id="fileformat-csv" class="wide eight field">
+                    <div id="fileformat-details-csv" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_SEPARATOR}</span> <br />
@@ -108,22 +108,20 @@
                             </span>
                         </p>
                     </div>
-                    <div id="fileformat-xlsx" class="wide eight field">
+                    <div id="fileformat-details-xlsx" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
-                        <p>
+                        %{-- <p>
                             ${message(code: 'reporting.modal.export.cfg.xlsx.default')} <br />
-                        </p>
+                        </p> --}%
                         <p>
+                            <br />
                             <span class="ui checkbox">
                                 <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
                                 <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
-                            <br />
-                            <br />
-                            <span class="ui label orange">Funktionalität in Entwicklung</span>
                         </p>
                     </div>
-                    <div id="fileformat-pdf" class="wide eight field">
+                    <div id="fileformat-details-pdf" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
@@ -139,7 +137,8 @@
 
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
-                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                            <label for="fileformat-details">${message(code: 'default.fileFormat.label')}</label>
+                            <g:select name="fileformat" id="fileformat-details" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
                                       from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
@@ -151,8 +150,8 @@
                                     optionExpl="${{it.value[1]}}" /> --}%
                         </div>
                         <div class="field">
-                            <label for="filename">${message(code: 'default.fileName.label')}</label>
-                            <input name="filename" id="filename" value="${BaseExportHelper.getFileName(queryLabels)}" />
+                            <label for="filename-details">${message(code: 'default.fileName.label')}</label>
+                            <input name="filename" id="filename-details" value="${BaseExportHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 
@@ -170,8 +169,8 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         $('#${modalID} select[name=fileformat]').on( 'change', function() {
-            $('#${modalID} *[id^=fileformat-').addClass('hidden')
-            $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
+            $('#${modalID} *[id^=fileformat-details-').addClass('hidden')
+            $('#${modalID} *[id^=fileformat-details-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
 

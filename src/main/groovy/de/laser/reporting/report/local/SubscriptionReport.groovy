@@ -32,7 +32,7 @@ class SubscriptionReport {
 
             base : [
                     meta : [
-                            cfgKey: 'SubscriptionReporting'
+                            cfgKey: 'SubscriptionReport'
                     ],
                     query: [
                             default: [
