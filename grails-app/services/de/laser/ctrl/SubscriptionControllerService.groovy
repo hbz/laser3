@@ -2251,8 +2251,21 @@ class SubscriptionControllerService {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
 
-                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    boolean tippExistsInParentSub = false
 
+                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                        tippExistsInParentSub = true
+                    }else {
+                        List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                        titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                            if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                                tippExistsInParentSub = true
+                                tipp = titleInstancePackagePlatform
+                            }
+                        }
+                    }
+
+                    if(tippExistsInParentSub) {
                         try {
                             if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
