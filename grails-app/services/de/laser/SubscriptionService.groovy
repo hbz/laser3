@@ -1087,7 +1087,7 @@ class SubscriptionService {
                 if(issueEntitlementOverwrite.accessStartDate) {
                     if(issueEntitlementOverwrite.accessStartDate instanceof String)
                         accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
-                    else if(issueEntitlementOverwrite instanceof Date)
+                    else if(issueEntitlementOverwrite.accessStartDate instanceof Date)
                         accessStartDate = issueEntitlementOverwrite.accessStartDate
                     else accessStartDate = tipp.accessStartDate
                 }

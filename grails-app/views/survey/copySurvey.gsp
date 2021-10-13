@@ -207,7 +207,7 @@
                     <td>${message(code: 'copySurvey.copyDocs')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${(((docctx.owner.contentType == 1) || (docctx.owner.contentType == 3)) && (docctx.status.value != 'Deleted'))}">
+                            <g:if test="${(((docctx.owner.contentType == 1) || (docctx.owner.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                                 <g:link controller="docstore" id="${docctx.owner.uuid}">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
@@ -231,7 +231,7 @@
                     <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${((docctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status.value != 'Deleted'))}">
+                            <g:if test="${((docctx.owner.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                 <g:if test="${docctx.owner.title}">
                                     <strong>${docctx.owner.title}</strong>
                                 </g:if>
