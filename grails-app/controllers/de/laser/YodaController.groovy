@@ -294,14 +294,30 @@ class YodaController {
         }
 
         result.globalStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri",
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri order by counter desc",
                 [arc: result.archive]
-        ).sort{it[2]}.reverse()
+        )
 
         result.contextStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id",
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id order by counter desc",
                 [arc: result.archive]
-        ).sort{it[2]}.reverse()
+        )
+
+
+        List<BigDecimal> hmw = [ -0.15, 0.15, 0.6, 1.2, 2.4, 4.8, 9.6, 19.2, 38.4 ]
+        Map<String, List> heatMap = [:]
+
+        result.globalStats.each{ gs ->
+            String uri = gs[0]
+            Map<String, Long> counts = result.globalMatrix[uri]
+            BigDecimal heat = 0.0
+
+            result.globalMatrixSteps.eachWithIndex { c, idx ->
+                heat += (counts.get(c.toString()) * hmw[idx])
+            }
+            heatMap.putAt(uri, [ heat.doubleValue(), gs[1], gs[2], gs[3] ])
+        }
+        result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
 
         result
     }
