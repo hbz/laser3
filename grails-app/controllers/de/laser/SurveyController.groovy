@@ -20,6 +20,7 @@ import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import groovyx.gpars.GParsPool
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
@@ -30,6 +31,7 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -55,6 +57,7 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     ExportClickMeService exportClickMeService
     CustomWkhtmltoxService wkhtmltoxService
+    ExecutorService executorService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
@@ -4093,14 +4096,14 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                         }
                             countNewSubs++
-                            result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params)
+                            result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     } else {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
 
                 }
@@ -4114,7 +4117,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     }
                     else {
                         use(TimeCategory) {
@@ -4122,7 +4125,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
                 }else {
                     use(TimeCategory) {
@@ -4130,7 +4133,7 @@ class SurveyController {
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                     }
                     countNewSubs++
-                    result.newSubs << processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params)
+                    result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
@@ -4142,12 +4145,39 @@ class SurveyController {
                     if (!(org in result.parentSuccessortParticipantsList)) {
 
                         countNewSubs++
-                        result.newSubs << processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params)
+                        result.newSubs.addAll(processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
                     }
                 }
             }
 
         }
+
+        Set<Package> packagesToProcess = []
+
+        //copy package data
+        if(params.linkAllPackages) {
+            result.parentSuccessorSubscription.packages.each { sp ->
+                packagesToProcess << sp.pkg
+            }
+        }else if(params.packageSelection) {
+            List packageIds = params.list("packageSelection")
+            packageIds.each { spId ->
+                packagesToProcess << SubscriptionPackage.get(spId).pkg
+            }
+        }
+
+        boolean linkWithEntitlements = params.linkWithEntitlements == 'on'
+        executorService.execute({
+            result.newSubs.each { Subscription memberSub ->
+                packagesToProcess.each { pkg ->
+                    if (linkWithEntitlements) {
+                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.parentSuccessorSubscription, pkg)
+                    }
+                    else
+                        subscriptionService.addToSubscription(memberSub, pkg, false)
+                }
+            }
+        })
 
         result.countNewSubs = countNewSubs
         if(result.newSubs) {
@@ -4172,20 +4202,8 @@ class SurveyController {
 
                 //def subLicense = newParentSub.owner
 
-                Set<Package> packagesToProcess = []
                 List<License> licensesToProcess = []
 
-                //copy package data
-                if(params.linkAllPackages) {
-                    newParentSub.packages.each { sp ->
-                        packagesToProcess << sp.pkg
-                    }
-                }else if(params.packageSelection) {
-                    List packageIds = params.list("packageSelection")
-                    packageIds.each { spId ->
-                        packagesToProcess << SubscriptionPackage.get(spId).pkg
-                    }
-                }
                 if(params.generateSlavedLics == "all") {
                     String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
                     licensesToProcess.addAll(License.executeQuery(query, [subscription:newParentSub, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -4275,13 +4293,6 @@ class SurveyController {
                                 newProp.save()
                             }
                         }
-                    }
-
-                    packagesToProcess.each { pkg ->
-                        if(params.linkWithEntitlements)
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
-                        else
-                            subscriptionService.addToSubscription(memberSub, pkg, false)
                     }
 
                     licensesToProcess.each { License lic ->

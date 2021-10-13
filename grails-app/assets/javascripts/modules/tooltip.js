@@ -25,7 +25,7 @@ tooltip = {
         $('.ui.toggle.button').next('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
-            inline     : true,
+            inline     : false,
             lastResort: true,
             movePopup: false,
             boundary: 'body',

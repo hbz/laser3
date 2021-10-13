@@ -333,6 +333,9 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
+            }
             Subscription refSub = subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0 ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -524,12 +527,12 @@ class SubscriptionControllerService {
                 endTime.setTime(result.subscription.endDate)
         }
         else if(result.subscription.startDate) {
-            dateRange = " and r.reportFrom >= :startDate "
+            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
+                queryParams.endDate = new Date()
             }
             else {
-                dateRange += "and r.reportTo <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
                 Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                 filterTime.setTime(filterDate)
@@ -538,6 +541,7 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.setTime(result.subscription.startDate)
+            endTime.setTime(new Date())
         }
         else {
             if(params.tab != 'total') {
@@ -553,6 +557,7 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.set(2018, 0, 1)
+            endTime.setTime(new Date())
         }
         while(startTime.before(endTime)) {
             monthsInRing << startTime.getTime()
@@ -1085,6 +1090,15 @@ class SubscriptionControllerService {
             }
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+            result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+            result.subscriberSubs = []
+            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            if(subscriptions) {
+                result.subscriberSubs = subscriptions
+            }
+
 
             if (result.editable) {
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -1897,13 +1911,16 @@ class SubscriptionControllerService {
         RefdataValue oldStatus = ie.status
         ie.status = RDStore.TIPP_STATUS_DELETED
         if(ie.save()){
-            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
-            {
-                return [result:null,status:STATUS_OK]
-            }else {
-                ie.status = oldStatus
-                ie.save()
-                return [result:null,status:STATUS_ERROR]
+            if(IssueEntitlementGroupItem.findByIe(ie)) {
+                if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
+                    return [result: null, status: STATUS_OK]
+                } else {
+                    ie.status = oldStatus
+                    ie.save()
+                    return [result: null, status: STATUS_ERROR]
+                }
+            }else{
+                return [result: null, status: STATUS_OK]
             }
         }
         else {
@@ -2237,8 +2254,21 @@ class SubscriptionControllerService {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
 
-                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    boolean tippExistsInParentSub = false
 
+                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                        tippExistsInParentSub = true
+                    }else {
+                        List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                        titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                            if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                                tippExistsInParentSub = true
+                                tipp = titleInstancePackagePlatform
+                            }
+                        }
+                    }
+
+                    if(tippExistsInParentSub) {
                         try {
                             if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")

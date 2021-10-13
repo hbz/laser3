@@ -53,7 +53,7 @@
     %{--th DELETE:--}%
         <th>
             <g:if test="${targetObject}">
-                <input type="checkbox" data-action="delete" class="select-all" onclick="JSPC.app.selectAllDelete(this);"/>
+                <input class="setDeletionConfirm" type="checkbox" data-action="delete" class="select-all" onclick="JSPC.app.selectAllDelete(this);"/>
             </g:if>
         </th>
     </g:if>
@@ -390,7 +390,7 @@
                 <td>
                     <g:if test="${targetObject && propValues.containsKey(targetObject)}">
                         <g:each var="propValue" in="${propValuesForTargetSub}">
-                            <div class="ui checkbox la-toggle-radio la-noChange">
+                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                 <g:checkBox class="bulkcheck" name="copyObject.deleteProperty"
                                             data-multipleOccurrence="${propKey.multipleOccurrence}"
                                             value="${genericOIDService.getOID(propValue)}" data-action="delete"

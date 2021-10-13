@@ -23,7 +23,7 @@ class RenewSubscriptionService extends AbstractLockableService {
     def contextService
 
     boolean subscriptionRenewCheck() {
-        if (running) {
+        if (!running) {
             running = true
             println "processing all current local subscriptions with annually peroide to renew ..."
             Date currentDate = new Date()

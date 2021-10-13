@@ -14,7 +14,7 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}"
+    <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -34,7 +34,7 @@
                                 </th>
                                 <th class="one wide center aligned">
                                     <g:if test="${targetObject}">
-                                        <input type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)" />
+                                        <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)" />
                                     </g:if>
                                 </th>
                     </g:if>
@@ -144,7 +144,7 @@
                             <g:each in="${targetObject.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                 <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     %{--<div class="ui checkbox">--}%
-                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                         <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
                                     </div>
                                     %{--</div>--}%
@@ -255,7 +255,7 @@
                                                 <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                                         %{--<div class="ui checkbox">--}%
-                                                        <div class="ui checkbox la-toggle-radio la-noChange">
+                                                        <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                             <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
                                                         </div>
                                                         %{--</div>--}%
@@ -309,7 +309,7 @@
                                     <g:each in="${targetTasks}" var="tsk">
                                         <g:if test="${tsk.creator.id == userId || isInstAdm}">
                                             %{--<div class="ui checkbox">--}%
-                                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="copyObject.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
                                             </div>
                                             %{--</div>--}%
@@ -328,7 +328,9 @@
         <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return JSPC.app.jsConfirmation()"  ${submitDisabled}/>
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:if>
         <g:elseif test="${copyObject}">
@@ -346,7 +348,9 @@
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return JSPC.app.jsConfirmation()"  ${submitDisabled}/>
+                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                           data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                           data-confirm-term-how="delete" ${submitDisabled}/>
                 </div>
             </div>
         </g:else>

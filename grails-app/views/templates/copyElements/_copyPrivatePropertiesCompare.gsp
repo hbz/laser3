@@ -16,7 +16,7 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
+    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}" data-confirm-id="copyElements_form"
             params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
@@ -34,8 +34,10 @@
                     message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStep') :
                     message(code: 'copyElementsIntoObject.copyProperties.button')}"/>
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                       data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:if>
         <g:else>
@@ -46,8 +48,10 @@
                 <g:set var="submitButtonText" value="${isRenewSub ?
                         message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
                         message(code: 'copyElementsIntoObject.lastStepWithoutSaveDate')}"/>
-                <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                       onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                       data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:else>
 

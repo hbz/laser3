@@ -7,6 +7,28 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3928    12.10.2021  rc-2.2  2.2.1       Andreas Feature     weitere Nachbestellungen für FIDs
+
+3924    12.10.2021  rc-2.2  2.2.1       Andreas Bug         Fallback für Lizenzen ohne Enddatum nachgezogen
+
+3912    12.10.2021  rc-2.2  2.2.1       Andreas Bug         Fallback zur Ermittlung der fehlenden nominalPlatform implementiert
+
+3925    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage kopieren nicht möglich
+
+3919    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage: Mehrjahreszeitraum wird bei ClickMeExcel nicht angezeigt
+
+3923    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Lizenzverwaltung Bugs
+
+3918    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage-Merkmale falsch sortiert in Reiter Ergebnis
+
+3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
+
+3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
+
+3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
+
+3891    04.10.2021  rc-2.2  2.2.1       Moe     Bug         Titel löschen aus Bestand Fehler
+
 3895    04.10.2021  rc-2.2  2.2         Moe     Bug         Adressbuch nicht aufrufbar
 
 3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
