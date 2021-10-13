@@ -60,7 +60,7 @@ class BaseQuery {
 
             it.value.get('query')?.default?.each { it2 ->
                 if (it2.value.contains(query)) {
-                    if (cfgKey == 'SubscriptionReporting') {
+                    if (cfgKey == 'SubscriptionReport') {
                         meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query) ]
                     } else {
                         meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
@@ -70,7 +70,7 @@ class BaseQuery {
             // TODO - query dist
             it.value.get('query2')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    if (cfgKey == 'SubscriptionReporting') {
+                    if (cfgKey == 'SubscriptionReport') {
                         meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
                     } else {
                         meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]

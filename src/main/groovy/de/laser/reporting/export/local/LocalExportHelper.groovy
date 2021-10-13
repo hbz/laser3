@@ -29,21 +29,21 @@ class LocalExportHelper extends BaseExportHelper {
     // ----- Cache -----
 
     static Map<String, Object> getFilterCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.filterCache as Map<String, Object>
     }
 
     static Map<String, Object> getQueryCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.queryCache as Map<String, Object>
     }
 
     static Map<String, Object> getDetailsCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, token )
         Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.detailsCache as Map<String, Object>
