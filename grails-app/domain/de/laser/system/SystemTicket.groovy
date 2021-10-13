@@ -1,11 +1,13 @@
 package de.laser.system
 
-
 import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This class was used to record bug notifications and user remarks. The underlying workflow is currently not used
+ */
 class SystemTicket {
 
     User author
@@ -55,6 +57,10 @@ class SystemTicket {
         jiraReference(nullable:true, blank:true)
     }
 
+    /**
+     * Lists the most recent tickets which have not been dealt with (= status is New)
+     * @return a sorted {@link List} of tickets
+     */
     static List<SystemTicket> getNew() {
         SystemTicket.where{ status == RefdataValue.getByValueAndCategory('New', RDConstants.TICKET_STATUS) }.list(sort:'dateCreated', order:'desc')
     }

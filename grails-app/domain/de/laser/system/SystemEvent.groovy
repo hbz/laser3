@@ -6,6 +6,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
+/**
+ * This class reflects cronjob-related event records and serves to mark events. Depending on the relevance of the event, this event appears in a mail reminder sent to all developers (every morning at 7 o'clock AM;
+ * this time may be defined by a cronjob script on a server instance directly). The system events may be reviewed in /admin/systemEvents where every event is listed and cronjob runnings may be checked
+ */
 @Slf4j
 class SystemEvent {
 
@@ -20,6 +24,9 @@ class SystemEvent {
     RELEVANCE relevance
     Date      created
 
+    /**
+     * The event types which may be triggered
+     */
     static final DEFINED_EVENTS = [
             'ADM_JOB_START'                 : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'BATCH_IMP_JOB_START'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
@@ -78,6 +85,9 @@ class SystemEvent {
             'YODA_ES_RESET_END'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
+    /**
+     * The relevance of an event. It the relevance is WARNING oder ERROR, it appears in the reminder mail to the developers and usually requires action on behalf of them
+     */
     static enum RELEVANCE {
         INFO    ("INFO"),
         WARNING ("WARNING"),
@@ -90,6 +100,9 @@ class SystemEvent {
         public String value
     }
 
+    /**
+     * The category of an event
+     */
     static enum CATEGORY {
         SYSTEM    ("SYSTEM"),
         CRONJOB   ("CRONJOB"),
@@ -124,10 +137,21 @@ class SystemEvent {
         created = created ?: new Date()
     }
 
+    /**
+     * Creates a new system event with the given token but without payload
+     * @param token one of the {@link #DEFINED_EVENTS} constants
+     * @return the new event
+     */
     static SystemEvent createEvent(String token) {
         createEvent(token, null)
     }
 
+    /**
+     * Creates a new system event with the given event and JSON payload
+     * @param token one of the {@link #DEFINED_EVENTS} constants
+     * @param payload additional data which will be formatted in JSON
+     * @return the new event
+     */
     static SystemEvent createEvent(String token, def payload) {
 
         withTransaction {
@@ -151,6 +175,10 @@ class SystemEvent {
         }
     }
 
+    /**
+     * Gets a list of distinct sources of all system events
+     * @return a {@link List} of sources
+     */
     static List<String> getAllSources() {
         List<String> result = []
 
@@ -163,12 +191,20 @@ class SystemEvent {
 
     // GETTER
 
+    /**
+     * This method is actually a getter. It gets the internationalised message by the system event token
+     */
     private void setInfo() {
         if (!i18n) {
             i18n = messageSource.getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
         }
     }
 
+    /**
+     * Gets a certain part of the internationalised message string
+     * @param index the index of the message string (array, split by '|') to be retrieved
+     * @return the message part or an empty string if not found
+     */
     private String getInfoPart(def index) {
         setInfo()
         List parts = i18n.split('\\|')
@@ -181,12 +217,26 @@ class SystemEvent {
         }
     }
 
+    /**
+     * Gets the source of the message
+     * @return the source part of the internationalised message string
+     */
     String getSource() {
         getInfoPart(0)
     }
+
+    /**
+     * Gets the event of the message
+     * @return the event part of the internationalised message string
+     */
     String getEvent() {
         getInfoPart(1)
     }
+
+    /**
+     * Gets the description of the message
+     * @return the description part of the internationalised message string
+     */
     String getDescr() {
         getInfoPart(2)
     }
