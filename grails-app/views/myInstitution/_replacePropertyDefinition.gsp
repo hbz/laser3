@@ -16,6 +16,7 @@
             <div class="content">
                 <div class="header"><g:message code="default.notice" /></div>
                 <p><g:message code="menu.institutions.replace_prop.refdata"/></p>
+                <p><g:message code="menu.institutions.replace_prop.setting"/></p>
             </div>
         </div>
 
