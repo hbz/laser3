@@ -16,17 +16,20 @@
             <div class="content">
                 <div class="header"><g:message code="default.notice" /></div>
                 <p><g:message code="menu.institutions.replace_prop.refdata"/></p>
+                <p><g:message code="menu.institutions.replace_prop.setting"/></p>
             </div>
         </div>
 
         <div class="field">
             <label for="xcgPdTo">&nbsp;</label>
+            <%--suppress XmlDuplicatedId; message is for IntelliJ and because it errs (it never will be duplicated) --%>
             <select id="xcgPdTo"></select>
         </div>
 
-        <p>
-            <g:message code="menu.institutions.replace_prop.note"/>
-        </p>
+        <div class="field">
+            <label for="overwrite"><g:message code="menu.institutions.replace_prop.overwrite"/></label>
+            <g:checkBox name="overwrite" id="overwrite" />
+        </div>
 
     </g:form>
 
@@ -47,10 +50,14 @@
                         for (var index = 0; index < data.length; index++) {
                             var option = data[index];
                             if (option.value != pd) {
-                                select += '<option value="' + option.value + '">' + option.text + '</option>';
+                                select += '<option value="' + option.value + '">' + option.text;
+                                if(option.isPrivate == true) {
+                                    select += ' (priv.)';
+                                }
+                                select += '</option>';
                             }
                         }
-                        select = '<select id="xcgPdTo" name="xcgPdTo" class="ui search selection dropdown">' + select + '</select>';
+                        select = '<select id="xcgPdTo" name="xcgPdTo" class="ui fluid search selection dropdown la-filterPropDef">' + select + '</select>';
 
                         $('label[for=xcgPdTo]').next().replaceWith(select);
 
