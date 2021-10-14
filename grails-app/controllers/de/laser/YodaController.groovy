@@ -239,9 +239,8 @@ class YodaController {
                 int indexOf = labels.findIndexOf{it == val[0]}
                 if (indexOf >= 0) {
                     series1.putAt(indexOf, val[3])          // [0] = min
-                    series2.putAt(indexOf, val[4])          // [1] = max
-                    //series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
-
+                    //series2.putAt(indexOf, val[4])          // [1] = max
+                    series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
                     averages[indexOf] = averages[indexOf] + val[5]
                 }
             }

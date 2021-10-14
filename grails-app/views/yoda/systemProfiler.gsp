@@ -10,27 +10,33 @@
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemProfiler" class="active"/>
+    <semui:crumb message="menu.yoda.profiler" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemProfiler')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
 
-    <div class="ui la-float-right">
-        <g:select name="archive" id="archive" class="ui dropdown"
-                  from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
-        <laser:script file="${this.getGroovyPageFileName()}">
-            $('#archive').on('change', function() {
-                var selection = $(this).val()
-                var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
-                window.location.href = link
-            })
-        </laser:script>
-    </div>
+    <nav class="ui secondary menu">
+        <g:link controller="yoda" action="systemProfiler" class="item active">Ladezeiten</g:link>
+        <g:link controller="yoda" action="activityProfiler" class="item">Nutzerzahlen</g:link>
+        <g:link controller="yoda" action="timelineProfiler" class="item">Seitenaufrufe</g:link>
+
+        <div style="position:absolute; right:0">
+            <g:select name="archive" id="archive" class="ui dropdown"
+                      from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('#archive').on('change', function() {
+                    var selection = $(this).val()
+                    var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
+                    window.location.href = link
+                })
+            </laser:script>
+        </div>
+    </nav>
 
     <div class="ui secondary stackable pointing tabular menu">
         <a data-tab="first" class="item active">Heat</a>
-        <a data-tab="second" class="item">Global</a>
-        <a data-tab="third" class="item">Kontextbezogen</a>
+        <a data-tab="second" class="item">Alle</a>
+        <a data-tab="third" class="item">URL/Kontext</a>
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
