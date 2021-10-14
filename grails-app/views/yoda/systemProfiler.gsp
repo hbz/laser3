@@ -86,8 +86,19 @@
                             </g:else>
                         </td>
                     </g:each>
-                    <td>${((double) stat[2] / 1000).round(2)}</td>
-                    <td><span style="color:orangered;"><strong>${((double) stat[0] / 1).round(1)}</strong></span></td>
+                    <td>
+                        <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+                        <g:if test="${avg >= 8}">
+                            <span style="color:red"> ${avg} </span>
+                        </g:if>
+                        <g:elseif test="${avg >= 4}">
+                            <span style="color:orange"> ${avg} </span>
+                        </g:elseif>
+                        <g:else>
+                            <span>${avg}</span>
+                        </g:else>
+                    </td>
+                    <td><strong>${((double) stat[0] / 1).round(1)}</strong></td>
                 </tr>
             </g:each>
             </tbody>
@@ -142,7 +153,18 @@
                                 </g:else>
                             </td>
                         </g:each>
-                        <td>${((double) stat[2] / 1000).round(2)}</td>
+                        <td>
+                            <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+                            <g:if test="${avg >= 8}">
+                                <span style="color:red"> ${avg} </span>
+                            </g:if>
+                            <g:elseif test="${avg >= 4}">
+                                <span style="color:orange"> ${avg} </span>
+                            </g:elseif>
+                            <g:else>
+                                <span>${avg}</span>
+                            </g:else>
+                        </td>
                         <td>${((double) stat[1] / 1000).round(2)}</td>
                     </tr>
                 </g:each>
@@ -187,7 +209,18 @@
                     <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td data-context="${bench[3]}">${Org.get(bench[3]).getDesignation()}</td>
                     <td>${bench[4]}</td>
-                    <td>${((double) bench[2] / 1000).round(2)}</td>
+                    <td>
+                        <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
+                        <g:if test="${avg >= 8}">
+                            <span style="color:red"> ${avg} </span>
+                        </g:if>
+                        <g:elseif test="${avg >= 4}">
+                            <span style="color:orange"> ${avg} </span>
+                        </g:elseif>
+                        <g:else>
+                            <span>${avg}</span>
+                        </g:else>
+                    </td>
                     <td>${((double) bench[1] / 1000).round(2)}</td>
                 </tr>
                 </g:each>
