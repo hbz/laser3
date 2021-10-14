@@ -238,12 +238,12 @@
                 <g:if test="${'onlyMemberSubs' in tableConfig}">
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
-                            <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui minus icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link class="ui icon positive button" action="linkToSubscription" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui plus icon"></i>
                             </g:link>
                         </g:else>
