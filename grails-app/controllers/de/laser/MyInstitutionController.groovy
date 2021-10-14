@@ -3461,18 +3461,20 @@ join sub.orgRelations or_sub where
                 }
                 break
             case 'replacePropertyDefinition':
-                PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-                PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-                String oldName = pdFrom.tenant ? "${pdFrom.name} (priv.)" : pdFrom.name
-                String newName = pdTo.tenant ? "${pdTo.name} (priv.)" : pdTo.name
-                if (pdFrom && pdTo) {
-                    try {
-                        int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-                        flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace()
-                        flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                if(params.xcgPdTo) {
+                    PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                    PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                    String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
+                    String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
+                    if (pdFrom && pdTo) {
+                        try {
+                            int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
+                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace()
+                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                        }
                     }
                 }
                 break
@@ -3520,17 +3522,35 @@ join sub.orgRelations or_sub where
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if(params.pd) {
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
-            if (pd) {
-                PropertyDefinition.withTransaction { TransactionStatus ts ->
+        if(params.xcgPdTo) {
+            PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+            PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+            String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
+            String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
+            if (pdFrom && pdTo) {
+                try {
+                    int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', false)
+                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                }
+                catch (Exception e) {
+                    e.printStackTrace()
+                    flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                }
+            }
+        }
+                //PropertyDefinition.withTransaction { TransactionStatus ts ->
                     switch(params.cmd) {
+                        /*
                         case 'toggleMandatory': pd.mandatory = !pd.mandatory
                             pd.save()
                             break
                         case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
                             pd.save()
                             break
+                         */
+                        case 'replacePropertyDefinition':
+                            break
+                            /*
                         case 'deletePropertyDefinition':
                             if (! pd.isHardData) {
                                 try {
@@ -3542,10 +3562,9 @@ join sub.orgRelations or_sub where
                                 }
                             }
                             break
+                        */
                     }
-                }
-            }
-        }
+                //}
 
         result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 

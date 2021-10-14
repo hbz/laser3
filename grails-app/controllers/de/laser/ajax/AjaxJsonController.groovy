@@ -634,6 +634,7 @@ class AjaxJsonController {
     def searchPropertyAlternativesByOID() {
         List<Map<String, Object>> result = []
         PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+        Org contextOrg = contextService.getOrg()
         List<PropertyDefinition> queryResult
         if(pd.refdataCategory) {
             queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.refdataCategory = :refdataCategory and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
@@ -641,26 +642,26 @@ class AjaxJsonController {
                      refdataCategory: pd.refdataCategory,
                      type    : pd.type,
                      multiple: pd.multipleOccurrence,
-                     tenant  : pd.tenant])
+                     tenant  : contextOrg])
         }
         else {
             queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
                     [descr   : pd.descr,
                      type    : pd.type,
                      multiple: pd.multipleOccurrence,
-                     tenant  : pd.tenant])
+                     tenant  : contextOrg])
         }
 
         queryResult.each { PropertyDefinition it ->
             PropertyDefinition rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
             if (pd.isUsedForLogic) {
                 if (it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}", isPrivate: rowobj.tenant ? true : false])
                 }
             }
             else {
                 if (! it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}", isPrivate: rowobj.tenant ? true : false])
                 }
             }
         }

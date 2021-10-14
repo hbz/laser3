@@ -1506,18 +1506,20 @@ SELECT * FROM (
                     }
                     break
                 case 'replacePropertyDefinition':
-                    PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-                    PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-                    String oldName = pdFrom.tenant ? "${pdFrom.name} (priv.)" : pdFrom.name
-                    String newName = pdTo.tenant ? "${pdTo.name} (priv.)" : pdTo.name
-                    if (pdFrom && pdTo) {
-                        try {
-                            int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
-                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace()
-                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                    if(params.xcgPdTo) {
+                        PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                        PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                        String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
+                        String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
+                        if (pdFrom && pdTo) {
+                            try {
+                                int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
+                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace()
+                                flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                            }
                         }
                     }
                     break
