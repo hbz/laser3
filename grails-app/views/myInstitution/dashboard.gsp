@@ -174,7 +174,7 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <a onclick="JSPC.app.taskcreate();" class="ui icon button">
+                        <a onclick="JSPC.app.taskcreate();" class="ui button">
                             ${message(code:'task.create.new')}
                         </a>
                     </div>
