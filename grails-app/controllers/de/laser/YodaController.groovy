@@ -303,7 +303,7 @@ class YodaController {
         )
 
 
-        List<BigDecimal> hmw = [ -0.1, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0 ]
+        List<BigDecimal> hmw = [ -0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0 ]
         Map<String, List> heatMap = [:]
 
         result.globalStats.each{ gs ->
@@ -314,7 +314,7 @@ class YodaController {
             result.globalMatrixSteps.eachWithIndex { c, idx ->
                 heat += (counts.get(c.toString()) * hmw[idx])
             }
-            heatMap.putAt(uri, [ heat.doubleValue(), gs[1], gs[2], gs[3] ]) // max, avg, count
+            heatMap.putAt(uri, [ heat.doubleValue() * (Math.sqrt(gs[3]) / gs[3]), gs[1], gs[2], gs[3] ]) // max, avg, count
         }
         result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
 

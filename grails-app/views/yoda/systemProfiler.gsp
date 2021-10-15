@@ -57,7 +57,7 @@
                     <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
                 </g:if>
                 <th>avg</th>
-                <th>heat</th>
+                <th><i class="icon fire"></i></th>
             </tr>
             </thead>
             <tbody>
@@ -98,7 +98,7 @@
                             <span>${avg}</span>
                         </g:else>
                     </td>
-                    <td><strong>${((double) stat[0] / 1).round(1)}</strong></td>
+                    <td><strong>${((double) stat[0]).round(1)}</strong></td>
                 </tr>
             </g:each>
             </tbody>
