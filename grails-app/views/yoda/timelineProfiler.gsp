@@ -9,15 +9,21 @@
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.timelineProfiler" class="active"/>
+    <semui:crumb message="menu.yoda.profiler" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.timelineProfiler')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
+
+    <nav class="ui secondary menu">
+        <g:link controller="yoda" action="systemProfiler" class="item">Ladezeiten</g:link>
+        <g:link controller="yoda" action="activityProfiler" class="item">Nutzerzahlen</g:link>
+        <g:link controller="yoda" action="timelineProfiler" class="item active">Seitenaufrufe</g:link>
+    </nav>
 
     <table class="ui celled la-table compact table">
         <thead>
             <tr class="center aligned">
-                <th>Seitenaufrufe am Tag</th>
+                <th>Registrierte Seitenaufrufe am Tag</th>
             </tr>
         </thead>
         <tbody>
@@ -55,7 +61,7 @@
                                         smooth: true,
                                         animation: false,
                                         areaStyle: { color: 'rgba(58,111,196, 0.3)' },
-                                        lineStyle: { color: 'rgb(58,111,196)', width: 3 },
+                                        lineStyle: { color: 'rgb(58,111,196)', width: 2 },
                                     }]
                                 }
                             </g:if>
