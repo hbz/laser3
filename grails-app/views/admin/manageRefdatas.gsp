@@ -115,7 +115,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
-                                                    <button class="ui icon button" data-href="#replaceRefdataValueModal" data-semui="modal"
+                                                    <button class="ui icon button la-modern-button" data-href="#replaceRefdataValueModal" data-semui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"

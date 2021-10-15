@@ -137,10 +137,11 @@ class RDConstants {
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
     public static final String SIM_USER_NUMBER        = 'sim.user.number'
+    public static final String SIS_BUSINESS_MODEL_BASE = "sis.business.model.base"
+    public static final String SIS_REJECTION_REASON   = "sis.rejection.reason"
     public static final String SIS_USER_GROUP_BASE    = "sis.user.group.base"
     public static final String SIS_USER_GROUP_ATTR1   = "sis.user.group.attr1"
     public static final String SIS_USER_GROUP_ATTR2   = "sis.user.group.attr2"
-    public static final String SIS_BUSINESS_MODEL_BASE = "sis.business.model.base"
     public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'

@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3928    12.10.2021  rc-2.2  2.2.1       Andreas Feature     weitere Nachbestellungen für FIDs
+
+3924    12.10.2021  rc-2.2  2.2.1       Andreas Bug         Fallback für Lizenzen ohne Enddatum nachgezogen
+
+3912    12.10.2021  rc-2.2  2.2.1       Andreas Bug         Fallback zur Ermittlung der fehlenden nominalPlatform implementiert
+
+3925    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage kopieren nicht möglich
+
 3919    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Umfrage: Mehrjahreszeitraum wird bei ClickMeExcel nicht angezeigt
 
 3923    11.10.2021  rc-2.2  2.2.1       Moe     Bug         Lizenzverwaltung Bugs

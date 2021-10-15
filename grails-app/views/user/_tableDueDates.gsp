@@ -114,7 +114,7 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon button"
+                        <laser:remoteLink class="ui icon button la-modern-button"
                                           controller="ajax"
                                           action="showDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -126,11 +126,11 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon"></i>
+                            <i class="icon bell slash la-js-editmode-icon la-modern-button"></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
-                        <laser:remoteLink class="ui icon green button"
+                        <laser:remoteLink class="ui icon green button la-modern-button "
                                           controller="ajax"
                                           action="hideDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -146,7 +146,7 @@
                 </td>
                 <td style="text-align: center">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <laser:remoteLink class="ui green button"
+                    <laser:remoteLink class="ui green button la-modern-button"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
@@ -165,7 +165,7 @@
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui icon button"
+                    <laser:remoteLink class="ui icon button la-modern-button"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
