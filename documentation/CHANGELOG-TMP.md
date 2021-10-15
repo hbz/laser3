@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen
+
 3831    15.10.2021  rc-2.2  2.2.2       David   Feature     Systemprofiler erweitern
 
 3928    12.10.2021  rc-2.2  2.2.1       Andreas Feature     weitere Nachbestellungen für FIDs
