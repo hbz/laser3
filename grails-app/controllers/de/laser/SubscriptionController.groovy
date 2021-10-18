@@ -733,7 +733,21 @@ class SubscriptionController {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
 
+                boolean tippExistsInParentSub = false
+
                 if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    tippExistsInParentSub = true
+                }else {
+                   List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                    titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                        if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                            tippExistsInParentSub = true
+                            tipp = titleInstancePackagePlatform
+                        }
+                    }
+                }
+
+                if(tippExistsInParentSub) {
                     try {
                         if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                             flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
@@ -748,7 +762,7 @@ class SubscriptionController {
             log.error("Unable to locate subscription instance")
         }
 
-        redirect action: "renewEntitlementsWithSurvey", id: result.subscription.id, params: [surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs']
+        redirect(url: request.getHeader("referer"))
 
     }
 
@@ -1030,7 +1044,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect action: "renewEntitlementsWithSurvey", id: ctrlResult.result.subscription.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, tab: 'selectedIEs']
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)

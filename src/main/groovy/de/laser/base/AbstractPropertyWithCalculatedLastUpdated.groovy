@@ -202,6 +202,10 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
             case Date.class.name:
                 result = DateUtils.toDate_NoTime(value)
                 break
+            case RefdataValue.toString():
+            case RefdataValue.class.name:
+                result = RefdataValue.get(value)
+                break
             case URL.toString():
             case URL.class.name:
                 result = new URL(value)

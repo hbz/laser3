@@ -139,7 +139,7 @@
                                     </g:if>
                                     <g:else>
                                         <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
-                                            <div class="ui icon button disabled">
+                                            <div class="ui icon button la-modern-button disabled">
                                                 <i class="trash alternate outline icon"></i>
                                             </div>
                                         </div>
