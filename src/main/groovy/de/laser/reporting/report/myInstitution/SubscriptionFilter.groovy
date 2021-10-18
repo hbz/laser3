@@ -7,6 +7,7 @@ import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
@@ -17,12 +18,14 @@ class SubscriptionFilter extends BaseFilter {
 
     def contextService
     def filterService
+    def propertyService
     def subscriptionsQueryService
 
     SubscriptionFilter() {
         ApplicationContext mainContext  = Holders.grailsApplication.mainContext
         contextService                  = mainContext.getBean('contextService')
         filterService                   = mainContext.getBean('filterService')
+        propertyService                 = mainContext.getBean('propertyService')
         subscriptionsQueryService       = mainContext.getBean('subscriptionsQueryService')
     }
 
@@ -149,6 +152,16 @@ class SubscriptionFilter extends BaseFilter {
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        String pq = getPropertyFilterSubQuery(
+                                'SubscriptionProperty', 'sub',
+                                params.long(key),
+                                params.get('filter:subscription_propertyValue') as String,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
                     }
                 }
 
@@ -281,6 +294,16 @@ class SubscriptionFilter extends BaseFilter {
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        String pq = getPropertyFilterSubQuery(
+                                'SubscriptionProperty', 'mbr',
+                                params.long(key),
+                                params.get('filter:subscription_propertyValue') as String,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
                     }
                 }
 

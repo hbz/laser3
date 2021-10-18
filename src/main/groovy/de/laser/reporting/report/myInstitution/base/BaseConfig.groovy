@@ -1,6 +1,8 @@
 package de.laser.reporting.report.myInstitution.base
 
 import de.laser.ContextService
+import de.laser.License
+import de.laser.Org
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.auth.Role
@@ -120,8 +122,9 @@ class BaseConfig {
         getCustomImplRefdata(key, null)
     }
 
-    static Map<String, Object> getCustomImplRefdata(String key, String cfgKey) {
+    static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
 
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.cfg.base.custom'
@@ -195,13 +198,17 @@ class BaseConfig {
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PROPERTY_KEY) {
-            List<PropertyDefinition> propList = []
+            String descr = ''
 
-            if (cfgKey == KEY_SUBSCRIPTION) {
-                propList = PropertyDefinition.executeQuery(
-                        'select pd from PropertyDefinition pd where pd.descr = :descr and pd.tenant is null order by pd.name_de', [descr: PropertyDefinition.SUB_PROP]
-                )
-            }
+            if (clazz == License) { descr = PropertyDefinition.LIC_PROP }
+            else if (clazz == Org) { descr = PropertyDefinition.ORG_PROP }
+            else if (clazz == Subscription) { descr = PropertyDefinition.SUB_PROP }
+
+            List<PropertyDefinition> propList = descr ? PropertyDefinition.executeQuery(
+                    'select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant is null or pd.tenant = :ctx) order by pd.name_de',
+                    [descr: descr, ctx: contextService.getOrg()]
+            ) : []
+
             return [
                     label: 'Merkmal',
                     from: propList.collect{[
