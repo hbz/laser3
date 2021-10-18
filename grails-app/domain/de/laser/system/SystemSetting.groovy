@@ -1,5 +1,8 @@
 package de.laser.system
 
+/**
+ * This class lets configure some system-wide settings (e.g. MaintenanceMode, MailSending). Setting can be changed only by ROLE_YODA users
+ */
 class SystemSetting {
 
     static final int CONTENT_TYPE_STRING  = 0

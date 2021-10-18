@@ -156,8 +156,8 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
      * @return the new property with the values and note set
      */
     def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
-        if (type != newProp.type) {
-            throw new IllegalArgumentException("AbstractProperty.copyInto nicht möglich, weil die Typen nicht übereinstimmen.")
+        if (type.descr != newProp.type.descr) {
+            throw new IllegalArgumentException("AbstractProperty.copyInto not possible because types do not match: ${type.descr} vs. ${newProp.type.descr}")
         }
         else {
             newProp.stringValue = stringValue

@@ -297,23 +297,70 @@ class PropertyService {
         objMap
     }
 
-    int replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {
+    int replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo, boolean overwrite, boolean asAdmin) {
 
-        log.debug("replacing: ${pdFrom} with: ${pdTo}")
+        log.debug("replacing: ${pdFrom} with: ${pdTo}, overwrite: ${overwrite}")
         int count = 0
-
-        PropertyDefinition.executeUpdate("update PropertyDefinitionGroupItem set propDef = :pdTo where propDef = :pdFrom", [pdTo: pdTo, pdFrom: pdFrom])
-
-        def implClass = pdFrom.getImplClass()
-        def customPropDef = Class.forName(implClass)
-        Set customProps = customPropDef.findAllByType(pdFrom)
-        customProps.each{ cp ->
-            log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
-            cp.type = pdTo
-            cp.save()
-            count++
+        Org contextOrg = contextService.getOrg()
+        PropertyDefinition.executeUpdate("update PropertyDefinitionGroupItem set propDef = :pdTo where propDef in (select pdgi.propDef from PropertyDefinitionGroupItem pdgi join pdgi.propDefGroup pdg where pdgi.propDef = :pdFrom and pdg.tenant = :context)", [pdTo: pdTo, pdFrom: pdFrom, context: contextOrg])
+        String implClass = pdFrom.getImplClass(), targetImpl = pdTo.getImplClass()
+        Class<?> customPropDef = Class.forName(implClass), targetPropDef = Class.forName(targetImpl)
+        Set<AbstractPropertyWithCalculatedLastUpdated> customProps = customPropDef.findAllByType(pdFrom)
+        Set<AbstractPropertyWithCalculatedLastUpdated> existingTargetProps = targetPropDef.findAllByType(pdTo)
+        customProps.each{ AbstractPropertyWithCalculatedLastUpdated cp ->
+            //decision tree: is the property to be changed private?
+            if(pdFrom.tenant) {
+                //assign tenant of property definition to target property
+                cp.tenant = pdFrom.tenant
+                if(moveProperty(cp, pdTo, existingTargetProps, overwrite)) {
+                    log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
+                    count++
+                }
+            }
+            //no, it is a general property to be moved
+            else {
+                //is it the tenant moving his property or is an admin changing every property of this type?
+                if(cp.tenant.id == contextOrg.id || asAdmin) {
+                    if(moveProperty(cp, pdTo, existingTargetProps, overwrite)) {
+                        log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
+                        count++
+                    }
+                }
+            }
         }
         count
+    }
+
+    boolean moveProperty(AbstractPropertyWithCalculatedLastUpdated cp, PropertyDefinition pdTo, Set<AbstractPropertyWithCalculatedLastUpdated> existingTargetProps, boolean overwrite) {
+        boolean changed = false
+        //can the property exist several times?
+        if (pdTo.multipleOccurrence) {
+            //change foreign key
+            cp.type = pdTo
+            changed = true
+        }
+        //no multiple occurrence: should the old value be retained?
+        else {
+            AbstractPropertyWithCalculatedLastUpdated existing = existingTargetProps.find { AbstractPropertyWithCalculatedLastUpdated ep -> ep.owner == cp.owner }
+            //does a property exist at target?
+            if (existing && overwrite) {
+                cp.copyInto(existing)
+                if (pdTo.descr == PropertyDefinition.LIC_PROP) {
+                    existing.paragraph = cp.paragraph
+                }
+                cp.delete()
+                return existing.save()
+            }
+            //no property to overwrite: move property
+            else if(!existing) {
+                cp.type = pdTo
+                changed = true
+            }
+        }
+        if(changed) {
+            return cp.save()
+        }
+        else return false
     }
 
     List<AbstractPropertyWithCalculatedLastUpdated> getOrphanedProperties(Object obj, List<List> sorted) {
