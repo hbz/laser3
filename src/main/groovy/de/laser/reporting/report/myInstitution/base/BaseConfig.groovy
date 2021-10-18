@@ -2,8 +2,12 @@ package de.laser.reporting.report.myInstitution.base
 
 import de.laser.ContextService
 import de.laser.RefdataCategory
+import de.laser.Subscription
 import de.laser.auth.Role
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
 import de.laser.reporting.report.myInstitution.config.LicenseConsCfg
 import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
@@ -44,6 +48,8 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_ANNUAL            = 'annual'
     static String CUSTOM_IMPL_KEY_STARTDATE_LIMIT   = 'startDateLimit'
     static String CUSTOM_IMPL_KEY_ENDDATE_LIMIT     = 'endDateLimit'
+    static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
+    static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static List<String> FILTER = [
             'organisation', 'subscription', 'license' // 'costItem'
@@ -111,6 +117,10 @@ class BaseConfig {
     }
 
     static Map<String, Object> getCustomImplRefdata(String key) {
+        getCustomImplRefdata(key, null)
+    }
+
+    static Map<String, Object> getCustomImplRefdata(String key, String cfgKey) {
 
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
@@ -182,6 +192,29 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+            List<PropertyDefinition> propList = []
+
+            if (cfgKey == KEY_SUBSCRIPTION) {
+                propList = PropertyDefinition.executeQuery(
+                        'select pd from PropertyDefinition pd where pd.descr = :descr and pd.tenant is null order by pd.name_de', [descr: PropertyDefinition.SUB_PROP]
+                )
+            }
+            return [
+                    label: 'Merkmal',
+                    from: propList.collect{[
+                            id: it.id,
+                            value_de: it.name_de,
+                            value_en: it.name_en,
+                    ]}
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PROPERTY_VALUE) {
+            return [
+                    label: 'Merkmalswert (TODO)',
+                    from: []
             ]
         }
     }
