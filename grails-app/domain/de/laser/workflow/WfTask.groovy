@@ -4,6 +4,20 @@ import de.laser.RefdataValue
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 
+/**
+ * Represents a task in a workflow, containing a {@link WfCondition} to solve it. A task may be in one of the following status ({@link RDConstants#WF_TASK_STATUS}):
+ * <ul>
+ *     <li>open</li>
+ *     <li>canceled</li>
+ *     <li>done</li>
+ * </ul>
+ * Moreover, tasks may be prioritised according to the following reference values ({@link RDConstants#WF_TASK_PRIORITY}):
+ * <ul>
+ *     <li>normal</li>
+ *     <li>optional</li>
+ *     <li>important</li>
+ * </ul>
+ */
 class WfTask extends WfTaskBase {
 
     static final String KEY = 'WF_TASK'
@@ -46,6 +60,10 @@ class WfTask extends WfTaskBase {
         comment     (nullable: true)
     }
 
+    /**
+     * Gets the sequence of tasks, beginning from the current one
+     * @return a {@link List} of tasks, ordered by sequence
+     */
     List<WfTask> getSequence() {
         List<WfTask> sequence = []
 
@@ -56,6 +74,10 @@ class WfTask extends WfTaskBase {
         sequence
     }
 
+    /**
+     * Removes this task and the associated objects to it
+     * @throws Exception
+     */
     void remove() throws Exception {
         if (this.child) {
             this.child.remove()
@@ -73,14 +95,26 @@ class WfTask extends WfTaskBase {
         condition?.afterUpdate()
     }
 
+    /**
+     * Retrieves the {@link WfWorkflow} to which this task is associated
+     * @return the {@link WfWorkflow}
+     */
     WfWorkflow getWorkflow() {
         WfWorkflow.findByTask( this )
     }
 
+    /**
+     * Retrieves the parent task of this task
+     * @return the task of which this is a child (the parent task)
+     */
     WfTask getParent() {
         WfTask.findByChild( this )
     }
 
+    /**
+     * Retrieves the previous task of this task
+     * @return the task to which this task is following (the preceding task)
+     */
     WfTask getPrevious() {
         WfTask.findByNext( this )
     }
