@@ -18,11 +18,13 @@ class DocController  {
 
     static allowedMethods = [delete: 'POST']
 
+	@Deprecated
 	@Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
+	@Deprecated
 	@Secured(['ROLE_ADMIN'])
     def list() {
       	Map<String, Object> result = [:]
@@ -35,6 +37,7 @@ class DocController  {
       	result
     }
 
+	@Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
@@ -48,6 +51,9 @@ class DocController  {
         [docInstance: docInstance]
     }
 
+	/**
+	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
+	 */
 	@Secured(['ROLE_USER'])
 	@Transactional
 	def createNote() {
@@ -87,6 +93,9 @@ class DocController  {
 		redirect(url: request.getHeader('referer'))
 	}
 
+	/**
+	 * Edits an already existing note. The note to edit is given by params.id
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
@@ -135,6 +144,9 @@ class DocController  {
 		}
 	}
 
+	/**
+	 * Deletes the {@link Doc} given by params.id
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {

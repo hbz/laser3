@@ -5,6 +5,9 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
+/**
+ * This is the base class for a workflow task
+ */
 @DirtyCheck
 class WfTaskBase {
 

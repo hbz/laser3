@@ -41,6 +41,9 @@ trait ShareableTrait {
         }
     }
 
+    /**
+     * Removes sharing links from the given {@link DocContext} or {@link OrgRole}
+     */
     @Transient
     def deleteShare_trait() {
         log?.debug ("deleteAllShares where x.sharedFrom = " + this)

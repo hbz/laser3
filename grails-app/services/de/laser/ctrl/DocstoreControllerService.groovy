@@ -8,6 +8,9 @@ import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * This contains the service methods for the {@link DocstoreController}
+ */
 @Transactional
 class DocstoreControllerService {
 
@@ -17,6 +20,12 @@ class DocstoreControllerService {
     ContextService contextService
     GenericOIDService genericOIDService
 
+    /**
+     * Edits a document with the given parameter map. The editing is done if the attached object could be retrieved. The document context is given by params.docctx
+     * @param params the parameter {@link Map}
+     * @return a {@link Map} containing the edtiting result status
+     */
+    //TODO [ticket=2393] this is a process which should be deployed onto the DMS
     Map<String,Object> editDocument(GrailsParameterMap params) {
         GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
         if (domain_class) {

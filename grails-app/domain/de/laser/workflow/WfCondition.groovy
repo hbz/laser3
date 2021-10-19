@@ -2,6 +2,9 @@ package de.laser.workflow
 
 import de.laser.helper.RDStore
 
+/**
+ * A workflow condition, mapping a trigger for a workflow task ({@link WfTask})
+ */
 class WfCondition extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION'
@@ -43,6 +46,10 @@ class WfCondition extends WfConditionBase {
         file1_title     (nullable: true)
     }
 
+    /**
+     * Removes this condition
+     * @throws Exception
+     */
     void remove() throws Exception {
         this.delete()
     }
@@ -57,6 +64,10 @@ class WfCondition extends WfConditionBase {
         }
     }
 
+    /**
+     * Gets the task for this condition
+     * @return the associated {@link WfTask}
+     */
     WfTask getTask() {
         WfTask.findByCondition( this )
     }
