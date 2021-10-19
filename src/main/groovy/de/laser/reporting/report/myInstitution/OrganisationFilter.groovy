@@ -6,6 +6,7 @@ import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
@@ -193,6 +194,18 @@ where (consOr.roleType = :consRoleType)
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:org_propertyValue')
+
+                        String pq = getPropertyFilterSubQuery(
+                                'OrgProperty', 'org',
+                                params.long(key),
+                                pValue,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 

@@ -898,6 +898,11 @@ class DeletionService {
         }
     }
 
+    /**
+     * Removes the given ElasticSearch entry (document) from the index
+     * @param id the id of the entry to remove
+     * @param className the domain class index from which the entry should be removed
+     */
     void deleteDocumentFromIndex(id, String className) {
         String es_index = ESWrapperService.es_indices.get(className)
         RestHighLevelClient esclient = ESWrapperService.getClient()

@@ -23,6 +23,8 @@ class LicenseInstCfg extends BaseConfig {
                             'endDateLimit'          : FIELD_TYPE_CUSTOM_IMPL,
                             'licenseCategory'       : FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
+                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
+                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
                             'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : FIELD_TYPE_REFDATA,
                             //'type'                  : FIELD_TYPE_REFDATA
@@ -30,7 +32,8 @@ class LicenseInstCfg extends BaseConfig {
                     filter : [
                             default : [
                                     [ 'licenseCategory', 'status' ],
-                                    [ 'startDateLimit', 'endDateLimit', 'annual' /*, 'openEnded' */ ]
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' /*, 'openEnded' */ ],
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [

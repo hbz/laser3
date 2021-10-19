@@ -1,5 +1,9 @@
 package de.laser.reporting.report.myInstitution.base
 
+import de.laser.ContextService
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.properties.PropertyDefinition
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class BaseFilter {
@@ -42,6 +46,28 @@ class BaseFilter {
         else if (key == 3){
             return 'org.createdBy is null and org.legallyObligedBy is not null'
         }
+    }
+
+    static String getPropertyFilterSubQuery(String hqlDc, String hqlVar, Long pdId, Long pValue, Map<String, Object> queryParams) {
+
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        String pvQuery = ''
+        if (pValue) {
+            PropertyDefinition pd = PropertyDefinition.get(pdId)
+            pvQuery = ' and prop.' + pd.getImplClassValueProperty() + ' = :pfsq3'
+            queryParams.put('pfsq3', AbstractPropertyWithCalculatedLastUpdated.parseValue(pValue as String, pd.type))
+        }
+
+        String query =  'select prop from ' + hqlDc + ' prop join prop.owner owner join prop.type pd' +
+                        ' where owner = ' + hqlVar +
+                        ' and pd.id = :pfsq1 ' +
+                        ' and (prop.tenant = :pfsq2 or prop.isPublic = true)' + pvQuery
+
+        queryParams.put('pfsq1', pdId)
+        queryParams.put('pfsq2', contextService.getOrg())
+
+        query
     }
 
     static List<Long> getCachedFilterIdList(prefix, params) {

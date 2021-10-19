@@ -25,6 +25,8 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                             'isMultiYear'           : FIELD_TYPE_PROPERTY,
                             'kind'                  : FIELD_TYPE_REFDATA,
+                            'propertyKey'           : FIELD_TYPE_CUSTOM_IMPL,
+                            'propertyValue'         : FIELD_TYPE_CUSTOM_IMPL,
                             'resource'              : FIELD_TYPE_REFDATA,
                             'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : FIELD_TYPE_REFDATA,
@@ -37,7 +39,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'form', 'kind', 'status' ],
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
-                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ],
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
@@ -127,6 +130,8 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                             'isMultiYear'           : FIELD_TYPE_PROPERTY,
                             'kind'                  : FIELD_TYPE_REFDATA,
+                            'propertyKey'           : FIELD_TYPE_CUSTOM_IMPL,
+                            'propertyValue'         : FIELD_TYPE_CUSTOM_IMPL,
                             'resource'              : FIELD_TYPE_REFDATA,
                             'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : FIELD_TYPE_REFDATA,
@@ -136,7 +141,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'form', 'kind', 'status' ],
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
-                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ],
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
@@ -173,6 +179,8 @@ class SubscriptionConsCfg extends BaseConfig {
                             'libraryNetwork'    : FIELD_TYPE_REFDATA,
                             'libraryType'       : FIELD_TYPE_REFDATA,
                             'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
+                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
+                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
                             //'region'            : FIELD_TYPE_REFDATA,
                             'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                     ],
@@ -181,7 +189,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
                                     [ 'orgType', 'eInvoice' ],
-                                    [ 'customerType', 'legalInfo' ]
+                                    [ 'customerType', 'legalInfo' ],
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [

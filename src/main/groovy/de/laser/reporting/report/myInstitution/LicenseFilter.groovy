@@ -7,6 +7,7 @@ import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
@@ -148,6 +149,18 @@ class LicenseFilter extends BaseFilter {
 
                         filterLabelValue = params.get(key)
                     }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:license_propertyValue')
+
+                        String pq = getPropertyFilterSubQuery(
+                                'LicenseProperty', 'lic',
+                                params.long(key),
+                                pValue,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
+                    }
                 }
 
                 if (filterLabelValue) {
@@ -186,7 +199,6 @@ class LicenseFilter extends BaseFilter {
         //println 'handleInternalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
-            return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'

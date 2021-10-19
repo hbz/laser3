@@ -27,6 +27,8 @@ class SubscriptionInstCfg extends BaseConfig {
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                             'isMultiYear'           : FIELD_TYPE_PROPERTY,
                             'kind'                  : FIELD_TYPE_REFDATA,
+                            'propertyKey'           : FIELD_TYPE_CUSTOM_IMPL,
+                            'propertyValue'         : FIELD_TYPE_CUSTOM_IMPL,
                             'resource'              : FIELD_TYPE_REFDATA,
                             'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : FIELD_TYPE_REFDATA,
@@ -39,7 +41,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                     [ 'form', 'kind', 'status' ],
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
-                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ],
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [

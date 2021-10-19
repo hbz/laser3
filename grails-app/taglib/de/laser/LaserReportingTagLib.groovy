@@ -78,7 +78,7 @@ class LaserReportingTagLib {
             out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
             out << laser.select([
-                    class      : "ui fluid dropdown",
+                    class      : "ui fluid search dropdown",
                     name       : filterName,
                     id         : getUniqueId(filterName),
                     from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
@@ -119,7 +119,7 @@ class LaserReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         out << laser.select([
-                class      : "ui fluid dropdown",
+                class      : "ui fluid search dropdown",
                 name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
@@ -137,8 +137,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
-        //println 'reportFilterRefdataRelTable'
-        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata)
+        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
@@ -150,7 +149,7 @@ class LaserReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         Map<String, Object> map = [
-            class      : 'ui fluid dropdown',
+            class      : 'ui fluid search dropdown',
             name       : filterName,
             id         : getUniqueId(filterName),
             from       : customRdv.get('from'),

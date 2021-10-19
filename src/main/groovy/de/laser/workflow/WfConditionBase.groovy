@@ -5,6 +5,9 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import grails.gorm.dirty.checking.DirtyCheck
 
+/**
+ * This class represents the different condition types for a workflow task condition
+ */
 @DirtyCheck
 class WfConditionBase {
 
@@ -47,6 +50,10 @@ class WfConditionBase {
 
     // --
 
+    /**
+     * Returns the list of fields depending on the condition type
+     * @return a {@link List} of fields to display
+     */
     List<String> getFields() {
         List<String> fields = []
 
@@ -77,6 +84,11 @@ class WfConditionBase {
         fields
     }
 
+    /**
+     * Retrieves the label for the given field key
+     * @param key the key to which the field label should be get
+     * @return the (internationalised) field label
+     */
     String getFieldLabel(String key) {
 
         if (key.startsWith('checkbox')) {
@@ -93,6 +105,10 @@ class WfConditionBase {
         }
     }
 
+    /**
+     * Returns the condition type as a {@link RefdataValue}
+     * @return the corresponding {@link RefdataValue}
+     */
     RefdataValue getTypeAsRefdataValue() {
         RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + type)
     }
