@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -216,6 +216,50 @@
                 'setting', 'onChange', function(value, text, $choice) {
                     $("input[name=filter\\:org_region]").attr('value', value);
             });
+
+            $("*[name$='_propertyKey']").on('change', function(){
+                var defaults = {}
+                <%
+                    params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->
+                        println "defaults['${it.key}'] = '${it.value}';"
+                    }
+                %>
+                var $key = $(this);
+                var $value = $("*[name='" + $key.attr('name').replace('_propertyKey', '_propertyValue') + "']");
+                $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
+
+                var kValue  = $key.dropdown('get value');
+                if (kValue) {
+                    $.ajax({
+                        url: '<g:createLink controller="ajaxJson" action="getPropRdValues"/>?oid=${PropertyDefinition.class.name}:' + kValue,
+                        success: function (data) {
+                            var pdv;
+                            if (data.length > 0) {
+                                $value.removeAttr('disabled').parent().removeClass('disabled');
+
+                                if (defaults[$key.attr('name')] == kValue && defaults[$value.attr('name')]) {
+                                    pdv = defaults[$value.attr('name')];
+                                }
+                                for (var i=0; i < data.length; i++) {
+                                    if (data[i].value == pdv) {
+                                        $value.append('<option selected="selected" value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    } else {
+                                        $value.append('<option value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    }
+                                }
+                            }
+                            $value.dropdown().dropdown({ clearable: true, values: data });
+                            if (pdv) {
+                                $value.dropdown('set selected', defaults[$value.attr('name')]);
+                            }
+                        },
+                        async: false
+                    });
+                } else {
+                    $value.dropdown('restore defaults');
+                }
+            });
+            $("*[name$='_propertyKey']").trigger('change');
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

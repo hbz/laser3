@@ -40,7 +40,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
@@ -142,7 +142,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
@@ -190,7 +190,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
                                     [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [

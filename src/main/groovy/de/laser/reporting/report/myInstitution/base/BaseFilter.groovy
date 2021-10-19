@@ -48,7 +48,7 @@ class BaseFilter {
         }
     }
 
-    static String getPropertyFilterSubQuery(String hqlDc, String hqlVar, Long pdId, String pValue, Map<String, Object> queryParams) {
+    static String getPropertyFilterSubQuery(String hqlDc, String hqlVar, Long pdId, Long pValue, Map<String, Object> queryParams) {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
@@ -56,7 +56,7 @@ class BaseFilter {
         if (pValue) {
             PropertyDefinition pd = PropertyDefinition.get(pdId)
             pvQuery = ' and prop.' + pd.getImplClassValueProperty() + ' = :pfsq3'
-            queryParams.put('pfsq3', AbstractPropertyWithCalculatedLastUpdated.parseValue(pValue, pd.type))
+            queryParams.put('pfsq3', AbstractPropertyWithCalculatedLastUpdated.parseValue(pValue as String, pd.type))
         }
 
         String query =  'select prop from ' + hqlDc + ' prop join prop.owner owner join prop.type pd' +

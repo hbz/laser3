@@ -150,14 +150,16 @@ class LicenseFilter extends BaseFilter {
                         filterLabelValue = params.get(key)
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:license_propertyValue')
+
                         String pq = getPropertyFilterSubQuery(
                                 'LicenseProperty', 'lic',
                                 params.long(key),
-                                params.get('filter:license_propertyValue') as String,
+                                pValue,
                                 queryParams
                         )
                         whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 
@@ -197,7 +199,6 @@ class LicenseFilter extends BaseFilter {
         //println 'handleInternalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
-            return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
