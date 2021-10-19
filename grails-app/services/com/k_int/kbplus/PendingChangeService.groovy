@@ -544,7 +544,7 @@ class PendingChangeService extends AbstractLockableService {
                 Long spId = row.get('subPkg')
                 Long spPkg = row.get('pkg')
                 Date dateEntry = row.get('sp_date_created')
-                if(row.get('prompt') != null) {
+                if(row.get('prompt') != null && row.get('prompt') == true) {
                     Set<String> packageSettings = packageConfigMap.prompt.get([spId, spPkg, dateEntry])
                     if(!packageSettings)
                         packageSettings = []
