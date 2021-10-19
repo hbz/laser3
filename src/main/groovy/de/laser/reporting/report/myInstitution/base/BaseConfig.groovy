@@ -220,7 +220,7 @@ class BaseConfig {
         }
         else if (key == CUSTOM_IMPL_KEY_PROPERTY_VALUE) {
             return [
-                    label: 'Merkmalswert',
+                    label: 'Merkmalswert (nur Referenzwerte)',
                     from: []
             ]
         }

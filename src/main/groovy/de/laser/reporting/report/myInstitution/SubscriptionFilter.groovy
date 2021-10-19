@@ -447,6 +447,18 @@ class SubscriptionFilter extends BaseFilter {
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:member_propertyValue')
+
+                        String pq = getPropertyFilterSubQuery(
+                                'OrgProperty', 'org',
+                                params.long(key),
+                                pValue,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
+                    }
                 }
 
                 if (filterLabelValue) {

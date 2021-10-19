@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
+
 3928    12.10.2021  rc-2.2  2.2.1       Andreas Feature     weitere Nachbestellungen für FIDs
 
 3924    12.10.2021  rc-2.2  2.2.1       Andreas Bug         Fallback für Lizenzen ohne Enddatum nachgezogen
