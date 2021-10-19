@@ -7,6 +7,7 @@ import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
@@ -147,6 +148,16 @@ class LicenseFilter extends BaseFilter {
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        String pq = getPropertyFilterSubQuery(
+                                'LicenseProperty', 'lic',
+                                params.long(key),
+                                params.get('filter:license_propertyValue') as String,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
                     }
                 }
 

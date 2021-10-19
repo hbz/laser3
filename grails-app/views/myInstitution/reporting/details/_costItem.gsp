@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -9,6 +10,9 @@
             <th></th>
             <th>
                 ${message(code:'default.subscription.label')}
+            </th>
+            <th>
+                ${message(code:'financials.newCosts.costParticipants')}
             </th>
             <th>
                 ${message(code:'financials.costItemElement')}
@@ -39,6 +43,13 @@
                     <td>${i + 1}.</td>
                     <td>
                         <g:link controller="subscription" action="show" id="${costItem.sub.instanceOf.id}" target="_blank">${costItem.sub.name}</g:link>
+                    </td>
+                    <td>
+                        <g:each in="${costItem.sub.orgRelations}" var="ciSubscr">
+                            <g:if test="${[RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id].contains(ciSubscr.roleType.id)}">
+                                <g:link controller="org" action="show" id="${ciSubscr.org.id}">${ciSubscr.org.sortname ?: ciSubscr.org.name}</g:link>
+                            </g:if>
+                        </g:each>
                     </td>
                     <td>${costItem.costItemElement?.getI10n('value')}</td>
                     <td>${costItem.costTitle}</td>
