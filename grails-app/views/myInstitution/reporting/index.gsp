@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -216,6 +216,31 @@
                 'setting', 'onChange', function(value, text, $choice) {
                     $("input[name=filter\\:org_region]").attr('value', value);
             });
+
+            $("*[name$='_propertyKey']").on('change', function(){
+                var $value = $("*[name='" + $(this).attr('name').replace('_propertyKey', '_propertyValue') + "']");
+                $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
+
+                var value  = $(this).dropdown('get value');
+                if (value) {
+                    var oid = '?oid=${PropertyDefinition.class.name}:' + value;
+
+                    $.ajax({
+                        url: '<g:createLink controller="ajaxJson" action="getPropRdValues"/>' + oid,
+                        success: function (data) {
+                            if (data.length > 0) {
+                                $value.removeAttr('disabled').parent().removeClass('disabled');
+                                for (var i=0; i < data.length; i++) {
+                                    $value.append('<option value="' + data[i].value + '">' + data[i].name + '</option>');
+                                }
+                            }
+                            $value.dropdown().dropdown({ clearable: true, values: data });
+                        },
+                        async: false
+                    });
+                }
+            });
+            $("*[name$='_propertyKey']").trigger('change');
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

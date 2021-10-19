@@ -196,14 +196,16 @@ where (consOr.roleType = :consRoleType)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:org_propertyValue')
+
                         String pq = getPropertyFilterSubQuery(
                                 'OrgProperty', 'org',
                                 params.long(key),
-                                params.get('filter:org_propertyValue') as String,
+                                pValue,
                                 queryParams
                         )
                         whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 

@@ -42,7 +42,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
                                     [ 'isPublicForApi', 'isMultiYear' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
