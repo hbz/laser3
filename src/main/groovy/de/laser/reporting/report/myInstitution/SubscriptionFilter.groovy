@@ -154,14 +154,16 @@ class SubscriptionFilter extends BaseFilter {
                         filterLabelValue = params.get(key)
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:subscription_propertyValue')
+
                         String pq = getPropertyFilterSubQuery(
                                 'SubscriptionProperty', 'sub',
                                 params.long(key),
-                                params.get('filter:subscription_propertyValue') as String,
+                                pValue,
                                 queryParams
                         )
                         whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 
@@ -205,7 +207,6 @@ class SubscriptionFilter extends BaseFilter {
 
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
-            return
         }
 
         String queryBase                = 'select distinct (mbr.id) from Subscription mbr join mbr.instanceOf sub'
@@ -296,14 +297,16 @@ class SubscriptionFilter extends BaseFilter {
                         filterLabelValue = params.get(key)
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:memberSubscription_propertyValue')
+
                         String pq = getPropertyFilterSubQuery(
                                 'SubscriptionProperty', 'mbr',
                                 params.long(key),
-                                params.get('filter:subscription_propertyValue') as String,
+                                pValue,
                                 queryParams
                         )
                         whereParts.add( '(exists (' + pq + '))' )
-                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name')
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 
@@ -330,7 +333,6 @@ class SubscriptionFilter extends BaseFilter {
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
-            return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
@@ -444,6 +446,18 @@ class SubscriptionFilter extends BaseFilter {
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                        Long pValue = params.long('filter:member_propertyValue')
+
+                        String pq = getPropertyFilterSubQuery(
+                                'OrgProperty', 'org',
+                                params.long(key),
+                                pValue,
+                                queryParams
+                        )
+                        whereParts.add( '(exists (' + pq + '))' )
+                        filterLabelValue = PropertyDefinition.get(params.long(key)).getI10n('name') + ( pValue ? ': ' + RefdataValue.get( pValue ).getI10n('value') : '')
                     }
                 }
 

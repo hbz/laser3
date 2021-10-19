@@ -305,6 +305,21 @@ class AjaxJsonController {
     }*/
 
     @Secured(['ROLE_USER'])
+    def getPropRdValues() {
+        List<Map<String, Object>> result = []
+        if (params.oid) {
+            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if (pd && pd.isRefdataValueType()) {
+                RefdataCategory.getAllRefdataValues(pd.refdataCategory).each {
+                    result.add([ value: it.id, name: it.getI10n('value') ])
+                }
+                result = result.sort { x, y -> x.name.compareToIgnoreCase(y.name) }
+            }
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def getPropValues() {
         List<Map<String, Object>> result = []
 

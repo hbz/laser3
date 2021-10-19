@@ -31,7 +31,7 @@ class LicenseConsCfg extends BaseConfig {
                             default : [
                                     [ 'licenseCategory', 'status' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' /*, 'openEnded' */ ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [

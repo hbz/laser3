@@ -45,7 +45,7 @@ class OrganisationConsCfg extends BaseConfig {
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
                                     [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
-                                    [ 'propertyKey' /*, 'propertyValue' */ ]
+                                    [ 'propertyKey', 'propertyValue' ]
                             ],
                             provider : [ // TODO : provider != agency
                                     // all disabled
