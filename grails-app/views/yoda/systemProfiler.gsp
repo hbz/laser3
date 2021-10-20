@@ -10,33 +10,103 @@
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemProfiler" class="active"/>
+    <semui:crumb message="menu.yoda.profiler" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemProfiler')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
 
-    <div class="ui la-float-right">
-        <g:select name="archive" id="archive" class="ui dropdown"
-                  from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
-        <laser:script file="${this.getGroovyPageFileName()}">
-            $('#archive').on('change', function() {
-                var selection = $(this).val()
-                var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
-                window.location.href = link
-            })
-        </laser:script>
-    </div>
+    <nav class="ui secondary menu">
+        <g:link controller="yoda" action="systemProfiler" class="item active">Ladezeiten</g:link>
+        <g:link controller="yoda" action="activityProfiler" class="item">Nutzerzahlen</g:link>
+        <g:link controller="yoda" action="timelineProfiler" class="item">Seitenaufrufe</g:link>
+
+        <div style="position:absolute; right:0">
+            <g:select name="archive" id="archive" class="ui dropdown"
+                      from="${allArchives}" optionKey="${{it.toString()}}" optionValue="${{it.toString()}}" value="${archive}"/>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('#archive').on('change', function() {
+                    var selection = $(this).val()
+                    var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
+                    window.location.href = link
+                })
+            </laser:script>
+        </div>
+    </nav>
 
     <div class="ui secondary stackable pointing tabular menu">
-        <a data-tab="first" class="item active">Global</a>
-        <a data-tab="second" class="item">Kontextbezogen</a>
-        %{--
-        <a data-tab="third" class="item">Top 20 (Aufrufe)</a>
-        <a data-tab="fourth" class="item">Top 20 (AVG)</a>
-        --}%
+        <a data-tab="first" class="item active">Heat</a>
+        <a data-tab="second" class="item">Alle</a>
+        <a data-tab="third" class="item">URL/Kontext</a>
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
+
+        <table class="ui celled la-table compact table" id="heatTable">
+            <thead>
+            <tr>
+                <th>Url</th>
+                <th>Aufrufe</th>
+                <g:each in="${globalMatrixSteps}" var="step" status="i">
+                    <g:if test="${i>0}">
+                        <th>
+                            &lt; ${((int) step / 1000)} s
+                        </th>
+                    </g:if>
+                </g:each>
+                <g:if test="${globalMatrixSteps.size()>1}">
+                    <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
+                </g:if>
+                <th>avg</th>
+                <th><i class="icon fire"></i></th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${globalHeatMap}" var="uri, stat">
+                <tr data-uri="${uri}">
+                    <td data-uri="${uri}">${uri}</td>
+                    <td>${stat[3]}</td>
+                    <g:each in="${globalMatrix[uri]}" var="border,hits" status="i">
+                        <td>
+                            <g:if test="${hits > 0}">
+                                <g:if test="${i==0}">
+                                    <strong class="ui green circular label">${hits}</strong>
+                                </g:if>
+                                <g:elseif test="${i==1}">
+                                    <strong class="ui yellow circular label">${hits}</strong>
+                                </g:elseif>
+                                <g:elseif test="${i==2}">
+                                    <strong class="ui orange circular label">${hits}</strong>
+                                </g:elseif>
+                                <g:else>
+                                    <strong class="ui red circular label">${hits}</strong>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                ${hits}
+                            </g:else>
+                        </td>
+                    </g:each>
+                    <td>
+                        <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+                        <g:if test="${avg >= 8}">
+                            <span style="color:red"> ${avg} </span>
+                        </g:if>
+                        <g:elseif test="${avg >= 4}">
+                            <span style="color:orange"> ${avg} </span>
+                        </g:elseif>
+                        <g:else>
+                            <span>${avg}</span>
+                        </g:else>
+                    </td>
+                    <td><strong>${((double) stat[0]).round(1)}</strong></td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
         <table class="ui celled la-table compact table" id="globalTable">
             <thead>
@@ -53,8 +123,8 @@
                     <g:if test="${globalMatrixSteps.size()>1}">
                         <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
                     </g:if>
-                    <th>max</th>
                     <th>avg</th>
+                    <th>max</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,30 +153,54 @@
                                 </g:else>
                             </td>
                         </g:each>
+                        <td>
+                            <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+                            <g:if test="${avg >= 8}">
+                                <span style="color:red"> ${avg} </span>
+                            </g:if>
+                            <g:elseif test="${avg >= 4}">
+                                <span style="color:orange"> ${avg} </span>
+                            </g:elseif>
+                            <g:else>
+                                <span>${avg}</span>
+                            </g:else>
+                        </td>
                         <td>${((double) stat[1] / 1000).round(2)}</td>
-                        <td>${((double) stat[2] / 1000).round(2)}</td>
                     </tr>
                 </g:each>
             </tbody>
         </table>
 
     </div>
-    <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <g:select id="filterTable" name="filterTable" class="ui dropdown search"
-                  from="${contextStats.collect{Org.get(it[3])}.unique()}"
-                  optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
-                  noSelection="['':'Alle anzeigen']"
-        />
+    <div data-tab="third" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
+        <div class="ui form">
+            <div class="three fields">
+                <div class="field">
+                    <g:select id="filterTableUri" name="filterTableUri" class="ui dropdown search selection"
+                              from="${contextStats.collect{it[0]}.unique().sort()}"
+                              optionKey="${{it}}" optionValue="${{it}}"
+                              noSelection="['':'Alle anzeigen']"
+                    />
+                </div>
+                <div class="field">
+                    <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown search selection"
+                              from="${contextStats.collect{Org.get(it[3])}.unique()}"
+                              optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
+                              noSelection="['':'Alle anzeigen']"
+                    />
+                </div>
+            </div>
+        </div>
         <table class="ui celled la-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>
                     <th>Kontext</th>
                     <th>Aufrufe</th>
-                    <th>max</th>
                     <th>avg</th>
+                    <th>max</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,59 +209,60 @@
                     <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td data-context="${bench[3]}">${Org.get(bench[3]).getDesignation()}</td>
                     <td>${bench[4]}</td>
+                    <td>
+                        <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
+                        <g:if test="${avg >= 8}">
+                            <span style="color:red"> ${avg} </span>
+                        </g:if>
+                        <g:elseif test="${avg >= 4}">
+                            <span style="color:orange"> ${avg} </span>
+                        </g:elseif>
+                        <g:else>
+                            <span>${avg}</span>
+                        </g:else>
+                    </td>
                     <td>${((double) bench[1] / 1000).round(2)}</td>
-                    <td>${((double) bench[2] / 1000).round(2)}</td>
-                    </tr>
+                </tr>
                 </g:each>
             </tbody>
         </table>
     </div>
 
-%{--
-    <div data-tab="third" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
-        <div id="ct-chart-top20a" class="echarts-wrapper"></div>
-    </div>
-    <div data-tab="fourth" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
-        <div id="ct-chart-top20b" class="echarts-wrapper"></div>
-    </div>
-
-    <style>
-    .echarts-wrapper {
-        width: 100%;
-        height: 250px;
-    }
-    </style>
---}%
-
 <laser:script file="${this.getGroovyPageFileName()}">
-     $('.secondary.menu > a').tab();
 
-     $('#filterTable').change( function(){
-        var ctx = $('#filterTable option:selected').attr('value')
-
-        if(! ctx) {
-            $('#contextTable > tbody > tr').removeClass('hidden')
-        } else {
-            $('#contextTable > tbody > tr').addClass('hidden')
-            $('#contextTable > tbody > tr[data-context="' + ctx + '"]').removeClass('hidden')
+    $('#filterTableUri').dropdown().dropdown({
+        clearable: true,
+        onChange: function(value, text, $selectedItem){
+            if (text) {
+                $('#filterTableCtx').dropdown('clear')
+                $('#contextTable > tbody > tr').addClass('hidden')
+                $('#contextTable > tbody > tr[data-uri="' + value + '"]').removeClass('hidden')
+            }
+            else {
+                $('#filterTableUri').dropdown('clear')
+                $('#contextTable > tbody > tr').removeClass('hidden')
+            }
+        }
+    })
+    $('#filterTableCtx').dropdown().dropdown({
+        clearable: true,
+        onChange: function(value, text, $selectedItem){
+            if (text) {
+                $('#filterTableUri').dropdown('clear')
+                $('#contextTable > tbody > tr').addClass('hidden')
+                $('#contextTable > tbody > tr[data-context="' + value + '"]').removeClass('hidden')
+           }
+           else {
+               $('#filterTableCtx').dropdown('clear')
+               $('#contextTable > tbody > tr').removeClass('hidden')
+           }
         }
     })
 
-    $('.table tr td').mouseover( function(){
-       var dUri = $(this).attr('data-uri')
-       var dCtx = $(this).attr('data-context')
-
-       if (dUri) {
-           $('.table tr[data-uri="' + dUri + '"]').addClass('trHover')
-       }
-       if (dCtx) {
-           $('.table tr[data-context="' + dCtx + '"]').addClass('trHover')
-       }
-    })
-
-    $('.table tr td').mouseout( function(){
-       $('.table tr').removeClass('trHover')
-    })
+    $('.table tr').hover(
+        function(){ $(this).addClass('trHover') },
+        function(){ $(this).removeClass('trHover') }
+    )
 </laser:script>
 
 <style>

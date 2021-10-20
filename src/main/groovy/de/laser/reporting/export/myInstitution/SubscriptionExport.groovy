@@ -36,7 +36,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   //  qdp
+                                    'x-property'                    : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-memberSubscriptionProperty'  : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -151,6 +152,12 @@ class SubscriptionExport extends BaseDetailsExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
+                    Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
+
+                    List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
+                    content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
+                }
+                else if (key == 'x-memberSubscriptionProperty') {
                     Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())

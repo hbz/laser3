@@ -239,9 +239,8 @@ class YodaController {
                 int indexOf = labels.findIndexOf{it == val[0]}
                 if (indexOf >= 0) {
                     series1.putAt(indexOf, val[3])          // [0] = min
-                    series2.putAt(indexOf, val[4])          // [1] = max
-                    //series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
-
+                    //series2.putAt(indexOf, val[4])          // [1] = max
+                    series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
                     averages[indexOf] = averages[indexOf] + val[5]
                 }
             }
@@ -294,14 +293,30 @@ class YodaController {
         }
 
         result.globalStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri",
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri order by counter desc",
                 [arc: result.archive]
-        ).sort{it[2]}.reverse()
+        )
 
         result.contextStats = SystemProfiler.executeQuery(
-                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id",
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id order by counter desc",
                 [arc: result.archive]
-        ).sort{it[2]}.reverse()
+        )
+
+
+        List<BigDecimal> hmw = [ -0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0 ]
+        Map<String, List> heatMap = [:]
+
+        result.globalStats.each{ gs ->
+            String uri = gs[0]
+            Map<String, Long> counts = result.globalMatrix[uri]
+            BigDecimal heat = 0.0
+
+            result.globalMatrixSteps.eachWithIndex { c, idx ->
+                heat += (counts.get(c.toString()) * hmw[idx])
+            }
+            heatMap.putAt(uri, [ heat.doubleValue() * (Math.sqrt(gs[3]) / gs[3]), gs[1], gs[2], gs[3] ]) // max, avg, count
+        }
+        result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
 
         result
     }
