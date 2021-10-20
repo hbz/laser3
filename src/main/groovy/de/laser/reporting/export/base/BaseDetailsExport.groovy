@@ -46,15 +46,17 @@ abstract class BaseDetailsExport {
 
             'globalUID',
 
-            'x-identifier',                    // dyn.value
-            'x-provider',                      // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property',                      // QDP; dyn.value
+            'x-identifier',                     // dyn.value
+            'x-provider',                       // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property',                       // QDP; dyn.value
 
             // virtual; without XY.CONFIG.base.x
 
             '@-subscription-member',
             '@-subscription-memberCount',
             '@-subscription-prevNext',
+
+            'x-memberSubscriptionProperty',     // QDP; dyn.value
 
             '@-license-subscriptionCount',
             '@-license-memberCount',
