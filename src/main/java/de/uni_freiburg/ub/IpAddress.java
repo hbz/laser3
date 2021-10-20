@@ -5,6 +5,11 @@ import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * Abstract class to represent an IP{v4/v6} address
+ * @see Ipv4Address
+ * @see Ipv6Address
+ */
 public class IpAddress implements Comparable<IpAddress>{
 	
 	protected short max_cidr_suffix;
