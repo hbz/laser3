@@ -1784,6 +1784,15 @@ i.icon.la-thumbtack-regular {
 i.icon.la-consortia {
   font-family: 'icomoon';
 }
+i.icon.la-star.slash {
+  font-family: 'icomoon';
+}
+i.icon.la-redo.slash {
+  font-family: 'icomoon';
+}
+i.icon.la-exchange.slash {
+  font-family: 'icomoon';
+}
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
@@ -1816,6 +1825,10 @@ i.icon.la-greater-than-equal:before { content: "\e914"; }
 i.icon.la-open:before { content: "\e915"; }
 i.icon.la-thumbtack-regular:before { content: "\e916"; }
 i.icon.la-consortia:before { content: "\e917"; }
+/**/
+i.icon.la-star.slash:before { content: "\e918"; }
+i.icon.la-redo.slash:before { content: "\e919"; }
+i.icon.la-exchange.slash:before { content: "\e91a"; }
 /*******************************
            Laser Icons
 *******************************/
@@ -1915,7 +1928,7 @@ i.inverted.circular.la-light-grey.icon {
   content: "\f1ea";
   color: white;
 }
-// ****  databas **** //
+// ****  database **** //
 .icon.la-database {
   background-color: @title;
 }
