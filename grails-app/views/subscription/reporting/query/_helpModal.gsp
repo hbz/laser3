@@ -17,7 +17,21 @@
         </p>
         <p>Aktuelle Teilnehmer sind unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
-    <div class="help-section" data-help-section="timeline-costX">B</div>
+    <div class="help-section" data-help-section="timeline-cost">
+        <p class="ui header">
+            Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmerkosten für diese Lizenz
+        </p>
+        <p>
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
+            Über betroffene Teilnehmerlizenzen und existierende Kostenposten werden folgende Informationen berechnet:
+        </p>
+        <p>
+            <i class="icon circle blue"></i> Kumulierter Endpreis in Euro (nach Steuern), <br />
+            <i class="icon circle green"></i> Kumulierter Wert in Euro, <br />
+            <i class="icon circle orange"></i> Neutrale Kosten in Euro (nach Steuern), <br />
+            <i class="icon circle yellow"></i> Neutrale Kosten in Euro
+        </p>
+    </div>
     <div class="help-section" data-help-section="timeline-entitlement">
         <p class="ui header">
             Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz
