@@ -68,6 +68,11 @@ class SubscriptionConsCfg extends BaseConfig {
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'base', 'x.properties' ]
                                      ],
+                                     'subscription-x-memberSubscriptionProperty' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : '2axis2values',
+                                             chartLabels         : [ 'base', 'x.properties' ]
+                                     ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'annual',

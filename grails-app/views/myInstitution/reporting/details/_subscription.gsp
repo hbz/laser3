@@ -12,7 +12,7 @@
             <g:if test="${query.startsWith('subscription-x-member') || query.startsWith('memberSubscription-')}">
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:if>
-            <g:if test="${query == 'subscription-x-property'}">
+            <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'subscription-x-platform'}">
@@ -55,7 +55,7 @@
                         </td>
                     </g:if>
 
-                    <g:if test="${query == 'subscription-x-property'}">
+                    <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                         <td>
                             <%
                                 List<SubscriptionProperty> properties = BaseDetails.getPropertiesGeneric(sub, id as Long, contextService.getOrg()) as List<SubscriptionProperty>

@@ -211,6 +211,19 @@ class SubscriptionQuery extends BaseQuery {
                         result
                 )
             }
+            else if (params.query in ['subscription-x-memberSubscriptionProperty']) {
+
+                List<Long> memberSubscriptionIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params)
+
+                handleGenericPropertyXQuery(
+                        params.query,
+                        'select pd.id, pd.name, count(*) from Subscription sub join sub.propertySet prop join prop.type pd where sub.id in (:idList)',
+                        'select sub.id from Subscription sub join sub.propertySet prop join prop.type pd where sub.id in (:idList)',
+                        memberSubscriptionIdList,
+                        contextService.getOrg(),
+                        result
+                )
+            }
             else if (params.query in ['subscription-x-identifier']) {
 
                 handleGenericIdentifierXQuery(
