@@ -39,7 +39,7 @@ class DashboardDueDatesJob extends AbstractJob {
                 if (! dashboardDueDatesService.takeCareOfDueDates(
                         ConfigUtils.getIsUpdateDashboardTableInDatabase(),
                         ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers(),
-                        [:]
+                        [:] //!!!!! flash as an empty container as placeholder! Mark that!
                 )) {
                     log.warn( 'Failed. Maybe ignored due blocked dashboardDueDatesService')
                 }
