@@ -28,8 +28,9 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -132,6 +133,14 @@ class LicenseExport extends BaseDetailsExport {
                 }
                 else if (key == '@-license-memberCount') {
                     int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                    content.add( count )
+                }
+                else if (key == '@-license-memberSubscriptionCount') {
+                    int count = License.executeQuery('select count( distinct sub ) from Links li join li.destinationSubscription sub where li.sourceLicense in (' +
+                            'select l from License l where l.instanceOf = :parent' +
+                            ') and li.linkType = :linkType',
+                                [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                        )[0]
                     content.add( count )
                 }
             }

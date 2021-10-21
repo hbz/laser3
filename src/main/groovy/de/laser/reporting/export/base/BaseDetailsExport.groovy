@@ -60,6 +60,7 @@ abstract class BaseDetailsExport {
 
             '@-license-subscriptionCount',
             '@-license-memberCount',
+            '@-license-memberSubscriptionCount',
 
             '@-org-accessPoint',      // dyn.value
             '@-org-contact',          // dyn.value
