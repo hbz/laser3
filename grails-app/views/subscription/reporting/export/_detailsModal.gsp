@@ -110,10 +110,12 @@
                     </div>
                     <div id="fileformat-details-xlsx" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
-                        %{-- <p>
-                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')} <br />
-                        </p> --}%
                         <p>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="insertNewLines-xlsx" id="insertNewLines-xlsx" />
+                                <label for="insertNewLines-xlsx">${message(code: 'reporting.modal.export.cfg.xlsx.newLines')}</label>
+                            </span>
                             <br />
                             <span class="ui checkbox">
                                 <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />

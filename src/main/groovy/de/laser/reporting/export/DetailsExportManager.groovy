@@ -47,7 +47,7 @@ class DetailsExportManager {
         LocalExportHelper.createExport( token, selectedFields )
     }
 
-    static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static List exportAsList(BaseDetailsExport export, List<Long> idList, String format, Map<String, Boolean> options) {
 
         List rows = []
 
@@ -60,13 +60,13 @@ class DetailsExportManager {
             List<Integer> ici
             (csv, ici) = buildCSV(export, objList, fields)
 
-            if (hideEmptyResults) {
+            if (options.hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
             rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
-                if (hideEmptyResults) {
+                if (options.hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
                 rows.add( row.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
@@ -77,13 +77,13 @@ class DetailsExportManager {
             List<Integer> ici
             (pdf, ici) = buildPDF(export, objList, fields)
 
-            if (hideEmptyResults) {
+            if (options.hideEmptyResults) {
                 ici.each { i -> /* println 'Export PDF ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
             rows.add( buildRowAsPDF(cols) )
 
             pdf.each { row ->
-                if (hideEmptyResults) {
+                if (options.hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
                 rows.add( row )
@@ -92,12 +92,12 @@ class DetailsExportManager {
         rows
     }
 
-    static Workbook exportAsWorkbook(BaseDetailsExport export, List<Long> idList, String format, boolean hideEmptyResults) {
+    static Workbook exportAsWorkbook(BaseDetailsExport export, List<Long> idList, String format, Map<String, Boolean> options) {
 
         List objList = resolveObjectList( export, idList )
 
         if (format == 'xlsx') {
-            buildXLSX(export, objList, export.getSelectedFields(), hideEmptyResults)
+            buildXLSX(export, objList, export.getSelectedFields(), options)
         }
     }
 
@@ -151,7 +151,7 @@ class DetailsExportManager {
         }
     }
 
-    static Workbook buildXLSX(BaseDetailsExport export, List objList, Map<String, Object> fields, boolean hideEmptyResults) {
+    static Workbook buildXLSX(BaseDetailsExport export, List objList, Map<String, Object> fields, Map<String, Boolean> options) {
 
         Workbook workbook = new XSSFWorkbook()
         Sheet sheet = workbook.createSheet( export.token )
@@ -174,14 +174,14 @@ class DetailsExportManager {
         ici = ici.reverse()
 
         rows.eachWithIndex { row, idx ->
-            if (hideEmptyResults) {
+            if (options.hideEmptyResults) {
                 ici.each { i -> row.removeAt(i) }
             }
             if (row) {
                 Row entry = sheet.createRow(idx + 1)
                 row.eachWithIndex { v, i ->
 
-                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
+                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v, options.insertNewLines)
                     sheet.autoSizeColumn(i)
                 }
             }
@@ -190,7 +190,7 @@ class DetailsExportManager {
         Row header = sheet.createRow(0)
 
         List<String> cols = fields.collect{it -> export.getFieldLabel(it.key as String) }
-        if (hideEmptyResults) {
+        if (options.hideEmptyResults) {
             ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
         }
 

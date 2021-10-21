@@ -14,7 +14,7 @@ import java.time.Year
 
 abstract class BaseExportHelper {
 
-    static Cell updateCell(Workbook workbook, Cell cell, def value) {
+    static Cell updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
 
         CreationHelper createHelper = workbook.getCreationHelper()
         Locale locale = LocaleContextHolder.getLocale()
@@ -47,6 +47,9 @@ abstract class BaseExportHelper {
         }
         else {
             if (value instanceof String) {
+                if (inserNewLines) {
+                    value = value.split( BaseDetailsExport.CSV_VALUE_SEPARATOR ).join('\n')
+                }
                 cell.setCellValue(value.trim())
             }
             else if (value instanceof Boolean) {
