@@ -117,7 +117,7 @@
 
                     <div class="la-flexbox la-main-object">
 
-                        <i class="icon clipboard outline outline la-list-icon"></i>
+                        <i class="icon clipboard outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons._getCalculatedPrevious()}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
