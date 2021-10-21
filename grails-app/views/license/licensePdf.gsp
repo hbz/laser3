@@ -148,7 +148,7 @@
                         </g:elseif>--}%
                     </li>
                     <li>
-                        <strong><g:message code="license.licenseCategory.label"/>: </strong>${license.licenseCategory.getI10n("value")}
+                        <strong><g:message code="license.licenseCategory.label"/>: </strong>${license.licenseCategory?.getI10n("value")}
                         %{--<g:if test="${auditService.getAuditConfig(license, 'licenseCategory')}">
                             <span class="green">V</span>
                         </g:if>
