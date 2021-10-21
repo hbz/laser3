@@ -10,7 +10,9 @@ class DueDateObject {
     String attribute_value_de
     String attribute_value_en
     Date date
-    /** Subscription, AbstractProperty oder Task*/
+    /**
+     * {@link Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo}
+     */
     String oid
     boolean isDone = false
     Date lastUpdated
