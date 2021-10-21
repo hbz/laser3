@@ -4,6 +4,9 @@ package de.laser
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * Represents a connection between two {@link Org}s
+ */
 class Combo {
 
     @RefdataAnnotation(cat = RDConstants.COMBO_STATUS)
