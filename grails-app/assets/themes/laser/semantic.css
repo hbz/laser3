@@ -5798,6 +5798,38 @@ i.icon.la-list-icon:before {
   background-color: #004678;
   color: #FFFFFF;
 }
+
+/*---------------
+    Orange
+----------------*/
+
+.ui.orange.buttons .button.la-modern-button,
+.ui.orange.button.la-modern-button {
+  color: #fa820a;
+  background-color: transparent;
+}
+
+.ui.orange.buttons .button.la-modern-button:hover,
+.ui.orange.button.la-modern-button:hover {
+  background-color: #fa820a;
+  color: #FFFFFF;
+}
+
+/*---------------
+    Yellow
+----------------*/
+
+.ui.yellow.buttons .button.la-modern-button,
+.ui.yellow.button.la-modern-button {
+  color: #FBBD08;
+  background-color: transparent;
+}
+
+.ui.yellow.buttons .button.la-modern-button:hover,
+.ui.yellow.button.la-modern-button:hover {
+  background-color: #FBBD08;
+  color: #FFFFFF;
+}
 /*!
  * # Semantic UI 2.4.2 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -13492,6 +13524,18 @@ i.icon.la-consortia {
   font-family: 'icomoon';
 }
 
+i.icon.la-star.slash {
+  font-family: 'icomoon';
+}
+
+i.icon.la-redo.slash {
+  font-family: 'icomoon';
+}
+
+i.icon.la-exchange.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -13594,6 +13638,20 @@ i.icon.la-thumbtack-regular:before {
 
 i.icon.la-consortia:before {
   content: "\e917";
+}
+
+/**/
+
+i.icon.la-star.slash:before {
+  content: "\e918";
+}
+
+i.icon.la-redo.slash:before {
+  content: "\e919";
+}
+
+i.icon.la-exchange.slash:before {
+  content: "\e91a";
 }
 
 /*******************************
