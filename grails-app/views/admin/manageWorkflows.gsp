@@ -186,7 +186,7 @@
             <g:link class="ui small icon blue button right floated la-modern-button"
                     controller="subscription" action="workflows" id="${wf.subscription.id}"
                     params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                <i class="icon pencil"></i>
+                <i class="icon edit"></i>
             </g:link>
 
             <br />
