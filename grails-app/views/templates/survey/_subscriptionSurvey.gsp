@@ -250,7 +250,7 @@
                         </dl>
                     </g:if>
 
-                    <div class="ui form">
+                    <div class="ui form la-padding-left-07em">
                         <div class="field">
                             <label>
                                 <g:message code="surveyConfigsInfo.comment"/>
