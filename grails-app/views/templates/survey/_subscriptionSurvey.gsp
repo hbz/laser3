@@ -250,7 +250,7 @@
                         </dl>
                     </g:if>
 
-                    <div class="ui form">
+                    <div class="ui form la-padding-left-07em">
                         <div class="field">
                             <label>
                                 <g:message code="surveyConfigsInfo.comment"/>
@@ -313,9 +313,8 @@
                 <div class="content">
                     <div class="header">
                         <g:if test="${!subscription}">
-                            <h2 class="ui icon header"><semui:headerIcon/>
-
-                                <i class="icon clipboard outline la-list-icon"></i>
+                            <semui:headerTitleIcon type="Subscription"/>
+                            <h2 class="ui icon header">
                                 <g:link controller="public" action="gasco"
                                         params="${[q: '"' + surveyConfig.subscription.name + '"']}">
                                     ${surveyConfig.subscription.name}
@@ -330,8 +329,8 @@
                             </div>
                         </g:if>
                         <g:else>
-
-                            <h2 class="ui icon header"><semui:headerIcon/>
+                            <semui:headerTitleIcon type="Subscription"/>
+                            <h2 class="ui icon header">
                             <g:link controller="subscription" action="show" id="${subscription.id}">
                                 ${subscription.name}
                             </g:link>

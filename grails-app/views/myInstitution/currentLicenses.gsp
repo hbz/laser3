@@ -186,7 +186,7 @@
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
                                   <div class="la-flexbox la-minor-object">
-                                      <i class="icon clipboard outline outline la-list-icon"></i>
+                                      <i class="icon clipboard outline la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                   </div>
                               </g:each>
