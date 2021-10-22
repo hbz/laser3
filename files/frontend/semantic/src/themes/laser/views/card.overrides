@@ -163,3 +163,7 @@
 .la-padding-top-1em {
   padding-top:1em;
 }
+.la-padding-left-07em {
+  padding-top:1em;
+  padding-left:.7em;
+}

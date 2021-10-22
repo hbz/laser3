@@ -82,7 +82,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
             </table>
         </g:if>
 
-        <div class="ui form">
+        <div class="ui form la-padding-left-07em">
             <div class="field">
                 <label>
                     <g:message code="surveyInfo.comment.label"/>
