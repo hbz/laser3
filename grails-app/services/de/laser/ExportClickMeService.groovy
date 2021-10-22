@@ -405,6 +405,36 @@ class ExportClickMeService {
 
     ]
 
+    static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
+            provider : [
+                    label: 'Provider',
+                    message: 'default.provider.label',
+                    fields: [
+                            'provider.sortname'            : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'provider.name'                : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'provider.altnames'            : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
+                    ]
+            ],
+            providerIdentifiers : [
+                    label: 'Identifiers/Customer Identifier',
+                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    fields: [:]
+            ],
+            providerProperties : [
+                    label: 'Properties',
+                    message: 'propertyDefinition.plural',
+                    fields: [:]
+            ]
+
+    ]
+
     static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
             // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
@@ -793,7 +823,7 @@ class ExportClickMeService {
         fields
     }
 
-    Map<String, Object> getExportOrgFields() {
+    Map<String, Object> getExportOrgFields(String config) {
 
         Map<String, Object> exportFields = [:]
 
@@ -808,27 +838,46 @@ class ExportClickMeService {
                 break
         }
 
-        EXPORT_ORG_CONFIG.keySet().each {
-            EXPORT_ORG_CONFIG.get(it).fields.each {
-                exportFields.put(it.key, it.value)
-            }
-        }
+        switch(config) {
+            case 'institution':
+                EXPORT_ORG_CONFIG.keySet().each {
+                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
-        }
+                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                    exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                }
+                break
+            case 'provider':
+                EXPORT_PROVIDER_CONFIG.keySet().each {
+                    EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
 
+                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                    exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                }
+                break
         }
 
         exportFields
     }
 
-    Map<String, Object> getExportOrgFieldsForUI() {
+    Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
-        Map<String, Object> fields = EXPORT_ORG_CONFIG as Map
+        Map<String, Object> fields
+
 
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -840,15 +889,27 @@ class ExportClickMeService {
             default: localizedName = "name_en"
                 break
         }
-
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
-        }
-
-        fields.participantProperties.fields.clear()
-
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-            fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+        switch(orgType) {
+            case 'institution': fields = EXPORT_ORG_CONFIG as Map
+                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                    fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                fields.participantProperties.fields.clear()
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                break
+            case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
+                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                    fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                fields.providerProperties.fields.clear()
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                break
+            default: fields = [:]
+                break
         }
 
         fields
@@ -1323,12 +1384,21 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    def exportOrgs(List<Org> result, Map<String, Object> selectedFields) {
+    def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config) {
         Locale locale = LocaleContextHolder.getLocale()
 
-        Map<String, Object> selectedExportFields = [:]
+        String sheetTitle
 
-        Map<String, Object> configFields = getExportOrgFields()
+        switch(config) {
+            case 'institution':
+                sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
+                break
+            case 'provider':
+                sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
+                break
+        }
+
+        Map<String, Object> selectedExportFields = [:], configFields = getExportOrgFields(config)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -1344,7 +1414,7 @@ class ExportClickMeService {
         }
 
         Map sheetData = [:]
-        sheetData[messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)] = [titleRow: titles, columnData: exportData]
+        sheetData[sheetTitle] = [titleRow: titles, columnData: exportData]
 
         sheetData =  exportAccessPoints(result, sheetData, selectedExportFields, locale)
 
@@ -1638,21 +1708,25 @@ class ExportClickMeService {
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey == 'participant.generalContact') {
+                if (fieldKey.contains('generalContact')) {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }else if (fieldKey == 'participant.billingContact') {
-                    setOrgFurtherInformation(result, row, fieldKey)
-                }
-                else if (fieldKey == 'participant.billingAdress') {
+                }else if (fieldKey.contains('billingContact')) {
                     setOrgFurtherInformation(result, row, fieldKey)
                 }
-                else if (fieldKey == 'participant.postAdress') {
+                else if (fieldKey.contains('billingAdress')) {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }else if (fieldKey == 'participant.readerNumbers') {
+                }
+                else if (fieldKey.contains('postAdress')) {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }
+                else if (fieldKey.contains('altnames')) {
                     setOrgFurtherInformation(result, row, fieldKey)
-                }else if (fieldKey.startsWith('participantProperty.')) {
+                }
+                else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
+                    setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
                     setOrgFurtherInformation(result, row, fieldKey)
                 }
                 else {
@@ -1861,7 +1935,16 @@ class ExportClickMeService {
                 row.add([field: '', style: null])
             }
 
-        } else if (fieldKey.startsWith('participantIdentifiers.')) {
+        } else if (fieldKey.contains('altnames')) {
+            if (org) {
+                if(org.altnames)
+                    row.add([field: org.altnames.collect { AlternativeName alt -> alt.name }.join('\n'), style: null])
+                else row.add([field: '', style: null])
+            }
+            else {
+                row.add([field: '', style: null])
+            }
+        } else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
             if (org) {
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
                 List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces)", [org: org, namespaces: [id]])
@@ -1889,7 +1972,7 @@ class ExportClickMeService {
             } else {
                 row.add([field: '', style: null])
             }
-        } else if (fieldKey.startsWith('participantProperty.')) {
+        } else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
             if (org) {
 
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
