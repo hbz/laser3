@@ -571,7 +571,12 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
-                List<String> rows = DetailsExportManager.exportAsList(export, detailsCache.idList as List<Long>, 'csv', params.containsKey('hideEmptyResults-csv'))
+                List<String> rows = DetailsExportManager.exportAsList(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'csv',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-csv')]
+                )
 
                 ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
@@ -586,7 +591,12 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
                 response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-                Workbook wb = DetailsExportManager.exportAsWorkbook(export, detailsCache.idList as List<Long>, 'xlsx', params.containsKey('hideEmptyResults-xlsx'))
+                Workbook wb = DetailsExportManager.exportAsWorkbook(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'xlsx',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'), insertNewLines: params.containsKey('insertNewLines-xlsx')]
+                )
 
                 ServletOutputStream out = response.outputStream
                 wb.write(out)
@@ -594,9 +604,14 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
 
-                List<List<String>> content = DetailsExportManager.exportAsList(export, detailsCache.idList as List<Long>, 'pdf', params.containsKey('hideEmptyResults-pdf'))
-                Map<String, Object> struct = [:]
+                List<List<String>> content = DetailsExportManager.exportAsList(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'pdf',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-pdf')]
+                )
 
+                Map<String, Object> struct = [:]
                 String view = ''
                 Map<String, Object> model = [:]
 

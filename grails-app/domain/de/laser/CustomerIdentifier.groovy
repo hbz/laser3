@@ -3,6 +3,9 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * Represents a key/value pair for a customer {@link Org} which enables to load statistic data from a SUSHI server
+ */
 class CustomerIdentifier {
 
     @RefdataAnnotation(cat = 'CustomerIdentifierType')
@@ -38,6 +41,10 @@ class CustomerIdentifier {
         note     (nullable:true, blank:true)
     }
 
+    /**
+     * Retrieves the provider associated to the platform (if the platform exists)
+     * @return the {@link Org} linked to the {@link Platform}, null if not exists
+     */
     Org getProvider() {
         return platform?.org
     }

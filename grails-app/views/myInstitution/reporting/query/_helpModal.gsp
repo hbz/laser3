@@ -28,13 +28,28 @@
             Diese Abfrage liefert eine Übersicht über vergebene Lizenz-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Lizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Lizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Lizenzen mit Merkmal X, <br />
             <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Lizenzen <br />
+        </p>
+    </div>
+
+    <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
+        <p class="ui header">
+            Diese Abfrage liefert eine Übersicht über vergebene Teilnehmerlizenz-Merkmale
+        </p>
+        <p>
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Teilnehmerlizenzen konkret vergeben wurden.
+            Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
+        </p>
+        <p>
+            Im Detail sind folgende Informationen verfügbar: <br/>
+            <i class="icon circle blue"></i> Teilnehmerlizenzen mit Merkmal X, <br />
+            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Teilnehmerlizenzen <br />
         </p>
     </div>
 
@@ -166,7 +181,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Vertrags-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Verträgen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Verträge konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>
         <p>
@@ -217,7 +232,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Organisations-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Organisationen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Organisationen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
         </p>
         <p>

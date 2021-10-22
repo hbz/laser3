@@ -3,6 +3,7 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseDetails
@@ -28,8 +29,9 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -124,15 +126,38 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-license-subscriptionCount') { // TODO: query
-                    int count = License.executeQuery(
-                            'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+//                    int count = License.executeQuery(
+//                            'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+//                            [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+//                    )[0]
+//                    content.add( count )
+
+                    String counts = Subscription.executeQuery(
+                            'select status, count(status) from Links li join li.destinationSubscription sub join sub.status status where li.sourceLicense = :lic and li.linkType = :linkType group by status',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                    )[0]
-                    content.add( count )
+                    ).collect { it[1] + ' ' + it[0].getI10n('value').toLowerCase() }.join( CSV_VALUE_SEPARATOR ) ?: '0'
+
+                    content.add( counts )
                 }
                 else if (key == '@-license-memberCount') {
                     int count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count )
+                }
+                else if (key == '@-license-memberSubscriptionCount') {
+//                    int count = License.executeQuery('select count( distinct sub ) from Links li join li.destinationSubscription sub where li.sourceLicense in (' +
+//                            'select l from License l where l.instanceOf = :parent' +
+//                            ') and li.linkType = :linkType',
+//                                [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
+//                        )[0]
+//                    content.add( count )
+
+                    String counts = License.executeQuery('select status, count(status) from Links li join li.destinationSubscription sub join sub.status status where li.sourceLicense in (' +
+                            'select l from License l where l.instanceOf = :parent' +
+                            ') and li.linkType = :linkType group by status',
+                            [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                    ).collect { it[1] + ' ' + it[0].getI10n('value').toLowerCase() }.join( CSV_VALUE_SEPARATOR ) ?: '0'
+
+                    content.add( counts )
                 }
             }
             // --> custom query depending filter implementation

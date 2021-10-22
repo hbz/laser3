@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
+
 3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
 
 --      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen

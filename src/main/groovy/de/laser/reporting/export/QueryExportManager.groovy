@@ -116,7 +116,7 @@ class QueryExportManager {
 
             Row entry = sheet.createRow(idx+1)
             row.eachWithIndex{ v, i ->
-                Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v)
+                Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v, false)
                 sheet.autoSizeColumn(i)
             }
         }
