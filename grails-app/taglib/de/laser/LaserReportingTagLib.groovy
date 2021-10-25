@@ -70,7 +70,7 @@ class LaserReportingTagLib {
 
         String filterLabel    = message(code: todo + '.' + prop.getName() + '.label', default: prop.getName())
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
-        String filterValue    = params.get(filterName)
+        Integer filterValue   = params.int(filterName)
 
         if (prop.getType() in [boolean, Boolean]) {
 
@@ -113,7 +113,7 @@ class LaserReportingTagLib {
 
         String filterLabel    = rdI18n != 'n/a' ? message(code: rdI18n, default: rdCat) : message(code: rdCat + '.label', default: rdCat) // TODO -> @RefdataAnnotation
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
-        String filterValue    = params.get(filterName)
+        Integer filterValue   = params.int(filterName)
 
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
@@ -143,7 +143,6 @@ class LaserReportingTagLib {
 
         String filterLabel    = customRdv.get('label')
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
-        String filterValue    = params.get(filterName)
 
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
@@ -158,13 +157,12 @@ class LaserReportingTagLib {
             noSelection: ['': message(code: 'default.select.choose.label')]
         ]
         if ( GenericHelper.isFieldMultiple(attrs.refdata) ) {  // TODO - other tags
-            map.putAt('multiple', true)
-            map.putAt('value', params.list(filterName).collect { Integer.parseInt(it) })
+            map.put('multiple', true)
+            map.put('value', params.list(filterName).collect { Integer.parseInt(it) })
         }
         else {
-            map.putAt('value', filterValue)
+            map.put('value', params.int(filterName))
         }
-
         out << laser.select( map )
         out << '</div>'
     }

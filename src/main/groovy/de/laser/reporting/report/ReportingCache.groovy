@@ -45,6 +45,11 @@ class ReportingCache {
 
     // ---
 
+    Map<String, Object> readMeta() {
+        Map<String, Object> cache = get()
+        cache.meta as Map<String, Object>
+    }
+    
     Map<String, Object> readFilterCache() {
         Map<String, Object> cache = get()
         cache.filterCache as Map<String, Object>
