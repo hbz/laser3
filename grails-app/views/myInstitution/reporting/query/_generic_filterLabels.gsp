@@ -1,6 +1,37 @@
 <%@page import="de.laser.reporting.report.myInstitution.GenericHelper" %>
 
-<g:if test="${stacked}">
+<g:if test="${simple}">
+
+    <g:each in="${filterLabels}" var="lblGroup">
+        <g:if test="${lblGroup.value.size() > 1}">
+            <strong>${lblGroup.value.source}</strong>
+            <g:each in="${lblGroup.value}" var="label">
+                <g:if test="${label.key != 'source'}">
+                    <g:if test="${label.key in ['endDate', 'startDate']}">
+                        &middot; ${label.value.label} ${label.value.value}
+                    </g:if>
+                    <g:else>
+                        &middot; ${label.value.label}:
+                        <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
+                            <g:if test="${label.value.value instanceof String}">
+                                ${label.value.value}
+                            </g:if>
+                            <g:else>
+                                ${label.value.value.join(', ')}
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            ${label.value.value}
+                        </g:else>
+                    </g:else>
+                </g:if>
+            </g:each>
+            <br />
+        </g:if>
+    </g:each>
+
+</g:if>
+<g:elseif test="${stacked}">
 
     <div class="ui horizontal segments">
         <g:each in="${filterLabels}" var="lblGroup">
@@ -32,7 +63,8 @@
             </div>
         </g:each>
     </div>
-</g:if>
+
+</g:elseif>
 <g:else>
 
     <div class="ui small steps">
@@ -67,4 +99,5 @@
             </div>
         </g:each>
     </div>
+
 </g:else>
