@@ -26,7 +26,6 @@ apply plugin:'com.gorylenko.gradle-git-properties'
 repositories {
     mavenLocal()
     maven { url 'https://repo.grails.org/core' }
-    mavenCentral()
 }
 
 dependencies {
