@@ -673,6 +673,7 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.subPerpetual = 'on'
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.constraint_orgIds = orgIds
@@ -716,7 +717,24 @@ join sub.orgRelations or_sub where
                 return
             }
         }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename = params.filename
+            }
 
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider')
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+        }
         withFormat {
             html {
                 result
@@ -2651,6 +2669,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else if(params.exportClickMeExcel) {
             if (params.filename) {
@@ -2661,7 +2680,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'institution')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2669,6 +2688,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else {
             withFormat {

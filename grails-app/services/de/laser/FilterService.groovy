@@ -29,10 +29,8 @@ class FilterService {
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
-             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
-             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-             queryParams << [orgNameContains3 : "${params.orgNameContains}"]
+            query << "(genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) "
+             queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
             if (params.orgType instanceof List) {
@@ -104,6 +102,17 @@ class FilterService {
             query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
+        }
+
+        if (params.platform?.length() > 0) {
+            query << "exists (select plat.id from Platform plat where plat.org = o and genfunc_filter_matcher(plat.name, :platform) = true)"
+            queryParams << [platform: params.platform]
+        }
+
+        if (params.privateContact?.length() > 0) {
+            query << "exists (select p.id from o.prsLinks op join op.prs p where p.tenant = :ctx and (genfunc_filter_matcher(p.first_name, :contact) = true or genfunc_filter_matcher(p.middle_name, :contact) = true or genfunc_filter_matcher(p.last_name, :contact) = true))"
+            queryParams << [ctx: contextService.getOrg()]
+            queryParams << [contact: params.privateContact]
         }
 
         // hack: applying filter on org subset

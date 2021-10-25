@@ -6,10 +6,13 @@ package de.laser
 class ApiSource {
 
     /**
-     * The we:kb is a form from the GOKb
+     * List all possible API types here
      */
     enum ApiTyp
     {
+        /**
+         * The we:kb is a fork of the GOKb
+         */
         GOKBAPI
     }
 
