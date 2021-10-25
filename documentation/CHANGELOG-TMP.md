@@ -13,6 +13,8 @@
 
 3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
 
+3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
+
 --      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen
 
 3831    15.10.2021  rc-2.2  2.2.2       David   Feature     Systemprofiler erweitern
