@@ -30524,7 +30524,7 @@ a.ui.card:hover,
   color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
-  padding-left: 0.9rem;
+  padding-left: 0.7em;
 }
 
 .la-inline-lists dl {
@@ -30668,6 +30668,11 @@ a.ui.card:hover,
 
 .la-padding-top-1em {
   padding-top: 1em;
+}
+
+.la-padding-left-07em {
+  padding-top: 1em;
+  padding-left: 0.7em;
 }
 /*!
  * # Semantic UI 2.4.2 - Comment

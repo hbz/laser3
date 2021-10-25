@@ -215,7 +215,7 @@
                                                 <i class="university icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="folder open icon"></i>
+                                                <i class="clipboard outline icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
                                                 <i class="gift icon"></i>

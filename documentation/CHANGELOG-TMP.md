@@ -9,6 +9,8 @@
 
 3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
 
+3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
+
 3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
 
 3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche

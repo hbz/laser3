@@ -124,6 +124,8 @@ class ExportService {
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
 		bold.setFont(font)
+		XSSFCellStyle lb = wb.createCellStyle()
+		lb.setWrapText(true)
 		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
@@ -166,6 +168,8 @@ class ExportService {
 							cell.setCellValue((Double) cellData.field)
 							cell.setCellStyle(numberStyle)
 						}
+						if(cellData.field.contains('\n'))
+							cell.setCellStyle(lb)
 						switch(cellData.style) {
 							case 'positive': cell.setCellStyle(csPositive)
 								break

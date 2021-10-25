@@ -94,6 +94,7 @@ class SubscriptionService {
             if (params.isSiteReloaded != "yes") {
                 String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
                 params.status = defaultStatus
+                params.hasPerpetualAccess = RDStore.YN_YES
                 result.defaultSet = true
             }
             else {

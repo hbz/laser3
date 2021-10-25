@@ -16,6 +16,9 @@
 
  <semui:controlButtons>
         <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <semui:exportDropdownItem>
                     <g:link class="item js-open-confirm-modal"
@@ -59,7 +62,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier']],
+                                  tmplConfigShow: [['name', 'identifier'], ['platform', '']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -69,7 +72,7 @@
                 <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: orgList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'country']
+                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform']
                       ]"/>
             </g:if>
             <g:else>
@@ -82,6 +85,8 @@
             </g:else>
         </div>
         <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
+
+        <g:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
     </body>
 </html>

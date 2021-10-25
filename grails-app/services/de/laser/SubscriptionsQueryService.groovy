@@ -250,15 +250,27 @@ class SubscriptionsQueryService {
 
             if (params.status != 'FETCH_ALL') {
                 if(params.status instanceof List || params.status instanceof String[]){
-                    base_qry += " and s.status.id in (:status) "
+                    base_qry += " and (s.status.id in (:status) "
                     qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
                     filterSet = true
                 }else {
-                    base_qry += " and s.status.id = :status "
+                    base_qry += " and (s.status.id = :status "
                     qry_params.put('status', (params.status as Long))
                     filterSet = true
                 }
             }
+            if(RDStore.SUBSCRIPTION_CURRENT.id in qry_params.status) {
+                /*
+                needs to be dealt separately, must not be and-linked
+                */
+                if (params.hasPerpetualAccess) {
+                    base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
+                    qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+                    filterSet = true
+                }
+                else base_qry += ")" //opened in line 253 or 257
+            }
+            else base_qry += ")" //opened in line 253 or 257
         }
 
 
@@ -277,12 +289,6 @@ class SubscriptionsQueryService {
         if (params.isPublicForApi) {
             base_qry += "and s.isPublicForApi = :isPublicForApi "
             qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-            filterSet = true
-        }
-
-        if (params.hasPerpetualAccess) {
-            base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess "
-            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true
         }
 
