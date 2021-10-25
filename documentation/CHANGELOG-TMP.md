@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
+
 3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
 
 3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
