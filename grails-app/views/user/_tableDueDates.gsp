@@ -114,7 +114,7 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon button la-modern-button"
+                        <laser:remoteLink class="ui icon blue button la-modern-button"
                                           controller="ajax"
                                           action="showDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -126,7 +126,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon la-modern-button"></i>
+                            <i class="icon bell slash la-js-editmode-icon "></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
@@ -165,7 +165,7 @@
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui icon button la-modern-button"
+                    <laser:remoteLink class="ui icon blue button la-modern-button"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
