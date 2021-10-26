@@ -25,7 +25,7 @@ class SemanticUiIconTagLib {
                 out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
                 break
             case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
+                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
                 break
             case 'Workflow':
                 out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
@@ -52,7 +52,7 @@ class SemanticUiIconTagLib {
                 out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
                 break
             case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
+                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
                 break
             case 'Workflow':
                 out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '

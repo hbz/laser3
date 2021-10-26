@@ -7397,8 +7397,8 @@ body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
 body[class*="Title"] .ui.icon.header .circular.icon.la-object,
 body[class*="title"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 body[class*="Title"] .ui.icon.header .circular.icon.la-object:before,
@@ -7425,8 +7425,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-journal {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-journal:before {
@@ -7435,8 +7435,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-database {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-database:before {
@@ -7445,8 +7445,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-ebook {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-ebook:before {
@@ -13928,7 +13928,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-journal {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-journal:before {
@@ -13937,7 +13937,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-database {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-database:before {
@@ -13946,7 +13946,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-ebook {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-ebook:before {
@@ -13955,7 +13955,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-book {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-book:before {

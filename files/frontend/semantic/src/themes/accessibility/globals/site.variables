@@ -252,7 +252,7 @@
 
 @subscription     :    @orange; /* hbz-orange */
 @package          :    @violet; /*@violet */
-@title            :    @blue; /* hbz-blue */
+@title            :    @purple; /* light-blue -  mismatch because semantic ui definition*/
 @license          :    #008C25; /* Dark Green */
 @organisation      :   @teal; /* bluegreen */
 @platform      :    @o-yellow;
