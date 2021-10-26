@@ -1404,8 +1404,7 @@ class SubscriptionControllerService {
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
-                List issueEntitlements = entitlements.toList()
-                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
                 params.remove("kbartPreselect")
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
@@ -1984,7 +1983,7 @@ class SubscriptionControllerService {
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, false, ie_accept_status))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, ie_accept_status))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }

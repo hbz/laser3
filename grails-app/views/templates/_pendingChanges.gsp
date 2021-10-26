@@ -57,11 +57,11 @@
                 <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
                 <td class="x">
                   <g:if test="${! processingpc}">
-                    <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">
+                    <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button la-modern-button">
                       <i class="checkmark icon"></i>
                       <!--${message(code:'default.button.accept.label')}-->
                     </g:link>
-                    <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui icon negative button">
+                    <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui icon negative button la-modern-button">
                       <i class="times icon"></i>
                       <!--${message(code:'default.button.reject.label')}-->
                     </g:link>

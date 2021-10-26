@@ -291,7 +291,7 @@
                                     </g:if>
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
-                                    <laser:statsLink class="ui icon button"
+                                    <laser:statsLink class="ui icon button la-modern-button"
                                                      base="${ConfigUtils.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
@@ -309,12 +309,12 @@
                             <g:if test="${'showLinking' in tableConfig}">
                             <%--<g:if test="${license in s.licenses}"></g:if>--%>
                                 <g:if test="${s in linkedSubscriptions}">
-                                    <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
+                                    <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
                                         <i class="ui minus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon positive button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
+                                    <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
                                         <i class="ui plus icon"></i>
                                     </g:link>
                                 </g:else>
