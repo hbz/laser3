@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      26.10.2021  rc-2.2  2.2.2       Andreas Bug         Argumentfehler bei der Versendung von Reminder-Mails behoben
+
+3944    26.10.2021  rc-2.2  2.2.2       Andreas Bug         Parserfehler für Finanzwerte behoben
+
+3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
+
 3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
 
 3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
