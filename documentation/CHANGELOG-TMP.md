@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      26.10.2021  rc-2.2  2.2.2       Andreas Bug         Argumentfehler bei der Versendung von Reminder-Mails behoben
+
+3944    26.10.2021  rc-2.2  2.2.2       Andreas Bug         Parserfehler für Finanzwerte behoben
+
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
 --      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen
