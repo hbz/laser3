@@ -121,6 +121,10 @@ class Task {
             displayArgs.id = surveyConfig.surveyInfo.id
             displayArgs.surveyConfigID = surveyConfig.id
         }
+        else {
+            displayArgs.controller = 'myInstitution'
+            displayArgs.action = 'tasks'
+        }
         displayArgs
     }
 }
