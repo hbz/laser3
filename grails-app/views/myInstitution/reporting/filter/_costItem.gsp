@@ -1,8 +1,6 @@
 <%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-    <g:form action="reporting" method="POST" class="ui form">
-
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="costItem-filter-tab-1">${message(code:'subscription.costItems.label')}</a>
         </div><!-- .menu -->
@@ -27,12 +25,3 @@
             </g:each>
 
         </div><!-- .tab -->
-
-        <div class="field">
-            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
-            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${BaseConfig.KEY_COSTITEM}" />
-            <input type="hidden" name="token" value="${token}" />
-        </div>
-
-    </g:form>
