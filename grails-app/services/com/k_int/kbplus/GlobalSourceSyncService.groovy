@@ -1470,8 +1470,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(!itemA)
                         itemA = listA[i]
                     Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
-                    if(currDiffs)
-                        subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    if(instanceType == 'coverage') {
+                        if (currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else if(instanceType == 'price') {
+                        IssueEntitlement.findAllByTippAndPriceItemsIsNotEmpty(tippA).each { IssueEntitlement ieA ->
+                            PriceItem piA = locateEquivalent(itemB,ieA.priceItems) as PriceItem
+                            if(!piA) {
+                                piA = ieA.priceItems[i]
+                                piA.startDate = itemB.startDate
+                                piA.endDate = itemB.endDate
+                                piA.listCurrency = itemB.listCurrency
+                            }
+                            piA.listPrice = itemB.listPrice
+                            piA.save()
+                        }
+                    }
                 }
             }
             else if(listA.size() > listB.size()) {
