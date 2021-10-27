@@ -1,5 +1,6 @@
 package de.laser.reporting.report.myInstitution
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
@@ -12,19 +13,23 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.ApplicationContext
 
 class SubscriptionFilter extends BaseFilter {
 
-    SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
-
-    Map<String, Object> filter(GrailsParameterMap params) {
+    static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (sub.id) from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
+        SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put('base', [source: BaseConfig.getMessage('subscription.source.' + filterSource)])
@@ -174,10 +179,10 @@ class SubscriptionFilter extends BaseFilter {
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'memberSubscription') {
-                    handleInternalSubFilter(params, pk, filterResult)
+                    _handleInternalSubFilter(params, pk, filterResult)
                 }
                 else {
-                    handleInternalOrgFilter(params, pk, filterResult)
+                    _handleInternalOrgFilter(params, pk, filterResult)
                 }
             }
         }
@@ -189,7 +194,7 @@ class SubscriptionFilter extends BaseFilter {
         filterResult
     }
 
-    private void handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
@@ -314,7 +319,7 @@ class SubscriptionFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Subscription.executeQuery(query, queryParams) : [] )
     }
 
-    private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])

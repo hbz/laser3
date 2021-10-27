@@ -17,6 +17,7 @@ import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
+import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -121,8 +122,10 @@ class BaseConfig {
 
     static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
+        MessageSource messageSource    = mainContext.getBean('messageSource')
+        
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.cfg.base.custom'
 

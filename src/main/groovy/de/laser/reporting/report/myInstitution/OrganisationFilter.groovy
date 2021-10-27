@@ -1,5 +1,6 @@
 package de.laser.reporting.report.myInstitution
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
@@ -10,17 +11,22 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.ApplicationContext
 
 class OrganisationFilter extends BaseFilter {
 
-    Map<String, Object> filter(GrailsParameterMap params) {
+    static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (org.id) from Org org']
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
         Map<String, Object> queryParams = [ orgIdList: [] ]
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.source.' + filterSource)])
@@ -45,13 +51,13 @@ class OrganisationFilter extends BaseFilter {
                 )
                 break
             case 'all-provider':
-                queryParams.orgIdList = getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
+                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
                 break
             case 'all-agency':
-                queryParams.orgIdList = getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
+                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
                 break
             case 'all-providerAndAgency':
-                queryParams.orgIdList = getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
+                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
                 break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
@@ -88,13 +94,13 @@ where (consOr.roleType = :consRoleType)
                 queryParams.orgIdList = queryParams.orgIdList.unique()
                 break
             case 'my-provider':
-                queryParams.orgIdList = getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
+                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
                 break
             case 'my-agency':
-                queryParams.orgIdList = getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
+                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
                 break
             case 'my-providerAndAgency':
-                queryParams.orgIdList = getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
+                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
                 break
         }
 
@@ -217,7 +223,7 @@ where (consOr.roleType = :consRoleType)
         filterResult
     }
 
-    List<Long> getAllProviderAndAgencyIdList(List orgTypes) {
+    static List<Long> _getAllProviderAndAgencyIdList(List orgTypes) {
 
         List<Long> idList = Org.executeQuery(
                 'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
@@ -226,7 +232,10 @@ where (consOr.roleType = :consRoleType)
         idList
     }
 
-    List<Long> getMyProviderAndAgencyIdList(List roleTypes) {
+    static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
 
         List<Long> idList = Org.executeQuery( '''
             select distinct(prov.org.id) from OrgRole prov 

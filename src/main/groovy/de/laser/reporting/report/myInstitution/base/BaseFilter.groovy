@@ -10,9 +10,6 @@ import org.springframework.context.ApplicationContext
 
 class BaseFilter {
 
-    ApplicationContext mainContext = Holders.grailsApplication.mainContext
-    ContextService contextService  = mainContext.getBean('contextService')
-
     static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
 
         params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(BaseConfig.FILTER_SOURCE_POSTFIX) }
@@ -55,7 +52,8 @@ class BaseFilter {
 
     static String getPropertyFilterSubQuery(String hqlDc, String hqlVar, Long pdId, Long pValue, Map<String, Object> queryParams) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
 
         String pvQuery = ''
         if (pValue) {

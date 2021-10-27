@@ -12,19 +12,22 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.ApplicationContext
 
 class LicenseFilter extends BaseFilter {
 
-    LicenseService licenseService = mainContext.getBean('licenseService')
-
-    Map<String, Object> filter(GrailsParameterMap params) {
+    static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (lic.id) from License lic']
         List<String> whereParts         = [ 'where lic.id in (:licenseIdList)']
         Map<String, Object> queryParams = [ licenseIdList: [] ]
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        LicenseService licenseService = mainContext.getBean('licenseService')
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'license' + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.source.' + filterSource)])
@@ -171,7 +174,7 @@ class LicenseFilter extends BaseFilter {
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{pk ->
             if (pk != 'base') {
-                handleInternalOrgFilter(params, pk, filterResult)
+                _handleInternalOrgFilter(params, pk, filterResult)
             }
         }
 
@@ -182,7 +185,7 @@ class LicenseFilter extends BaseFilter {
         filterResult
     }
 
-    private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.source.' + filterSource)])
