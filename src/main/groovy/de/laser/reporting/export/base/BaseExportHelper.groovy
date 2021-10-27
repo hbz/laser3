@@ -12,7 +12,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import java.text.SimpleDateFormat
 import java.time.Year
 
-abstract class BaseExportHelper {
+class BaseExportHelper {
 
     static Cell updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
 

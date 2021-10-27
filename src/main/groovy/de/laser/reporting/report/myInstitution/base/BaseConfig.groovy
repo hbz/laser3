@@ -6,10 +6,9 @@ import de.laser.Org
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.auth.Role
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
 import de.laser.reporting.report.myInstitution.config.LicenseConsCfg
 import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
@@ -83,36 +82,34 @@ class BaseConfig {
 
     static Map<String, Object> getCurrentConfig(String key) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
         if (key == KEY_COSTITEM) {
 
             CostItemXCfg.CONFIG
         }
         else if (key == KEY_LICENSE) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (BaseDetailsExport.ctxConsortium()) {
                 LicenseConsCfg.CONFIG
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            else if (BaseDetailsExport.ctxInst()) {
                 LicenseInstCfg.CONFIG
             }
         }
         else if (key == KEY_ORGANISATION) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (BaseDetailsExport.ctxConsortium()) {
                 OrganisationConsCfg.CONFIG
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            else if (BaseDetailsExport.ctxInst()) {
                 OrganisationInstCfg.CONFIG
             }
         }
         else if (key == KEY_SUBSCRIPTION) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (BaseDetailsExport.ctxConsortium()) {
                 SubscriptionConsCfg.CONFIG
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            else if (BaseDetailsExport.ctxInst()) {
                 SubscriptionInstCfg.CONFIG
             }
         }

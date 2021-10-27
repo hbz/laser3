@@ -42,6 +42,7 @@ abstract class BaseDetailsExport {
 
     String token                    // cache token
 
+    // checked via <X>ExportHelper.getFieldLabel()
     static List<String> CUSTOM_FIELD_KEY = [
 
             'globalUID',
@@ -103,45 +104,41 @@ abstract class BaseDetailsExport {
     abstract List<Object> getDetailedObject(Object obj, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         if (key == LicenseExportGlobal.KEY) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (ctxConsortium()) {
                 LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            else if (ctxInst()) {
                 LicenseExportGlobal.CONFIG_ORG_INST
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
 
-            String pkg = this.class.package.toString()
-
-            if (pkg.endsWith('.myInstitution')) {
+            if (isGlobal(this)) {
                 OrgExportGlobal.CONFIG_X
             }
-            else if (pkg.endsWith('.local')) {
+            else if (isLocal(this)) {
                 OrgExportLocal.CONFIG_X
             }
         }
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
+            if (isGlobal(this)) {
 
-            String pkg = this.class.package.toString()
-
-            if (pkg.endsWith('.myInstitution')) {
-                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                if (ctxConsortium()) {
                     SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
                 }
-                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                else if (ctxInst()) {
                     SubscriptionExportGlobal.CONFIG_ORG_INST
                 }
             }
-            else if (pkg.endsWith('.local')) {
-                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            else if (isLocal(this)) {
+
+                if (ctxConsortium()) {
                     SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
                 }
-                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
             }
@@ -152,7 +149,7 @@ abstract class BaseDetailsExport {
         }
         else if (key == CostItemExportLocal.KEY) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (ctxConsortium()) {
                 CostItemExportLocal.CONFIG_ORG_CONSORTIUM
             }
         }
@@ -161,13 +158,12 @@ abstract class BaseDetailsExport {
     Map<String, Object> getAllFields() {
 
         String cfg, field
-        String pkg = this.class.package.toString()
 
-        if (pkg.endsWith('.myInstitution')) {
+        if (isGlobal(this)) {
             cfg   = GlobalExportHelper.getCachedConfigStrategy( token )
             field = GlobalExportHelper.getCachedFieldStrategy( token )
         }
-        else if (pkg.endsWith('.local')) {
+        else if (isLocal(this)) {
             cfg   = LocalExportHelper.getCachedConfigStrategy( token )
             field = LocalExportHelper.getCachedFieldStrategy( token )
         }
@@ -180,6 +176,23 @@ abstract class BaseDetailsExport {
         base.fields.get(cfg).findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
+    }
+
+    // -----
+
+    static boolean isLocal(Object clazz) {
+        clazz.class.package.toString().endsWith('.local')
+    }
+    static boolean isGlobal(Object clazz) {
+        clazz.class.package.toString().endsWith('.myInstitution')
+    }
+    static boolean ctxConsortium() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'
+    }
+    static boolean ctxInst() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        contextService.getOrg().getCustomerType() == 'ORG_INST'
     }
 
     // -----
