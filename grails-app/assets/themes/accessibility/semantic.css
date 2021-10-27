@@ -7472,7 +7472,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 }
 
 .ui.header.la-noMargin-top {
-  margin-top: 0rem;
+  margin-top: 1rem;
   text-align: left;
 }
 /*!
@@ -16299,6 +16299,7 @@ a.ui.basic.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
