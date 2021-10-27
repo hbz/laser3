@@ -4,6 +4,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -11,24 +12,11 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.ApplicationContext
 
 class SubscriptionFilter extends BaseFilter {
 
-    def contextService
-    def filterService
-    def propertyService
-    def subscriptionsQueryService
-
-    SubscriptionFilter() {
-        ApplicationContext mainContext  = Holders.grailsApplication.mainContext
-        contextService                  = mainContext.getBean('contextService')
-        filterService                   = mainContext.getBean('filterService')
-        propertyService                 = mainContext.getBean('propertyService')
-        subscriptionsQueryService       = mainContext.getBean('subscriptionsQueryService')
-    }
+    SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned

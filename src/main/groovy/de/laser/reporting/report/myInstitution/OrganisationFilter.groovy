@@ -10,22 +10,9 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.ApplicationContext
 
 class OrganisationFilter extends BaseFilter {
-
-    def contextService
-    def filterService
-    def subscriptionsQueryService
-
-    OrganisationFilter() {
-        ApplicationContext mainContext  = Holders.grailsApplication.mainContext
-        contextService                  = mainContext.getBean('contextService')
-        filterService                   = mainContext.getBean('filterService')
-        subscriptionsQueryService       = mainContext.getBean('subscriptionsQueryService')
-    }
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned

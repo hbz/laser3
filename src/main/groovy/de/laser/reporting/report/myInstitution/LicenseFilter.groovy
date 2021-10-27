@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.License
+import de.laser.LicenseService
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
@@ -11,22 +12,11 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.ApplicationContext
 
 class LicenseFilter extends BaseFilter {
 
-    def contextService
-    def filterService
-    def licenseService
-
-    LicenseFilter() {
-        ApplicationContext mainContext  = Holders.grailsApplication.mainContext
-        contextService                  = mainContext.getBean('contextService')
-        filterService                   = mainContext.getBean('filterService')
-        licenseService                  = mainContext.getBean('licenseService')
-    }
+    LicenseService licenseService = mainContext.getBean('licenseService')
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned

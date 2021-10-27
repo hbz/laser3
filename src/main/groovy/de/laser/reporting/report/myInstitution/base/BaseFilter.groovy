@@ -1,12 +1,17 @@
 package de.laser.reporting.report.myInstitution.base
 
 import de.laser.ContextService
+import de.laser.FilterService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.ApplicationContext
 
 class BaseFilter {
+
+    ApplicationContext mainContext = Holders.grailsApplication.mainContext
+    ContextService contextService  = mainContext.getBean('contextService')
 
     static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
 
