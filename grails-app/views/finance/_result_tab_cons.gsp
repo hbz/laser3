@@ -220,7 +220,7 @@
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
                                     <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
                                     <g:if test="${ci.isVisibleForSubscriber}">
-                                        <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                             <i class="ui icon eye orange"></i>
                                         </span>
                                     </g:if>
