@@ -183,6 +183,10 @@ class UserService {
         check
     }
 
+    /**
+     * This setup was used only for QA in order to create test accounts for the hbz employees. Is disused as everyone should start from scratch when using the system
+     * @param orgs the configuration {@link Map} containing the affiliation configurations to process
+     */
     void setupAdminAccounts(Map<String,Org> orgs) {
         List adminUsers = grailsApplication.config.adminUsers
         List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
