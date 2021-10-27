@@ -30527,6 +30527,14 @@ a.ui.card:hover,
   padding-left: 0.7em;
 }
 
+.ui.table tfoot th.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: 0.7em;
+  font-weight: 700;
+}
+
 .la-inline-lists dl {
   display: table-row;
 }

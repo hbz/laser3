@@ -24,13 +24,13 @@
     println jb.toPrettyString()
 --%>
 <%
-    int colspan1 = 4
+    int colspan1 = 3
     int colspan2 = 7
     int wideColspan2 = 15
     Map sorting
     int offset
     if(showView == "cons") {
-        colspan1 = 6
+        colspan1 = 5
         colspan2 = 9
         wideColspan2 = 15
         sorting = [consSort: true]
@@ -42,18 +42,18 @@
     }
 
     if(fixedSubscription) {
-        colspan1 = 3
+        colspan1 = 2
         colspan2 = 6
         wideColspan2 = 13
         if(showView == "cons") {
-            colspan1 = 5
+            colspan1 = 4
             colspan2 = 8
             wideColspan2 = 13
             sorting = [consSort: true]
             offset = offsets.consOffset
         }
         else if(showView == "consAtSubscr") {
-            colspan1 = 4
+            colspan1 = 3
             colspan2 = 7
             wideColspan2 = 13
             sorting = [consSort: true]
@@ -346,7 +346,7 @@
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
             <tr>
-                <th colspan="${wideColspan2}">
+                <th class="control-label" colspan="${wideColspan2}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -355,7 +355,7 @@
                     <td colspan="${colspan1}">
 
                     </td>
-                    <td>
+                    <td colspan="2">
                         ${message(code:'financials.sum.billing')} ${entry.currency}<br />
                     </td>
                     <td class="la-exposed-bg">
@@ -391,7 +391,7 @@
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="${wideColspan2}">
+                <th class="control-label" colspan="${wideColspan2}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>
