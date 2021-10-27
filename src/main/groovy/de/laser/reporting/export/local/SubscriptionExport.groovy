@@ -6,6 +6,7 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.RDStore
+import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders

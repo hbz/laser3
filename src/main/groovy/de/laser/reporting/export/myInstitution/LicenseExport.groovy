@@ -5,6 +5,7 @@ import de.laser.Identifier
 import de.laser.License
 import de.laser.Subscription
 import de.laser.helper.RDStore
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders

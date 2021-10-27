@@ -11,12 +11,12 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.reporting.export.local.LocalExportHelper
+import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.local.CostItemExport as CostItemExportLocal
 import de.laser.reporting.export.local.IssueEntitlementExport as IssueEntitlementExportLocal
 import de.laser.reporting.export.local.OrgExport as OrgExportLocal
 import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportLocal
-import de.laser.reporting.export.myInstitution.GlobalExportHelper
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal

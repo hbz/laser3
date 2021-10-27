@@ -4,6 +4,7 @@ import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
+import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
