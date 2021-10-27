@@ -138,7 +138,7 @@ class GlobalExportHelper extends BaseExportHelper {
         else if (fieldName == 'x-memberSubscriptionProperty') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseDetailsExport.CUSTOM_FIELD_KEY.contains(fieldName)) {
+        else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {
             return BaseDetailsExport.getMessage(fieldName)
         }
 

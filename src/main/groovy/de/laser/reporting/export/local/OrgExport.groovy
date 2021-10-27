@@ -89,7 +89,6 @@ class OrgExport extends BaseDetailsExport {
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
 
         Org org = obj as Org

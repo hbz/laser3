@@ -1,6 +1,5 @@
 package de.laser.reporting.export.local
 
-import de.laser.ContextService
 import de.laser.OrgRole
 import de.laser.Subscription
 import de.laser.finance.CostItem
@@ -10,8 +9,6 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
-import grails.util.Holders
-import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -79,8 +76,6 @@ class CostItemExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         CostItem ci = obj as CostItem

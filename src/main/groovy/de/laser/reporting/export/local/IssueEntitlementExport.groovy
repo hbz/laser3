@@ -1,6 +1,5 @@
 package de.laser.reporting.export.local
 
-import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.helper.DateUtils
@@ -75,7 +74,6 @@ class IssueEntitlementExport extends BaseDetailsExport {
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         IssueEntitlement ie = obj as IssueEntitlement
         List content = []

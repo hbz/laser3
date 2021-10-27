@@ -42,8 +42,12 @@ abstract class BaseDetailsExport {
 
     String token                    // cache token
 
+    static List<String> CUSTOM_MULTIPLE_FIELDS = [
+            'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
+    ]
+
     // checked via <X>ExportHelper.getFieldLabel()
-    static List<String> CUSTOM_FIELD_KEY = [
+    static List<String> CUSTOM_FIELD_KEYS = [
 
             'globalUID',
 
@@ -230,11 +234,7 @@ abstract class BaseDetailsExport {
     // -----
 
     static boolean isFieldMultiple(String fieldName) {
-
-        if (fieldName in [ 'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier']) {
-            return true
-        }
-        return false
+        return fieldName in CUSTOM_MULTIPLE_FIELDS
     }
 
     static void normalizeSelectedMultipleFields(BaseDetailsExport export) {
@@ -271,6 +271,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
+
         List<IdentifierNamespace> idnsList = []
 
         if (cfg.base.meta.class == Org) {
@@ -292,6 +293,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getAccessPointMethodsforDropdown() {
+
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
 
         aptList.collect{ it ->
@@ -299,6 +301,7 @@ abstract class BaseDetailsExport {
         }
     }
     static List getContactOptionsforDropdown() {
+
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.REPORTING_CONTACT_TYPE )
 
         aptList.collect{ it ->
@@ -307,6 +310,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getReaderNumberSemesterAndDueDatesForDropdown() {
+
         List<RefdataValue> semList = RefdataCategory.getAllRefdataValuesWithOrder( RDConstants.SEMESTER )
 
         List result = semList.collect{ it ->
