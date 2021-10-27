@@ -99,6 +99,10 @@
 
             <div class="column"><i aria-hidden="true" class="la-open icon"></i>la-open</div>
             <div class="column"><i aria-hidden="true" class="la-consortia icon"></i>la-consortia</div>
+
+            <div class="column"><i aria-hidden="true" class="la-star slash icon"></i>la-star slash</div>
+            <div class="column"><i aria-hidden="true" class="la-redo slash icon"></i>la-redo slash</div>
+            <div class="column"><i aria-hidden="true" class="la-exchange slash icon"></i>la-exchange slash</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
@@ -107,6 +111,7 @@
     <p>Die Größe der Icons ist von der Umgebung abhängig (durch Größenangabe in em, die sich nach der Fontgröße des Elternelements richtet)</p>
     <i class="circular la-license icon"></i>
     <i class="circular la-package icon"></i>
+    <i class="circular la-subscription icon"></i>
     <i class="circular la-organisation icon"></i>
     <i class="circular la-platform icon"></i>
     <i class="circular la-journal icon"></i>
@@ -114,7 +119,7 @@
     <i class="circular la-ebook icon"></i>
     <i class="circular la-book icon"></i>
     <i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>
-    <i aria-hidden="true" class="circular icon inverted blue chart pie"></i>
+    <i aria-hidden="true" class="circular icon inverted pink chart pie"></i>
     <div class="html ui top attached segment example">
 
         <div class="ui doubling five column grid">
@@ -137,7 +142,7 @@
             <div class="column"><i class="circular la-book icon"></i>circular la-book icon</div>
 
             <div class="column"><i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>circular icon inverted brown icon tasks</div>
-                <div class="column"><i aria-hidden="true" class="circular icon inverted purple chart pie"></i>circular icon inverted purple chart pie</div>
+
             <div class="column"><i aria-hidden="true" class="circular icon inverted pink chart pie"></i>circular icon inverted pink chart pie</div>
 
         </div>
