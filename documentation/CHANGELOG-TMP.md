@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
+
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
