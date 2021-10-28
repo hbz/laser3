@@ -9,6 +9,10 @@
 
 --      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
 
+--      26.10.2021  rc-2.2  2.2.2       Andreas Bug         Argumentfehler bei der Versendung von Reminder-Mails behoben
+
+3944    26.10.2021  rc-2.2  2.2.2       Andreas Bug         Parserfehler für Finanzwerte behoben
+
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
