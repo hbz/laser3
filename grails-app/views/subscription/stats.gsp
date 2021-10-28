@@ -173,7 +173,7 @@
                     </div>
                 </g:form>
             </semui:filter>
-            <semui:tabs>
+            <semui:tabs class="la-overflowX-auto">
                 <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
                     <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}" tab="${month.format("yyyy-MM")}"/>

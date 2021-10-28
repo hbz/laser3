@@ -26735,6 +26735,11 @@ Floated Menu / Item
   align-self: center;
   text-align: center;
 }
+
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 /*!
  * # Semantic UI 2.4.2 - Message
  * http://github.com/semantic-org/semantic-ui/

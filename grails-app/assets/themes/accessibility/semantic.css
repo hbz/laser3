@@ -26901,6 +26901,11 @@ Floated Menu / Item
 .la-ctrls .ui.dropdown .menu {
   z-index: 101;
 }
+
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 /*!
  * # Semantic UI 2.4.2 - Message
  * http://github.com/semantic-org/semantic-ui/
