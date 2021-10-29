@@ -1,10 +1,14 @@
-package de.laser.reporting.export.local
+package de.laser.reporting.export
 
 import de.laser.*
+import de.laser.reporting.export.local.CostItemExport
+import de.laser.reporting.export.local.IssueEntitlementExport
+import de.laser.reporting.export.local.OrgExport
+import de.laser.reporting.export.local.SubscriptionExport
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.report.myInstitution.GenericHelper
+import de.laser.reporting.report.GenericHelper
 
 class LocalExportHelper extends BaseExportHelper {
 
@@ -124,7 +128,7 @@ class LocalExportHelper extends BaseExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseDetailsExport.CUSTOM_FIELD_KEY.contains(fieldName)) {
+        else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {
             return BaseDetailsExport.getMessage(fieldName)
         }
 

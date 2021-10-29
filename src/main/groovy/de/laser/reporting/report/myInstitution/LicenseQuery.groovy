@@ -34,15 +34,15 @@ class LicenseQuery extends BaseQuery {
         }
         else if ( suffix in ['licenseCategory']) {
 
-            processSimpleRefdataQuery(params.query,'licenseCategory', idList, result)
+            _processSimpleRefdataQuery(params.query,'licenseCategory', idList, result)
         }
         else if ( suffix in ['type']) {
 
-            processSimpleRefdataQuery(params.query,'type', idList, result)
+            _processSimpleRefdataQuery(params.query,'type', idList, result)
         }
         else if ( suffix in ['status']) {
 
-            processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query,'status', idList, result)
         }
         else if ( suffix in ['x']) {
 
@@ -77,7 +77,7 @@ class LicenseQuery extends BaseQuery {
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
+    static void _processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,

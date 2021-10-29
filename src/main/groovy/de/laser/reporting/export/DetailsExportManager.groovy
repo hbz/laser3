@@ -9,9 +9,7 @@ import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.local.CostItemExport
-import de.laser.reporting.export.local.LocalExportHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
-import de.laser.reporting.export.myInstitution.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
@@ -159,12 +157,12 @@ class DetailsExportManager {
         CellStyle cellStyle = workbook.createCellStyle()
         cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
 
-        List<List<String>> rows = []
+        List<List<Object>> rows = []
         List<Integer> ici = []
         Integer[] cc = new Integer[fields.size()].collect{ 0 }
 
         objList.each{ obj ->
-            List<String> row = export.getDetailedObject(obj, fields)
+            List<Object> row = export.getDetailedObject(obj, fields)
             if (row) {
                 rows.add( row )
                 row.eachWithIndex{ col, i -> if (col) { cc[i]++ } }
@@ -179,10 +177,13 @@ class DetailsExportManager {
             }
             if (row) {
                 Row entry = sheet.createRow(idx + 1)
-                row.eachWithIndex { v, i ->
-
-                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), v, options.insertNewLines)
-                    sheet.autoSizeColumn(i)
+                int cellHeight = 1
+                row.eachWithIndex { val, i ->
+                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
+                    cellHeight = h > cellHeight ? h : cellHeight
+                }
+                if (cellHeight > 1) {
+                    entry.setHeight((short) (cellHeight * 0.8 * entry.getHeight()))
                 }
             }
         }
@@ -194,10 +195,10 @@ class DetailsExportManager {
             ici.each { i -> /* println 'Export XLSX ignored: ' + cols[i]; */ cols.remove(i) }
         }
 
-        cols.eachWithIndex{ row, idx ->
+        cols.eachWithIndex{ col, idx ->
             Cell headerCell = header.createCell(idx)
             headerCell.setCellStyle(cellStyle)
-            headerCell.setCellValue(row)
+            headerCell.setCellValue(col)
             sheet.autoSizeColumn(idx)
         }
 

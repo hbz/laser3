@@ -7,6 +7,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.util.Holders
@@ -15,18 +16,7 @@ import org.springframework.context.ApplicationContext
 
 class CostItemFilter extends BaseFilter {
 
-    def contextService
-    def filterService
-    def subscriptionsQueryService
-
-    CostItemFilter() {
-        ApplicationContext mainContext  = Holders.grailsApplication.mainContext
-        contextService                  = mainContext.getBean('contextService')
-        filterService                   = mainContext.getBean('filterService')
-        subscriptionsQueryService       = mainContext.getBean('subscriptionsQueryService')
-    }
-
-    Map<String, Object> filter(GrailsParameterMap params) {
+    static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
         Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
@@ -39,8 +29,10 @@ class CostItemFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'consortia-cost':
-                FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
-                FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
+
+                ApplicationContext mainContext = Holders.grailsApplication.mainContext
+                FinanceService financeService = mainContext.getBean('financeService')
+                FinanceControllerService financeControllerService = mainContext.getBean('financeControllerService')
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('max', 1000000 as String)

@@ -39,19 +39,19 @@ class SubscriptionQuery extends BaseQuery {
         }
         else if ( suffix in ['form']) {
 
-            processSimpleRefdataQuery(params.query,'form', idList, result)
+            _processSimpleRefdataQuery(params.query,'form', idList, result)
         }
         else if ( suffix in ['kind']) {
 
-            processSimpleRefdataQuery(params.query,'kind', idList, result)
+            _processSimpleRefdataQuery(params.query,'kind', idList, result)
         }
         else if ( suffix in ['resource']) {
 
-            processSimpleRefdataQuery(params.query,'resource', idList, result)
+            _processSimpleRefdataQuery(params.query,'resource', idList, result)
         }
         else if ( suffix in ['status']) {
 
-            processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query,'status', idList, result)
         }
         else if ( suffix in ['manualCancellationDate']) {
 
@@ -301,7 +301,7 @@ class SubscriptionQuery extends BaseQuery {
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
+    static void _processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,

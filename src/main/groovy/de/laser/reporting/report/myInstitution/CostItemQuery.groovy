@@ -25,33 +25,33 @@ class CostItemQuery extends BaseQuery {
         }
         else if ( suffix in ['type']) {
 
-            processSimpleRefdataQuery(params.query,'type', idList, result)
+            _processSimpleRefdataQuery(params.query,'type', idList, result)
         }
         else if ( suffix in ['costItemStatus']) {
 
-            processSimpleRefdataQuery(params.query,'costItemStatus', idList, result)
+            _processSimpleRefdataQuery(params.query,'costItemStatus', idList, result)
         }
         else if ( suffix in ['costItemCategory']) {
 
-            processSimpleRefdataQuery(params.query,'costItemCategory', idList, result)
+            _processSimpleRefdataQuery(params.query,'costItemCategory', idList, result)
         }
         else if ( suffix in ['costItemElement']) {
 
-            processSimpleRefdataQuery(params.query,'costItemElement', idList, result)
+            _processSimpleRefdataQuery(params.query,'costItemElement', idList, result)
         }
         else if ( suffix in ['costItemElementConfiguration']) {
 
-            processSimpleRefdataQuery(params.query,'costItemElementConfiguration', idList, result)
+            _processSimpleRefdataQuery(params.query,'costItemElementConfiguration', idList, result)
         }
         else if ( suffix in ['billingCurrency']) {
 
-            processSimpleRefdataQuery(params.query,'billingCurrency', idList, result)
+            _processSimpleRefdataQuery(params.query,'billingCurrency', idList, result)
         }
 
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
+    static void _processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,
