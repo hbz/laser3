@@ -177,10 +177,13 @@ class DetailsExportManager {
             }
             if (row) {
                 Row entry = sheet.createRow(idx + 1)
+                int cellHeight = 1
                 row.eachWithIndex { val, i ->
-
-                    Cell cell = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
-                    sheet.autoSizeColumn(i)
+                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
+                    cellHeight = h > cellHeight ? h : cellHeight
+                }
+                if (cellHeight > 1) {
+                    entry.setHeight((short) (cellHeight * 0.8 * entry.getHeight()))
                 }
             }
         }

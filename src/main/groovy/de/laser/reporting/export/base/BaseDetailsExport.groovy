@@ -20,7 +20,7 @@ import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
-
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -29,10 +29,10 @@ import java.time.Year
 
 abstract class BaseDetailsExport {
 
-    static String FIELD_TYPE_PROPERTY           = 'property'
-    static String FIELD_TYPE_REFDATA            = 'refdata'
-    static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
-    static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
+    static String FIELD_TYPE_PROPERTY           = BaseConfig.FIELD_TYPE_PROPERTY
+    static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
+    static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+    static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
 
     static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
 

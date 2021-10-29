@@ -14,7 +14,9 @@ import java.time.Year
 
 class BaseExportHelper {
 
-    static Cell updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
+    static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
+
+        int lineCount = 1
 
         CreationHelper createHelper = workbook.getCreationHelper()
         Locale locale = LocaleContextHolder.getLocale()
@@ -48,7 +50,10 @@ class BaseExportHelper {
         else {
             if (value instanceof String) {
                 if (inserNewLines) {
-                    value = value.split( BaseDetailsExport.CSV_VALUE_SEPARATOR ).join('\n')
+                    cell.setCellStyle(wrapStyle)
+                    value = value.split( BaseDetailsExport.CSV_VALUE_SEPARATOR )
+                    lineCount = value.size()
+                    value = value.join('\n')
                 }
                 cell.setCellValue(value.trim())
             }
@@ -81,7 +86,7 @@ class BaseExportHelper {
             }
         }
 
-        cell
+        lineCount
     }
 
     static String getFileName(List<String> labels = ['Reporting']) {
