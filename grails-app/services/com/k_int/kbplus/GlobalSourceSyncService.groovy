@@ -404,9 +404,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else if(result.count > 0) {
                     switch (source.rectype) {
-                        case RECTYPE_ORG: result.records.each { record ->
-                            createOrUpdateOrgJSON(record)
-                        }
+                        case RECTYPE_ORG:
+                            result.records.each { record ->
+                                record.platforms.each { Map platformData ->
+                                    try {
+                                        createOrUpdatePlatformJSON(platformData.uuid)
+                                    }
+                                    catch (SyncException e) {
+                                        log.error("Error on updating platform ${platformData.uuid}: ",e)
+                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
+                                    }
+                                }
+                                createOrUpdateOrgJSON(record)
+                            }
                             break
                         case RECTYPE_TIPP: updateRecords(result.records, offset)
                             break
@@ -434,9 +444,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         else if(result.count > 0 && result.count < 5000) {
             switch (source.rectype) {
-                case RECTYPE_ORG: result.records.each { record ->
-                    createOrUpdateOrgJSON(record)
-                }
+                case RECTYPE_ORG:
+                    result.records.each { record ->
+                        record.platforms.each { Map platformData ->
+                            try {
+                                createOrUpdatePlatformJSON(platformData.uuid)
+                            }
+                            catch (SyncException e) {
+                                log.error("Error on updating platform ${platformData.uuid}: ",e)
+                                SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
+                            }
+                        }
+                        createOrUpdateOrgJSON(record)
+                    }
                     break
                 case RECTYPE_TIPP: updateRecords(result.records, 0)
                     break
@@ -776,7 +796,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     else {
                         if(packageRecord.nominalPlatformUuid) {
-                            newPackageProps.nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                            Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                            if(!nominalPlatform) {
+                                nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
+                            }
+                            newPackageProps.nominalPlatform = nominalPlatform
                         }
                         if(packageRecord.providerUuid) {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
@@ -948,6 +972,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            providerRecord.platforms.each { Map platformData ->
+                Platform plat = Platform.findByGokbId(platformData.uuid)
+                if(!plat)
+                    plat = createOrUpdatePlatformJSON(platformData.uuid)
+                plat.org = provider
+                plat.save()
+            }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
             if(lastUpdatedTime.getTime() > maxTimestamp) {
                 maxTimestamp = lastUpdatedTime.getTime()
@@ -1067,6 +1098,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             platform.normname = platformRecord.name.toLowerCase()
             if(platformRecord.primaryUrl)
                 platform.primaryUrl = new URL(platformRecord.primaryUrl)
+            /*
+            TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
             if(platformRecord.providerUuid) {
                 Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
                 if(providerData && !providerData.error)
@@ -1078,6 +1111,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
                 }
             }
+            */
             if(platform.save()) {
                 platform
             }
@@ -1470,8 +1504,28 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(!itemA)
                         itemA = listA[i]
                     Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
-                    if(currDiffs)
-                        subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    if(instanceType == 'coverage') {
+                        if (currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else if(instanceType == 'price') {
+                        IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ieA ->
+                            if(ieA.priceItems) {
+                                PriceItem piA = locateEquivalent(itemB,ieA.priceItems) as PriceItem
+                                if(!piA) {
+                                    piA = ieA.priceItems[i]
+                                    piA.startDate = itemB.startDate
+                                    piA.endDate = itemB.endDate
+                                    piA.listCurrency = itemB.listCurrency
+                                }
+                                piA.listPrice = itemB.listPrice
+                                piA.save()
+                            }
+                            else {
+                                addNewPriceItem(ieA, itemB)
+                            }
+                        }
+                    }
                 }
             }
             else if(listA.size() > listB.size()) {

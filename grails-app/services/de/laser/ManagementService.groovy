@@ -121,7 +121,7 @@ class ManagementService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :parentSub', [parentSub: result.subscription]) as Set<Platform>
+            result.platforms = Platform.executeQuery('select plat from Platform plat where plat.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :parentSub))', [parentSub: result.subscription]) as Set<Platform>
             result.members = Org.executeQuery("select org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType in (:subscrTypes) order by org.sortname asc, org.name asc",[parent: result.subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) as Set<Org>
             result.keyPairs = []
             result.platforms.each { Platform platform ->

@@ -12,7 +12,7 @@ buildscript {
     }
 }
 
-version '2.2.2'
+version '2.2.3'
 group 'laser2'
 
 apply plugin:'eclipse'
@@ -99,7 +99,7 @@ dependencies {
     compile 'org.liquibase:liquibase-core:3.5.5' // org.grails.plugins:database-migration:3.0.3
 
     // runtime only
-    runtime 'org.postgresql:postgresql:42.2.5.jre6'
+    runtime 'org.postgresql:postgresql:42.3.0'
 }
 
 bootRun {

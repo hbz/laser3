@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.helper.RDStore; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.*" %>
+<%@ page import="de.laser.UserSetting; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -25,46 +25,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${dueDates}" var="dashDueDate">
-                        <g:set var="obj" value="${genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)}"/>
-                        <g:if test="${obj}">
-                            <tr>
-                                <td>
-                                    <g:if test="${language == RDStore.LANGUAGE_DE}">
-                                        ${escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)}
-                                    </g:if>
-                                    <g:else>
-                                        ${escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_en)}
-                                    </g:else>
-                                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
-                                </td>
-                                <td>
-                                    <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
-                                        !
-                                    </g:if>
-                                    <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                                        !!
-                                    </g:elseif>
-                                    <g:else>
-
-                                    </g:else>
-                                </td>
-                                <td>
-                                    <g:if test="${obj instanceof Subscription}">${message(code: 'subscription', locale: language)}: ${raw(link([controller: "subscription", action: "show", id: obj.id], obj.name))}</g:if>
-                                    <g:elseif test="${obj instanceof License}">${message(code: 'license.label', locale: language)}: ${raw(link([controller: "license", action: "show", id: obj.id], obj.reference))}</g:elseif>
-                                    <g:elseif test="${obj instanceof Task}">${message(code:'task.label', locale: language)}: ${raw(link(obj.getDisplayArgs(), obj.title))}</g:elseif>
-                                    <g:elseif test="${obj instanceof de.laser.base.AbstractPropertyWithCalculatedLastUpdated}">${message(code:'attribute', locale: language)}:
-                                        <g:if test="${obj.owner instanceof Person}">${message(code: 'default.person.label', locale: language)}: ${raw(link([controller: "person", action: "show", id: obj.owner?.id], obj.owner?.first_name+' '+obj.owner?.last_name))}</g:if>
-                                        <g:elseif test="${obj.owner instanceof Subscription}">${message(code: 'subscription', locale: language)}: ${raw(link([controller: "subscription", action: "show", id: obj.owner?.id], obj.owner?.name))}</></g:elseif>
-                                        <g:elseif test="${obj.owner instanceof License}">${message(code: 'license.label', locale: language)}: ${raw(link([controller: "license", action: "show", id: obj.owner?.id], obj.owner?.reference))}></g:elseif>
-                                        <g:elseif test="${obj.owner instanceof Org}">${message(code: 'org.label', locale: language)}: ${raw(link([controller: "organisation", action: "show", id: obj.owner?.id], obj.owner?.name))}</g:elseif>
-                                        <g:else>${raw(obj.owner?.name)}</g:else>
-                                    </g:elseif>
-                                    <g:elseif test="${obj instanceof SurveyInfo}">${message(code: 'survey', locale: language)}: ${raw(link([controller: "survey", action: "show", id: obj.id], obj.name))}</g:elseif>
-                                    <g:else>Not implemented yet!</g:else>
-                                </td>
-                            </tr>
-                        </g:if>
+                    <g:each in="${dueDates}" var="dashDueDateRow">
+                        <tr>
+                            <td>
+                                ${dashDueDateRow.valueDate}
+                            </td>
+                            <td>
+                                ${dashDueDateRow.importance}
+                            </td>
+                            <td>
+                                ${dashDueDateRow.classLabel}<g:if test="${dashDueDateRow.link}">: <a href="${dashDueDateRow.link}">${dashDueDateRow.objLabel}</a></g:if>
+                            </td>
+                        </tr>
                     </g:each>
                 </tbody>
             </g:if>

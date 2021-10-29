@@ -2,14 +2,16 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.system.SystemEvent
-import grails.core.GrailsApplication
+import de.laser.helper.SqlDateUtils
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
 
 //@Transactional
@@ -17,7 +19,7 @@ class DashboardDueDatesService {
 
     QueryService queryService
     MailService mailService
-    GrailsApplication grailsApplication
+    LinkGenerator grailsLinkGenerator
     GenericOIDService genericOIDService
     def messageSource
     EscapeService escapeService
@@ -159,7 +161,7 @@ class DashboardDueDatesService {
 
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
-            println(e)
+            e.printStackTrace()
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
         flash
@@ -168,6 +170,7 @@ class DashboardDueDatesService {
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+        RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
         String currentServer = ServerUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
@@ -181,6 +184,72 @@ class DashboardDueDatesService {
             if (isRemindCCbyEmail){
                 ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
             }
+            List<Map<String, Object>> dueDateRows = []
+            dashboardEntries.each { DashboardDueDate dashDueDate ->
+                Map<String, Object> dashDueDateRow = [:]
+                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
+                if(obj) {
+                    if(userLang == RDStore.LANGUAGE_DE)
+                        dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)
+                    else dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_en)
+                    dashDueDateRow.valueDate += " ${dashDueDate.dueDateObject.date.format(messageSource.getMessage('default.date.format.notime', null, locale))}"
+                    if(SqlDateUtils.isToday(dashDueDate.dueDateObject.date))
+                        dashDueDateRow.importance = '!'
+                    else if(SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date))
+                        dashDueDateRow.importance = '!!'
+                    else dashDueDateRow.importance = ' '
+                    if(obj instanceof Subscription) {
+                        dashDueDateRow.classLabel = messageSource.getMessage('subscription', null, language)
+                        dashDueDateRow.link = grailsLinkGenerator.link(controller: 'subscription', action: 'show', id: obj.id, absolute: true)
+                        dashDueDateRow.objLabel = obj.name
+                    }
+                    else if(obj instanceof License) {
+                        dashDueDateRow.classLabel = messageSource.getMessage('license.label', null, language)
+                        dashDueDateRow.link = grailsLinkGenerator.link([controller: "license", action: "show", id: obj.id, absolute: true])
+                        dashDueDateRow.objLabel = obj.reference
+                    }
+                    else if(obj instanceof Task) {
+                        dashDueDateRow.classLabel = messageSource.getMessage('task.label', null, language)
+                        dashDueDateRow.link = grailsLinkGenerator.link(obj.getDisplayArgs())
+                        dashDueDateRow.objLabel = obj.title
+                    }
+                    else if (obj instanceof AbstractPropertyWithCalculatedLastUpdated) {
+                        dashDueDateRow.classLabel = messageSource.getMessage('attribute', null, language)+': '
+                        if (obj.owner instanceof Person) {
+                            dashDueDateRow.classLabel += "${messageSource.getMessage('default.person.label', null, language)}: "
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "person", action: "show", id: obj.owner?.id, absolute: true])
+                            dashDueDateRow.objLabel = obj.owner?.first_name+' '+obj.owner?.last_name
+                        }
+                        else if (obj.owner instanceof Subscription) {
+                            dashDueDateRow.classLabel += "${messageSource.getMessage('subscription', null, language)}: "
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "subscription", action: "show", id: obj.owner?.id, absolute: true])
+                            dashDueDateRow.objLabel = obj.owner?.name
+                        }
+                        else if(obj.owner instanceof License) {
+                            dashDueDateRow.classLabel += "${messageSource.getMessage('license.label', null, language)}: "
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "license", action: "show", id: obj.owner?.id, absolute: true])
+                            dashDueDateRow.objLabel = obj.owner?.reference
+                        }
+                        else if(obj.owner instanceof Org) {
+                            dashDueDateRow.classLabel += "${messageSource.getMessage('org.label', null, language)}: "
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "organisation", action: "show", id: obj.owner?.id, absolute: true])
+                            dashDueDateRow.objLabel = obj.owner?.name
+                        }
+                        else {
+                            dashDueDateRow.classLabel += obj.owner?.name
+                        }
+                    }
+                    else if(obj instanceof SurveyInfo) {
+                        dashDueDateRow.classLabel = messageSource.getMessage('survey', null, language)
+                        dashDueDateRow.link = grailsLinkGenerator.link([controller: "survey", action: "show", id: obj.id, absolute: true])
+                        dashDueDateRow.objLabel = obj.name
+                    }
+                    else {
+                        dashDueDateRow.classLabel = 'Not implemented yet!'
+                    }
+                }
+                dueDateRows << dashDueDateRow
+            }
             if (isRemindCCbyEmail && ccAddress) {
                 mailService.sendMail {
                     to      emailReceiver
@@ -188,7 +257,7 @@ class DashboardDueDatesService {
                     cc      ccAddress
                     replyTo replyTo
                     subject mailSubject
-                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                 }
             } else {
                 mailService.sendMail {
@@ -196,7 +265,7 @@ class DashboardDueDatesService {
                     from    from
                     replyTo replyTo
                     subject mailSubject
-                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                 }
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
