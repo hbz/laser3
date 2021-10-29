@@ -375,6 +375,7 @@
                 url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
             }).done(function(response){
                 $("#surveyWrapper").html(response);
+                  r2d2.initDynamicSemuiStuff('#surveyWrapper');
             })
         }
 
