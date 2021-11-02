@@ -27,19 +27,23 @@
                                     <strong>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</strong>
                                 </div>
                             </div>
-                        <%--<g:if test="${sp.pkg.tipps}">--%>
-                            <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
-                                <div class="item">
+                            <div class="item">
 
-                                    <div class="content">
-                                        <g:if test="${platform}">
-                                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                            <semui:linkIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
-                                        </g:if>
-                                    </div>
+                                <div class="content">
+                                    <g:if test="${sp.pkg.tipps}">
+                                        <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
+                                            <g:if test="${platform}">
+                                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                <semui:linkIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
+                                            </g:if>
+                                        </g:each>
+                                    </g:if>
+                                    <g:elseif test="${sp.pkg.nominalPlatform}">
+                                        <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
+                                        <semui:linkIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                                    </g:elseif>
                                 </div>
-                            </g:each>
-                        <%--</g:if>--%>
+                            </div>
                         </div>
                     </td>
                     <td style="border-top: none" class="right aligned">
