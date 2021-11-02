@@ -1838,7 +1838,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -1853,7 +1853,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -2039,5 +2039,53 @@ class ExportClickMeService {
         }
 
         titles
+    }
+
+    private String getAddress(Address address, Org org){
+        String addr= ""
+
+        addr = org.name
+
+        if(address.street_1 || address.street_2) {
+            addr += ', '
+            if (address.street_1) {
+                addr += address.street_1 + ' '
+            }
+            if (address.street_2) {
+                addr += address.street_2 + ' '
+            }
+        }
+
+        if(address.zipcode || address.city) {
+            addr += ', '
+            if (address.zipcode) {
+                addr += address.zipcode + ' '
+            }
+            if (address.city) {
+                addr += address.city + ' '
+            }
+        }
+
+        if (address.region) {
+                addr += ', ' + address.region.getI10n('value') + ' '
+        }
+
+        if (address.country) {
+                addr += ', ' + address.country.getI10n('value') + ' '
+        }
+
+        if(address.pob){
+            addr += ', ' + address.pob + ' '
+        }
+
+        if(address.pobZipcode){
+            addr += ', ' + address.pobZipcode + ' '
+        }
+
+        if(address.pobCity){
+            addr += ', ' + address.pobCity + ' '
+        }
+
+        return addr
     }
 }

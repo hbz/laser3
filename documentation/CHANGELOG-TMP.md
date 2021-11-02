@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3963    02.11.2021  rc-2.2  2.2.3       Moe     Bug         ClickMe Excel Adressausgabe blöd
+
 --      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
 
 3953    28.10.2021  rc-2.2  2.2.3       Andreas Bug         verschiedene 500er behoben
