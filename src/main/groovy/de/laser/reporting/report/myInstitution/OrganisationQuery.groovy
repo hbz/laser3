@@ -42,27 +42,27 @@ class OrganisationQuery extends BaseQuery {
         }
         else if ( suffix in ['libraryType']) {
 
-            processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
+            _processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
         }
         else if ( suffix in ['region']) {
 
-            processSimpleRefdataQuery(params.query,'region', idList, result)
+            _processSimpleRefdataQuery(params.query,'region', idList, result)
         }
         else if ( suffix in ['country']) {
 
-            processSimpleRefdataQuery(params.query,'country', idList, result)
+            _processSimpleRefdataQuery(params.query,'country', idList, result)
         }
         else if ( suffix in ['libraryNetwork']) {
 
-            processSimpleRefdataQuery(params.query, 'libraryNetwork', idList, result)
+            _processSimpleRefdataQuery(params.query, 'libraryNetwork', idList, result)
         }
         else if ( suffix in ['funderType']) {
 
-            processSimpleRefdataQuery(params.query, 'funderType', idList, result)
+            _processSimpleRefdataQuery(params.query, 'funderType', idList, result)
         }
         else if ( suffix in ['funderHskType']) {
 
-            processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
+            _processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
         }
         else if ( suffix in ['orgType']) {
 
@@ -142,7 +142,7 @@ class OrganisationQuery extends BaseQuery {
         result
     }
 
-    static void processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
+    static void _processSimpleRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         handleGenericRefdataQuery(
                 query,

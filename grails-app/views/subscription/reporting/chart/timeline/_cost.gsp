@@ -39,7 +39,7 @@ JSPC.app.reporting.current.chart.option = {
     series: [
             {
             name: '${labels.chart[0]}',
-            color: JSPC.app.reporting.helper.series.color.yellow,
+            color: JSPC.app.reporting.helper.series._color.yellow,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -61,7 +61,7 @@ JSPC.app.reporting.current.chart.option = {
         },
                 {
             name: '${labels.chart[1]}',
-            color: JSPC.app.reporting.helper.series.color.orange,
+            color: JSPC.app.reporting.helper.series._color.orange,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -83,7 +83,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${labels.chart[2]}',
-            color: JSPC.app.reporting.helper.series.color.green,
+            color: JSPC.app.reporting.helper.series._color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -105,7 +105,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${labels.chart[3]}',
-            color: JSPC.app.reporting.helper.series.color.blue,
+            color: JSPC.app.reporting.helper.series._color.blue,
             type: 'bar',
             encode: {
                 x: 'id',

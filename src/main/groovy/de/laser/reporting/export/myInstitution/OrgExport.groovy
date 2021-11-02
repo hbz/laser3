@@ -19,6 +19,7 @@ import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders

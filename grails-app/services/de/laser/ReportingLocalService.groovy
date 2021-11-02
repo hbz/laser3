@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ReportingCache
-import de.laser.reporting.report.ReportingCacheHelper
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.local.SubscriptionReport
 import grails.gorm.transactions.Transactional
@@ -47,7 +46,7 @@ class ReportingLocalService {
 
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
             if (! rCache.exists()) {
-                ReportingCacheHelper.initSubscriptionCache( params.long('id'), params.token )
+                ReportingCache.initSubscriptionCache( params.long('id'), params.token )
             }
             rCache.writeDetailsCache( null )
             rCache.writeQueryCache(result)

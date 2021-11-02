@@ -42,8 +42,8 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
-import de.laser.reporting.export.local.LocalExportHelper
-import de.laser.reporting.export.myInstitution.GlobalExportHelper
+import de.laser.reporting.export.LocalExportHelper
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

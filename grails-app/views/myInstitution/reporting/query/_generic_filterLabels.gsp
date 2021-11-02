@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.GenericHelper" %>
+<%@page import="de.laser.reporting.report.GenericHelper" %>
 
 <g:if test="${simple}">
 

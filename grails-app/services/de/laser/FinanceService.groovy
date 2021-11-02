@@ -225,7 +225,7 @@ class FinanceService {
                 CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
             }
             else if(params.percentOnOldPrice) {
-                Double percentage = 1 + params.int('percentOnOldPrice') / 100
+                Double percentage = 1 + params.double('percentOnOldPrice') / 100
                 CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = ci.costInBillingCurrency * :percentage, ci.costInLocalCurrency = ci.costInLocalCurrency * :percentage where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
             }
             else {
@@ -735,9 +735,9 @@ class FinanceService {
             //cost item filter settings
             //cost item title
             if(params.filterCITitle) {
-                costItemFilterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
-                queryParams.filterCITitle = "%${params.filterCITitle}%"
-                queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
+                costItemFilterQuery += " and (genfunc_filter_matcher(ci.costTitle, :filterCITitle) = true) "
+                queryParams.filterCITitle = params.filterCITitle
+                //queryParams.ciTitleLowerCase = params.filterCITitle.toLowerCase()
             }
             //cost item subscription
             if(params.filterCISub) {

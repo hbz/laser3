@@ -1542,7 +1542,7 @@ class ExportService {
 						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ')
 						//localprice_usd
 						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ')
-					} else if (tipp.priceItems) {
+					} else if (entitlementInstance == TitleInstancePackagePlatform.class.name && tipp.priceItems) {
 						//listprice_eur
 						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
 						//listprice_gbp

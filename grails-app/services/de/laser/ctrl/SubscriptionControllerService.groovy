@@ -541,7 +541,7 @@ class SubscriptionControllerService {
             endTime.setTime(new Date())
         }
         else {
-            if(params.tab != 'total') {
+            if(params.tab == 'total') {
                 dateRange = ''
             }
             else {

@@ -1,5 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import grails.util.Holders
 import org.springframework.context.MessageSource

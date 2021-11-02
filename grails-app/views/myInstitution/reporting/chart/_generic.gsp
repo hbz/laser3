@@ -21,8 +21,10 @@
            }
         },
         legend: {
+            align:  'left',
+            type:   'scroll',
             orient: 'vertical',
-            left: 'left',
+            left:   'left',
             formatter: function (value) {
                 return value.replace(/\s\(ID:[0-9]*\)/,'')
             }
@@ -31,7 +33,7 @@
             {
                 type: 'pie',
                 radius: '70%',
-                center: ['65%', '50%'],
+                center: ['60%', '45%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -39,7 +41,7 @@
                     value: 'value',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series.pie.emphasis,
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
                 label: {
                     formatter: function (obj) {
                         return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
@@ -105,13 +107,13 @@
                 itemStyle: {
                     color: function(params) {
                         if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series.color.redInactive
+                            return JSPC.app.reporting.helper.series._color.redInactive
                         }
                         else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series.color.ice
+                            return JSPC.app.reporting.helper.series._color.ice
                         }
                         else {
-                            return JSPC.app.reporting.helper.series.color.blue
+                            return JSPC.app.reporting.helper.series._color.blue
                         }
                     }
                 }
