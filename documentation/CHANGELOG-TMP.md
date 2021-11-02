@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
+
+3953    28.10.2021  rc-2.2  2.2.3       Andreas Bug         verschiedene 500er behoben
+
+3951    28.10.2021  rc-2.2  2.2.3       Andreas Bug         Kundennummern können auch ohne Titel in der Lizenz angelegt werden
+
+3945    28.10.2021  rc-2.2  2.2.3       Andreas Bug         Verknüpfung Plattform zu Paket ohne Titel realisiert
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Löschung von Kundennummern behoben
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Durchreichung der Preisangaben an Bestandsebene im Sync korrigiert
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Inkonsistenz bei Brotkrümelmenü behoben
+
 --      26.10.2021  rc-2.2  2.2.2       Andreas Bug         Argumentfehler bei der Versendung von Reminder-Mails behoben
 
 3944    26.10.2021  rc-2.2  2.2.2       Andreas Bug         Parserfehler für Finanzwerte behoben

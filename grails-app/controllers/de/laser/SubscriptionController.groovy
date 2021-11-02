@@ -413,7 +413,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        managementService.deleteCustomerIdentifier(params.deleteCI)
+        managementService.deleteCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 
