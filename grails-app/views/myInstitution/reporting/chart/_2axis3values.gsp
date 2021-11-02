@@ -11,6 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
+        legend: JSPC.app.reporting.helper._pie.legend,
         toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
@@ -21,16 +22,12 @@
                 return str
            }
         },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
-        },
         series: [
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
-                center: ['65%', '50%'],
+                center: ['60%', '45%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -38,7 +35,7 @@
                     value: 'value2',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis
             },
         ]
     };
