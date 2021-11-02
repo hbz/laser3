@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.reporting.report.myInstitution.GenericHelper
+import de.laser.reporting.report.GenericHelper
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field

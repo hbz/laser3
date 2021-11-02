@@ -44,16 +44,14 @@ class ReportingGlobalService {
 
     void doFilterCostItem (Map<String, Object> result, GrailsParameterMap params) {
 
-        CostItemFilter filter = new CostItemFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = CostItemFilter.filter(params)
 
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
     }
 
     void doFilterLicense (Map<String, Object> result, GrailsParameterMap params) {
 
-        LicenseFilter filter = new LicenseFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = LicenseFilter.filter(params)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( pk ).query.default )
@@ -64,8 +62,7 @@ class ReportingGlobalService {
 
     void doFilterOrganisation (Map<String, Object> result, GrailsParameterMap params) {
 
-        OrganisationFilter filter = new OrganisationFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = OrganisationFilter.filter(params)
 
         if (params.get('filter:org_source').contains('providerAndAgency')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
@@ -85,8 +82,7 @@ class ReportingGlobalService {
 
     void doFilterSubscription (Map<String, Object> result, GrailsParameterMap params) {
 
-        SubscriptionFilter filter = new SubscriptionFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = SubscriptionFilter.filter(params)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             //if (pk != 'memberSubscription') {

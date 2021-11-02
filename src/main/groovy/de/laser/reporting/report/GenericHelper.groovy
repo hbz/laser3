@@ -1,4 +1,4 @@
-package de.laser.reporting.report.myInstitution
+package de.laser.reporting.report
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.base.AbstractBase

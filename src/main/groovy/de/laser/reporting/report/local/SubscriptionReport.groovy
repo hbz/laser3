@@ -11,7 +11,6 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.report.myInstitution.SubscriptionQuery
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -319,7 +318,7 @@ class SubscriptionReport {
                         )
                     }
 
-                    SubscriptionQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
+                    BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
 
                     List newData = []
                     result.data.each { d ->

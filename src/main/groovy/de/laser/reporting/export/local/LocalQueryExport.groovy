@@ -1,5 +1,6 @@
 package de.laser.reporting.export.local
 
+import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import grails.util.Holders
 import org.springframework.context.MessageSource

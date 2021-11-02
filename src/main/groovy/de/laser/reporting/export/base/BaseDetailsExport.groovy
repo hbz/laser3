@@ -11,16 +11,16 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.reporting.export.local.LocalExportHelper
+import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.local.CostItemExport as CostItemExportLocal
 import de.laser.reporting.export.local.IssueEntitlementExport as IssueEntitlementExportLocal
 import de.laser.reporting.export.local.OrgExport as OrgExportLocal
 import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportLocal
-import de.laser.reporting.export.myInstitution.GlobalExportHelper
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
-
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -29,10 +29,10 @@ import java.time.Year
 
 abstract class BaseDetailsExport {
 
-    static String FIELD_TYPE_PROPERTY           = 'property'
-    static String FIELD_TYPE_REFDATA            = 'refdata'
-    static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
-    static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
+    static String FIELD_TYPE_PROPERTY           = BaseConfig.FIELD_TYPE_PROPERTY
+    static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
+    static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+    static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
 
     static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
 
@@ -42,7 +42,12 @@ abstract class BaseDetailsExport {
 
     String token                    // cache token
 
-    static List<String> CUSTOM_FIELD_KEY = [
+    static List<String> CUSTOM_MULTIPLE_FIELDS = [
+            'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
+    ]
+
+    // checked via <X>ExportHelper.getFieldLabel()
+    static List<String> CUSTOM_FIELD_KEYS = [
 
             'globalUID',
 
@@ -103,45 +108,41 @@ abstract class BaseDetailsExport {
     abstract List<Object> getDetailedObject(Object obj, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         if (key == LicenseExportGlobal.KEY) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (ctxConsortium()) {
                 LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            else if (ctxInst()) {
                 LicenseExportGlobal.CONFIG_ORG_INST
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
 
-            String pkg = this.class.package.toString()
-
-            if (pkg.endsWith('.myInstitution')) {
+            if (isGlobal(this)) {
                 OrgExportGlobal.CONFIG_X
             }
-            else if (pkg.endsWith('.local')) {
+            else if (isLocal(this)) {
                 OrgExportLocal.CONFIG_X
             }
         }
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
+            if (isGlobal(this)) {
 
-            String pkg = this.class.package.toString()
-
-            if (pkg.endsWith('.myInstitution')) {
-                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                if (ctxConsortium()) {
                     SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
                 }
-                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                else if (ctxInst()) {
                     SubscriptionExportGlobal.CONFIG_ORG_INST
                 }
             }
-            else if (pkg.endsWith('.local')) {
-                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            else if (isLocal(this)) {
+
+                if (ctxConsortium()) {
                     SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
                 }
-                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
             }
@@ -152,7 +153,7 @@ abstract class BaseDetailsExport {
         }
         else if (key == CostItemExportLocal.KEY) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            if (ctxConsortium()) {
                 CostItemExportLocal.CONFIG_ORG_CONSORTIUM
             }
         }
@@ -161,13 +162,12 @@ abstract class BaseDetailsExport {
     Map<String, Object> getAllFields() {
 
         String cfg, field
-        String pkg = this.class.package.toString()
 
-        if (pkg.endsWith('.myInstitution')) {
+        if (isGlobal(this)) {
             cfg   = GlobalExportHelper.getCachedConfigStrategy( token )
             field = GlobalExportHelper.getCachedFieldStrategy( token )
         }
-        else if (pkg.endsWith('.local')) {
+        else if (isLocal(this)) {
             cfg   = LocalExportHelper.getCachedConfigStrategy( token )
             field = LocalExportHelper.getCachedFieldStrategy( token )
         }
@@ -180,6 +180,23 @@ abstract class BaseDetailsExport {
         base.fields.get(cfg).findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
+    }
+
+    // -----
+
+    static boolean isLocal(Object clazz) {
+        clazz.class.package.toString().endsWith('.local')
+    }
+    static boolean isGlobal(Object clazz) {
+        clazz.class.package.toString().endsWith('.myInstitution')
+    }
+    static boolean ctxConsortium() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'
+    }
+    static boolean ctxInst() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        contextService.getOrg().getCustomerType() == 'ORG_INST'
     }
 
     // -----
@@ -217,11 +234,7 @@ abstract class BaseDetailsExport {
     // -----
 
     static boolean isFieldMultiple(String fieldName) {
-
-        if (fieldName in [ 'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier']) {
-            return true
-        }
-        return false
+        return fieldName in CUSTOM_MULTIPLE_FIELDS
     }
 
     static void normalizeSelectedMultipleFields(BaseDetailsExport export) {
@@ -258,6 +271,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
+
         List<IdentifierNamespace> idnsList = []
 
         if (cfg.base.meta.class == Org) {
@@ -279,6 +293,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getAccessPointMethodsforDropdown() {
+
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
 
         aptList.collect{ it ->
@@ -286,6 +301,7 @@ abstract class BaseDetailsExport {
         }
     }
     static List getContactOptionsforDropdown() {
+
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.REPORTING_CONTACT_TYPE )
 
         aptList.collect{ it ->
@@ -294,6 +310,7 @@ abstract class BaseDetailsExport {
     }
 
     static List getReaderNumberSemesterAndDueDatesForDropdown() {
+
         List<RefdataValue> semList = RefdataCategory.getAllRefdataValuesWithOrder( RDConstants.SEMESTER )
 
         List result = semList.collect{ it ->
