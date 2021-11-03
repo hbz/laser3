@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.ReportingCache; de.laser.reporting.myInstitution.base.BaseConfig" %>
+<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

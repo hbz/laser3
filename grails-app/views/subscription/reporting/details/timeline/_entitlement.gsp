@@ -3,50 +3,61 @@
 
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
-<g:set var="plusListNames" value="${plusList.collect{ it.name }}" />
+<g:if test="${minusList}">
+    <div class="ui top attached tabular menu">
+        <a data-tab="positive" class="item active">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.3')}</a>
+        <a data-tab="minus" class="item">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.1')}</a>
+    </div>
+    <div data-tab="positive" class="ui bottom attached tab segment active">
+</g:if>
+<g:else>
+    <div class="ui segment">
+</g:else>
 
-<div class="ui segment">
-    <table class="ui table la-table compact">
-        <thead>
-        <tr>
-            <th></th>
-            <th>${message(code:'tipp.name')}</th>
-            <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
-        </tr>
-        </thead>
-        <tbody>
-            <g:each in="${list}" var="tipp" status="i">
-                <g:if test="${plusListNames.contains(tipp.name)}">
-                    <tr>
-                        <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
-                </g:if>
-                <g:else>
-                    <td style="text-align: center">${i + 1}.</td>
-                </g:else>
-                    <td>
-                        <%
-                            Long ieId = IssueEntitlement.executeQuery(
-                                'select ie.id from IssueEntitlement ie where ie.subscription.id = :id and ie.tipp = :tipp',
-                                [id: id, tipp: tipp]
-                            )[0]
-                        %>
-                        <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
-                    </td>
-                    <td>
-                        ${tipp.titleType}
-                        <g:if test="${tipp.medium}">
-                            <g:if test="${tipp.titleType}"> / </g:if>
-                            ${tipp.medium.getI10n('value')}
-                        </g:if>
-                    </td>
-                </tr>
-            </g:each>
-        </tbody>
-    </table>
-</div>
+        <g:set var="plusListNames" value="${plusList.collect{ it.name }}" />
+
+        <table class="ui table la-table compact">
+            <thead>
+            <tr>
+                <th></th>
+                <th>${message(code:'tipp.name')}</th>
+                <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <g:each in="${list}" var="tipp" status="i">
+                    <g:if test="${plusListNames.contains(tipp.name)}">
+                        <tr>
+                            <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
+                    </g:if>
+                    <g:else>
+                        <td style="text-align: center">${i + 1}.</td>
+                    </g:else>
+                        <td>
+                            <%
+                                Long ieId = IssueEntitlement.executeQuery(
+                                    'select ie.id from IssueEntitlement ie where ie.subscription.id = :id and ie.tipp = :tipp',
+                                    [id: id, tipp: tipp]
+                                )[0]
+                            %>
+                            <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
+                        </td>
+                        <td>
+                            ${tipp.titleType}
+                            <g:if test="${tipp.medium}">
+                                <g:if test="${tipp.titleType}"> / </g:if>
+                                ${tipp.medium.getI10n('value')}
+                            </g:if>
+                        </td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+    </div>
 
 <g:if test="${minusList}">
-    <div class="ui segment">
+
+    <div data-tab="minus" class="ui bottom attached tab segment">
         <table class="ui table la-table compact">
             <thead>
             <tr>
@@ -57,7 +68,7 @@
             </thead>
             <tbody>
                 <g:each in="${minusList}" var="tipp" status="i">
-                    <tr class="negative">
+                    <tr>
                         <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
                         <td>
                             <%

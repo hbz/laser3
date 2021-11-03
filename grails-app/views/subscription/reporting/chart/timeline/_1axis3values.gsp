@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'value', 'plus', 'minus', 'annual', 'isCurrent'],
@@ -41,7 +41,7 @@ JSPC.app.reporting.current.chart.option = {
     series: [
         {
             name: '${labels.chart[0]}',
-            color: JSPC.app.reporting.helper.series.color.red,
+            color: JSPC.app.reporting.helper.series._color.red,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -59,7 +59,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${labels.chart[1]}',
-            color: JSPC.app.reporting.helper.series.color.green,
+            color: JSPC.app.reporting.helper.series._color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -77,7 +77,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${labels.chart[2]}',
-            color: JSPC.app.reporting.helper.series.color.blue,
+            color: JSPC.app.reporting.helper.series._color.blue,
             type: 'bar',
             encode: {
                 x: 'id',

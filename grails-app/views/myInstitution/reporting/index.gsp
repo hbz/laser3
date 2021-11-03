@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.ReportingCache" %>
+<%@page import="de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -33,13 +33,44 @@
             </p>
         </div>
 
-       %{-- <g:if test="${filterHistory}">
-            ${filterHistory}
-        </g:if> --}%
+        <g:if test="${filterHistory}">
+            <div id="history-chooser" class="ui icon button right floated">
+                <i class="icon history"></i>
+            </div>
+            <div id="history-chooser-content" class="ui segment hidden">
+                <div class="ui form">
+                    <div class="field">
+                        <div class="ui relaxed divided list">
+                            <g:each in="${filterHistory}" var="fh">
+                                <g:set var="fhRCache" value="${new ReportingCache(ReportingCache.CTX_GLOBAL, fh.split('/').last() as String)}" />
+                                <g:set var="meta" value="${fhRCache.readMeta()}" />
+                                <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
+                                <div class="item">
+                                    <div class="image middle aligned"><i class="icon grey history large"></i></div>
+                                    <div class="content" style="line-height: 1.5em;">
+                                        <div class="header">
+                                            <g:link controller="myInstitution" action="reporting" params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
+                                                ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)} - ${BaseConfig.getMessage('base.filter.' + meta.filter)}
+                                            </g:link>
+                                        </div>
+                                        <div class="description">
+                                            <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
+
+                                            <%= filterCache.result %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </g:each>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <g:link action="reporting" class="ui button" params="${[cmd: 'deleteHistory']}">${message(code:'reporting.filter.history.delete')}</g:link>
+                    </div>
+                </div>
+            </div>
+        </g:if>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
-
-        <g:set var="hidden" value="hidden" />
 
         <g:if test="${!filter}">
             <div class="ui segment form">
@@ -56,15 +87,22 @@
                 </div>
             </div>
         </g:if>
-        <g:else>
-            <g:set var="hidden" value="" />
-        </g:else>
 
         <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
             <g:if test="${!filter || filter == filterItem}">
-                <div id="filter-${filterItem}" class="filter-form-wrapper ${hidden}">
-                    <g:render template="/myInstitution/reporting/filter/${filterItem}" />
+                <div id="filter-${filterItem}" class="filter-form-wrapper ${filter ? '' : 'hidden'}">
+                    <g:form action="reporting" method="POST" class="ui form">
+                        <g:render template="/myInstitution/reporting/filter/${filterItem}" />
+
+                        <div class="field">
+                            %{-- <g:link action="reporting" class="ui button">${message(code:'reporting.filter.save')}</g:link> --}%
+                            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
+                            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
+                            <input type="hidden" name="filter" value="${filterItem}" />
+                            <input type="hidden" name="token" value="${token}" />
+                        </div>
+                    </g:form>
                 </div>
             </g:if>
         </g:each>
@@ -86,14 +124,18 @@
         </g:if>
 
         <style>
+            #history-chooser-content { margin-top: 4.5em; }
             #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
-
             h3.ui.header { margin-top: 3em !important; }
-
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+
+            $('#history-chooser').on( 'click', function() {
+                $('#history-chooser-content').toggleClass('hidden');
+            })
+
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
@@ -216,6 +258,50 @@
                 'setting', 'onChange', function(value, text, $choice) {
                     $("input[name=filter\\:org_region]").attr('value', value);
             });
+
+            $("*[name$='_propertyKey']").on('change', function(){
+                var defaults = {}
+                <%
+                    params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->
+                        println "defaults['${it.key}'] = '${it.value}';"
+                    }
+                %>
+                var $key = $(this);
+                var $value = $("*[name='" + $key.attr('name').replace('_propertyKey', '_propertyValue') + "']");
+                $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
+
+                var kValue  = $key.dropdown('get value');
+                if (kValue) {
+                    $.ajax({
+                        url: '<g:createLink controller="ajaxJson" action="getPropRdValues"/>?oid=${PropertyDefinition.class.name}:' + kValue,
+                        success: function (data) {
+                            var pdv;
+                            if (data.length > 0) {
+                                $value.removeAttr('disabled').parent().removeClass('disabled');
+
+                                if (defaults[$key.attr('name')] == kValue && defaults[$value.attr('name')]) {
+                                    pdv = defaults[$value.attr('name')];
+                                }
+                                for (var i=0; i < data.length; i++) {
+                                    if (data[i].value == pdv) {
+                                        $value.append('<option selected="selected" value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    } else {
+                                        $value.append('<option value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    }
+                                }
+                            }
+                            $value.dropdown().dropdown({ clearable: true, values: data });
+                            if (pdv) {
+                                $value.dropdown('set selected', defaults[$value.attr('name')]);
+                            }
+                        },
+                        async: false
+                    });
+                } else {
+                    $value.dropdown('restore defaults');
+                }
+            });
+            $("*[name$='_propertyKey']").trigger('change');
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

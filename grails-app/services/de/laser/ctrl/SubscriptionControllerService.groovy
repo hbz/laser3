@@ -3,8 +3,6 @@ package de.laser.ctrl
 import com.k_int.kbplus.*
 import de.laser.*
 import de.laser.auth.User
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -15,7 +13,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
 import de.laser.workflow.WfWorkflow
@@ -23,7 +21,6 @@ import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
@@ -405,6 +402,11 @@ class SubscriptionControllerService {
                     result.total = count4check.get(0)
                     result.sums = c4sums
                     result.usages = c4usages
+                    Map<String, Object> monthQueryParams = queryParams.clone()
+                    monthQueryParams.remove('startDate')
+                    monthQueryParams.remove('endDate')
+                    monthQueryParams.monthsInRing = monthsInRing
+                    result.monthsInRing = Counter4Report.executeQuery('select r.reportFrom from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
                 else {
                     Set availableReportTypes = Counter5Report.executeQuery('select lower(r.reportType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
@@ -432,9 +434,18 @@ class SubscriptionControllerService {
                     result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange, queryParams).get(0)
                     result.sums = c5sums
                     result.usages = c5usages
+                    Map<String, Object> monthQueryParams = queryParams.clone()
+                    monthQueryParams.remove('startDate')
+                    monthQueryParams.remove('endDate')
+                    monthQueryParams.monthsInRing = monthsInRing
+                    result.monthsInRing = Counter5Report.executeQuery('select r.reportFrom from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
             }
-            result.monthsInRing = monthsInRing
+            else {
+                result.metricTypes = []
+                result.reportTypes = []
+                result.monthsInRing = []
+            }
             [result: result, status: STATUS_OK]
         }
     }
@@ -544,7 +555,7 @@ class SubscriptionControllerService {
             endTime.setTime(new Date())
         }
         else {
-            if(params.tab != 'total') {
+            if(params.tab == 'total') {
                 dateRange = ''
             }
             else {
@@ -1272,17 +1283,17 @@ class SubscriptionControllerService {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
                 String addTypeChildren = params.addTypeChildren
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                result.source = apiSource.baseUrl
+                GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
+                log.debug("linkPackage. Global Record Source URL: " +source.uri)
+                globalSourceSyncService.source = source
+                globalSourceSyncService.defineMapFields()
                 if(!Package.findByGokbId(pkgUUID)) {
-                    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                    result.source = apiSource.baseUrl
-                    GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
-                    log.debug("linkPackage. Global Record Source URL: " +source.uri)
-                    globalSourceSyncService.source = source
                     //to be deployed in parallel thread
                     executorService.execute({
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
-                            globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
@@ -1316,7 +1327,7 @@ class SubscriptionControllerService {
                     })
                 }
                 else {
-                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
                     log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                     if(addTypeChildren) {
@@ -2673,9 +2684,9 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
-        result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
-        result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
+        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+        result.cfgQueryList  = SubscriptionReport.CONFIG.base.query.default
+        result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

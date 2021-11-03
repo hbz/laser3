@@ -1,11 +1,9 @@
 package de.laser
 
 import de.laser.helper.RDStore
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.ReportingCacheHelper
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.local.SubscriptionReporting
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.reporting.report.local.SubscriptionReport
 import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -16,6 +14,8 @@ class ReportingLocalService {
     def contextService
     def financeService
     def financeControllerService
+
+    static final String TMPL_PATH = '/subscription/reporting/'
 
     // ----- <X>Controller.reporting() -----
 
@@ -32,21 +32,21 @@ class ReportingLocalService {
             Subscription sub = Subscription.get( params.id )
 
             if (prefix in ['timeline']) {
-                Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
-                result.putAll( SubscriptionReporting.query(clone) )
+                Map<String, Object> queryCfg = SubscriptionReport.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
+                result.putAll( SubscriptionReport.query(clone) )
                 //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
-                result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReporting.getMessage('timeline.chartLabel.' + it) } // TODO
-                result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
+                result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReport.getMessage('timeline.chartLabel.' + it) } // TODO
+                result.tmpl = TMPL_PATH + 'chart/timeline/' + queryCfg.getAt('chart')
             }
             else {
-                result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
-                result.tmpl = '/subscription/reporting/chart/default'
+                result.putAll( SubscriptionReport.query(clone) )
+                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone).get(1)
+                result.tmpl = TMPL_PATH + 'chart/default'
             }
 
-            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
             if (! rCache.exists()) {
-                ReportingCacheHelper.initSubscriptionCache(params.long('id'))
+                ReportingCache.initSubscriptionCache( params.long('id'), params.token )
             }
             rCache.writeDetailsCache( null )
             rCache.writeQueryCache(result)
@@ -60,7 +60,7 @@ class ReportingLocalService {
         // TODO : SESSION TIMEOUT
 
         if (params.query) {
-            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             List<Long> idList = [], plusIdList = [], minusIdList = []
             String label
@@ -76,18 +76,25 @@ class ReportingLocalService {
             }
 
             if (params.query == 'timeline-cost') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
-                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+
+                Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
+                fsCifsMap.put('max', 5000)
+                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
+
+                result.list              = finance.cons.costItems ?: []
+                result.relevantCostItems = result.list.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]}
+                result.neutralCostItems  = result.list.minus( result.relevantCostItems )
 
                 result.billingSums = finance.cons.sums?.billingSums ?: []
                 result.localSums   = finance.cons.sums?.localSums ?: []
-                result.tmpl        = '/subscription/reporting/details/timeline/cost'
+                result.tmpl        = TMPL_PATH + 'details/timeline/cost'
             }
             else if (params.query in ['timeline-entitlement', 'timeline-member']) {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 if (params.query == 'timeline-entitlement') {
                     String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name'
@@ -95,7 +102,7 @@ class ReportingLocalService {
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/entitlement'
+                    result.tmpl      = TMPL_PATH + 'details/timeline/entitlement'
                 }
                 else {
                     String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
@@ -103,22 +110,22 @@ class ReportingLocalService {
                     result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/organisation'
+                    result.tmpl      = TMPL_PATH + 'details/timeline/organisation'
                 }
             }
             else if (params.query == 'timeline-annualMember-subscription') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabelsForAnnual(params)
+                result.labels = SubscriptionReport.getTimelineQueryLabelsForAnnual(params)
 
                 result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
-                result.tmpl = '/subscription/reporting/details/timeline/subscription'
+                result.tmpl = TMPL_PATH + 'details/timeline/subscription'
             }
             else {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('label', label) // todo
 
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
-                result.tmpl   = '/subscription/reporting/details/entitlement'
+                result.tmpl   = TMPL_PATH + 'details/entitlement'
             }
 
             Map<String, Object> currentLabels = rCache.readQueryCache().labels as Map<String, Object>

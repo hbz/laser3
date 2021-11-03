@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 
 <g:if test="${filter == BaseConfig.KEY_COSTITEM}">
     ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
@@ -14,6 +14,10 @@
 
 <g:if test="${filter == BaseConfig.KEY_ORGANISATION}">
     ${message(code: 'reporting.filterResult.organisation', args: [filterResult.data.orgIdList.size()])}
+</g:if>
+
+<g:if test="${filter == BaseConfig.KEY_PACKAGE}">
+    ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size()])}
 </g:if>
 
 <g:if test="${filter == BaseConfig.KEY_SUBSCRIPTION}">

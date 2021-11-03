@@ -5,8 +5,6 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
-import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -415,7 +413,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        managementService.deleteCustomerIdentifier(params.deleteCI)
+        managementService.deleteCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 
@@ -1402,6 +1400,9 @@ class SubscriptionController {
     @DebugAnnotation(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
     def reporting() {
+        if (! params.token) {
+            params.token = 'static#' + params.id
+        }
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1409,7 +1410,6 @@ class SubscriptionController {
                 return
         }
         else {
-            ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
     }

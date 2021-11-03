@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 <g:if test="${data && chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         title: {
@@ -11,31 +11,27 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
+        legend: JSPC.app.reporting.helper._pie.legend,
         toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
                 var str = params.name
 
-                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
-
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', params.value[3])
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[1]}', params.value[2])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(null, '${labels.chart[1]}', params.value[2])
                 return str
            }
-        },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
         },
         series: [
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
-                center: ['65%', '50%'],
+                center: ['60%', '45%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -43,7 +39,7 @@
                     value: 'value2',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis
             },
         ]
     };
@@ -58,7 +54,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails) * -1}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
         legend: {
@@ -70,20 +66,20 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
                 }
 
                 if (params.length == 1) {
                     if (params[0].seriesName == '${labels.chart[0]}') {
-                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[3])
                     } else if (params[0].seriesName == '${labels.chart[1]}') {
-                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[2]))
                     }
                 }
                 else if (params.length > 1) {
-                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
-                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].value[2])
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[3])
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, Math.abs(params[1].value[2]))
                 }
                 return str
            }
@@ -121,15 +117,15 @@
                 },
                 label: {
                     show: true,
-                    position: 'left',
+                    position: 'right',
                     formatter (params) { return Math.abs(params.value[3]) }
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series.color.redInactive
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactive
                         } else {
-                            return JSPC.app.reporting.helper.series.color.blue
+                            return JSPC.app.reporting.helper.series._color.blue
                         }
                     }
                 }
@@ -144,8 +140,11 @@
                 },
                 label: {
                     show: true,
-                    position: 'right',
-                    formatter (params) { return Math.abs(params.value[2]) }
+                    position: 'left',
+                    formatter (params) {
+                        var v = Math.abs(params.value[2])
+                        if (v > 0) { return v } else { return '' }
+                    }
                 }
             }
         ]

@@ -7,11 +7,41 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3967    03.11.2021  rc-2.2  2.2.3       Moe     Bug         Filter Teilnehmer in Umfrage funktioniert nicht?
+
+3942    03.11.2021  rc-2.2  2.2.3       Moe     Bug         Nutzerzahlen FTEs nicht in Click Me Excel Export
+
+3956    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Bei Nettopreis auch das Runden ermöglichen
+
+3963    02.11.2021  rc-2.2  2.2.3       Moe     Bug         ClickMe Excel Adressausgabe blöd
+
+3957    29.10.2021  dev     2.3         David   Feature     Reporting: Verteilungsdiagramme überarbeiten
+
+--      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
+
+3953    28.10.2021  rc-2.2  2.2.3       Andreas Bug         verschiedene 500er behoben
+
+3951    28.10.2021  rc-2.2  2.2.3       Andreas Bug         Kundennummern können auch ohne Titel in der Lizenz angelegt werden
+
+3945    28.10.2021  rc-2.2  2.2.3       Andreas Bug         Verknüpfung Plattform zu Paket ohne Titel realisiert
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Löschung von Kundennummern behoben
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Durchreichung der Preisangaben an Bestandsebene im Sync korrigiert
+
+--      28.10.2021  rc-2.2  2.2.3       Andreas Bug         Inkonsistenz bei Brotkrümelmenü behoben
+
 --      26.10.2021  rc-2.2  2.2.2       Andreas Bug         Argumentfehler bei der Versendung von Reminder-Mails behoben
 
 3944    26.10.2021  rc-2.2  2.2.2       Andreas Bug         Parserfehler für Finanzwerte behoben
 
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
+
+3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
+
+3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
+
+3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
 
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
@@ -36,6 +66,12 @@
 3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
 
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
+
+3901    06.10.2021  dev     2.3         David   Feature     Reporting: XLSX-Export - Datentypen
+
+3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
+
+3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 
