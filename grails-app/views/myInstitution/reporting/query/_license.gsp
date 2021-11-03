@@ -12,15 +12,7 @@
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part1" model="${[cfgKey: "${BaseConfig.KEY_LICENSE}"]}" />
-
-        <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY_MYINST}',
-                filter: '${BaseConfig.KEY_LICENSE}',
-                token: '${token}'
-            }
-        </laser:script>
+        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_LICENSE}"]}" />
 
     </g:if>
     <g:else>

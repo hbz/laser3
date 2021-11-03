@@ -154,7 +154,7 @@ class SubscriptionQuery extends BaseQuery {
                 )
 
                 result.data.eachWithIndex { d, i ->
-                    List<Long> subIdList = Platform.executeQuery(
+                    List<Long> subIdList = Subscription.executeQuery(
                             'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
                             [idList: idList, d: d[0]]
                     )
@@ -175,7 +175,7 @@ class SubscriptionQuery extends BaseQuery {
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Platform.executeQuery(
+                            idList: Subscription.executeQuery(
                                     'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
                                     [idList: idList, d: d[0]]
                             ),

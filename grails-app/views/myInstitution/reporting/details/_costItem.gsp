@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
-<g:render template="/myInstitution/reporting/details/base.part1" />
+<g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
