@@ -43,6 +43,11 @@ class PackageXCfg extends BaseConfig {
                     ],
                     query2 : [
                             'distribution' : [
+                                    'package-x-provider' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : '2axis2values_nonMatches',
+                                            chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
+                                    ],
                                     'package-x-platform' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
