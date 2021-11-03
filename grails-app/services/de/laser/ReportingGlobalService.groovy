@@ -175,6 +175,13 @@ class ReportingGlobalService {
                 result.putAll( PackageQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = TMPL_PATH + 'chart/generic'
+
+                if (suffix in ['x']) {
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2.getAt('distribution').getAt(clone.query) as Map
+
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.dist.chartLabel.' + it) }
+                    result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
+                }
             }
             else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                 result.putAll(SubscriptionQuery.query(clone))

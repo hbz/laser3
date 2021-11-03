@@ -152,7 +152,6 @@ class SubscriptionQuery extends BaseQuery {
                         'select p.id, p.name, count(*) from Org o join o.platforms p join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by p.id order by p.name',
                         [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 )
-
                 result.data.eachWithIndex { d, i ->
                     List<Long> subIdList = Subscription.executeQuery(
                             'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
