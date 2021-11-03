@@ -1904,44 +1904,55 @@ class ExportClickMeService {
             }
         }else if (fieldKey == 'participant.readerNumbers') {
             if (org) {
+                ReaderNumber readerNumberStudents
+                ReaderNumber readerNumberStaff
+                ReaderNumber readerNumberFTE
 
-                RefdataValue currentSemester = RefdataValue.getCurrentSemester()
-
-                ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
-                ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
-                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
-
-                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
-                    row.add([field: currentSemester.getI10n('value'), style: null])
-                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
-                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
-                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                ReaderNumber readerNumberFTEwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
+                if(readerNumberFTEwithDueDate){
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: readerNumberFTEwithDueDate.value, style: null])
                 }else{
-                    boolean nextSemester = false
+                    RefdataValue currentSemester = RefdataValue.getCurrentSemester()
 
-                    List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
-                    for(def count = 0; count < refdataValueList.size(); count = count + 1) {
-                        if (refdataValueList[count] == currentSemester) {
-                            nextSemester = true
-                        }
-                        if (nextSemester) {
-                            readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
-                            readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
-                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
-                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
-                                row.add([field: refdataValueList[count].getI10n('value'), style: null])
-                                row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
-                                row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
-                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
-                                break
+                    readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
+                    readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                    readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
+
+                    if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
+                        row.add([field: currentSemester.getI10n('value'), style: null])
+                        row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                        row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                        row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                    }else{
+                        boolean nextSemester = false
+
+                        List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
+                        for(def count = 0; count < refdataValueList.size(); count = count + 1) {
+                            if (refdataValueList[count] == currentSemester) {
+                                nextSemester = true
+                            }
+                            if (nextSemester) {
+                                readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
+                                readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
+                                readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                                if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
+                                    row.add([field: refdataValueList[count].getI10n('value'), style: null])
+                                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                                    break
+                                }
                             }
                         }
-                    }
-                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                        }
                     }
                 }
 
@@ -1962,9 +1973,12 @@ class ExportClickMeService {
                 if(readerNumberFTE){
                     sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
+                if(readerNumberFTEwithDueDate){
+                    sum = sum + (readerNumberFTEwithDueDate.value != null ? readerNumberFTEwithDueDate.value : 0)
+                }
                 row.add([field: sum, style: null])
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : ''))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberFTEwithDueDate ? readerNumberFTEwithDueDate.dateGroupNote : '')))
 
                 row.add([field: note, style: null])
 
