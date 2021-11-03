@@ -932,20 +932,41 @@ class SurveyController {
         if(selectedMembers) {
 
             RefdataValue billing_currency = null
-            if (params.long('newCostCurrency2')) //GBP,etc
+            if (params.long('newCostCurrency')) //GBP,etc
             {
-                billing_currency = RefdataValue.get(params.newCostCurrency2)
+                billing_currency = RefdataValue.get(params.newCostCurrency)
+            }
+            SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
+            Closure newDate = { param, format ->
+                Date date
+                try {
+                    date = dateFormat.parse(param)
+                } catch (Exception e) {
+                    log.debug("Unable to parse date : ${param} in format ${format}")
+                }
+                date
             }
 
+            Date startDate = newDate(params.newStartDate, dateFormat.toPattern())
+            Date endDate = newDate(params.newEndDate, dateFormat.toPattern())
+
+            RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
+            RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+
+            String costDescription = params.newDescription ? params.newDescription.trim() : null
+            String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
+
+            Boolean billingSumRounding = params.newBillingSumRounding == 'on'
+            Boolean finalCostRounding = params.newFinalCostRounding == 'on'
 
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
-            def cost_billing_currency = params.newCostInBillingCurrency2 ? format.parse(params.newCostInBillingCurrency2).doubleValue() : null //0.00
-            //def cost_currency_rate = params.newCostCurrencyRate2 ? params.double('newCostCurrencyRate2', 1.00) : null //1.00
-            //def cost_local_currency = params.newCostInLocalCurrency2 ? format.parse(params.newCostInLocalCurrency2).doubleValue() : null //0.00
+            def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
+
 
             def tax_key = null
-            if (!params.newTaxRate2.contains("null")) {
-                String[] newTaxRate = params.newTaxRate2.split("§")
+            if (!params.newTaxRate.contains("null")) {
+                String[] newTaxRate = params.newTaxRate.split("§")
                 RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
@@ -992,10 +1013,26 @@ class SurveyController {
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
                         }
+
+                        surveyCostItem.costItemElement = cost_item_element ?: surveyCostItem.costItemElement
+                        surveyCostItem.costItemStatus = cost_item_status ?: surveyCostItem.costItemStatus
+                        surveyCostItem.costTitle = costTitle ?: surveyCostItem.costTitle
+
+                        surveyCostItem.costItemElementConfiguration = cost_item_element_configuration ?: surveyCostItem.costItemElementConfiguration
+
+                        surveyCostItem.costDescription = costDescription ?: surveyCostItem.costDescription
+
+                        surveyCostItem.startDate = startDate ?: surveyCostItem.startDate
+                        surveyCostItem.endDate = endDate ?: surveyCostItem.endDate
+
                         surveyCostItem.billingCurrency = billing_currency ?: surveyCostItem.billingCurrency
                         //Not specified default to GDP
                         //surveyCostItem.costInLocalCurrency = cost_local_currency ?: surveyCostItem.costInLocalCurrency
-                        surveyCostItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
+                        surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
+                        surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
+
+                        println( params.newFinalCostRounding)
+                        println( Boolean.valueOf(params.newFinalCostRounding))
                         //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
                         surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
                         surveyCostItem.save()
@@ -3397,7 +3434,7 @@ class SurveyController {
                         break
                 }
             }
-            RefdataValue cost_item_element_configuration = params.ciec ? RefdataValue.get(Long.parseLong(params.ciec)) : null
+            RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(Long.parseLong(params.ciec)) : null
 
             boolean cost_item_isVisibleForSubscriber = false
             // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber).value == 'Yes') : false)
@@ -3462,6 +3499,7 @@ class SurveyController {
                         newCostItem.costInBillingCurrency = cost_billing_currency as Double
                         //newCostItem.costInLocalCurrency = cost_local_currency as Double
 
+                        newCostItem.billingSumRounding = params.newBillingSumRounding ? true : false
                         newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
                         newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
                         //newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double

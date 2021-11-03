@@ -148,76 +148,9 @@
                     </span>:</h3>
 
                 <div class="ui basic segment">
-                    <div class="fields">
-                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
-                            <label>${g.message(code: 'financials.newCosts.amount')}</label>
 
-                            <div class="two fields">
-                                <div class="field">
-                                    <label>${message(code: 'financials.invoice_total')}</label>
-                                    <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
-                                           class="calc"
-                                           style="width:50%"
-                                           name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
-                                           placeholder="${g.message(code: 'financials.invoice_total')}"
-                                           value="<g:formatNumber
-                                                   number="${costItem?.costInBillingCurrency}"
-                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
+                    <g:render template="costItemInputSurvey" />
 
-
-                                    <g:select class="ui dropdown floating la-small-dropdown la-not-clearable" name="newCostCurrency2"
-                                              title="${g.message(code: 'financials.addNew.currencyType')}"
-                                              from="${currency}"
-                                              optionKey="id"
-                                              optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
-                                              value="${costItem?.billingCurrency?.id}"/>
-                                </div><!-- .field -->
-                                <div class="field">
-                                    <label><g:message code="financials.newCosts.billingSum"/></label>
-                                    <input title="<g:message code="financials.newCosts.billingSum"/>" type="text"
-                                           readonly="readonly"
-                                           name="newCostInBillingCurrencyAfterTax2"
-                                           id="newCostInBillingCurrencyAfterTax2"
-                                           value="<g:formatNumber
-                                                   number="${costItem?.costInBillingCurrencyAfterTax}"
-                                                   minFractionDigits="2" maxFractionDigits="2"/>"/>
-
-                                </div><!-- .field -->
-                            </div>
-
-                            <div class="two fields">
-                                <div class="field la-exchange-rate">
-
-                                </div><!-- .field -->
-
-                                <div class="field">
-                                    <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                                    <%
-                                        CostItem.TAX_TYPES taxKey
-                                        if (costItem?.taxKey && tab != "subscr")
-                                            taxKey = costItem.taxKey
-                                    %>
-                                    <g:select class="ui dropdown calc" name="newTaxRate2" title="TaxRate"
-                                              from="${CostItem.TAX_TYPES}"
-                                              optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
-                                              optionValue="${{ it.taxType.getI10n("value") + " (" + it.taxRate + "%)" }}"
-                                              value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
-                                              noSelection="${['null§0': '']}"/>
-
-                                </div><!-- .field -->
-                            </div>
-
-                            <div class="field">
-                                <div class="ui checkbox">
-                                    <label><g:message code="financials.newCosts.roundFinalSum"/></label>
-                                    <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
-                                           <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
-                                </div>
-                            </div><!-- .field -->
-
-                        </fieldset> <!-- 1/2 field |  .la-account-currency -->
-
-                    </div><!-- three fields -->
                     <g:if test="${params.tab == 'selectedSubParticipants' }">
                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
@@ -439,68 +372,6 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                             }, 800);
                         }
                     }
-
-    JSPC.app.costItemElementConfigurations = ${raw(orgConfigurations as String)};
-
-    JSPC.app.eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
-
-    JSPC.app.isError = function (cssSel) {
-        if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
-            $(".la-account-currency").children(".field").removeClass("error");
-            $(cssSel).parent(".field").addClass("error");
-            return true
-        }
-        return false
-    };
-
-    $('.calc').on('change', function () {
-        JSPC.app.calcTaxResults()
-    });
-
-    JSPC.app.calcTaxResults = function () {
-        var roundF = $('*[name=newFinalCostRounding2]').prop('checked');
-        console.log($("*[name=newTaxRate2]").val());
-        var taxF = 1.0 + (0.01 * $("*[name=newTaxRate2]").val().split("§")[1]);
-
-        var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency2").val());
-
-
-        $('#newCostInBillingCurrencyAfterTax2').val(
-            roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.app.convertDouble(parsedBillingCurrency * taxF)
-        );
-
-    };
-
-    JSPC.app.costElems = $("#newCostInBillingCurrency2");
-
-    JSPC.app.costElems.on('change', function () {
-        if ($("[name='newCostCurrency2']").val() != 0) {
-            $("#newCostCurrency2").parent(".field").removeClass("error");
-        } else {
-            $("#newCostCurrency2").parent(".field").addClass("error");
-        }
-    });
-
-    JSPC.app.convertDouble = function (input) {
-        console.log("input: " + input + ", typeof: " + typeof (input))
-        var output;
-        //determine locale from server
-        var locale = "${LocaleContextHolder.getLocale()}";
-        if (typeof (input) === 'number') {
-            output = input.toFixed(2);
-            if (locale.indexOf("de") > -1)
-                output = output.replace(".", ",");
-        } else if (typeof (input) === 'string') {
-            output = 0.0;
-            if (input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
-                output = parseFloat(input.replace(/\./g, "").replace(/,/g, "."));
-            else if (input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
-                output = parseFloat(input.replace(/,/g, ""));
-            } else console.log("Please check over regex!");
-            console.log("string input parsed, output is: " + output);
-        }
-        return output;
-    }
 
 </laser:script>
 
