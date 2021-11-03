@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
@@ -9,6 +9,7 @@
         <tr>
             <th></th>
             <th>${message(code:'package.label')}</th>
+            <th>${message(code:'package.content_provider')}</th>
             <th>${message(code:'package.nominalPlatform')}</th>
             <th>${message(code:'package.lastUpdated.label')}</th>
         </tr>
@@ -19,6 +20,12 @@
                     <td>${i + 1}.</td>
                     <td>
                         <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
+                    </td>
+                    <td>
+                        <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
+                            %{-- ${ro.roleType.id}  ${ro.roleType.getI10n('value')} --}%
+                            <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.shortname ?: ro.org.name}</g:link><br />
+                        </g:each>
                     </td>
                     <td>
                         <g:if test="${pkg.nominalPlatform}">
