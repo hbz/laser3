@@ -2,9 +2,11 @@
 <h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
 
 <div style="text-align: right">
-    <button id="details-export-button la-modern-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
-        <i class="ui icon download"></i>
-    </button>
+    %{-- TODO --}%<g:if test="${params.filter != 'package'}">%{-- TODO --}%
+        <button id="details-export-button la-modern-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
+            <i class="ui icon download"></i>
+        </button>
+    %{-- TODO --}%</g:if>%{-- TODO --}%
 
     <g:if test="${query.split('-')[0] in ['org', 'member', 'consortium', 'provider', 'licensor']}">
         <button id="details-copy-email-button" class="ui icon button la-modern-button" href="#detailsCopyEmailModal" data-semui="modal">

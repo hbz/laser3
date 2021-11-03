@@ -4,7 +4,7 @@
 <g:if test="${filterResult}">
     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
-    <g:if test="${filterResult.data.costItemIdList}">
+    <g:if test="${filterResult.data.packageIdList}">
 
         <div class="ui message success">
             <p>
@@ -12,7 +12,7 @@
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_COSTITEM}"]}" />
+        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PACKAGE}"]}" />
 
     </g:if>
     <g:else>

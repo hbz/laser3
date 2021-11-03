@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
 
-<g:render template="/myInstitution/reporting/details/base.part1" />
+<g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">

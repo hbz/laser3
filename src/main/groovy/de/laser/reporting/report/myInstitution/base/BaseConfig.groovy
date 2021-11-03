@@ -14,6 +14,7 @@ import de.laser.reporting.report.myInstitution.config.LicenseConsCfg
 import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
+import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
@@ -28,6 +29,7 @@ class BaseConfig {
     static String KEY_MYINST                    = 'myInstitution'
 
     static String KEY_COSTITEM                  = 'costItem'
+    static String KEY_PACKAGE                   = 'package'
     static String KEY_LICENSE                   = 'license'
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_SUBSCRIPTION              = 'subscription'
@@ -54,27 +56,30 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static List<String> FILTER = [
-            'organisation', 'subscription', 'license' // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE // 'costItem'
     ]
 
     static List<String> CHARTS = [
-            'bar', 'pie'
+            CHART_BAR, CHART_PIE
     ]
 
     static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
 
         Map<String, Object> cfg = [:]
 
-        if (prefix in ['license', 'licensor']) {
+        if (prefix in [ KEY_LICENSE, 'licensor' ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
         }
         else if (prefix in ['org']) {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
-        else if (prefix in ['subscription', 'memberSubscription', 'member', 'consortium', 'provider', 'agency']) {
+        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
         }
-        else if (prefix in ['costItem']) {
+        else if (prefix in [ KEY_PACKAGE ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
+        }
+        else if (prefix in [ KEY_COSTITEM ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
         }
 
@@ -83,12 +88,13 @@ class BaseConfig {
 
     static Map<String, Object> getCurrentConfig(String key) {
 
-        if (key == KEY_COSTITEM) {
-
+        if (key == KEY_PACKAGE) {
+            return PackageXCfg.CONFIG
+        }
+        else if (key == KEY_COSTITEM) {
             CostItemXCfg.CONFIG
         }
         else if (key == KEY_LICENSE) {
-
             if (BaseDetailsExport.ctxConsortium()) {
                 LicenseConsCfg.CONFIG
             }
@@ -97,7 +103,6 @@ class BaseConfig {
             }
         }
         else if (key == KEY_ORGANISATION) {
-
             if (BaseDetailsExport.ctxConsortium()) {
                 OrganisationConsCfg.CONFIG
             }
@@ -106,7 +111,6 @@ class BaseConfig {
             }
         }
         else if (key == KEY_SUBSCRIPTION) {
-
             if (BaseDetailsExport.ctxConsortium()) {
                 SubscriptionConsCfg.CONFIG
             }

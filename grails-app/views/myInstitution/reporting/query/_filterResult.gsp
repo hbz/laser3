@@ -16,6 +16,10 @@
     ${message(code: 'reporting.filterResult.organisation', args: [filterResult.data.orgIdList.size()])}
 </g:if>
 
+<g:if test="${filter == BaseConfig.KEY_PACKAGE}">
+    ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size()])}
+</g:if>
+
 <g:if test="${filter == BaseConfig.KEY_SUBSCRIPTION}">
     ${message(code: 'reporting.filterResult.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
     <g:if test="${filterResult.data.memberSubscriptionIdList}">

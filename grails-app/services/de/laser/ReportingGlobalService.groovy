@@ -35,6 +35,9 @@ class ReportingGlobalService {
         else if (params.filter == BaseConfig.KEY_ORGANISATION) {
             doFilterOrganisation(result, params.clone() as GrailsParameterMap)
         }
+        else if (params.filter == BaseConfig.KEY_PACKAGE) {
+            doFilterPackage(result, params.clone() as GrailsParameterMap)
+        }
         else if (params.filter == BaseConfig.KEY_SUBSCRIPTION) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
         }
@@ -80,6 +83,15 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2 ) // Verteilung
     }
 
+    void doFilterPackage (Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filterResult = PackageFilter.filter(params)
+
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query.default )
+
+        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2 ) // Verteilung
+    }
+
     void doFilterSubscription (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = SubscriptionFilter.filter(params)
@@ -103,13 +115,16 @@ class ReportingGlobalService {
         if (params.query) {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->
-                if (pm.filter == 'license') {
+                if (pm.filter == BaseConfig.KEY_LICENSE) {
                     BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), pm).get(1)
                 }
-                else if (pm.filter == 'organisation') {
+                else if (pm.filter == BaseConfig.KEY_ORGANISATION) {
                     BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ), pm).get(1)
                 }
-                else if (pm.filter == 'subscription') {
+                if (pm.filter == BaseConfig.KEY_PACKAGE) {
+                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ), pm).get(1)
+                }
+                else if (pm.filter == BaseConfig.KEY_SUBSCRIPTION) {
                     BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), pm).get(1)
                 }
             }
@@ -127,7 +142,12 @@ class ReportingGlobalService {
             String prefix = params.query.split('-')[0]
             String suffix = params.query.split('-')[1]
 
-            if (prefix in ['license']) {
+            if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
+                result.putAll( CostItemQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+                result.tmpl = TMPL_PATH + 'chart/generic'
+            }
+            else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                 result.putAll( LicenseQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = TMPL_PATH + 'chart/generic'
@@ -151,7 +171,12 @@ class ReportingGlobalService {
                     result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['subscription', 'memberSubscription']) {
+            else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
+                result.putAll( PackageQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+                result.tmpl = TMPL_PATH + 'chart/generic'
+            }
+            else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                 result.putAll(SubscriptionQuery.query(clone))
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = TMPL_PATH + 'chart/generic'
@@ -162,11 +187,6 @@ class ReportingGlobalService {
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
                 }
-            }
-            else if (prefix in ['costItem']) {
-                result.putAll( CostItemQuery.query(clone) )
-                result.labels.tooltip = getTooltipLabels(clone)
-                result.tmpl = TMPL_PATH + 'chart/generic'
             }
 
             // TODO
@@ -211,36 +231,42 @@ class ReportingGlobalService {
                     if (! idList) {
                         result.list = []
                     }
+                    else if (tmpl == BaseConfig.KEY_COSTITEM) {
+                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_LICENSE) {
                         result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_ORGANISATION) {
                         result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                     }
+                    else if (tmpl == BaseConfig.KEY_PACKAGE) {
+                        result.list = Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                     }
-                    else if (tmpl == BaseConfig.KEY_COSTITEM) {
-                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
-                    }
                 }
                 else {
-
-                    if (prefix in ['license']) {
+                    if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
+                        result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/costItem'
+                    }
+                    else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                         result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
                         result.tmpl = TMPL_PATH + 'details/license'
                     }
-                    else if (prefix in ['licensor', 'org', 'member', 'consortium', 'provider', 'agency']) {
+                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', 'provider', 'agency' ]) {
                         result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH + 'details/organisation'
                     }
-                    else if (prefix in ['subscription', 'memberSubscription']) {
+                    else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
+                        result.list = idList ? Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/package'
+                    }
+                    else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                         result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH + 'details/subscription'
-                    }
-                    else if (prefix in ['costItem']) {
-                        result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
-                        result.tmpl = TMPL_PATH + 'details/costItem'
                     }
                 }
             }
