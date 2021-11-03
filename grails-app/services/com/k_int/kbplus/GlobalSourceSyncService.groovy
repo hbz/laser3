@@ -705,6 +705,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                         case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
+                        case 'pkgPropDiffs':
+                            diff.diffs.each { pkgPropDiff ->
+                                packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
+                            }
+
+                            break
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
                 }
@@ -862,7 +868,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 result.file = file
                 if(result.save()) {
                     if(packageRecord.nominalPlatformUuid) {
-                        result.nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                        Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                        if(!nominalPlatform) {
+                            nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
+                        }
+                        result.nominalPlatform = nominalPlatform
+                        if(!result.save())
+                            throw new SyncException(result.errors)
                     }
                     if(packageRecord.providerUuid) {
                         try {
@@ -1162,6 +1174,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             */
             if(platform.save()) {
+                //update platforms
+                Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
+                if(packagesOfPlatform) {
+                    packagesOfPlatform.records.each { pkgRecord ->
+                        Package pkg = Package.findByGokbId(pkgRecord.uuid)
+                        if(pkg) {
+                            pkg.nominalPlatform = platform
+                            pkg.save()
+                        }
+                    }
+                }
                 platform
             }
             else throw new SyncException("Error on saving platform: ${platform.errors}")
