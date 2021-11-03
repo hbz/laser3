@@ -7294,7 +7294,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 }
 
 .ui.header.la-noMargin-top {
-  margin-top: 0rem;
+  margin-top: 1rem;
   text-align: left;
 }
 /*!
@@ -16117,6 +16117,7 @@ a.ui.basic.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
@@ -16163,6 +16164,57 @@ a.ui.basic.label:hover {
 .ui.label.la-annual-rings .la-annual-rings-text {
   vertical-align: sub;
   padding-right: 0.5em;
+}
+
+.ui.la-annual-rings-modern {
+  display: inline-block;
+  position: relative;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+}
+
+.ui.la-annual-rings-modern > a {
+  opacity: 1;
+  text-decoration: none;
+  display: inline-block;
+  width: 2.1em;
+}
+
+.ui.la-annual-rings-modern > a:hover {
+  -webkit-filter: brightness(0.85);
+  filter: brightness(0.85);
+}
+
+.ui.la-annual-rings-modern i.disabled.icon {
+  opacity: 0!important;
+}
+
+.ui.la-annual-rings-modern .la-status-active {
+  color: #98B500;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-inactive {
+  color: #BB1600;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-else {
+  color: #FBBD08;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-annual-rings-text {
+  vertical-align: sub;
+  margin-right: -0.3em;
+  display: inline-block;
+  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
 .ui.left-tag.labels .label,
@@ -26734,6 +26786,11 @@ Floated Menu / Item
   align-self: center;
   text-align: center;
 }
+
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 /*!
  * # Semantic UI 2.4.2 - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -30371,6 +30428,14 @@ a.ui.card:hover,
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: 0.7em;
+}
+
+.ui.table tfoot th.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: 0.7em;
+  font-weight: 700;
 }
 
 .la-inline-lists dl {

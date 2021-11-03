@@ -19,6 +19,7 @@
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  margin-bottom: 1.2em;
   background-color: @laSecondaryBackground;
   border: 1px solid #d3dae3;
   vertical-align: super;
@@ -57,6 +58,53 @@
   .la-annual-rings-text {
     vertical-align: sub;
     padding-right: 0.5em;
+  }
+}
+// annual rings modern
+.ui.la-annual-rings-modern {
+  display: inline-block;
+  position: relative;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+  .icon {
+    //margin: 0em @iconDistance 0em @iconDistance;
+  }
+  >a {
+    opacity: 1;
+    text-decoration: none;
+    display: inline-block;
+    width: 2.1em;
+    &:hover {
+      filter: brightness(0.85);
+    }
+  }
+  i.disabled.icon {
+    opacity: 0!important;
+    //margin: 0 0 0 .1em;
+  }
+  .la-status-active {
+    color: @green;
+    opacity: 1;
+  }
+  .la-status-inactive {
+    color: @red;
+    opacity: 1;
+  }
+  .la-status-else {
+    color: @yellow;
+    opacity: 1;
+  }
+  .la-annual-rings-text {
+    vertical-align: sub;
+    margin-right: -0.3em;
+    display: inline-block;
+    color: rgba(0,0,0,.6);
+    letter-spacing: 0.05em;
+    font-weight: 700;
   }
 }
 

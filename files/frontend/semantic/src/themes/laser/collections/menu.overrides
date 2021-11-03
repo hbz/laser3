@@ -155,3 +155,7 @@
     text-align: center;
   }
 }
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

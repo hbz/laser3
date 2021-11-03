@@ -255,7 +255,7 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tfoot>
             <tr>
-                <th colspan="9">
+                <th class="control-label" colspan="9">
                     ${message(code:'financials.totalCostOnPage')}
                 </th>
             </tr>
