@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3942    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Nutzerzahlen FTEs nicht in Click Me Excel Export
+
 3956    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Bei Nettopreis auch das Runden ermöglichen
 
 3963    02.11.2021  rc-2.2  2.2.3       Moe     Bug         ClickMe Excel Adressausgabe blöd
