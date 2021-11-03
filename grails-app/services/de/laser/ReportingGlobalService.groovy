@@ -112,7 +112,6 @@ class ReportingGlobalService {
 
     void doChart(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
-        println params
         if (params.query) {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->

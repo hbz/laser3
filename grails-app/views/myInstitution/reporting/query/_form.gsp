@@ -55,3 +55,11 @@
 <g:render template="/myInstitution/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
 <g:render template="/myInstitution/reporting/query/helpModal" model="[modalID: 'queryHelpModal', token: token]" />
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.reporting.current.request = {
+        context: '${BaseConfig.KEY_MYINST}',
+        filter: '${cfgKey}',
+        token: '${token}'
+    }
+</laser:script>
+
