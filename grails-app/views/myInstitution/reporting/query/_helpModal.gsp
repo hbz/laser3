@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
+<%@ page import="de.laser.reporting.export.GlobalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <semui:infoModal id="${modalID}">
@@ -28,7 +28,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Lizenz-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Lizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Lizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
         <p>
@@ -38,12 +38,27 @@
         </p>
     </div>
 
+    <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
+        <p class="ui header">
+            Diese Abfrage liefert eine Übersicht über vergebene Teilnehmerlizenz-Merkmale
+        </p>
+        <p>
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Teilnehmerlizenzen konkret vergeben wurden.
+            Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
+        </p>
+        <p>
+            Im Detail sind folgende Informationen verfügbar: <br/>
+            <i class="icon circle blue"></i> Teilnehmerlizenzen mit Merkmal X, <br />
+            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Teilnehmerlizenzen <br />
+        </p>
+    </div>
+
     <div class="help-section" data-help-section="subscription-x-annual">
         <p class="ui header">
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Lizenzen
         </p>
         <p>
-            Gruppiert werden die Lizenzen in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Lizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Lizenz auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
@@ -59,7 +74,7 @@
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Teilnehmerlizenzen
         </p>
         <p>
-            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Teilnehmerlizenzen auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
         </p>
@@ -166,7 +181,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Vertrags-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Verträgen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Verträge konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>
         <p>
@@ -181,7 +196,7 @@
             Diese Abfrage liefert eine Übersicht über die Laufzeit von Verträgen
         </p>
         <p>
-            Gruppiert werden die Verträge in Jahresringen - abhängig von jeweiligen Datumsgrenzen.
+            Gruppiert werden die Verträge in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
             Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird der Vertrag auch mehreren Jahresringen zugeordnet.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>
@@ -217,7 +232,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Organisations-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>allgemeine oder eigene Merkmale</strong>, die Organisationen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Organisationen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
         </p>
         <p>

@@ -1,7 +1,5 @@
-<%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
-
-    <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="org-filter-tab-1">${message(code:'org.plural.label')}</a>
@@ -34,15 +32,6 @@
                 </g:each>
             </div>
         </div><!-- .tab -->
-
-        <div class="field">
-            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
-            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${BaseConfig.KEY_ORGANISATION}" />
-            <input type="hidden" name="token" value="${token}" />
-        </div>
-
-    </g:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#filter\\:org_source').on( 'change', function(e) {

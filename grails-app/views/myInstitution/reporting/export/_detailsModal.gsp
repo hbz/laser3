@@ -1,12 +1,12 @@
-<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportGlobalHelper.getCachedFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportGlobalHelper.getCachedQueryLabels( token )}" />
+    <g:set var="filterLabels" value="${GlobalExportHelper.getCachedFilterLabels( token )}" />
+    <g:set var="queryLabels" value="${GlobalExportHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="${message(code: 'reporting.modal.export.key.' + export.KEY)}" msgSave="${message(code: 'default.button.export.label')}">
 
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <g:set var="dcSize" value="${ExportGlobalHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${GlobalExportHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}
@@ -37,7 +37,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${ExportGlobalHelper.reorderFieldsForUI( formFields.findAll { !ExportGlobalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseDetailsExport.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -65,10 +65,10 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@-org-accessPoint','@-org-contact','@-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${ExportGlobalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${BaseDetailsExport.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
@@ -90,35 +90,53 @@
             <div class="ui vertical segment">
                 <div class="fields">
 
-                    <div id="fileformat-csv" class="wide eight field">
+                    <div id="fileformat-details-csv" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
-                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
-                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
-                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_QUOTATION}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_VALUE_SEPARATOR}</span> <br />
+                        </p>
+                        <p>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-csv" id="hideEmptyResults-csv" />
+                                <label for="hideEmptyResults-csv">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
                         </p>
                     </div>
-                    <div id="fileformat-xlsx" class="wide eight field">
+                    <div id="fileformat-details-xlsx" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
                         <p>
-                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
                             <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="insertNewLines-xlsx" id="insertNewLines-xlsx" />
+                                <label for="insertNewLines-xlsx">${message(code: 'reporting.modal.export.cfg.xlsx.newLines')}</label>
+                            </span>
                             <br />
-                            <span class="ui label orange">Funktionalität in Entwicklung</span>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
+                                <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
                         </p>
                     </div>
-                    <div id="fileformat-pdf" class="wide eight field">
+                    <div id="fileformat-details-pdf" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
                             ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>
+                        <p>
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
+                                <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
+                        </p>
                     </div>
 
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
-                            <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
-                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                            <label for="fileformat-details">${message(code: 'default.fileFormat.label')}</label>
+                            <g:select name="fileformat" id="fileformat-details" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
                                       from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
@@ -130,8 +148,8 @@
                                     optionExpl="${{it.value[1]}}" /> --}%
                         </div>
                         <div class="field">
-                            <label for="filename">${message(code: 'default.fileName.label')}</label>
-                            <input name="filename" id="filename" value="${BaseExportHelper.getFileName(queryLabels)}" />
+                            <label for="filename-details">${message(code: 'default.fileName.label')}</label>
+                            <input name="filename" id="filename-details" value="${BaseExportHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 
@@ -149,8 +167,8 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         $('#${modalID} select[name=fileformat]').on( 'change', function() {
-            $('#${modalID} *[id^=fileformat-').addClass('hidden')
-            $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
+            $('#${modalID} *[id^=fileformat-details-').addClass('hidden')
+            $('#${modalID} *[id^=fileformat-details-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
 </g:if>

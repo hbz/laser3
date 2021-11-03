@@ -1,9 +1,9 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'valueCons', 'valueConsTax', 'annual', 'isCurrent'],
+        dimensions: ['id', 'name', 'valueNeutralCons', 'valueNeutralConsTax', 'valueCons', 'valueConsTax', 'annual', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]},  ${it[3]}, '${it[4]}', ${it[5]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]},  ${it[3]}, ${it[4]},  ${it[5]}, '${it[6]}', ${it[7]}]," } %>
         ]
     },
     grid:  {
@@ -18,7 +18,7 @@ JSPC.app.reporting.current.chart.option = {
         type: 'category',
         axisLabel: {
             formatter: function(id, index) {
-                return JSPC.app.reporting.current.chart.option.dataset.source[ index ][ 4 ]
+                return JSPC.app.reporting.current.chart.option.dataset.source[ index ][ 6 ]
             }
         }
     },
@@ -28,7 +28,7 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            var str = params[0].data[4]
+            var str = params[0].data[6]
             for (var i=0; i<params.length; i++) {
                 var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 2 ])
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
@@ -37,9 +37,53 @@ JSPC.app.reporting.current.chart.option = {
         }
     },
     series: [
-        {
+            {
             name: '${labels.chart[0]}',
-            color: JSPC.app.reporting.helper.series.color.green,
+            color: JSPC.app.reporting.helper.series._color.yellow,
+            type: 'bar',
+            encode: {
+                x: 'id',
+                y: 'valueNeutralCons'
+            },
+            label: {
+                show: true,
+                position: 'top',
+                formatter (params) {
+                    var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralCons')
+                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                }
+            },
+            itemStyle: {
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('yellow', (params.data[7] == true))
+                }
+            }
+        },
+                {
+            name: '${labels.chart[1]}',
+            color: JSPC.app.reporting.helper.series._color.orange,
+            type: 'bar',
+            encode: {
+                x: 'id',
+                y: 'valueNeutralConsTax'
+            },
+            label: {
+                show: true,
+                position: 'top',
+                formatter (params) {
+                    var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralConsTax')
+                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
+                }
+            },
+            itemStyle: {
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('orange', (params.data[7] == true))
+                }
+            }
+        },
+        {
+            name: '${labels.chart[2]}',
+            color: JSPC.app.reporting.helper.series._color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -55,13 +99,13 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[5] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[7] == true))
                 }
             }
         },
         {
-            name: '${labels.chart[1]}',
-            color: JSPC.app.reporting.helper.series.color.blue,
+            name: '${labels.chart[3]}',
+            color: JSPC.app.reporting.helper.series._color.blue,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -77,7 +121,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[5] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[7] == true))
                 }
             }
         }

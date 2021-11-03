@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
+<%@ page import="de.laser.reporting.export.LocalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <semui:infoModal id="${modalID}">
@@ -8,7 +8,7 @@
             Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmer für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
             Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
@@ -17,13 +17,27 @@
         </p>
         <p>Aktuelle Teilnehmer sind unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
-    <div class="help-section" data-help-section="timeline-costX">B</div>
+    <div class="help-section" data-help-section="timeline-cost">
+        <p class="ui header">
+            Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmerkosten für diese Lizenz
+        </p>
+        <p>
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
+            Über betroffene Teilnehmerlizenzen und existierende Kostenposten werden folgende Informationen berechnet:
+        </p>
+        <p>
+            <i class="icon circle blue"></i> Kumulierter Endpreis in Euro (nach Steuern), <br />
+            <i class="icon circle green"></i> Kumulierter Wert in Euro, <br />
+            <i class="icon circle orange"></i> Neutrale Kosten in Euro (nach Steuern), <br />
+            <i class="icon circle yellow"></i> Neutrale Kosten in Euro
+        </p>
+    </div>
     <div class="help-section" data-help-section="timeline-entitlement">
         <p class="ui header">
             Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen.
             Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
@@ -37,10 +51,10 @@
             Die Abfrage visualisiert die zeitliche Entwicklung aller für diese Lizenz relevanten Teilnehmerlizenzen
         </p>
         <p>
-            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den Datumsgrenzen der jeweiligen Teilnehmerlizenzen.
+            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
         </p>
         <p>
-            Datumsangaben <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+            Start- und Enddatum <strong>in dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
             über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Teilnehmerlizenzen dagegen schon.
         </p>
     </div>

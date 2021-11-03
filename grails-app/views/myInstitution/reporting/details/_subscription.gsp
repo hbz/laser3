@@ -1,7 +1,7 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
 <laser:serviceInjection />
 
-<g:render template="/myInstitution/reporting/details/base.part1" />
+<g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -12,7 +12,7 @@
             <g:if test="${query.startsWith('subscription-x-member') || query.startsWith('memberSubscription-')}">
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:if>
-            <g:if test="${query == 'subscription-x-property'}">
+            <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'subscription-x-platform'}">
@@ -55,7 +55,7 @@
                         </td>
                     </g:if>
 
-                    <g:if test="${query == 'subscription-x-property'}">
+                    <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                         <td>
                             <%
                                 List<SubscriptionProperty> properties = BaseDetails.getPropertiesGeneric(sub, id as Long, contextService.getOrg()) as List<SubscriptionProperty>

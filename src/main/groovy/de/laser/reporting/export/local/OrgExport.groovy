@@ -4,15 +4,14 @@ import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.LocalExportHelper
+import de.laser.reporting.export.base.BaseDetailsExport
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
-import java.text.SimpleDateFormat
-
-class OrgExport extends BaseExport {
+class OrgExport extends BaseDetailsExport {
 
     static String KEY = 'organisation'
 
@@ -36,10 +35,10 @@ class OrgExport extends BaseExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
@@ -48,7 +47,7 @@ class OrgExport extends BaseExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
                             agency: [
@@ -57,7 +56,7 @@ class OrgExport extends BaseExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
@@ -73,7 +72,7 @@ class OrgExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportLocalHelper.normalizeSelectedMultipleFields( this )
+        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -83,18 +82,17 @@ class OrgExport extends BaseExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportLocalHelper.getFieldLabel( this, fieldName )
+        LocalExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
-    List<String> getObject(Object obj, Map<String, Object> fields) {
+    List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
 
         Org org = obj as Org
-        List<String> content = []
+        List content = []
 
         fields.each{ f ->
             String key = f.key
@@ -106,39 +104,17 @@ class OrgExport extends BaseExport {
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
-                else if (Org.getDeclaredField(key).getType() == Date) {
-                    if (org.getProperty(key)) {
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                        content.add( sdf.format( org.getProperty(key) ) as String )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
-                else if (Org.getDeclaredField(key).getType() in [boolean, Boolean]) {
-                    if (org.getProperty(key) == true) {
-                        content.add( RDStore.YN_YES.getI10n('value') )
-                    }
-                    else if (org.getProperty(key) == false) {
-                        content.add( RDStore.YN_NO.getI10n('value') )
-                    }
-                    else {
-                        content.add( '' )
-                    }
-                }
                 else {
-                    content.add( org.getProperty(key) as String )
+                    content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String rdv = org.getProperty(key)?.getI10n('value')
-                content.add( rdv ?: '')
+                content.add( getRefdataContent(org, key) )
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = org.getProperty(key) as Set
-                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
+                content.add( getJointableRefdataContent(org, key) )
             }
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
@@ -177,7 +153,7 @@ class OrgExport extends BaseExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-org-contact') {
+                else if (key == '@-org-contact') {
 
                     List coList = []
 
@@ -237,7 +213,7 @@ class OrgExport extends BaseExport {
 
                     content.add( coList.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-readerNumber') {
+                else if (key == '@-org-readerNumber') {
 
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
 
@@ -278,7 +254,7 @@ class OrgExport extends BaseExport {
 
                     content.add( entries.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '@ae-org-accessPoint') {
+                else if (key == '@-org-accessPoint') {
 
                     List oapList = []
 

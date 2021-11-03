@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
@@ -12,15 +12,7 @@
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part1" model="${[cfgKey: "${BaseConfig.KEY_COSTITEM}"]}" />
-
-        <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY_MYINST}',
-                filter: '${BaseConfig.KEY_COSTITEM}',
-                token: '${token}'
-            }
-        </laser:script>
+        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_COSTITEM}"]}" />
 
     </g:if>
     <g:else>
