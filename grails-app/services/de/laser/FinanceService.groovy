@@ -102,6 +102,8 @@ class FinanceService {
             IssueEntitlement ie = params.newIE ? (IssueEntitlement) genericOIDService.resolveOID(params.newIE) : null
             IssueEntitlementGroup issueEntitlementGroup = params.newTitleGroup ? (IssueEntitlementGroup) genericOIDService.resolveOID(params.newTitleGroup) : null
             Map<String, Object> configMap = setupConfigMap(params, result.institution)
+            Boolean billingSumRounding = params.newBillingSumRounding == 'on'
+            Boolean finalCostRounding = params.newFinalCostRounding == 'on'
             if (! subsToDo) {
                 subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
@@ -144,8 +146,8 @@ class FinanceService {
                 newCostItem.costTitle = configMap.costTitle
                 newCostItem.costInBillingCurrency = configMap.costBillingCurrency
                 newCostItem.costInLocalCurrency = configMap.costLocalCurrency
-                newCostItem.billingSumRounding = Boolean.valueOf(params.billingSumRounding)
-                newCostItem.finalCostRounding = Boolean.valueOf(params.finalCostRounding)
+                newCostItem.billingSumRounding = billingSumRounding
+                newCostItem.finalCostRounding = finalCostRounding
                 newCostItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrencyAfterTax
                 newCostItem.costInLocalCurrencyAfterTax = configMap.costLocalCurrencyAfterTax
                 newCostItem.currencyRate = configMap.currencyRate
@@ -230,6 +232,8 @@ class FinanceService {
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)
+                Boolean billingSumRounding = params.newBillingSumRounding == 'on'
+                Boolean finalCostRounding = params.newFinalCostRounding == 'on'
                 List<CostItem> costItems = CostItem.findAllByIdInList(selectedCostItems)
                 costItems.each { CostItem costItem ->
                     if(costItem && costItem.costItemStatus != RDStore.COST_ITEM_DELETED){
@@ -237,7 +241,7 @@ class FinanceService {
                         costItem.invoice = configMap.invoice ?: costItem.invoice
                         costItem.costItemElement = configMap.costItemElement ?: costItem.costItemElement
                         costItem.costItemElementConfiguration = configMap.elementSign ?: costItem.costItemElementConfiguration
-                        costItem.costItemStatus = params.newCostItemStatus ? RefdataValue.get(params.newCostItemStatus) : null
+                        costItem.costItemStatus = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? RefdataValue.get(params.newCostItemStatus) : null
                         if(configMap.taxKey)
                             costItem.taxKey = configMap.taxKey
                         int taxRate = 0 //fallback
@@ -256,8 +260,8 @@ class FinanceService {
                             costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                         }
-                        costItem.billingSumRounding = Boolean.valueOf(params.billingSumRounding) != costItem.billingSumRounding ? Boolean.valueOf(params.billingSumRounding) : costItem.billingSumRounding
-                        costItem.finalCostRounding = Boolean.valueOf(params.finalCostRounding) != costItem.finalCostRounding ? Boolean.valueOf(params.finalCostRounding) : costItem.finalCostRounding
+                        costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
+                        costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
                         if(configMap.currencyRate) {
                             costItem.currencyRate = configMap.currencyRate
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
