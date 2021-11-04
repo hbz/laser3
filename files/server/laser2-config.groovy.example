@@ -29,7 +29,7 @@ financials.currency = "EUR|GBP|USD|CHF" // priority of order
 globalDataSyncJobActiv = false
 
 grails.mail.disabled = true
-grails.mail.overrideAddress = "laser_devoloper@hbz-nrw.de"
+grails.mail.overrideAddress = "laser@local"
 grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
 grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run'    // pdf generation; server only
 grails.plugin.databasemigration.updateOnStart = true
