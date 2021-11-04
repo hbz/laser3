@@ -34,7 +34,7 @@ class OrganisationQuery extends BaseQuery {
 
             handleGenericAllQuery(
                     params.query,
-                    'select o.name, o.name, count(o.name) from Org o where o.id in (:idList) group by o.name',
+                    'select o.name, o.name, count(o.name) from Org o where o.id in (:idList) group by o.name order by o.name',
                     'select o.id from Org o where o.id in (:idList) and o.name = :d order by o.id',
                     idList,
                     result
@@ -121,7 +121,7 @@ class OrganisationQuery extends BaseQuery {
                         params.query,
                         'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
                         'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
-                        'select o.id from Org o where o.id in (:idList)', // modified idList
+                        'select o.id from Org o where o.id in (:idList)', // inversed idList
                         idList,
                         result
                 )
