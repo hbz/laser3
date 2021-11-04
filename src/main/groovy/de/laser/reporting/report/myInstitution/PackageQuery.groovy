@@ -103,18 +103,8 @@ class PackageQuery extends BaseQuery {
                         'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
                         [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
                 )
-
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL), noDataList.size()])
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL),
-                            idList: noDataList,
-                            value1: 0,
-                            value2: noDataList.size()
-                    ])
+                    handleGenericNonMatchingData2Values_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
                 }
             }
             else if (params.query in ['package-x-platform']) {
@@ -168,16 +158,7 @@ class PackageQuery extends BaseQuery {
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
-                            idList: noDataList,
-                            value1: 0,
-                            value2: noDataList.size()
-                    ])
+                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 }
             }
             else if (params.query in ['package-x-ddc']) {
@@ -205,16 +186,7 @@ class PackageQuery extends BaseQuery {
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
-                            idList: noDataList,
-                            value1: 0,
-                            value2: noDataList.size()
-                    ])
+                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 }
             }
         }

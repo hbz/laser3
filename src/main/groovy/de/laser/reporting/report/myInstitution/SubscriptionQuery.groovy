@@ -136,14 +136,7 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL), noDataList.size()])
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL),
-                            idList: noDataList
-                    ])
+                    handleGenericNonMatchingData1Value_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
                 }
             }
             else if (params.query in ['subscription-x-platform']) {
@@ -187,16 +180,7 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL), noDataList.size()])
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL),
-                            idList: noDataList,
-                            value1: 0,
-                            value2: noDataList.size()
-                    ])
+                    handleGenericNonMatchingData2Values_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
                 }
             }
             else if (params.query in ['subscription-x-property']) {
