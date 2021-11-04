@@ -14,7 +14,7 @@
     </g:form>
 </semui:filter>
 
-
+<br><br>
 <g:form action="addSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
