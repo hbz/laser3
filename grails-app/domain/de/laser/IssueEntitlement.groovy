@@ -13,6 +13,25 @@ import org.apache.commons.logging.LogFactory
 import javax.persistence.Transient
 import java.text.Normalizer
 
+/**
+ * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
+ * The individually negotiated subscription holding may differ from what a provider offers usually. Those differences must be reflected in the issue entitlement record; that is why there are some
+ * fields in both classes. In detail:
+ * <ul>
+ *     <li>acces start/end may be different</li>
+ *     <li>name</li>
+ *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
+ *     <li>prices may differ from list prices on global level (the {@link PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>coverage entities may differ from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
+ * </ul>
+ * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
+ * @see IssueEntitlementCoverage
+ * @see IssueEntitlementGroup
+ * @see IssueEntitlementGroupItem
+ * @see PriceItem
+ * @see TitleInstancePackagePlatform
+ * @see Subscription
+ */
 class IssueEntitlement extends AbstractBase implements Comparable {
 
     def deletionService
