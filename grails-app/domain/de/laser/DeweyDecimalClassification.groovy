@@ -7,9 +7,11 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 /**
- * A container class to retain Dewey decimal classifications of titles and packages
+ * A container class to retain Dewey decimal classifications of titles and packages.
+ * The structure is the same as in {@link Language} just as the purpose is
  * @see TitleInstancePackagePlatform
  * @see Package
+ * @see Language
  */
 class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
