@@ -1,8 +1,11 @@
 package de.laser.reporting.report.myInstitution
 
+import de.laser.DeweyDecimalClassification
+import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Package
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -25,7 +28,13 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['*']) {
 
-            println '--- TODO ---'
+            handleGenericAllQuery(
+                    params.query,
+                    'select pkg.name, pkg.name, count(pkg.name) from Package pkg where pkg.id in (:idList) group by pkg.name order by pkg.name',
+                    'select pkg.id from Package pkg where pkg.id in (:idList) and pkg.name = :d order by pkg.id',
+                    idList,
+                    result
+            )
         }
         else if ( suffix in ['breakable']) {
 
@@ -53,12 +62,23 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['package-x-provider']) {
+            if (params.query in ['package-x-identifier']) {
 
-                result.data = Org.executeQuery(
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
+                        idList,
+                        result
+                )
+            }
+            else if (params.query in ['package-x-provider']) {
+
+                result.data = idList ? Org.executeQuery(
                         'select o.id, o.name, count(*) from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) group by o.id order by o.name',
                         [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
-                )
+                ) : []
                 result.data.each { d ->
                     result.dataDetails.add([
                             query : params.query,
@@ -99,10 +119,10 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-platform']) {
 
-                result.data = Platform.executeQuery(
+                result.data = idList ? Platform.executeQuery(
                         'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) group by p.id order by p.name',
                         [idList: idList]
-                )
+                ) : []
                 result.data.eachWithIndex { d, i ->
                     List<Long> pkgIdList = Package.executeQuery(
                             'select pkg.id from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) and p.id = :d order by pkg.name',
@@ -122,6 +142,80 @@ class PackageQuery extends BaseQuery {
                         idList,
                         result
                 )
+            }
+            else if (params.query in ['package-x-language']) {
+
+                result.data = idList ? Language.executeQuery(
+                        'select lang.id, lang.language.id, count(*) from Package pkg join pkg.languages lang where pkg.id in (:idList) group by lang.id, lang.language.id order by lang.id',
+                        [idList: idList]
+                ) : []
+
+                result.data.each { d ->
+                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.languages lang where pkg.id in (:idList) and lang.id = :d order by pkg.name',
+                                    [d: d[0], idList: idList]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                if (noDataList) {
+                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : null,
+                            label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
+                            idList: noDataList,
+                            value1: 0,
+                            value2: noDataList.size()
+                    ])
+                }
+            }
+            else if (params.query in ['package-x-ddc']) {
+
+                result.data = idList ? DeweyDecimalClassification.executeQuery(
+                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
+                        [idList: idList]
+                ) : []
+
+                result.data.each { d ->
+                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
+                                    [d: d[0], idList: idList]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                if (noDataList) {
+                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : null,
+                            label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
+                            idList: noDataList,
+                            value1: 0,
+                            value2: noDataList.size()
+                    ])
+                }
             }
         }
 

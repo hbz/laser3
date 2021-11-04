@@ -31,7 +31,7 @@ class SubscriptionQuery extends BaseQuery {
 
             handleGenericAllQuery(
                     params.query,
-                    'select s.name, s.name, count(s.name) from Subscription s where s.id in (:idList) group by s.name',
+                    'select s.name, s.name, count(s.name) from Subscription s where s.id in (:idList) group by s.name order by s.name',
                     'select s.id from Subscription s where s.id in (:idList) and s.name = :d order by s.id',
                     idList,
                     result
@@ -229,7 +229,7 @@ class SubscriptionQuery extends BaseQuery {
                         params.query,
                         'select ns.id, ns.ns, count(*) from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
                         'select sub.id from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
-                        'select sub.id from Subscription sub where sub.id in (:idList)', // modified idList
+                        'select sub.id from Subscription sub where sub.id in (:idList)', // inversed idList
                         idList,
                         result
                 )
