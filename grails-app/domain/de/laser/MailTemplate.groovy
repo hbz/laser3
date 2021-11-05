@@ -1,5 +1,9 @@
 package de.laser
 
+/**
+ * This class represents a mail template element for the (semi-)automatised sending of mails ex LAS:eR.
+ * The sending procedure is controlled by the flag sentBySystem
+ */
 class MailTemplate {
 
     String name
