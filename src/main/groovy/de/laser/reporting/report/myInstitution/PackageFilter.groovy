@@ -1,14 +1,18 @@
 package de.laser.reporting.report.myInstitution
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.Package
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.ApplicationContext
 
 class PackageFilter extends BaseFilter {
 
@@ -20,12 +24,27 @@ class PackageFilter extends BaseFilter {
         List<String> whereParts         = [ 'where pkg.id in (:packageIdList)']
         Map<String, Object> queryParams = [ packageIdList: [] ]
 
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        ContextService contextService  = mainContext.getBean('contextService')
+
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'package' + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
 
         switch (filterSource) {
             case 'all-pkg':
                 queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
+                break
+            case 'my-pkg':
+                List<Long> subIdList = Subscription.executeQuery(
+                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
+                        [roleTypes: [
+                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+                        ], ctx: contextService.getOrg()])
+
+                queryParams.packageIdList = Package.executeQuery(
+                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:idList)',
+                        [idList: subIdList]
+                )
                 break
         }
 
@@ -98,7 +117,7 @@ class PackageFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('packageIdList', Package.executeQuery( query, queryParams ))
+        filterResult.data.put('packageIdList', queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : [])
 
 //        println 'packages (raw) >> ' + queryParams.packageIdList.size()
 //        println 'packages (queried) >> ' + filterResult.data.packageIdList.size()
