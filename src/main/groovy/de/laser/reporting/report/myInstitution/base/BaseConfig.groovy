@@ -56,7 +56,7 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE //, KEY_PACKAGE // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE // 'costItem'
     ]
 
     static List<String> CHARTS = [

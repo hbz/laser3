@@ -148,13 +148,36 @@ class BaseQuery {
         List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
         if (noDataList) {
-            result.data.add( [null, getMessage(NO_DATA_LABEL), noDataList.size()] )
+            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
+        }
+    }
 
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     null,
-                    label:  getMessage(NO_DATA_LABEL),
-                    idList: noDataList
+    static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
+
+        if (noDataList) {
+            result.data.add([null, getMessage(label), noDataList.size()])
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : null,
+                    label : getMessage(label),
+                    idList: noDataList,
+            ])
+        }
+    }
+
+    static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
+
+        if (noDataIdList) {
+            result.data.add([null, getMessage(label), noDataIdList.size()])
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : null,
+                    label : getMessage(label),
+                    idList: noDataIdList,
+                    value1: 0,
+                    value2: noDataIdList.size()
             ])
         }
     }
@@ -225,16 +248,7 @@ class BaseQuery {
         List<Long> noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
         if (noDataList) {
-            result.data.add( [null, getMessage(NO_IDENTIFIER_LABEL), noDataList.size()] )
-
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     null,
-                    label:  getMessage(NO_IDENTIFIER_LABEL),
-                    idList: noDataList,
-                    value1: 0,
-                    value2: noDataList.size(),
-            ])
+            handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
         }
     }
 
@@ -315,14 +329,7 @@ class BaseQuery {
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
         if (noDataList) {
-            result.data.add([null, getMessage(NO_DATA_LABEL), noDataList.size()])
-
-            result.dataDetails.add([
-                    query : query,
-                    id    : null,
-                    label : getMessage(NO_DATA_LABEL),
-                    idList: noDataList
-            ])
+            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
         }
     }
 

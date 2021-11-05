@@ -29,8 +29,8 @@
                     <tr>
                         <td>${entry.tippId} + ${entry.wekbId}</td>
                         <td>${entry.name}</td>
-                        <td>${entry.laserStatus}</td>
                         <td>${entry.wekbStatus}</td>
+                        <td>${entry.laserStatus}</td>
                         <td>
                             <ul>
                                 <g:each in="${entry.issueEntitlements}" var="ie">
