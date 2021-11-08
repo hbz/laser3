@@ -5,6 +5,15 @@ import de.laser.auth.User
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This class represents settings for a user; it ensures preferences of the user using the system.
+ * These settings are used in various places in the system; they control the look-and-feel on the one hand,
+ * reminders and alerting periods on the other. See the enum {@link UserSetting.KEYS} for the full list of
+ * configurable settings
+ * OrgSetting is a class with the same functionality for organisations
+ * @see Org
+ * @see OrgSetting
+ */
 class UserSetting {
 
     def genericOIDService
@@ -12,6 +21,9 @@ class UserSetting {
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
     final static DEFAULT_REMINDER_PERIOD = 14
 
+    /**
+     * The settings for an {@link User} which can be configured
+     */
     static enum KEYS {
         PAGE_SIZE                                   (Long),
         DASHBOARD                                   (Org),
@@ -112,9 +124,9 @@ class UserSetting {
         dateCreated (nullable: true)
     }
 
-    /*
-        returns user depending setting for given key
-        or SETTING_NOT_FOUND if not
+    /**
+     * Returns the user depending setting for the given key or SETTING_NOT_FOUND if not
+     * @return the user setting if found, SETTING_NOT_FOUND constant otherwise
      */
     static def get(User user, KEYS key) {
 
@@ -122,8 +134,9 @@ class UserSetting {
         uss ?: SETTING_NOT_FOUND
     }
 
-    /*
-        adds new user depending setting (with value) for given key
+    /**
+     * Adds a new user depending setting (with value) for the given key
+     * @return the new user setting
      */
     static UserSetting add(User user, KEYS key, def value) {
 
@@ -136,8 +149,8 @@ class UserSetting {
         }
     }
 
-    /*
-        deletes user depending setting for given key
+    /**
+     * Deletes the given user depending setting for the given key
      */
     static void delete(User user, KEYS key) {
 
@@ -147,8 +160,8 @@ class UserSetting {
         }
     }
 
-    /*
-        gets parsed value by key.type
+    /**
+     * Gets the parsed value depending on {@link UserSetting.KEYS#type}
      */
     def getValue() {
 
@@ -174,8 +187,8 @@ class UserSetting {
         result
     }
 
-    /*
-        sets value by key.type
+    /**
+     * Sets the value by the given {@link UserSetting.KEYS#type}
      */
     def setValue(def value) {
 
