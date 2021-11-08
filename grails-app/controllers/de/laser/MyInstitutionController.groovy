@@ -105,17 +105,7 @@ class MyInstitutionController  {
         result.cfgFilterList = BaseConfig.FILTER
         result.cfgChartsList = BaseConfig.CHARTS
 
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Closure getReportingKeys = {
-            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
-        }
-
-        if (params.cmd == 'deleteHistory') {
-            getReportingKeys().each {it ->
-                sessionCache.remove( it )
-            }
-        }
-        else if (params.filter) {
+        if (params.filter) {
             reportingGlobalService.doFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
@@ -147,9 +137,6 @@ class MyInstitutionController  {
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, result.token as String)
             rCache.put( cacheMap )
         }
-
-        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(10)
-        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
 
         render view: 'reporting/index', model: result
     }

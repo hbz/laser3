@@ -14,6 +14,7 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.ReportingFilter
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.Subscription
@@ -36,7 +37,9 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SessionCacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -495,6 +498,54 @@ class AjaxHtmlController {
     }
 
     // ----- reporting -----
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def reporting() {
+        Map<String, Object> result = [
+            tab: params.tab
+        ]
+
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Closure getReportingKeys = {
+            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
+        }
+
+        if (params.context == BaseConfig.KEY_MYINST) {
+
+            if (params.cmd == 'deleteHistory') {
+                getReportingKeys().each {it ->
+                    sessionCache.remove( it )
+                }
+            }
+            else if (params.token) {
+                if (params.cmd == 'addBookmark') {
+                    ReportingCache rc = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token)
+                    ReportingFilter rf = ReportingFilter.construct(
+                            rc,
+                            contextService.getUser(),
+                            BaseConfig.getMessage('base.filter.' + rc.readMeta().filter) + ' - ' + DateUtils.getSDF_OnlyTime().format(System.currentTimeMillis()),
+                            rc.readFilterCache().result.replaceAll('<strong>', '').replaceAll('</strong>', '') as String
+                    )
+                    result.lastAddedBookmarkId = rf.id
+                }
+                else if (params.cmd == 'deleteBookmark') {
+                    ReportingFilter rf = ReportingFilter.findByTokenAndOwner(params.token, contextService.getUser())
+                    if (rf) {
+                        rf.delete()
+                    }
+                }
+            }
+        }
+        result.bookmarks = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
+
+        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(5)
+        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
+
+        render template: '/myInstitution/reporting/historyAndBookmarks', model: result
+    }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
