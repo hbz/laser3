@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden
 
 3964    04.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Einstiegspunkt - Pakete
 
