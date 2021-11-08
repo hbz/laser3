@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -18,7 +18,21 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <div class="ui message info">
+        <div style="margin: 0 0.5em">
+            <div id="bookmark-toggle" class="ui icon button right floated disabled">
+                <i class="icon bookmark"></i>
+            </div>
+            <div id="history-toggle" class="ui icon button right floated disabled">
+                <i class="icon history"></i>
+            </div>
+            <div id="info-toggle" class="ui icon button right floated">
+                <i class="icon question"></i>
+            </div>
+        </div>
+
+        <div id="hab-wrapper"></div>
+
+        <div id="info-content" class="ui message info hidden">
             <p>
                 <strong>${message(code:'reporting.macro.step1')}</strong> <br />
                 ${message(code:'reporting.macro.info1')}
@@ -31,44 +45,15 @@
                 <strong>${message(code:'reporting.macro.step3')}</strong> <br />
                 ${message(code:'reporting.macro.info3')}
             </p>
+            <p>
+                <i class="icon history"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
+                ${message(code:'reporting.macro.infoHistory')}
+            </p>
+            <p>
+                <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
+                ${message(code:'reporting.macro.infoBookmarks')}
+            </p>
         </div>
-
-        <g:if test="${filterHistory}">
-            <div id="history-chooser" class="ui icon button right floated">
-                <i class="icon history"></i>
-            </div>
-            <div id="history-chooser-content" class="ui segment hidden">
-                <div class="ui form">
-                    <div class="field">
-                        <div class="ui relaxed divided list">
-                            <g:each in="${filterHistory}" var="fh">
-                                <g:set var="fhRCache" value="${new ReportingCache(ReportingCache.CTX_GLOBAL, fh.split('/').last() as String)}" />
-                                <g:set var="meta" value="${fhRCache.readMeta()}" />
-                                <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
-                                <div class="item">
-                                    <div class="image middle aligned"><i class="icon grey history large"></i></div>
-                                    <div class="content" style="line-height: 1.5em;">
-                                        <div class="header">
-                                            <g:link controller="myInstitution" action="reporting" params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                                ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)} - ${BaseConfig.getMessage('base.filter.' + meta.filter)}
-                                            </g:link>
-                                        </div>
-                                        <div class="description">
-                                            <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
-
-                                            <%= filterCache.result %>
-                                        </div>
-                                    </div>
-                                </div>
-                            </g:each>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <g:link action="reporting" class="ui button" params="${[cmd: 'deleteHistory']}">${message(code:'reporting.filter.history.delete')}</g:link>
-                    </div>
-                </div>
-            </div>
-        </g:if>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
 
@@ -124,17 +109,30 @@
         </g:if>
 
         <style>
-            #history-chooser-content { margin-top: 4.5em; }
+            #history-content, #bookmark-content, #info-content { margin-top: 4em; }
+            #history-content table .description ,
+            #bookmark-content table .description { margin: 0.3em 0; }
+            #last-added-bookmark { margin-left: 1em; }
             #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
             h3.ui.header { margin-top: 3em !important; }
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-
-            $('#history-chooser').on( 'click', function() {
-                $('#history-chooser-content').toggleClass('hidden');
+            $('#info-toggle').on( 'click', function() {
+                $('#history-content, #bookmark-content').addClass('hidden');
+                $('#info-content').toggleClass('hidden');
             })
+            $('#bookmark-toggle').on( 'click', function() {
+                $('#info-content, #history-content').addClass('hidden');
+                $('#bookmark-content').toggleClass('hidden');
+                $('#bookmark-content #last-added-bookmark').fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250);
+            })
+            $('#history-toggle').on( 'click', function() {
+                $('#info-content, #bookmark-content').addClass('hidden');
+                $('#history-content').toggleClass('hidden');
+            })
+            $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
