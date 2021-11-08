@@ -16167,14 +16167,18 @@ a.ui.basic.label:hover {
 }
 
 .ui.la-annual-rings-modern {
-  display: inline-block;
-  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   padding-left: 0.2em;
   padding-right: 0.2em;
   margin-bottom: 1.2em;
   background-color: transparent;
   border: none;
   vertical-align: super;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .ui.la-annual-rings-modern > a {
@@ -16209,9 +16213,9 @@ a.ui.basic.label:hover {
 }
 
 .ui.la-annual-rings-modern .la-annual-rings-text {
-  vertical-align: sub;
+  padding: 3px;
+  margin-top: 0.3rem;
   margin-right: -0.3em;
-  display: inline-block;
   color: rgba(0, 0, 0, 0.6);
   letter-spacing: 0.05em;
   font-weight: 700;
