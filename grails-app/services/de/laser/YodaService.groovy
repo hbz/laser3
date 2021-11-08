@@ -668,30 +668,32 @@ class YodaService {
             }
         }
         http.shutdown()
-        List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted or tipp.gokbId in (:deletedWekbIDs)', [deleted: RDStore.TIPP_STATUS_DELETED, deletedWekbIDs: wekbUuids.keySet()])
-        Set<String> keysToDelete = []
-        deletedLaserTIPPs.each { Map row ->
-            Map<String, Object> titleRow = row
-            titleRow.wekbStatus = wekbUuids.get(row.wekbId)
-            List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :deleted", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, deleted: RDStore.TIPP_STATUS_DELETED])
-            titleRow.issueEntitlements = issueEntitlements
-            if(doIt) {
-                if(!issueEntitlements) {
-                    keysToDelete << row.wekbId
+        if(wekbUuids) {
+            List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted or tipp.gokbId in (:deletedWekbIDs)', [deleted: RDStore.TIPP_STATUS_DELETED, deletedWekbIDs: wekbUuids.keySet()])
+            Set<String> keysToDelete = []
+            deletedLaserTIPPs.each { Map row ->
+                Map<String, Object> titleRow = row
+                titleRow.wekbStatus = wekbUuids.get(row.wekbId)
+                List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :deleted", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, deleted: RDStore.TIPP_STATUS_DELETED])
+                titleRow.issueEntitlements = issueEntitlements
+                if(doIt) {
+                    if(!issueEntitlements) {
+                        keysToDelete << row.wekbId
+                    }
+                    else titles << titleRow
                 }
-                else titles << titleRow
+                else
+                    titles << titleRow
             }
-            else
-                titles << titleRow
-        }
-        if(doIt && keysToDelete) {
-            Set<TitleInstancePackagePlatform> toDelete = TitleInstancePackagePlatform.findAllByGokbIdInList(keysToDelete)
-            if(toDelete) {
-                toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
-                    deletionService.deleteTIPPsCascaded(subList)
+            if(doIt && keysToDelete) {
+                Set<TitleInstancePackagePlatform> toDelete = TitleInstancePackagePlatform.findAllByGokbIdInList(keysToDelete)
+                if(toDelete) {
+                    toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
+                        deletionService.deleteTIPPsCascaded(subList)
+                    }
                 }
+                else log.info("no titles to delete")
             }
-            else log.info("no titles to delete")
         }
         result.titles = titles
         result
