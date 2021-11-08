@@ -60,7 +60,14 @@
                       <g:link uri="${source.uri + '?verb=ListRecords&metadataPrefix=' + source.fullPrefix + '&from=' + formatDate(format: "yyyy-MM-dd'T'HH:mm:ss'Z'", date: source.haveUpTo)}" target="_blank">Link</g:link>
                   </g:if>
                   <g:elseif test="${source.type == "JSON"}">
-                      <g:link uri="${source.uri + 'find?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}" target="_blank">Link</g:link>
+                      <%
+                          Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",GlobalSourceSyncService.PERMANENTLY_DELETED]
+                          String statusString = ""
+                          requestedStatus.each { String status ->
+                              statusString += "&status=${status}"
+                          }
+                      %>
+                      <g:link uri="${source.uri + 'find?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}${statusString}" target="_blank">Link</g:link>
                   </g:elseif>
               </td>
               <td>${source.listPrefix}</td>

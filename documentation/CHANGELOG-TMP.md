@@ -7,7 +7,6 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-
 3964    04.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Einstiegspunkt - Pakete
 
 3957    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Verteilungsdiagramme überarbeiten (29.10.2021 @ dev)
