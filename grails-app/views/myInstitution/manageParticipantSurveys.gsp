@@ -215,7 +215,6 @@
                                     <i class="icon pie chart la-list-icon"></i>
                                 </span>
                             </g:if>
-                            <i class="icon chart pie la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
                                 ${surveyConfig?.getSurveyName()}
                             </g:link>

@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3972    08.11.2021  rc-2.2  2.2.4       Moe     Bug         Kostenelemente in Umfrage: USD nicht als Währung erkannt
 
 3964    04.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Einstiegspunkt - Pakete
 

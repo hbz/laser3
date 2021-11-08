@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.helper.RDStore; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.finance.CostItemElementConfiguration;" %>
 <laser:serviceInjection/>
 
 <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
@@ -29,7 +29,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <laser:select name="newCostItemElement" class="ui dropdown"
+                    <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -42,7 +42,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label><g:message code="financials.costItemConfiguration"/></label>
-                <laser:select name="ciec" class="ui dropdown"
+                <laser:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
                               from="${costItemSigns}"
                               optionKey="id"
                               optionValue="value"
@@ -53,9 +53,8 @@
 
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
-            <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}"
+            <laser:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
                           class="ui dropdown"
-                          id="newCostItemStatus"
                           from="${costItemStatus}"
                           optionKey="id"
                           optionValue="value"
@@ -75,13 +74,13 @@
                 <label>${message(code: 'financials.invoice_total')}</label>
                 <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text" class="calc"
                        style="width:50%"
-                       name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                       name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}"
                        placeholder="${g.message(code: 'financials.invoice_total')}"
                        value="<g:formatNumber
                                number="${costItem?.costInBillingCurrency}"
                                minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                <g:select class="ui dropdown la-small-dropdown la-not-clearable" name="newCostCurrency"
+                <g:select class="ui dropdown la-small-dropdown la-not-clearable" name="newCostCurrency" id="newCostCurrency_${idSuffix}"
                           title="${message(code: 'financials.addNew.currencyType')}"
                           from="${currency}"
                           optionKey="id"
@@ -91,7 +90,7 @@
             <div class="field">
                 <label><g:message code="financials.newCosts.totalAmount"/></label>
                 <input title="${g.message(code: 'financials.newCosts.totalAmount')}" type="text" readonly="readonly"
-                       name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
+                       name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax_${idSuffix}"
                        value="<g:formatNumber
                                number="${costItem?.costInBillingCurrencyAfterTax}"
                                minFractionDigits="2" maxFractionDigits="2"/>"/>
@@ -106,7 +105,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
+                <g:select class="ui dropdown calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                           from="${CostItem.TAX_TYPES}"
                           optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
                           optionValue="${{ it.display ? it.taxType.getI10n("value") + " (" + it.taxRate + "%)" : it.taxType.getI10n("value") }}"
@@ -120,14 +119,14 @@
             <div class="field">
                 <div class="ui checkbox">
                     <label><g:message code="financials.newCosts.roundBillingSum"/></label>
-                    <input name="newBillingSumRounding" class="hidden calc" type="checkbox"
+                    <input name="newBillingSumRounding" id="newBillingSumRounding_${idSuffix}" class="hidden calc" type="checkbox"
                         <g:if test="${costItem?.billingSumRounding}">checked="checked"</g:if>/>
                 </div>
             </div><!-- .field -->
             <div class="field">
                 <div class="ui checkbox">
                     <label><g:message code="financials.newCosts.roundFinalSum"/></label>
-                    <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
+                    <input name="newFinalCostRounding" id="newFinalCostRounding_${idSuffix}" class="hidden calc" type="checkbox"
                         <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                 </div>
             </div><!-- .field -->
@@ -160,117 +159,118 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.app.costItemElementConfigurations = ${raw(orgConfigurations as String)};
-        console.log(JSPC.app.costItemElementConfigurations);
-        JSPC.app.eurVal = "${RefdataValue.getByValueAndCategory('EUR', 'Currency').id}";
-
-        $("#newCostInBillingCurrency").change(function(){
-            var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR', 'Currency').id};
-            if($("#newCostCurrency").val() == currencyEUR) {
-                $("#costButton1").click();
-            }
-        });
-
-        $("#costButton1").click(function () {
-            if (! JSPC.app.isError("#newCostInBillingCurrency") && ! JSPC.app.isError("#newCostCurrencyRate")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency").val());
-                input.val(JSPC.app.convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
-
-                $(".la-account-currency").find(".field").removeClass("error");
-                JSPC.app.calcTaxResults()
-            }
-        });
-
-
-        $("#newCostItemElement").change(function () {
-            if (typeof(JSPC.app.costItemElementConfigurations[$(this).val()]) !== 'undefined')
-                $("[name='ciec']").dropdown('set selected', JSPC.app.costItemElementConfigurations[$(this).val()]);
-            else
-                $("[name='ciec']").dropdown('set selected', 'null');
-        });
-        JSPC.app.isError = function (cssSel) {
-            if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
+    JSPC.app.finance${idSuffix} = {
+        userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
+        currentForm: $("#editCost_${idSuffix}"),
+        costBillingCurrency: $("#newCostInBillingCurrency_${idSuffix}"),
+        costBillingCurrencyAfterTax: $("#newCostInBillingCurrencyAfterTax_${idSuffix}"),
+        costCurrency: $("#newCostCurrency_${idSuffix}"),
+        costItemElement: $("#newCostItemElement_${idSuffix}"),
+        billingSumRounding: $("#newBillingSumRounding_${idSuffix}"),
+        finalCostRounding: $("#newFinalCostRounding_${idSuffix}"),
+        taxRate: $("#newTaxRate_${idSuffix}"),
+        ciec: $("#ciec_${idSuffix}"),
+        costElems: $("#newCostInBillingCurrency_${idSuffix}"),
+        calc: $(".calc"),
+        costItemElementConfigurations: {
+    <%
+        costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
+            String tmp = "${ciec.costItemElement.id}: ${ciec.elementSign.id}"
+            if(i < costItemElements.size() - 1)
+                tmp += ','
+            println tmp
+        }
+    %>
+    },
+    eurVal: "${RDStore.CURRENCY_EUR.id}",
+        isError: function(elem)  {
+            if (elem.val().length <= 0 || elem.val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");
-                $(cssSel).parent(".field").addClass("error");
+                elem.parent(".field").addClass("error");
                 return true
             }
             return false
-        };
+        },
+        calcTaxResults: function () {
+            let roundB = JSPC.app.finance${idSuffix}.billingSumRounding.prop('checked');
+            let roundF = JSPC.app.finance${idSuffix}.finalCostRounding.prop('checked');
+            //console.log(taxRate.val());
+            let taxF = 1.0 + (0.01 * JSPC.app.finance${idSuffix}.taxRate.val().split("§")[1]);
+            let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
+            let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedBillingCurrency)
+            JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(billingCurrencyAfterRounding));
+            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF)
 
-        $('.calc').on('change', function () {
-            JSPC.app.calcTaxResults()
-        });
-
-        JSPC.app.calcTaxResults = function () {
-            var roundF = $('*[name=newFinalCostRounding]').prop('checked');
-            var roundB = $('*[name=newBillingSumRounding]').prop('checked');
-            console.log($("*[name=newTaxRate]").val());
-            var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
-
-            var parsedBillingCurrency = JSPC.app.convertDouble($("#newCostInBillingCurrency").val());
-
-            $('#newCostInBillingCurrencyAfterTax').val(
-                roundF ? Math.round(parsedBillingCurrency * taxF) : JSPC.app.convertDouble(parsedBillingCurrency * taxF)
+            JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
+                 JSPC.app.finance${idSuffix}.outputValue(billingAfterTax)
             );
-
-            $('#newCostInBillingCurrency').val(
-                roundB ? Math.round(parsedBillingCurrency) : JSPC.app.convertDouble(parsedBillingCurrency)
-            );
-        };
-
-        JSPC.app.costElems = $("#newCostInBillingCurrency");
-
-        JSPC.app.costElems.on('change', function () {
-            if($("[name='newCostCurrency']").val() != 0) {
-                $("#newCostCurrency").parent(".field").removeClass("error");
-            }
-            else {
-                $("#newCostCurrency").parent(".field").addClass("error");
-            }
-        });
-
-        $("#editCost").submit(function(e){
-            e.preventDefault();
-            if($("[name='newCostCurrency']").val() != 0) {
-                $(this).unbind('submit').submit();
-            }
-            else {
-                alert("${message(code: 'financials.newCosts.noCurrencyPicked')}");
-                $("#newCostCurrency").parent(".field").addClass("error");
-            }
-        });
-
-
-        JSPC.app.convertDouble = function (input) {
-            //console.log("input: "+input+", typeof: "+typeof(input));
-            var output;
+        },
+        convertDouble: function (input) {
+            let output;
             //determine locale from server
-            var userLang = "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE, null)}";
-            //console.log(userLang);
             if(typeof(input) === 'number') {
                 output = input.toFixed(2);
-                if(userLang !== 'en')
-                    output = output.replace(".",",");
+                console.log("input: "+input+", typeof: "+typeof(input));
             }
             else if(typeof(input) === 'string') {
                 output = 0.0;
-                if(userLang === 'en') {
+                if(JSPC.app.finance${idSuffix}userLang === 'en') {
                     output = parseFloat(input);
                 }
                 else {
-                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
+                    if(input.match(/(\d+\.?)*\d+(,\d{2})?/g))
                         output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
-                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
+                    else if(input.match(/(\d+,?)*\d+(\.\d{2})?/g))
                         output = parseFloat(input.replace(/,/g, ""));
-                    }
                     else console.log("Please check over regex!");
                 }
                 //console.log("string input parsed, output is: "+output);
             }
             return output;
+        },
+        outputValue: function(input) {
+            //console.log(userLang);
+            let output;
+            if(JSPC.app.finance${idSuffix}.userLang !== 'en')
+                output = input.toString().replace(".",",");
+            else output = input.toString();
+            //console.log("output: "+output+", typeof: "+typeof(output));
+            return output;
+        },
+        init: function(elem) {
+            //console.log(this);
+            this.costItemElement.change(function() {
+                console.log(JSPC.app.finance${idSuffix}.ciec);
+                if(typeof(JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]) !== 'undefined')
+                    JSPC.app.finance${idSuffix}.ciec.dropdown('set selected', JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]);
+                else
+                    JSPC.app.finance${idSuffix}.ciec.dropdown('set selected','null');
+            });
+            this.calc.change( function() {
+                if('${idSuffix}' !== 'bulk')
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
+            });
+            this.costElems.change(function(){
+                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                }
+            });
+            this.currentForm.submit(function(e){
+                e.preventDefault();
+                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                }
+                else {
+                    alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                }
+            });
         }
+    }
+    JSPC.app.finance${idSuffix}.init();
 
 </laser:script>
 
