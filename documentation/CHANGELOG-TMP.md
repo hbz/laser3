@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3964    09.11.2021  dev     2.3         David   Feature     Reporting: Filter-Bookmarks
+3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden
+
+3972    08.11.2021  rc-2.2  2.2.4       Moe     Bug         Kostenelemente in Umfrage: USD nicht als Währung erkannt
 
 3964    04.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Einstiegspunkt - Pakete
 
@@ -524,7 +526,7 @@
 3553    10.06.2021  rc2.1   2.1         Andreas Bug         inkonsistentes Verhalten bei Paket verknüpfen behoben
 
 3551    10.06.2021  rc2.1   2.1         Andreas Bug         Pakete ohne Titel wurden nicht unter "Meine Pakete" aufgeführt
-   
+
 3108    10.06.2021  rc2.1   2.1         Andreas Feature     Hervorhebungen und Darstellungen des Schaltpultes
 
 2967/3532   10.06.2021  rc2.1   2.1-RC  Andreas Bug         Technischer Support unvollständig dargestellt
