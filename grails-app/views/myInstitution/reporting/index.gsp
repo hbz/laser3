@@ -19,11 +19,13 @@
         </h1>
 
         <div style="margin: 0 0.5em">
-            <div id="bookmark-toggle" class="ui icon button right floated disabled">
-                <i class="icon bookmark"></i>
+            <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+                    data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
+                    <i class="icon bookmark"></i>
             </div>
-            <div id="history-toggle" class="ui icon button right floated disabled">
-                <i class="icon history"></i>
+            <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+                    data-content="${message(code:'reporting.filter.history')}" data-position="top right">
+                    <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
                 <i class="icon question"></i>
@@ -119,18 +121,25 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.app.reporting.updateHabMenu = function (current) {
+                var base = ['info', 'bookmark', 'history']
+                var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
+
+                $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
+                $( '#' + current + '-content').toggleClass('hidden');
+                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue');
+                $( '#' + current + '-toggle').toggleClass('blue');
+            }
+
             $('#info-toggle').on( 'click', function() {
-                $('#history-content, #bookmark-content').addClass('hidden');
-                $('#info-content').toggleClass('hidden');
+                JSPC.app.reporting.updateHabMenu('info');
             })
             $('#bookmark-toggle').on( 'click', function() {
-                $('#info-content, #history-content').addClass('hidden');
-                $('#bookmark-content').toggleClass('hidden');
+                JSPC.app.reporting.updateHabMenu('bookmark');
                 $('#bookmark-content #last-added-bookmark').fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250);
             })
             $('#history-toggle').on( 'click', function() {
-                $('#info-content, #bookmark-content').addClass('hidden');
-                $('#history-content').toggleClass('hidden');
+                JSPC.app.reporting.updateHabMenu('history');
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
