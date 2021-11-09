@@ -5,6 +5,18 @@ import de.laser.auth.User
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfTask}, not part of a more complex workflow
+ * Tasks may but need not to be linked to an object; if they are, the following objects can contain them:
+ * <ul>
+ *     <li>{@link License}</li>
+ *     <li>{@link Org}</li>
+ *     <li><s>{@link Package}</s> (is still included in the domain model but is disused)</li>
+ *     <li>{@link Subscription}</li>
+ *     <li>{@link SurveyConfig}</li>
+ * </ul>
+ * Tasks have a status and can be assigned either to a single {@link User} or to the institution {@link Org} as a whole
+ */
 class Task {
 
     def deletionService
@@ -81,6 +93,10 @@ class Task {
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
+    /**
+     * Retrieves the associated objects to this task as link parameters
+     * @return a {@link List} of link argument maps, depending on the object type to which this task is associated
+     */
     def getObjects() {
         def result = []
 
@@ -98,6 +114,10 @@ class Task {
         result
     }
 
+    /**
+     * This getter is used by the mail template and retrieves link arguments for the object display to which this task is associated
+     * @return a {@link Map} of link arguments for the object with which this task is associated
+     */
     def getDisplayArgs() {
         Map<String, Object> displayArgs = [action: 'show', absolute: true]
         if (license) {

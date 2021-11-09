@@ -71,7 +71,7 @@ class Counter5Report extends AbstractReport {
     }
 
     /**
-     * This are the column headers which are mandatory for the respective COUNTER 5 report
+     * These are the column headers which are mandatory for the respective COUNTER 5 report
      */
     static enum COLUMN_HEADERS {
         PR (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
@@ -128,7 +128,7 @@ class Counter5Report extends AbstractReport {
 
     /**
      * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.
-     * @see {@link de.laser.StatsSyncService}
+     * @see de.laser.StatsSyncService
      */
     static Counter5Report construct(Map<String, Object> configMap) throws CreationException {
         Counter5Report c5report

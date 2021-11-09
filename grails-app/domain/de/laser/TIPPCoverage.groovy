@@ -9,7 +9,7 @@ import de.laser.base.AbstractCoverage
  * <ol>
  *     <li>date</li>
  *     <li>volume</li>
- *     <lI>issue</li>
+ *     <li>issue</li>
  * </ol>
  * meaning: startDate (startVolume:startIssue) - endDate (endVolume:endIssue)
  * Moreover, a coverage may contain a general remark note, a note about its depth (fulltext or abstract) and a embargo time mark
