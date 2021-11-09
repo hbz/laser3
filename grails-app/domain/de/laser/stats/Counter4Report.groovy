@@ -87,7 +87,7 @@ class Counter4Report extends AbstractReport {
 
     /**
      * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.
-     * @see {@link de.laser.StatsSyncService}
+     * @see de.laser.StatsSyncService
      */
     @Deprecated
     static Counter4Report construct(Map<String, Object> configMap) throws CreationException {
