@@ -5,8 +5,8 @@ import de.laser.annotations.RefdataAnnotation
 
 /**
  * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.
- * A reference group is linked to a temporal entity and we cannot have both due date and semester set. Only high schools use semesters; the reference groups pickable by them are thus linked to semester. All others go with due date.
- * See readerNumber.gsp for the groups pickable by each institution type
+ * A reference group is linked to a temporal entity and we cannot have both due date and semester set. Only high schools use semesters; the reference groups selectable by them are thus linked to semester. All others go with due date.
+ * See readerNumber.gsp for the groups selectable by each institution type
  */
 class ReaderNumber {
 
