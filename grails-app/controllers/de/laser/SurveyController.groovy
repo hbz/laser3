@@ -912,6 +912,8 @@ class SurveyController {
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
         }
+
+        result.idSuffix ="surveyCostItemsBulk"
         result
 
     }
@@ -1031,8 +1033,8 @@ class SurveyController {
                         surveyCostItem.billingSumRounding = billingSumRounding != surveyCostItem.billingSumRounding ? billingSumRounding : surveyCostItem.billingSumRounding
                         surveyCostItem.finalCostRounding = finalCostRounding != surveyCostItem.finalCostRounding ? finalCostRounding : surveyCostItem.finalCostRounding
 
-                        println( params.newFinalCostRounding)
-                        println( Boolean.valueOf(params.newFinalCostRounding))
+                        //println( params.newFinalCostRounding)
+                        //println( Boolean.valueOf(params.newFinalCostRounding))
                         //surveyCostItem.currencyRate = cost_currency_rate ?: surveyCostItem.currencyRate
                         surveyCostItem.taxKey = tax_key ?: surveyCostItem.taxKey
                         surveyCostItem.save()
@@ -2736,6 +2738,7 @@ class SurveyController {
 
         result.mode = result.costItem ? "edit" : ""
         result.taxKey = result.costItem ? result.costItem.taxKey : null
+        result.idSuffix = "edit_${result.costItem.id}"
         render(template: "/survey/costItemModal", model: result)
     }
 
