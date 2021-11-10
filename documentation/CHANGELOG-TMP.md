@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3968    10.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Filter-Bookmarks
+
 --      10.11.2021  rc-2.2  2.2.4       Andreas Feature     Cronjob-Intervall des Statistik-Syncs von monatlich auf wöchentlich verkürzt
 
 3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden

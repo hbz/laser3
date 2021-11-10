@@ -32,12 +32,12 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'package-breakable',
+                                            'package-breakable',     // ES
                                             'package-consistent',
                                             'package-contentType',
                                             'package-file',
                                             'package-packageStatus',
-                                            'package-scope',
+                                            'package-scope',     // ES
                                             'package-*'
                                     ]
                             ]
@@ -59,12 +59,32 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-curatoryGroup' : [ // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-openAccess' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-nationalRange' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-regionalRange' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-language' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'package-x-ddc' : [
+                                    'package-x-ddc' : [  // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
