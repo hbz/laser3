@@ -3,6 +3,17 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 
+/**
+ * This class represents a coverage span for a journal record. Coverage means the span of issues between which a periodic is offered in a package.
+ * The range consists of three parameters:
+ * <ol>
+ *     <li>date</li>
+ *     <li>volume</li>
+ *     <li>issue</li>
+ * </ol>
+ * meaning: startDate (startVolume:startIssue) - endDate (endVolume:endIssue)
+ * Moreover, a coverage may contain a general remark note, a note about its depth (fulltext or abstract) and a embargo time mark
+ */
 class TIPPCoverage extends AbstractCoverage {
 
     Date dateCreated

@@ -4,6 +4,11 @@ package de.laser
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This domain is part of the statistics component implemented for the Nationaler Statistikserver data.
+ * It serves to mark availability for titles; from when to when are reports available and how many of them
+ * Reports referred here are objects of the {@link Fact} class!
+ */
 class StatsTripleCursor {
 
     String titleId

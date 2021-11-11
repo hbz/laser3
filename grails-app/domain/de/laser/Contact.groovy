@@ -7,7 +7,10 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.logging.LogFactory
 
 /**
- * A contact address for a given {@link Person} or {@link Org}. Note that physical addresses are stored as {@link Address}es
+ * A contact address for a given {@link Person} or {@link Org}. Note that physical addresses are stored as {@link Address}es;
+ * the more appropriate name for this domain would be ContactDetails because the Person domain class represents the actual contact
+ * @see Address
+ * @see Person
  */
 @Slf4j
 class Contact implements Comparable<Contact>{

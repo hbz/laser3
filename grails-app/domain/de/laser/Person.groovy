@@ -11,6 +11,17 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A person is a contact entity; it does not need to be a person in the strict sense but also a collective or a
+ * functional entity. Contact is thus used synonymously to person in this context, despite the Contact domain class.
+ * A person may be attached to one or more organisations, titles, packages, licenses or subscriptions. This link is
+ * implemented by the {@link PersonRole} structure. As the contact details towards a person may vary from institution to
+ * institution, contact details such as addresses are stored separately from the person instance. Moreover, contacts may
+ * be public or private, i.e. visibility is restricted to the institution which set up the contact
+ * @see Address
+ * @see Contact
+ * @see PersonRole
+ */
 @Slf4j
 class Person extends AbstractBaseWithCalculatedLastUpdated {
 
@@ -92,16 +103,38 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         dateCreated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
-    
+
+    /**
+     * Gets all reference values in the given category string; is a mirror of the method in {@link RefdataValue}
+     * @param category the reference data category to look for
+     * @return a {@link List} of {@link RefdataValue}s matching the given category
+     * @see RefdataValue
+     * @see RefdataCategory#getAllRefdataValues(java.lang.String)
+     */
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
-    
+
+    /**
+     * Returns the person details as string, in the order (title) last name, first name, middle name
+     * @return a concatenated string of the person details
+     */
     @Override
     String toString() {
         ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
     }
 
+    /**
+     * Gets a person with the following parameters:
+     * @param firstName first name of the person
+     * @param lastName last name of the person or name of the collective
+     * @param tenant the institution ({@link Org}) who created the person
+     * @param isPublic the flag whether the contact point is public (= visible to everyone)
+     * @param contactType the distinction between a real person and a collective contact point; one of Functional Contact or Personal Contact
+     * @param org the organisation to which the contact is attached to
+     * @param functionType the type of function the person has, one of the {@link RDConstants#PERSON_FUNCTION} reference values
+     * @return a {@link List} of persons/contact points matching the given arguments, an empty list if nothing is found
+     */
     static Person lookup(String firstName, String lastName, Org tenant, boolean isPublic, RefdataValue contactType, Org org, RefdataValue functionType) {
 
         Person person
@@ -124,6 +157,12 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         person
     }
 
+    /**
+     * Retrieves all public persons attached to the given organisation and of the given function type
+     * @param org the organisation whose contacts should be retrieved
+     * @param func the function type string to get
+     * @return a {@link List} of persons matching to the given function type and attached to the given {@link Org}
+     */
     static List<Person> getPublicByOrgAndFunc(Org org, String func) {
         Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType.value = :functionType",
@@ -131,6 +170,26 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         )
     }
 
+    /**
+     * Gets all email addresses maintained by the context institution and matching to the given function type, ordered by public/private and then the org the person is being attached to
+     * @param func the requested function type as string (Functional Contact or Personal Contact)
+     * @param contextOrg the institution whose contacts should be retrieved
+     * @return a {@link Map} of structure
+     * {
+     *     publicContacts: {
+     *         org1: [mail1, mail2, ..., mailn],
+     *         org2: [mail1, mail2, ..., mailn],
+     *         ...,
+     *         orgn: [mail1, mail2, ..., mailn]
+     *     },
+     *     privateContacts: {
+     *         org1: [mail1, mail2, ..., mailn],
+     *         org2: [mail1, mail2, ..., mailn],
+     *         ...,
+     *         orgn: [mail1, mail2, ..., mailn]
+     *     }
+     * }
+     */
     static Map getPublicAndPrivateEmailByFunc(String func,Org contextOrg) {
         List allPersons = executeQuery('select p,pr from Person as p join p.roleLinks pr join p.contacts c where pr.functionType.value = :functionType',[functionType: func])
         Map publicContactMap = [:], privateContactMap = [:]
@@ -165,7 +224,14 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         [publicContacts: publicContactMap, privateContacts: privateContactMap]
     }
 
-    // if org is null, get ALL public responsibilities
+    /**
+     * Gets all public contacts attached to the given organisation and object, matching to the given responsibility.
+     * If org is null, this method gets ALL public responsibilities attached to the given object; if the object is missing, too, get all public responsibilities
+     * @param org the {@link Org} to which the contacts are attached to
+     * @param obj the object (one of {@link License}, {@link Package} or {@link Subscription}) for which the requested persons are responsible
+     * @param resp the responsibility of the persons requested
+     * @return a {@link List} of persons attached to the given organisation and object and matching to the given responsibility
+     */
     static List<Person> getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
         String q = ''
         def p = org ? ['org': org, 'resp': resp] : ['resp': resp]
@@ -196,6 +262,13 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         result
     }
 
+    /**
+     * Gets the private contact points attached to the given organisation, maintained by the given tenant institution and matching to the given function type
+     * @param org the {@link Org} to which the contacts are attached to
+     * @param func the function type of the contacts to be retrieved (one of Functional Contact or Personal Contact)
+     * @param tenant the tenant institution ({@link Org}) whose contacts should be retrieved
+     * @return a {@link List} of persons of the given function type, attached to the given organisation and maintained by the given tenant
+     */
     static List<Person> getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         List<Person> result = Person.executeQuery(
                 "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.functionType.value = :functionType and p.tenant = :tenant",
@@ -204,6 +277,14 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         result
     }
 
+    /**
+     * Gets all private contacts attached to the given organisation and object, matching to the given responsibility and maintained by the given tenant institution
+     * @param org the {@link Org} to which the persons are attached to
+     * @param obj the object (one of {@link License}, {@link Package} or {@link Subscription}) for which the requested persons are responsible
+     * @param resp the responsibility which the requested persons have
+     * @param tenant the tenant institution ({@link Org}) whose private contacts (= private addressbook) should be consulted
+     * @return a {@link List} of persons matching to the given responsibility, attached to the given organisation and object and maintained by the given tenant institution
+     */
     static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
         String q = ''
         def p = ['org': org, 'resp': resp, 'tnt': tenant]
@@ -232,8 +313,12 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         result
     }
 
+    /**
+     * Retrieves all person-organisation links which point to the given organisation
+     * @param org the {@link Org} to which the persons are linked to
+     * @return a {@link Set} of {@link PersonRole} links pointing to the given {@link Org}
+     */
     LinkedHashSet<PersonRole> getPersonRoleByOrg(Org org) {
-
         return roleLinks.findAll {it.org?.id == org.id}
     }
 
@@ -262,6 +347,10 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Retrieves the organisation to which this person is linked to
+     * @return the {@link Org} to which this person is linked to
+     */
     Org getBelongsToOrg() {
 
         List<Org> orgs = PersonRole.executeQuery(
