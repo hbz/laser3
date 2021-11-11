@@ -7,6 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
+
+3968    10.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Filter-Bookmarks
+
+--      10.11.2021  rc-2.2  2.2.4       Andreas Feature     Cronjob-Intervall des Statistik-Syncs von monatlich auf wöchentlich verkürzt
+
+3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden
+
+3972    08.11.2021  rc-2.2  2.2.4       Moe     Bug         Kostenelemente in Umfrage: USD nicht als Währung erkannt
+
+3964    04.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Einstiegspunkt - Pakete
+
+3957    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Verteilungsdiagramme überarbeiten (29.10.2021 @ dev)
+
+3941    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Suchverlauf (25.10.2021 @ dev)
+
+3940    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Vertragsdetails überarbeiten (21.10.2021 @ dev)
+
+3932    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Merkmalsfilter für Basissuche (19.10.2021 @ dev)
+
+3901    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: XLSX-Export - Datentypen (06.10.2021 @ dev)
+
+3898    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Export-Konfigurationen erweitern (05.10.2021 @ dev)
+
+3665    03.11.2021  rc-2.2  2.2.3       David   Feature     Reporting: Kosten exportieren (05.10.2021 @ dev)
+
 3967    03.11.2021  rc-2.2  2.2.3       Moe     Bug         Filter Teilnehmer in Umfrage funktioniert nicht?
 
 3942    03.11.2021  rc-2.2  2.2.3       Moe     Bug         Nutzerzahlen FTEs nicht in Click Me Excel Export
@@ -16,8 +42,6 @@
 3956    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Bei Nettopreis auch das Runden ermöglichen
 
 3963    02.11.2021  rc-2.2  2.2.3       Moe     Bug         ClickMe Excel Adressausgabe blöd
-
-3957    29.10.2021  dev     2.3         David   Feature     Reporting: Verteilungsdiagramme überarbeiten
 
 --      28.10.2021  rc-2.2  2.2.3       Moe     Bug         Titel Export gibt zuviel aus (Preise)
 
