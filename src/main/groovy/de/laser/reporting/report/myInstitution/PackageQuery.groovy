@@ -7,29 +7,13 @@ import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDStore
-import de.laser.reporting.report.EsIndexHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
-import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
 
 class PackageQuery extends BaseQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
-
-    static List<String> ES_QUERIES = [
-            'package-breakable',
-            'package-consistent',
-            'package-scope',
-            'package-x-curatoryGroup',
-            'package-x-openAccess',
-            'package-x-nationalRange',
-            'package-x-regionalRange',
-            'package-x-language',
-            'package-x-ddc'
-    ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -38,12 +22,6 @@ class PackageQuery extends BaseQuery {
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
-        Map<String, Object> esRecords = [:]
-
-        println params.query
-        if (idList && ES_QUERIES.contains( params.query )) {
-            esRecords = getEsRecords( idList ).records
-        }
 
         if (! idList) {
         }
@@ -245,55 +223,5 @@ class PackageQuery extends BaseQuery {
                 idList,
                 result
         )
-    }
-
-    static Map<String, Map> getEsRecords(List<Long> idList) {
-        Map<String, Map> result = [ records: [:] ]
-
-        if (idList) {
-            List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
-
-            try {
-                HTTPBuilder hb = EsIndexHelper.getHttpBuilder('/gokbpackages/_search')
-                println 'Requesting packages ..'
-
-                while (pkgList) {
-                    println '@' + pkgList.size()
-                    List terms = pkgList.take(500)
-                    pkgList = pkgList.drop(500) as List<List>
-
-                    hb.request(Method.POST, ContentType.JSON) {
-                        body = [
-                                query: [
-                                        terms: [ uuid: terms.collect{ it[0] } ]
-                                ],
-                                from: 0,
-                                size: 10000,
-                                _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*" ]
-                        ]
-
-                        response.success = { resp, data ->
-                            //println (resp.statusLine)
-                            //println (resp.headers['content-length'])
-                            data.hits.hits.each {
-                                Map<String, Object> source = it.get('_source')
-                                String id = terms.find{ it[0] == source.uuid }[1] as String
-                                result.records.putAt( id, source )
-                            }
-                        }
-                        response.failure = { resp ->
-                            println (resp.statusLine)
-                        }
-                    }
-                }
-                hb.shutdown()
-            }
-            catch (Exception e) {
-                println e.printStackTrace()
-            }
-            // println (idList.collect{ it.toString() } - result.records.keySet()).size()
-        }
-        println 'found: ' + result.records.size()
-        result
     }
 }

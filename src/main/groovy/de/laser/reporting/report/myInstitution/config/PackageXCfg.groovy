@@ -4,6 +4,19 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PackageXCfg extends BaseConfig {
 
+    static List<String> ES_DATA = [
+            'breakable',
+            'consistent',
+            'openAccess',
+            'paymentType',
+            'scope',
+            'package-x-curatoryGroup',
+            'package-x-nationalRange',
+            'package-x-regionalRange',
+            'package-x-language',
+            'package-x-ddc'
+    ]
+
     static Map<String, Object> CONFIG = [
 
             base : [
