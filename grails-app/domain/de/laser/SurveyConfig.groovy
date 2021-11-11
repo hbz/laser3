@@ -205,14 +205,16 @@ class SurveyConfig {
     //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
     def checkResultsEditByOrg(Org org) {
 
-        if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+        if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org).existsMultiYearTerm()) {
             return ALL_RESULTS_PROCESSED_BY_ORG
         } else {
 
-            int countFinish = 0
-            int countNotFinish = 0
+            int countFinish = SurveyResult.executeQuery("select count(sr.id) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
+                    "(sr.intValue != null or sr.stringValue != null or sr.decValue != null or sr.urlValue != null or sr.refValue != null or sr.dateValue != null)", [surConf: this, org: org])[0]
+            int countNotFinish = SurveyResult.executeQuery("select count(sr.id) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
+                    "(sr.intValue = null and sr.stringValue = null and sr.decValue = null and sr.urlValue = null and sr.refValue = null and sr.dateValue = null)", [surConf: this, org: org])[0]
 
-            List<SurveyResult> surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+            /*List<SurveyResult> surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                 surveyResult.each {
                     if (it.isResultProcessed()) {
@@ -220,7 +222,8 @@ class SurveyConfig {
                     } else {
                         countNotFinish++
                     }
-                }
+                }*/
+
                 if (countFinish > 0 && countNotFinish == 0) {
                     return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
@@ -237,38 +240,32 @@ class SurveyConfig {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
 
-        if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
+        if(surveyOrg.finishDate){
+            return true
+        }else  if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
             return true
         } else {
-
-           /* int countFinish = 0
-            int countNotFinish = 0
-
-            boolean noParticipation = false
-            if(subSurveyUseForTransfer) {
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
-            }*/
-
-                /*if (!noParticipation) {*/
-
-                    /*List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
-
-                    if (pickAndChoose) {
-                        boolean finish = false
-
-                        finish = surveyOrg.finishDate ? true : false
-
-                        return finish
-                    }else{
-                       surveyOrg.finishDate ? true : false
-                    }*/
-
-                    surveyOrg.finishDate ? true : false
-                /*} else {
-                    return true
-                }*/
+           return false
         }
 
+
+    }
+
+    boolean hasOrgSubscription(Org org) {
+        if (this.subscription) {
+            Subscription orgSub = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: this.subscription])[0]
+            if(orgSub){
+                return true
+            }
+        }
+        return false
 
     }
 
