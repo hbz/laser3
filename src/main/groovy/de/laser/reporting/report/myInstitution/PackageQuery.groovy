@@ -1,8 +1,5 @@
 package de.laser.reporting.report.myInstitution
 
-import de.laser.DeweyDecimalClassification
-import de.laser.ElasticsearchSource
-import de.laser.GokbService
 import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
@@ -10,16 +7,29 @@ import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDStore
+import de.laser.reporting.report.EsIndexHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 class PackageQuery extends BaseQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
+
+    static List<String> ES_QUERIES = [
+            'package-breakable',
+            'package-consistent',
+            'package-scope',
+            'package-x-curatoryGroup',
+            'package-x-openAccess',
+            'package-x-nationalRange',
+            'package-x-regionalRange',
+            'package-x-language',
+            'package-x-ddc'
+    ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -28,6 +38,12 @@ class PackageQuery extends BaseQuery {
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+        Map<String, Object> esRecords = [:]
+
+        println params.query
+        if (idList && ES_QUERIES.contains( params.query )) {
+            esRecords = getEsRecords( idList ).records
+        }
 
         if (! idList) {
         }
@@ -43,11 +59,13 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['breakable']) {
 
-            _processSimpleRefdataQuery(params.query, 'breakable', idList, result)
+            println '----------------> TODO'
+            // _processSimpleRefdataQuery(params.query, 'breakable', idList, result)
         }
         else if ( suffix in ['consistent']) {
 
-            _processSimpleRefdataQuery(params.query, 'consistent', idList, result)
+            println '----------------> TODO'
+            // _processSimpleRefdataQuery(params.query, 'consistent', idList, result)
         }
         else if ( suffix in ['contentType']) {
 
@@ -57,13 +75,22 @@ class PackageQuery extends BaseQuery {
 
             _processSimpleRefdataQuery(params.query, 'file', idList, result)
         }
+        else if ( suffix in ['openAccess']) {
+
+            println '----------------> TODO'
+        }
         else if ( suffix in ['packageStatus']) {
 
             _processSimpleRefdataQuery(params.query, 'packageStatus', idList, result)
         }
+        else if ( suffix in ['paymentType']) {
+
+            println '----------------> TODO'
+        }
         else if ( suffix in ['scope']) {
 
-            _processSimpleRefdataQuery(params.query, 'scope', idList, result)
+            println '----------------> TODO'
+            // _processSimpleRefdataQuery(params.query, 'scope', idList, result)
         }
         else if ( suffix in ['x']) {
 
@@ -138,6 +165,14 @@ class PackageQuery extends BaseQuery {
                         result
                 )
             }
+            else if (params.query in ['package-x-nationalRange']) {
+
+                println '----------------> TODO'
+            }
+            else if (params.query in ['package-x-regionalRange']) {
+
+                println '----------------> TODO'
+            }
             else if (params.query in ['package-x-language']) {
 
                 result.data = idList ? Language.executeQuery(
@@ -168,31 +203,32 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-ddc']) {
 
-                result.data = idList ? DeweyDecimalClassification.executeQuery(
-                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
-                        [idList: idList]
-                ) : []
-
-                result.data.each { d ->
-                    d[1] = RefdataValue.get(d[1]).getI10n('value')
-
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : d[0],
-                            label : d[1],
-                            idList: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
-                                    [d: d[0], idList: idList]
-                            )
-                    ])
-                }
-
-                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
-
-                if (noDataList) {
-                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-                }
+                println '----------------> TODO'
+//                result.data = idList ? DeweyDecimalClassification.executeQuery(
+//                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
+//                        [idList: idList]
+//                ) : []
+//
+//                result.data.each { d ->
+//                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+//
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: Package.executeQuery(
+//                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
+//                                    [d: d[0], idList: idList]
+//                            )
+//                    ])
+//                }
+//
+//                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+//                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
+//
+//                if (noDataList) {
+//                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+//                }
             }
         }
 
@@ -211,36 +247,53 @@ class PackageQuery extends BaseQuery {
         )
     }
 
-//    @Deprecated
-//    static Map<String, Object> getWekbPackageMap(List<Long> idList) {
-//        Map<String, Object> result = [:]
-//
-//        if (idList) {
-//            List<String> pkgList = Package.executeQuery('select pkg.gokbId from Package pkg where pkg.id in (:idList)', [idList: idList])
-//
-//            try {
-//                GokbService gokbService = (GokbService) Holders.grailsApplication.mainContext.getBean('gokbService')
-//                ElasticsearchSource esSource = ElasticsearchSource.findByGokb_esAndActive(true, true)
-//
-//                HTTPBuilder httpb = new HTTPBuilder(esSource.host + ':' + esSource.port + '/gokbpackages/_search')
-//
-//                httpb.request(Method.POST) { req ->
-//                    headers.'User-Agent' = 'laser'
-//                    response.success = { resp, html ->
-//                        println ('server response: ' + resp.statusLine )
-//                        println ('server:          ' + resp.headers.get('Server'))
-//                        println ('content length:  ' + resp.headers.get('Content-Length'))
-//                    }
-//                    response.failure = { resp ->
-//                        println ('server response: ' + resp.statusLine)
-//                    }
-//                }
-//                httpb.shutdown()
-//            }
-//            catch (Exception e) {
-//                println e.printStackTrace()
-//            }
-//        }
-//        result
-//    }
+    static Map<String, Map> getEsRecords(List<Long> idList) {
+        Map<String, Map> result = [ records: [:] ]
+
+        if (idList) {
+            List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
+
+            try {
+                HTTPBuilder hb = EsIndexHelper.getHttpBuilder('/gokbpackages/_search')
+                println 'Requesting packages ..'
+
+                while (pkgList) {
+                    println '@' + pkgList.size()
+                    List terms = pkgList.take(500)
+                    pkgList = pkgList.drop(500) as List<List>
+
+                    hb.request(Method.POST, ContentType.JSON) {
+                        body = [
+                                query: [
+                                        terms: [ uuid: terms.collect{ it[0] } ]
+                                ],
+                                from: 0,
+                                size: 10000,
+                                _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*" ]
+                        ]
+
+                        response.success = { resp, data ->
+                            //println (resp.statusLine)
+                            //println (resp.headers['content-length'])
+                            data.hits.hits.each {
+                                Map<String, Object> source = it.get('_source')
+                                String id = terms.find{ it[0] == source.uuid }[1] as String
+                                result.records.putAt( id, source )
+                            }
+                        }
+                        response.failure = { resp ->
+                            println (resp.statusLine)
+                        }
+                    }
+                }
+                hb.shutdown()
+            }
+            catch (Exception e) {
+                println e.printStackTrace()
+            }
+            // println (idList.collect{ it.toString() } - result.records.keySet()).size()
+        }
+        println 'found: ' + result.records.size()
+        result
+    }
 }

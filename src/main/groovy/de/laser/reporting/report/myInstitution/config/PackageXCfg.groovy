@@ -16,28 +16,33 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : FIELD_TYPE_REFDATA,
-                            'consistent'        : FIELD_TYPE_REFDATA,
+                            'breakable'         : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'consistent'        : FIELD_TYPE_CUSTOM_IMPL, // ES
                             'contentType'       : FIELD_TYPE_REFDATA,
                             'file'              : FIELD_TYPE_REFDATA,
+                            'openAccess'        : FIELD_TYPE_CUSTOM_IMPL, // ES
                             'packageStatus'     : FIELD_TYPE_REFDATA,
-                            'scope'             : FIELD_TYPE_REFDATA
+                            'paymentType'       : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'scope'             : FIELD_TYPE_CUSTOM_IMPL  // ES
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'scope', 'packageStatus' ],
-                                    [ 'consistent', 'breakable', 'file' ]
+                                    [ 'paymentType', 'breakable', 'consistent' ],
+                                    [ 'openAccess', 'file' ]
                             ]
                     ],
                     query : [
                             default: [
                                     'package' : [
                                             'package-breakable',     // ES
-                                            'package-consistent',
+                                            'package-consistent',    // ES
                                             'package-contentType',
                                             'package-file',
+                                            'package-openAccess',   // ES
                                             'package-packageStatus',
-                                            'package-scope',     // ES
+                                            'package-paymentType',  // ES
+                                            'package-scope',        // ES
                                             'package-*'
                                     ]
                             ]
@@ -60,11 +65,6 @@ class PackageXCfg extends BaseConfig {
                                             chartLabels         : []
                                     ],
                                     'package-x-curatoryGroup' : [ // ES
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ],
-                                    'package-x-openAccess' : [   // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []

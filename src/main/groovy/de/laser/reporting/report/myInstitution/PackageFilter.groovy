@@ -32,7 +32,9 @@ class PackageFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-pkg':
-                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
+                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
+                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+                )
                 break
             case 'my-pkg':
                 List<Long> subIdList = Subscription.executeQuery(
@@ -42,8 +44,8 @@ class PackageFilter extends BaseFilter {
                         ], ctx: contextService.getOrg()])
 
                 queryParams.packageIdList = Package.executeQuery(
-                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:idList)',
-                        [idList: subIdList]
+                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:idList) and subPkg.pkg.packageStatus != :pkgStatus',
+                        [idList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
                 )
                 break
         }
