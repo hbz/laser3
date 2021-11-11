@@ -1383,6 +1383,7 @@ class SubscriptionController {
 
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def pendingChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
