@@ -57,7 +57,7 @@
 
                 <div class="ui grid">
                     <div class="right aligned wide column">
-                        <g:if test="${!surveyConfig.subscription.getDerivedSubscriptionBySubscribers(participantResult.participant)}">
+                        <g:if test="${!surveyConfig.hasOrgSubscription(participantResult.participant)}">
                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyResult.newOrg')}">
                                 <i class="star black large  icon"></i>
