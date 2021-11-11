@@ -14,8 +14,8 @@ class StatsSyncJob extends AbstractJob {
         // Delay 20 seconds, run every 10 mins.
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
         // Example - every 10 mins 0 0/10 * * * ?
-        // At 5 past 2am on the first of every month - Sync stats
-        cron name:'statsSyncTrigger', cronExpression: "0 0 4 5 * ?"
+        // At 4am each Sunday - Sync stats
+        cron name:'statsSyncTrigger', cronExpression: "0 0 4 ? * 1"
         //cron name:'statsSyncTrigger', cronExpression: "0 0/10 * * * ?" //debug only!
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]

@@ -44,14 +44,32 @@ class SurveyOrg {
     boolean existsMultiYearTerm() {
         boolean existsMultiYearTerm = false
         Subscription sub = surveyConfig.subscription
+
         if (sub) {
-            def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - NOW())) > 366)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                return true
+            }
+        }
+
+
+ /*       if (sub) {
+            def subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
             if (subChild?.isCurrentMultiYearSubscriptionNew()) {
                 existsMultiYearTerm = true
                 return existsMultiYearTerm
             }
-        }
+        }*/
         return existsMultiYearTerm
     }
 

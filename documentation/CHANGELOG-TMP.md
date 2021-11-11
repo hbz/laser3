@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
+
+3968    10.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Filter-Bookmarks
+
+--      10.11.2021  rc-2.2  2.2.4       Andreas Feature     Cronjob-Intervall des Statistik-Syncs von monatlich auf wöchentlich verkürzt
+
 3964    09.11.2021  dev     2.3         David   Feature     Reporting: Filter-Bookmarks
 
 3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden
@@ -59,7 +65,13 @@
 
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
+3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
+
 3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
+
+3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
+
+3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
 
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
@@ -88,6 +100,12 @@
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
 
 3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
+
+3901    06.10.2021  dev     2.3         David   Feature     Reporting: XLSX-Export - Datentypen
+
+3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
+
+3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 

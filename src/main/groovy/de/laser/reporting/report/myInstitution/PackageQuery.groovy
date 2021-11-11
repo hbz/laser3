@@ -1,6 +1,8 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.DeweyDecimalClassification
+import de.laser.ElasticsearchSource
+import de.laser.GokbService
 import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
@@ -10,7 +12,10 @@ import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 
 class PackageQuery extends BaseQuery {
 
@@ -205,4 +210,37 @@ class PackageQuery extends BaseQuery {
                 result
         )
     }
+
+//    @Deprecated
+//    static Map<String, Object> getWekbPackageMap(List<Long> idList) {
+//        Map<String, Object> result = [:]
+//
+//        if (idList) {
+//            List<String> pkgList = Package.executeQuery('select pkg.gokbId from Package pkg where pkg.id in (:idList)', [idList: idList])
+//
+//            try {
+//                GokbService gokbService = (GokbService) Holders.grailsApplication.mainContext.getBean('gokbService')
+//                ElasticsearchSource esSource = ElasticsearchSource.findByGokb_esAndActive(true, true)
+//
+//                HTTPBuilder httpb = new HTTPBuilder(esSource.host + ':' + esSource.port + '/gokbpackages/_search')
+//
+//                httpb.request(Method.POST) { req ->
+//                    headers.'User-Agent' = 'laser'
+//                    response.success = { resp, html ->
+//                        println ('server response: ' + resp.statusLine )
+//                        println ('server:          ' + resp.headers.get('Server'))
+//                        println ('content length:  ' + resp.headers.get('Content-Length'))
+//                    }
+//                    response.failure = { resp ->
+//                        println ('server response: ' + resp.statusLine)
+//                    }
+//                }
+//                httpb.shutdown()
+//            }
+//            catch (Exception e) {
+//                println e.printStackTrace()
+//            }
+//        }
+//        result
+//    }
 }
