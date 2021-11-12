@@ -6,6 +6,7 @@ import de.laser.Platform
 import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -22,6 +23,7 @@ class PackageQuery extends BaseQuery {
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+        List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
         if (! idList) {
         }
@@ -37,13 +39,11 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['breakable']) {
 
-            println '----------------> TODO'
-            // _processSimpleRefdataQuery(params.query, 'breakable', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_BREAKABLE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['consistent']) {
 
-            println '----------------> TODO'
-            // _processSimpleRefdataQuery(params.query, 'consistent', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_CONSISTENT, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['contentType']) {
 
@@ -55,7 +55,7 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['openAccess']) {
 
-            println '----------------> TODO'
+            _processESRefdataQuery(params.query, RDConstants.LICENSE_OA_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['packageStatus']) {
 
@@ -63,12 +63,11 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['paymentType']) {
 
-            println '----------------> TODO'
+            _processESRefdataQuery(params.query, RDConstants.PAYMENT_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['scope']) {
 
-            println '----------------> TODO'
-            // _processSimpleRefdataQuery(params.query, 'scope', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_SCOPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['x']) {
 
@@ -146,10 +145,12 @@ class PackageQuery extends BaseQuery {
             else if (params.query in ['package-x-nationalRange']) {
 
                 println '----------------> TODO'
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
             }
             else if (params.query in ['package-x-regionalRange']) {
 
                 println '----------------> TODO'
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
             }
             else if (params.query in ['package-x-language']) {
 
@@ -182,6 +183,7 @@ class PackageQuery extends BaseQuery {
             else if (params.query in ['package-x-ddc']) {
 
                 println '----------------> TODO'
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
 //                result.data = idList ? DeweyDecimalClassification.executeQuery(
 //                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
 //                        [idList: idList]
@@ -210,6 +212,7 @@ class PackageQuery extends BaseQuery {
             }
         }
 
+        println result.data
         result
     }
 
@@ -223,5 +226,49 @@ class PackageQuery extends BaseQuery {
                 idList,
                 result
         )
+    }
+
+    static void _processESRefdataQuery(String query, String rdCategory, Map<String, Object> esRecords, List<Long> orphanedIdList, Map<String, Object> result) {
+
+        Map<String, Object> struct = [:]
+        String suffix = query.split('-')[1]
+
+        esRecords.each { it ->
+            String key = it.value.get( suffix )
+            if (! struct.containsKey(key)) {
+                struct.put(key, [])
+            }
+            struct.get(key).add( Long.parseLong(it.key) )
+        }
+        struct.eachWithIndex { it, idx ->
+            List d = [null, getMessage(NO_DATA_LABEL), it.value.size()]
+            if (it.key) {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
+                if (rdv) {
+                    d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+                } else {
+                    d = [idx * -1, '(' + it.key + ')', it.value.size()]
+                }
+            }
+            result.data.add( d )
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: it.value
+            ])
+        }
+
+        if (orphanedIdList) {
+            List d = [0, getMessage(NO_COUNTERPART_LABEL), orphanedIdList.size()]
+            result.data.add( d )
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: orphanedIdList
+            ])
+        }
     }
 }

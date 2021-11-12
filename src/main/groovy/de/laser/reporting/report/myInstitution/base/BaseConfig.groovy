@@ -237,32 +237,32 @@ class BaseConfig {
         }
         else if (key == CUSTOM_IMPL_KEY_PKG_BREAKABLE) {
             return [
-                    label: messageSource.getMessage('package.breakable', null, locale) + ' (ES)',
+                    label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_BREAKABLE )
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PKG_CONSISTENT) {
             return [
-                    label: messageSource.getMessage('package.consistent', null, locale) + ' (ES)',
+                    label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_CONSISTENT )
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PKG_OPENACCESS) {
             return [
-                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (ES)',
+                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.LICENSE_OA_TYPE )
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE) {
             return [
-                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (ES)',
+                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.PAYMENT_TYPE )
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PKG_SCOPE) {
             return [
 
-                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (ES)',
+                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
             ]
         }

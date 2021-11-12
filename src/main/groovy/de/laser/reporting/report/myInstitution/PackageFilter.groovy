@@ -124,11 +124,19 @@ class PackageFilter extends BaseFilter {
 //        println whereParts
 
         List<Long> idList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
+
         Map<String, Object> esRecords = [:]
+        List<Long> orphanedIdList = []
+        boolean esFilterUsed = false
+
         if (idList) {
-            esRecords = EsIndexHelper.getEsRecords( idList ).records as Map<String, Object>
+            Map<String, Object> esr = EsIndexHelper.getEsRecords( idList )
+            esRecords = esr.records as Map<String, Object>
+            orphanedIdList = esr.orphanedIds as List<Long>
+//            println idList.size()
+//            println esRecords.size()
+//            println orphanedIdList.size()
         }
-        boolean esFilter = false
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             if (params.get(key)) {
@@ -166,19 +174,17 @@ class PackageFilter extends BaseFilter {
 
                 if (filterLabelValue) {
                     filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p), value: filterLabelValue])
-                    esFilter = true
+                    esFilterUsed = true
                 }
             }
         }
 
-        if (esFilter) {
-            idList = esRecords.keySet()?.collect{ Long.parseLong(it) }
+        if (esFilterUsed) {
+            idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
         }
         filterResult.data.put('packageIdList', idList)
-        filterResult.data.put('packageEsRecords', esRecords)
-
-//        println 'packages (raw) >> ' + queryParams.packageIdList.size()
-//        println 'packages (queried) >> ' + filterResult.data.packageIdList.size() + ' - ' + filterResult.data.packageEsRecords.size()
+        filterResult.data.put('packageESRecords', esRecords)
+        filterResult.data.put('packageOrphanedIdList', orphanedIdList)
 
         filterResult
     }

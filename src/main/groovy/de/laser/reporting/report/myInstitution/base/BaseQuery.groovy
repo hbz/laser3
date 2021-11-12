@@ -19,6 +19,7 @@ class BaseQuery {
 
     static String NO_DATA_LABEL         = 'noData.label'
     static String NO_MATCH_LABEL        = 'noMatch.label'
+    static String NO_COUNTERPART_LABEL  = 'noCounterpart.label'
     static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
     static String NO_PLATFORM_LABEL     = 'noPlatform.label'
     static String NO_PROVIDER_LABEL     = 'noProvider.label'

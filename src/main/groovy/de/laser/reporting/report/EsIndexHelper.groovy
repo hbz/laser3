@@ -17,7 +17,7 @@ class EsIndexHelper {
     }
 
     static Map<String, Object> getEsRecords(List<Long> idList) {
-        Map<String, Object> result = [records: [:], orphaned: [] ] as Map<String, Object>
+        Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
 
         if (idList) {
             List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
@@ -42,8 +42,6 @@ class EsIndexHelper {
                         ]
 
                         response.success = { resp, data ->
-                            //println (resp.statusLine)
-                            //println (resp.headers['content-length'])
                             data.hits.hits.each {
                                 Map<String, Object> source = it.get('_source')
                                 String id = terms.find{ it[0] == source.uuid }[1] as String
@@ -60,7 +58,7 @@ class EsIndexHelper {
             catch (Exception e) {
                 println e.printStackTrace()
             }
-            result.orphaned = idList - result.records.keySet().collect{ Long.parseLong(it) }
+            result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
         //println 'found:    ' + result.records.size()
         //println 'orphaned: ' + result.orphaned.size()
