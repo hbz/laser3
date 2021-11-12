@@ -143,6 +143,10 @@
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
+            $('#filter-package input.button[type=submit]').on('click', function() {
+                $('#loadingIndicator').show(); /* es */
+            })
+
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
