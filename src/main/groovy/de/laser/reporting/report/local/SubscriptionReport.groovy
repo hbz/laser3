@@ -384,9 +384,7 @@ class SubscriptionReport {
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
-                    if (noDataList) {
-                        BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
-                    }
+                    BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 }
                 else if (params.query == 'tipp-languages') {
 
@@ -414,9 +412,7 @@ class SubscriptionReport {
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
-                    if (noDataList) {
-                        BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
-                    }
+                    BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 }
                 /* else if (params.query == 'tipp-platform') {
 

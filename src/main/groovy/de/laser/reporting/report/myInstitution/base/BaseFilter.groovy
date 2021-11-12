@@ -78,4 +78,10 @@ class BaseFilter {
         List<Long> idList = params?.filterCache?.data?.get(prefix + 'IdList')?.collect { it as Long }
         return idList ?: []
     }
+
+    static Map<String, Object> getCachedFilterESRecords(prefix, params) {
+
+        Map<String, Object> esRecords = params?.filterCache?.data?.get(prefix + 'ESRecords')
+        return esRecords ?: [:]
+    }
 }

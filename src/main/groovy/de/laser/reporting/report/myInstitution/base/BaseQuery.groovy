@@ -19,16 +19,18 @@ class BaseQuery {
 
     static String NO_DATA_LABEL         = 'noData.label'
     static String NO_MATCH_LABEL        = 'noMatch.label'
+    static String NO_COUNTERPART_LABEL  = 'noCounterpart.label'
     static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
     static String NO_PLATFORM_LABEL     = 'noPlatform.label'
     static String NO_PROVIDER_LABEL     = 'noProvider.label'
     static String NO_STARTDATE_LABEL    = 'noStartDate.label'
     static String NO_ENDDATE_LABEL      = 'noEndDate.label'
 
-    static int NO_DATA_ID       = 0
-    static int SPEC_DATA_ID_1   = 9990001
-    static int SPEC_DATA_ID_2   = 9990002
-    static int SPEC_DATA_ID_3   = 9990003
+    static def NO_DATA_ID           = null
+    static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata
+    static int FAKE_DATA_ID_1       = -1
+    static int FAKE_DATA_ID_2       = -2
+    static int FAKE_DATA_ID_3       = -3
 
     static String SQM_MASK      = "\\\\\'"
 
@@ -147,19 +149,17 @@ class BaseQuery {
 
         List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
 
         if (noDataList) {
-            result.data.add([null, getMessage(label), noDataList.size()])
+            result.data.add([NO_DATA_ID, getMessage(label), noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : null,
+                    id    : NO_DATA_ID,
                     label : getMessage(label),
                     idList: noDataList,
             ])
@@ -169,11 +169,11 @@ class BaseQuery {
     static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
 
         if (noDataIdList) {
-            result.data.add([null, getMessage(label), noDataIdList.size()])
+            result.data.add([NO_DATA_ID, getMessage(label), noDataIdList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : null,
+                    id    : NO_DATA_ID,
                     label : getMessage(label),
                     idList: noDataIdList,
                     value1: 0,
@@ -247,9 +247,7 @@ class BaseQuery {
         List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
         List<Long> noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
     }
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
@@ -305,11 +303,11 @@ class BaseQuery {
 
         List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
         if (sp1DataList) {
-            result.data.add([SPEC_DATA_ID_1, getMessage(NO_ENDDATE_LABEL), sp1DataList.size()])
+            result.data.add([FAKE_DATA_ID_1, getMessage(NO_ENDDATE_LABEL), sp1DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : SPEC_DATA_ID_1,
+                    id    : FAKE_DATA_ID_1,
                     label : getMessage(NO_ENDDATE_LABEL),
                     idList: sp1DataList
             ])
@@ -317,20 +315,19 @@ class BaseQuery {
 
         List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
         if (sp2DataList) {
-            result.data.add([SPEC_DATA_ID_2, getMessage(NO_STARTDATE_LABEL), sp2DataList.size()])
+            result.data.add([FAKE_DATA_ID_2, getMessage(NO_STARTDATE_LABEL), sp2DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : SPEC_DATA_ID_2,
+                    id    : FAKE_DATA_ID_2,
                     label : getMessage(NO_STARTDATE_LABEL),
                     idList: sp2DataList
             ])
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
     static String getMessage(String token) {
