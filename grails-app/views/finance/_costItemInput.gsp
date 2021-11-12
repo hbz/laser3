@@ -11,10 +11,10 @@
         <g:if test="${subscription}">
             <g:hiddenField id="sub_${idSuffix}" name="sub" value="${subscription.id}"/>
         </g:if>
-        <div class="fields">
+        <div class="fields la-more-padding">
             <div class="nine wide field">
                 <g:if test="${showVisibilitySettings}">
-                    <div class="two fields la-fields-no-margin-button">
+                    <div class="two fields la-fields-no-margin-button ">
                         <div class="field">
                             <label><g:message code="financials.newCosts.costTitle"/></label>
                             <input type="text" name="newCostTitle" value="${costItem?.costTitle}" maxlength="255"/>
@@ -96,7 +96,7 @@
         </div><!-- two fields -->
 
         <div class="fields">
-            <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency">
+            <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency la-more-padding">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                 <div class="two fields">
@@ -106,7 +106,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon button la-popup-tooltip la-delay" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -142,7 +142,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" step="0.001" />
 
-                        <div id="calculateExchangeRate_${idSuffix}" class="ui icon button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -166,7 +166,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -200,7 +200,7 @@
 
 
             <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}">
-                <fieldset class="seven wide field la-modal-fieldset-no-margin">
+                <fieldset class="seven wide field la-modal-fieldset-no-margin la-more-padding">
                     <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
                     <div class="field">
@@ -241,7 +241,7 @@
                                 <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
                             </g:if>
                             <g:else>
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
@@ -304,7 +304,7 @@
         </div><!-- three fields -->
 
         <div class="three fields">
-            <fieldset class="field la-modal-fieldset-no-margin">
+            <fieldset class="field la-modal-fieldset-no-margin la-more-padding">
                 <div class="two fields">
                     <semui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
@@ -318,17 +318,18 @@
                 </div>
             </fieldset> <!-- 1/3 field -->
 
-            <fieldset class="field la-modal-fieldset-margin">
-                <div class="field">
+            <fieldset class="field la-modal-fieldset-margin la-more-padding">
+                <div class="field la-more-margin">
                     <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
-
+                </div>
+                <div class="field">
                     <label>${message(code:'financials.newCosts.description')}</label>
                     <input type="text" name="newDescription" placeholder="${message(code:'default.description.label')}" value="${costItem?.costDescription}"/>
                 </div><!-- .field -->
             </fieldset> <!-- 2/3 field -->
 
-            <fieldset class="field la-modal-fieldset-no-margin">
-                <div class="field">
+            <fieldset class="field la-modal-fieldset-no-margin la-more-padding">
+                <div class="field la-more-margin">
                     <label>${message(code:'financials.invoice_number')}</label>
                     <input type="text" name="newInvoiceNumber" placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>
                 </div><!-- .field -->
