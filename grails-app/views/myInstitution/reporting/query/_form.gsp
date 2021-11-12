@@ -61,5 +61,8 @@
         filter: '${cfgKey}',
         token: '${token}'
     }
+    $('#filter-package input.button[type=submit]').on('click', function() {
+        $('#loadingIndicator').show();
+    })
 </laser:script>
 

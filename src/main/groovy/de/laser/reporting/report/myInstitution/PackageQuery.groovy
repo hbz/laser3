@@ -1,12 +1,12 @@
 package de.laser.reporting.report.myInstitution
 
-import de.laser.DeweyDecimalClassification
 import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -23,6 +23,7 @@ class PackageQuery extends BaseQuery {
         String prefix = params.query.split('-')[0]
         String suffix = params.query.split('-')[1] // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+        List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
         if (! idList) {
         }
@@ -38,11 +39,11 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['breakable']) {
 
-            _processSimpleRefdataQuery(params.query, 'breakable', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_BREAKABLE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['consistent']) {
 
-            _processSimpleRefdataQuery(params.query, 'consistent', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_CONSISTENT, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['contentType']) {
 
@@ -52,13 +53,21 @@ class PackageQuery extends BaseQuery {
 
             _processSimpleRefdataQuery(params.query, 'file', idList, result)
         }
+        else if ( suffix in ['openAccess']) {
+
+            _processESRefdataQuery(params.query, RDConstants.LICENSE_OA_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
+        }
         else if ( suffix in ['packageStatus']) {
 
             _processSimpleRefdataQuery(params.query, 'packageStatus', idList, result)
         }
+        else if ( suffix in ['paymentType']) {
+
+            _processESRefdataQuery(params.query, RDConstants.PAYMENT_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
+        }
         else if ( suffix in ['scope']) {
 
-            _processSimpleRefdataQuery(params.query, 'scope', idList, result)
+            _processESRefdataQuery(params.query, RDConstants.PACKAGE_SCOPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
         else if ( suffix in ['x']) {
 
@@ -72,6 +81,32 @@ class PackageQuery extends BaseQuery {
                         idList,
                         result
                 )
+            }
+            else if (params.query in ['package-x-language']) {
+
+                result.data = idList ? Language.executeQuery(
+                        'select lang.id, lang.language.id, count(*) from Package pkg join pkg.languages lang where pkg.id in (:idList) group by lang.id, lang.language.id order by lang.id',
+                        [idList: idList]
+                ) : []
+
+                result.data.each { d ->
+                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.languages lang where pkg.id in (:idList) and lang.id = :d order by pkg.name',
+                                    [d: d[0], idList: idList]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-provider']) {
 
@@ -103,9 +138,8 @@ class PackageQuery extends BaseQuery {
                         'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
                         [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
                 )
-                if (noDataList) {
-                    handleGenericNonMatchingData2Values_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
-                }
+
+                handleGenericNonMatchingData2Values_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-platform']) {
 
@@ -133,64 +167,191 @@ class PackageQuery extends BaseQuery {
                         result
                 )
             }
-            else if (params.query in ['package-x-language']) {
+            else if (params.query in ['package-x-curatoryGroup']) {
 
-                result.data = idList ? Language.executeQuery(
-                        'select lang.id, lang.language.id, count(*) from Package pkg join pkg.languages lang where pkg.id in (:idList) group by lang.id, lang.language.id order by lang.id',
-                        [idList: idList]
-                ) : []
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
 
-                result.data.each { d ->
-                    d[1] = RefdataValue.get(d[1]).getI10n('value')
-
+                esRecords.each { it ->
+                    List cgList = it.value.get('curatoryGroups')
+                    cgList.each { cg ->
+                        if (! struct.containsKey(cg.curatoryGroup)) {
+                            struct.put(cg.curatoryGroup, [])
+                            helper.put(cg.curatoryGroup, cg)
+                        }
+                        struct.get(cg.curatoryGroup).add( Long.parseLong(it.key) )
+                    }
+                    if (!cgList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
+                struct.each {
+                    Map<String, Object> cg = helper.get(it.key)
+                    List d = [Long.parseLong(cg.curatoryGroup.split(':')[1]), cg.name + ' (' + cg.type + ')', it.value.size()]
+                    result.data.add( d )
                     result.dataDetails.add([
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.languages lang where pkg.id in (:idList) and lang.id = :d order by pkg.name',
-                                    [d: d[0], idList: idList]
-                            )
+                            idList: it.value
                     ])
                 }
 
-                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
-
-                if (noDataList) {
-                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-                }
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
             else if (params.query in ['package-x-ddc']) {
 
-                result.data = idList ? DeweyDecimalClassification.executeQuery(
-                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
-                        [idList: idList]
-                ) : []
+                // TODO
+                // TODO
 
-                result.data.each { d ->
-                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+//                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+//                Map<String, Object> struct = [:]
+//                Map<String, Object> helper = [:]
+//                List<Long> noDataList = []
+//
+//                esRecords.each { it ->
+//                    List ddcList = it.value.get('ddcs')
+//                    ddcList.each { nr ->
+//                        if (! struct.containsKey(nr.value)) {
+//                            struct.put(nr.value, [])
+//                            helper.put(nr.value, nr)
+//                        }
+//                        struct.get(nr.value).add( Long.parseLong(it.key) )
+//                    }
+//                    if (!ddcList) {
+//                        noDataList.add(Long.parseLong(it.key))
+//                    }
+//                }
+//                struct.eachWithIndex { it, idx ->
+//                    Map<String, Object> ddc = helper.get(it.key)
+//                    List d = [idx * -1,  '(' + ddc.value + ')', it.value.size()]
+//                    RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value, RDConstants.DDC).getI10n('value')
+//                    if (rdv) {
+//                        d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+//                    }
+//                    result.data.add( d )
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: it.value
+//                    ])
+//                }
+//                if (noDataList) {
+//                    handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+//                }
 
+//                result.data = idList ? DeweyDecimalClassification.executeQuery(
+//                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
+//                        [idList: idList]
+//                ) : []
+//
+//                result.data.each { d ->
+//                    d[1] = RefdataValue.get(d[1]).getI10n('value')
+//
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: Package.executeQuery(
+//                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
+//                                    [d: d[0], idList: idList]
+//                            )
+//                    ])
+//                }
+//
+//                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+//                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
+//
+//                if (noDataList) {
+//                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+//                }
+            }
+            else if (params.query in ['package-x-nationalRange']) {
+
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
+
+                esRecords.each { it ->
+                    List nrList = it.value.get('nationalRanges')
+                    nrList.each { nr ->
+                        if (! struct.containsKey(nr.value)) {
+                            struct.put(nr.value, [])
+                            helper.put(nr.value, nr)
+                        }
+                        struct.get(nr.value).add( Long.parseLong(it.key) )
+                    }
+                    if (!nrList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
+                struct.eachWithIndex { it, idx ->
+                    Map<String, Object> nr = helper.get(it.key)
+                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.COUNTRY)
+                    if (rdv) {
+                        d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+                    }
+                    result.data.add( d )
                     result.dataDetails.add([
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
-                                    [d: d[0], idList: idList]
-                            )
+                            idList: it.value
                     ])
                 }
 
-                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
-
-                if (noDataList) {
-                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-                }
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
+            else if (params.query in ['package-x-regionalRange']) {
+
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
+
+                esRecords.each { it ->
+                    List rrList = it.value.get( 'regionalRanges' )
+                    rrList.each { nr ->
+                        if (! struct.containsKey(nr.value)) {
+                            struct.put(nr.value, [])
+                            helper.put(nr.value, nr)
+                        }
+                        struct.get(nr.value).add( Long.parseLong(it.key) )
+                    }
+                    if (!rrList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
+                struct.eachWithIndex { it, idx ->
+                    Map<String, Object> nr = helper.get(it.key)
+                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.REGIONS_DE)
+                    if (rdv) {
+                        d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+                    }
+                    result.data.add( d )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: it.value
+                    ])
+                }
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
+            }
+
         }
 
+        println result.data
         result
     }
 
@@ -204,5 +365,53 @@ class PackageQuery extends BaseQuery {
                 idList,
                 result
         )
+    }
+
+    static void _processESRefdataQuery(String query, String rdCategory, Map<String, Object> esRecords, List<Long> orphanedIdList, Map<String, Object> result) {
+
+        Map<String, Object> struct = [:]
+        String suffix = query.split('-')[1]
+
+        esRecords.each { it ->
+            String key = it.value.get( suffix )
+            if (! struct.containsKey(key)) {
+                struct.put(key, [])
+            }
+            struct.get(key).add( Long.parseLong(it.key) )
+        }
+        struct.eachWithIndex { it, idx ->
+            List d = [BaseQuery.NO_DATA_ID, getMessage(BaseQuery.NO_DATA_LABEL), it.value.size()]
+            if (it.key) {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
+                if (rdv) {
+                    d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+                } else {
+                    d = [idx * -1, '(' + it.key + ')', it.value.size()]
+                }
+            }
+            result.data.add( d )
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: it.value
+            ])
+        }
+
+        _handleGenericNoCounterpartData_TMP(query, orphanedIdList, result)
+    }
+
+    static _handleGenericNoCounterpartData_TMP(String query, List<Long> orphanedIdList, Map<String, Object> result) {
+        if (orphanedIdList) {
+            List d = [BaseQuery.NO_COUNTERPART_ID, getMessage(BaseQuery.NO_COUNTERPART_LABEL), orphanedIdList.size()]
+            result.data.add( d )
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: orphanedIdList
+            ])
+        }
     }
 }

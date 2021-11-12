@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
@@ -54,6 +55,12 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_ENDDATE_LIMIT     = 'endDateLimit'
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
+
+    static String CUSTOM_IMPL_KEY_PKG_BREAKABLE     = 'breakable'
+    static String CUSTOM_IMPL_KEY_PKG_CONSISTENT    = 'consistent'
+    static String CUSTOM_IMPL_KEY_PKG_OPENACCESS    = 'openAccess'
+    static String CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE   = 'paymentType'
+    static String CUSTOM_IMPL_KEY_PKG_SCOPE         = 'scope'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE // 'costItem'
@@ -226,6 +233,37 @@ class BaseConfig {
             return [
                     label: 'Merkmalswert (nur Referenzwerte)',
                     from: []
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_BREAKABLE) {
+            return [
+                    label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_BREAKABLE )
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_CONSISTENT) {
+            return [
+                    label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_CONSISTENT )
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_OPENACCESS) {
+            return [
+                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.LICENSE_OA_TYPE )
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE) {
+            return [
+                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PAYMENT_TYPE )
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_SCOPE) {
+            return [
+
+                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
             ]
         }
     }

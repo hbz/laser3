@@ -17,7 +17,7 @@
 </g:if>
 
 <g:if test="${filter == BaseConfig.KEY_PACKAGE}">
-    ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size()])}
+    ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size(), filterResult.data.packageESRecords.size()])}
 </g:if>
 
 <g:if test="${filter == BaseConfig.KEY_SUBSCRIPTION}">

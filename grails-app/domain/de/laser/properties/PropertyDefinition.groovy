@@ -31,13 +31,14 @@ import javax.validation.UnexpectedTypeException
  * The difference between general/custom and private properties is that general properties may be visible by every organisation accessing the owner object (their visibility is configurable) whereas private ones are viewable
  * only by the tenant {@link Org}.
  * Important note: private property definitions may be defined by each tenant individually by frontend;
- * general property definitions are hard-coded (/src/main/webapp/setup/PropertyDefinition.csv) as they should be instance-independent and survive database resets
- * @see {@link SubscriptionProperty}
- * @see {@link LicenseProperty}
- * @see {@link OrgProperty}
- * @see {@link PlatformProperty}
- * @see {@link PersonProperty}
- * @see {@link AbstractPropertyWithCalculatedLastUpdated}
+ * general property definitions are hard-coded (/src/main/webapp/setup/PropertyDefinition.csv) as they should be instance-independent and survive database resets. This is the same procedure as with reference data categories
+ * and their values
+ * @see SubscriptionProperty
+ * @see LicenseProperty
+ * @see OrgProperty
+ * @see PlatformProperty
+ * @see PersonProperty
+ * @see AbstractPropertyWithCalculatedLastUpdated
  */
 @Slf4j
 class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {

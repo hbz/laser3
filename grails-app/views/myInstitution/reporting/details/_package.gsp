@@ -1,7 +1,11 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
+
+<g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
+<g:set var="esRecordIds" value="${filterCache.data.packageESRecords.keySet().collect{Long.parseLong(it)}}"/>
+<g:set var="wekb" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -12,6 +16,7 @@
             <th>${message(code:'package.content_provider')}</th>
             <th>${message(code:'package.nominalPlatform')}</th>
             <th>${message(code:'package.lastUpdated.label')}</th>
+            <th>${message(code:'wekb')}</th>
         </tr>
         </thead>
         <tbody>
@@ -34,6 +39,19 @@
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkg._getCalculatedLastUpdated()}" />
+                    </td>
+                    <td>
+                        <g:if test="${wekb?.baseUrl && pkg.gokbId}">
+                            <g:if test="${esRecordIds.contains(pkg.id)}">
+                                <a href="${wekb.baseUrl + '/public/packageContent/' + pkg.gokbId}" target="_blank"><i class="icon external alternate"></i></a>
+                            </g:if>
+                            <g:else>
+                                <p class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.query.base.noCounterpart.label')}"
+                                   data-position="top right">
+                                    <i class="icon times red"></i>
+                                </p>
+                            </g:else>
+                        </g:if>
                     </td>
                 </tr>
             </g:each>

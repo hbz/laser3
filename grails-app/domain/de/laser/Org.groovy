@@ -746,14 +746,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Substitution caller for {@link #dropdownNamingConvention(de.laser.Org)}; substitutes with the context institution
-     * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser/wiki/UI:-Naming-Conventions">see here</a>)
+     * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
     String dropdownNamingConvention() {
         return dropdownNamingConvention(contextService.getOrg())
     }
 
     /**
-     * Displays this organisation's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser/wiki/UI:-Naming-Conventions">here</a>
+     * Displays this organisation's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
      * @param contextOrg the institution whose perspective should be taken
      * @return this organisation's name according to the dropdown naming convention
      */
