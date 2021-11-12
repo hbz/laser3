@@ -1,20 +1,12 @@
 package de.laser.reporting.report
 
-import de.laser.ElasticsearchSource
 import de.laser.Package
+import de.laser.helper.ConfigUtils
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 class EsIndexHelper {
-
-    static HTTPBuilder getHttpBuilder(String uriPart) {
-        ElasticsearchSource esSource = ElasticsearchSource.findByGokb_esAndActive(true, true)
-        HTTPBuilder builder = new HTTPBuilder( 'http://' + esSource.host + ':' + esSource.port + uriPart )
-
-        println 'EsIndexHelper.getHttpBuilder() - ' + builder.getUri()
-        return builder
-    }
 
     static Map<String, Object> getEsRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
@@ -23,11 +15,13 @@ class EsIndexHelper {
             List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
 
             try {
-                HTTPBuilder hb = getHttpBuilder('/gokbpackages/_search')
-                println 'Requesting packages ..'
+                Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+                HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
+                println 'Request: ' + hb.getUri()
 
+                print 'Queue: '
                 while (pkgList) {
-                    //println '@' + pkgList.size()
+                    print '[' + pkgList.size() + '~ '
                     List terms = pkgList.take(500)
                     pkgList = pkgList.drop(500) as List<List>
 
@@ -40,7 +34,6 @@ class EsIndexHelper {
                                 size: 10000,
                                 _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*" ]
                         ]
-
                         response.success = { resp, data ->
                             data.hits.hits.each {
                                 Map<String, Object> source = it.get('_source')
@@ -58,10 +51,9 @@ class EsIndexHelper {
             catch (Exception e) {
                 println e.printStackTrace()
             }
+            println()
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
-        //println 'found:    ' + result.records.size()
-        //println 'orphaned: ' + result.orphaned.size()
         result
     }
 }
