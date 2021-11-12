@@ -27,7 +27,7 @@ class EsIndexHelper {
                 println 'Requesting packages ..'
 
                 while (pkgList) {
-                    println '@' + pkgList.size()
+                    //println '@' + pkgList.size()
                     List terms = pkgList.take(500)
                     pkgList = pkgList.drop(500) as List<List>
 

@@ -148,9 +148,7 @@ class BaseQuery {
 
         List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
@@ -248,9 +246,7 @@ class BaseQuery {
         List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
         List<Long> noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
     }
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
@@ -329,9 +325,8 @@ class BaseQuery {
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
     static String getMessage(String token) {

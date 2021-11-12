@@ -14,7 +14,7 @@ class PackageXCfg extends BaseConfig {
             'package-x-nationalRange',
             'package-x-regionalRange',
             'package-x-language',
-            'package-x-ddc'
+           // 'package-x-ddc'
     ]
 
     static Map<String, Object> CONFIG = [
@@ -97,11 +97,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'package-x-ddc' : [  // ES
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ]
+//                                    'package-x-ddc' : [  // ES
+//                                            detailsTemplate     : 'package',
+//                                            chartTemplate       : 'generic',
+//                                            chartLabels         : []
+//                                    ]
                             ]
                     ]
             ]
