@@ -380,7 +380,7 @@ class PackageQuery extends BaseQuery {
             struct.get(key).add( Long.parseLong(it.key) )
         }
         struct.eachWithIndex { it, idx ->
-            List d = [null, getMessage(BaseQuery.NO_DATA_LABEL), it.value.size()]
+            List d = [BaseQuery.NO_DATA_ID, getMessage(BaseQuery.NO_DATA_LABEL), it.value.size()]
             if (it.key) {
                 RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
                 if (rdv) {
@@ -403,7 +403,7 @@ class PackageQuery extends BaseQuery {
 
     static _handleGenericNoCounterpartData_TMP(String query, List<Long> orphanedIdList, Map<String, Object> result) {
         if (orphanedIdList) {
-            List d = [0, getMessage(BaseQuery.NO_COUNTERPART_LABEL), orphanedIdList.size()]
+            List d = [BaseQuery.NO_COUNTERPART_ID, getMessage(BaseQuery.NO_COUNTERPART_LABEL), orphanedIdList.size()]
             result.data.add( d )
 
             result.dataDetails.add([
