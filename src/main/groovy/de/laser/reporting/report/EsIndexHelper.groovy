@@ -32,7 +32,7 @@ class EsIndexHelper {
                                 ],
                                 from: 0,
                                 size: 10000,
-                                _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*" ]
+                                _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*", "lastUpdatedDisplay" ]
                         ]
                         response.success = { resp, data ->
                             data.hits.hits.each {
