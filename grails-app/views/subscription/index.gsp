@@ -338,7 +338,7 @@
                                 <td>
                                     <!-- START TEMPLATE -->
                                     <g:render template="/templates/title"
-                                              model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                              model="${[ie: ie, tipp: ie.tipp,
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>

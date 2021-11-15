@@ -24,6 +24,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -396,6 +397,7 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
+
                     c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
                     c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange, queryParams))
@@ -597,6 +599,50 @@ class SubscriptionControllerService {
                     queryParams.languages << Long.parseLong(lang)
                 }
             }
+
+            if (params.filter) {
+                filter += "and ( ( lower(title.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) or ((lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+                queryParams.title = "%${params.filter.trim().toLowerCase()}%"
+                queryParams.identifier = "%${params.filter}%"
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            }
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                filter += " and title.pkg.id = :pkgId "
+                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            if(params.summaryOfContent) {
+                filter += " and lower(title.summaryOfContent) like :summaryOfContent "
+                queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                filter += " and (lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            }
+
+            if(params.yearsFirstOnline) {
+                filter += " and (Year(title.dateFirstOnline) in (:yearsFirstOnline)) "
+                queryParams.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            }
+
+            if (params.identifier) {
+                filter += "and ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) "
+                queryParams.identifier = "${params.identifier}"
+            }
+
+            if (params.publishers) {
+                filter += "and lower(title.publisherName) in (:publishers) "
+                queryParams.publishers = params.list('publishers').collect { it.toLowerCase() }
+            }
+
+
+            if (params.title_types && params.title_types != "" && params.list('title_types')) {
+                filter += " and lower(title.titleType) in (:title_types)"
+                queryParams.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            }
+
         }
         [filter, dateRange, queryParams, monthsInRing]
     }
@@ -1052,11 +1098,6 @@ class SubscriptionControllerService {
             Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
 
-            result.newSub = newSub
-            result.subscription = baseSub
-            result.previousSubscription = previousSubscription
-            result.subscriber = result.newSub.getSubscriber()
-
             List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
@@ -1085,7 +1126,27 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
 
             if(params.tab == 'allIEsStats') {
-                result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+                //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+                String oldTab = params.tab
+                params.tab = params.tabStat
+
+                params.sort= params.sort ?: 'r.reportCount'
+                params.order= params.order ?: 'desc'
+
+                Map<String,Object> statsResult
+
+                statsResult = stats(params)
+
+                if (statsResult.status == SubscriptionControllerService.STATUS_ERROR) {
+                    if (!statsResult.result) {
+                        [result: null, status: STATUS_ERROR]
+                        return
+                    }
+                } else {
+                    result = result + statsResult.result
+                }
+
+                params.tab = oldTab
             }else {
 
                 params.sort = params.sort ?: 'sortname'
@@ -1100,9 +1161,14 @@ class SubscriptionControllerService {
                 }*/
             }
 
+            result.newSub = newSub
+            result.subscription = baseSub
+            result.previousSubscription = previousSubscription
+            result.subscriber = result.newSub.getSubscriber()
+
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
             result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-            result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
 
             result.subscriberSubs = []
             List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])

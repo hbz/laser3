@@ -72,7 +72,7 @@
 
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title"
-                                  model="${[ie: ie, tipp: ie.tipp, apisources: apisources,
+                                  model="${[ie: ie, tipp: ie.tipp,
                                             showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>
@@ -80,18 +80,27 @@
                     <g:if test="${ieInNewSub?.priceItems}">
                             <g:each in="${ieInNewSub.priceItems}" var="priceItem" status="i">
                                 <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
-                                                                                     owner="${priceItem}"
-                                                                                     format=""/> <semui:xEditableRefData
-                                    field="listCurrency" owner="${priceItem}"
-                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                      owner="${priceItem}"/> <semui:xEditableRefData
-                                    field="localCurrency" owner="${priceItem}"
-                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                            <%--<semui:xEditable field="startDate" type="date"
-                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                field="endDate" type="date"
-                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                                                                           owner="${priceItem}"
+                                                                                           format=""
+                                                                                           overwriteEditable="${false}"/>
+                                <semui:xEditableRefData
+                                        field="listCurrency" owner="${priceItem}"
+                                        config="Currency"
+                                        overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+
+                                <g:if test="${priceItem.localCurrency}">
+                                    <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                                owner="${priceItem}"
+                                                                                                overwriteEditable="${false}"/>
+                                    <semui:xEditableRefData
+                                            field="localCurrency" owner="${priceItem}"
+                                            config="Currency"
+                                            overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                <%--<semui:xEditable field="startDate" type="date"
+                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                    field="endDate" type="date"
+                                    owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                </g:if>
                                 <g:if test="${i < ieInNewSub.priceItems.size() - 1}"><hr></g:if>
                                 <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
@@ -101,18 +110,25 @@
                         <g:if test="${ie?.priceItems}">
                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                 <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
-                                                                                     owner="${priceItem}"
-                                                                                     format=""/> <semui:xEditableRefData
+                                                                                           owner="${priceItem}"
+                                                                                           format=""
+                                                                                           overwriteEditable="${false}"/> <semui:xEditableRefData
                                     field="listCurrency" owner="${priceItem}"
-                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                      owner="${priceItem}"/> <semui:xEditableRefData
-                                    field="localCurrency" owner="${priceItem}"
-                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                            <%--<semui:xEditable field="startDate" type="date"
-                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                field="endDate" type="date"
-                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                    config="Currency"
+                                    overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+
+                                <g:if test="${priceItem.localCurrency}">
+                                    <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                                owner="${priceItem}"
+                                                                                                overwriteEditable="${false}"/> <semui:xEditableRefData
+                                        field="localCurrency" owner="${priceItem}"
+                                        config="Currency"
+                                        overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                <%--<semui:xEditable field="startDate" type="date"
+                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                    field="endDate" type="date"
+                                    owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                </g:if>
                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                 <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>

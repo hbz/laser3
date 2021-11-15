@@ -56,7 +56,7 @@
 
                             <!-- START TEMPLATE -->
                                 <g:render template="/templates/title"
-                                          model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                          model="${[ie: ie, tipp: ie.tipp,
                                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>

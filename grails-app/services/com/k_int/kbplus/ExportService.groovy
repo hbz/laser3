@@ -584,6 +584,7 @@ class ExportService {
 				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
 				columnHeaders = Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
+				columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				row = sheet.createRow(7)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -741,6 +742,7 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("")
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('MMM-yyyy') })
+				columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				row = sheet.createRow(13)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -818,6 +820,15 @@ class ExportService {
 						titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
 					titleRow.put("Reporting Period Total", periodTotal)
 					titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
+
+					if (report.title.priceItems) {
+						//listprice_eur
+						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
+						//listprice_gbp
+						titleRow.put("List Price GBP", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
+						//listprice_usd
+						titleRow.put("List Price USD", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+					}
 				}
 				else if(report instanceof Counter5Report) {
 					if(!titleRow) {
@@ -881,6 +892,14 @@ class ExportService {
 					}
 					titleRow.put("Reporting_Period_Total", periodTotal)
 					titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
+					if (report.title.priceItems) {
+						//listprice_eur
+						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
+						//listprice_gbp
+						titleRow.put("List Price GBP", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
+						//listprice_usd
+						titleRow.put("List Price USD", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+					}
 				}
 				titleMetrics.put(report.metricType, titleRow)
 				titleRows.put(report.title, titleMetrics)
