@@ -11,6 +11,7 @@
         <g:if test="${subscription}">
             <g:hiddenField id="sub_${idSuffix}" name="sub" value="${subscription.id}"/>
         </g:if>
+
         <div class="fields la-more-padding">
             <div class="nine wide field">
                 <g:if test="${showVisibilitySettings}">
@@ -96,7 +97,7 @@
         </div><!-- two fields -->
 
         <div class="fields">
-            <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency la-more-padding">
+            <fieldset class="<g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}"> nine la-modal-fieldset-margin-right </g:if> <g:else> sixteen </g:else> wide field  la-account-currency la-more-padding">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                 <div class="two fields">
@@ -137,7 +138,7 @@
                                 else value = 1.0
                             }
                         %>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc la-82Percent"
                                name="newCostCurrencyRate" id="newCostCurrencyRate_${idSuffix}"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" step="0.001" />
@@ -161,7 +162,7 @@
                 <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
-                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
+                        <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc la-82Percent"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency_${idSuffix}"
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
