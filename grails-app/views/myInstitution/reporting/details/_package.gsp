@@ -46,10 +46,10 @@
                                 <a href="${wekb.baseUrl + '/public/packageContent/' + pkg.gokbId}" target="_blank"><i class="icon external alternate"></i></a>
                             </g:if>
                             <g:else>
-                                <p class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.query.base.noCounterpart.label')}"
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.query.base.noCounterpart.label')}"
                                    data-position="top right">
-                                    <i class="icon times red"></i>
-                                </p>
+                                    <i class="icon times grey"></i>
+                                </span>
                             </g:else>
                         </g:if>
                     </td>
