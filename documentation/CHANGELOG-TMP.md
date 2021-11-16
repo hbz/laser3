@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3993    16.11.2021  dev     2.3         David   Feature     PlatformProperty.isPublic
+
 3987    16.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
 
 3964    15.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Pakete
