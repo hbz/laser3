@@ -4,23 +4,27 @@
     ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
 </g:if>
 
-<g:if test="${filter == BaseConfig.KEY_LICENSE}">
+<g:elseif test="${filter == BaseConfig.KEY_LICENSE}">
     ${message(code: 'reporting.filterResult.license.part', args: [filterResult.data.licenseIdList.size()])}
     <g:if test="${filterResult.data.licensorIdList.size()}">
         ${message(code: 'reporting.filterResult.and.licensor', args: [filterResult.data.licensorIdList.size()])}
     </g:if>
     ${message(code: 'reporting.filterResult.end')}
-</g:if>
+</g:elseif>
 
-<g:if test="${filter == BaseConfig.KEY_ORGANISATION}">
+<g:elseif test="${filter == BaseConfig.KEY_ORGANISATION}">
     ${message(code: 'reporting.filterResult.organisation', args: [filterResult.data.orgIdList.size()])}
-</g:if>
+</g:elseif>
 
-<g:if test="${filter == BaseConfig.KEY_PACKAGE}">
+<g:elseif test="${filter == BaseConfig.KEY_PACKAGE}">
     ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size(), filterResult.data.packageESRecords.size()])}
-</g:if>
+</g:elseif>
 
-<g:if test="${filter == BaseConfig.KEY_SUBSCRIPTION}">
+<g:elseif test="${filter == BaseConfig.KEY_PLATFORM}">
+   ${message(code: 'reporting.filterResult.platform', args: [filterResult.data.platformIdList.size(), filterResult.data.platformESRecords.size()])}
+</g:elseif>
+
+<g:elseif test="${filter == BaseConfig.KEY_SUBSCRIPTION}">
     ${message(code: 'reporting.filterResult.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
     <g:if test="${filterResult.data.memberSubscriptionIdList}">
         ${message(code: 'reporting.filterResult.and.memberSubscription', args: [filterResult.data.memberSubscriptionIdList.size()])}
@@ -38,5 +42,5 @@
         ${message(code: 'reporting.filterResult.and.agency', args: [filterResult.data.agencyIdList.size()])}
     </g:if>
     ${message(code: 'reporting.filterResult.end')}
-</g:if>
+</g:elseif>
 

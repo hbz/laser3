@@ -17,8 +17,8 @@
             <g:else>
                 <th>${message(code: 'title.label')}</th>
             </g:else>
-            <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="metricType" params="${params}" class="two wide"/>
-            <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="reportCount" params="${params}" class="two wide"/>
+            <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}" class="two wide"/>
+            <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}" class="two wide"/>
             <th class="two wide"><g:message code="default.actions.label"/></th>
         </tr>
         </thead>
@@ -39,11 +39,11 @@
                 <g:set var="allowedToSelect"
                        value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
             </g:else>
-            <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
+            <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie?.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie?.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
                     <g:if test="${(params.tab == 'allIEsStats') && (editable && !ieInNewSub && allowedToSelect)}">
-                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie?.id.toString()] : ''}>
                     </g:if>
 
                 </td>
@@ -73,8 +73,8 @@
                     </g:if>
 
                     <!-- START TEMPLATE -->
-                        <g:render template="/templates/title"
-                                  model="${[ie: ie, tipp: tipp, apisources: apisources,
+                        <g:render template="/templates/title_short"
+                                  model="${[ie: ie, tipp: tipp,
                                             showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>
@@ -94,7 +94,7 @@
                     <g:if test="${(params.tab == 'allIEsStats') && editable && !ieInNewSub && allowedToSelect }">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
-                                params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
+                                params="${[id: newSub.id, singleTitle: ie?.id, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                             <i class="plus icon"></i>
                         </g:link>

@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
+
+3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter
+
+3975    16.11.2021  rc-2.2  2.2.4       Moe     Bug         500er bei Zugriff auf Zugangskonfiguration
+
+3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
+
+3993    16.11.2021  dev     2.3         David   Feature     PlatformProperty.isPublic
+
+3987    16.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
+3964    15.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Pakete
+
+--      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
+
+3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
+
 3980    12.11.2021  dev     2.3         David   Feature     Reporting: ES-Schnittstelle laser
 
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
@@ -39,8 +57,6 @@
 
 3942    03.11.2021  rc-2.2  2.2.3       Moe     Bug         Nutzerzahlen FTEs nicht in Click Me Excel Export
 
-3942    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Nutzerzahlen FTEs nicht in Click Me Excel Export
-
 3956    02.11.2021  rc-2.2  2.2.3       Moe     Bug         Bei Nettopreis auch das Runden ermöglichen
 
 3963    02.11.2021  rc-2.2  2.2.3       Moe     Bug         ClickMe Excel Adressausgabe blöd
@@ -65,13 +81,7 @@
 
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
-3941    25.10.2021  dev     2.3         David   Feature     Reporting: Suchverlauf
-
 3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
-
-3940    21.10.2021  dev     2.3         David   Feature     Reporting: Vertragsdetails überarbeiten
-
-3932    19.10.2021  dev     2.3         David   Feature     Reporting: Merkmalsfilter für Basissuche
 
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
@@ -100,12 +110,6 @@
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
 
 3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
-
-3901    06.10.2021  dev     2.3         David   Feature     Reporting: XLSX-Export - Datentypen
-
-3898    05.10.2021  dev     2.3         David   Feature     Reporting: Export-Konfigurationen erweitern
-
-3665    05.10.2021  dev     2.3         David   Feature     Reporting: Kosten exportieren
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 

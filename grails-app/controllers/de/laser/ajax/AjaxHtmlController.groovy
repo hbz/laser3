@@ -8,6 +8,7 @@ import de.laser.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService
+import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
@@ -31,6 +32,7 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
@@ -1073,5 +1075,22 @@ class AjaxHtmlController {
 
             render template: '/templates/workflow/forms/modalWrapper', model: result
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    Map<String,Object> showAllTitleInfos() {
+        Map<String, Object> result = [:]
+
+        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+        result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
+        result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
+        result.showPackage = params.showPackage
+        result.showPlattform = params.showPlattform
+        result.showCompact = params.showCompact
+        result.showEmptyFields = params.showEmptyFields
+
+        render template: "/templates/title_modal", model: result
+
     }
 }

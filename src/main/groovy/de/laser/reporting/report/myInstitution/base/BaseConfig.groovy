@@ -16,6 +16,7 @@ import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
+import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
@@ -31,6 +32,7 @@ class BaseConfig {
 
     static String KEY_COSTITEM                  = 'costItem'
     static String KEY_PACKAGE                   = 'package'
+    static String KEY_PLATFORM                  = 'platform'
     static String KEY_LICENSE                   = 'license'
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_SUBSCRIPTION              = 'subscription'
@@ -62,8 +64,12 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE   = 'paymentType'
     static String CUSTOM_IMPL_KEY_PKG_SCOPE         = 'scope'
 
+    static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
+    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
+    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
+
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM // 'costItem'
     ]
 
     static List<String> CHARTS = [
@@ -74,31 +80,30 @@ class BaseConfig {
 
         Map<String, Object> cfg = [:]
 
-        if (prefix in [ KEY_LICENSE, 'licensor' ]) {
+        if (prefix in [ KEY_COSTITEM ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        }
+        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
         }
         else if (prefix in ['org']) {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
-        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-        }
         else if (prefix in [ KEY_PACKAGE ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
         }
-        else if (prefix in [ KEY_COSTITEM ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        else if (prefix in [ KEY_PLATFORM]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
         }
-
+        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+        }
         cfg
     }
 
     static Map<String, Object> getCurrentConfig(String key) {
 
-        if (key == KEY_PACKAGE) {
-            return PackageXCfg.CONFIG
-        }
-        else if (key == KEY_COSTITEM) {
+        if (key == KEY_COSTITEM) {
             CostItemXCfg.CONFIG
         }
         else if (key == KEY_LICENSE) {
@@ -116,6 +121,12 @@ class BaseConfig {
             else if (BaseDetailsExport.ctxInst()) {
                 OrganisationInstCfg.CONFIG
             }
+        }
+        else if (key == KEY_PACKAGE) {
+            return PackageXCfg.CONFIG
+        }
+        else if (key == KEY_PLATFORM) {
+            return PlatformXCfg.CONFIG
         }
         else if (key == KEY_SUBSCRIPTION) {
             if (BaseDetailsExport.ctxConsortium()) {
@@ -264,6 +275,28 @@ class BaseConfig {
 
                     label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_ORG) { // TODO
+            return [
+                    label: messageSource.getMessage('platform.provider', null, locale),
+                    from: Org.findAll().collect{[
+                        id: it.id,
+                        value_de: it.name,
+                        value_en: it.name,
+                ]}
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
+            return [
+                    label: messageSource.getMessage('platform.serviceProvider', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
+            return [
+                    label: messageSource.getMessage('platform.softwareProvider', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
     }

@@ -45,21 +45,13 @@ class PackageQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.PACKAGE_CONSISTENT, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['contentType']) {
+        else if ( suffix in ['contentType', 'file', 'packageStatus']) {
 
-            _processSimpleRefdataQuery(params.query, 'contentType', idList, result)
-        }
-        else if ( suffix in ['file']) {
-
-            _processSimpleRefdataQuery(params.query, 'file', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['openAccess']) {
 
             _processESRefdataQuery(params.query, RDConstants.LICENSE_OA_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
-        }
-        else if ( suffix in ['packageStatus']) {
-
-            _processSimpleRefdataQuery(params.query, 'packageStatus', idList, result)
         }
         else if ( suffix in ['paymentType']) {
 
@@ -351,8 +343,6 @@ class PackageQuery extends BaseQuery {
             }
 
         }
-
-        println result.data
         result
     }
 

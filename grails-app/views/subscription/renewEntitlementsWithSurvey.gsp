@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource; de.laser.Org;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -44,6 +44,16 @@
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
                                tab           : 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
+        </semui:exportDropdownItem>
+
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLSStats     : true,
+                               data             : 'fetchAll',
+                               tab           : 'allIEsStats',
+                               tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -93,6 +103,38 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </p>
         </div>
     </div>
+</g:if>
+
+<g:if test="${participant}">
+
+    <semui:form>
+        <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
+        <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
+
+        <table class="ui table la-table compact">
+            <tbody>
+            <tr>
+                <td>
+                    <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+
+                    ${choosenOrg?.libraryType?.getI10n('value')}
+                </td>
+                <td>
+                    <g:if test="${choosenOrgCPAs}">
+                        <g:set var="oldEditable" value="${editable}"/>
+                        <g:set var="editable" value="${false}" scope="request"/>
+                        <g:each in="${choosenOrgCPAs}" var="gcp">
+                            <g:render template="/templates/cpa/person_details"
+                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                        </g:each>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                    </g:if>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </semui:form>
 </g:if>
 
 
@@ -180,7 +222,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             <div class="eight wide field" style="text-align: left;">
                 <g:if test="${editable && params.tab != 'selectedIEs'}">
                     <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
-                        ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
+                        ${params.tab == 'allIEsStats' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>
 
                 <g:if test="${editable && params.tab == 'selectedIEs'}">
@@ -228,6 +270,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
 
+    <g:if test="${params.tab != 'allIEsStats'}">
         JSPC.app.selectAll = function () {
             $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
             $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
@@ -268,6 +311,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     $("#select-all").change(function() {
         JSPC.app.selectAll();
     });
+    </g:if>
+
 
     $(".bulkcheck").change(function() {
         var index = $(this).parents("tr").attr("data-index");
@@ -276,7 +321,9 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
             }
+    <g:if test="${params.tab != 'allIEsStats'}">
         JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
+    </g:if>
     });
 
 </laser:script>
