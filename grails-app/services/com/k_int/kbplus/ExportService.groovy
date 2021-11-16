@@ -796,8 +796,9 @@ class ExportService {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
-			if(!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
-					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {
+			//FOR ANDY: Check Export for other Counters
+			/*if(!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
+					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {*/
 				Map<String, Map> titleMetrics = titleRows.get(report.title)
 				if(!titleMetrics)
 					titleMetrics = [:]
@@ -903,7 +904,7 @@ class ExportService {
 				}
 				titleMetrics.put(report.metricType, titleRow)
 				titleRows.put(report.title, titleMetrics)
-			}
+			/*}*/
 		}
 		titleRows
 	}
