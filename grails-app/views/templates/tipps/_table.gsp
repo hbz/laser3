@@ -28,7 +28,7 @@
             <td>${counter++}</td>
             <td>
                 <!-- START TEMPLATE -->
-                <g:render template="/templates/title"
+                <g:render template="/templates/title_short"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->

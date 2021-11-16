@@ -11,6 +11,12 @@
 
 3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter
 
+3975    16.11.2021  rc-2.2  2.2.4       Moe     Bug         500er bei Zugriff auf Zugangskonfiguration
+
+3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
+
+--      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
+
 3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
 
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern

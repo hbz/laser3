@@ -239,7 +239,7 @@
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
                                 <!-- START TEMPLATE -->
-                                <g:render template="/templates/title"
+                                <g:render template="/templates/title_short"
                                           model="${[ie         : null, tipp: tipp,
                                                     showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                 <!-- END TEMPLATE -->

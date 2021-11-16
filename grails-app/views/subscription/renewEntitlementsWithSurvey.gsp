@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource; de.laser.Org;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -103,6 +103,38 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </p>
         </div>
     </div>
+</g:if>
+
+<g:if test="${participant}">
+
+    <semui:form>
+        <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
+        <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
+
+        <table class="ui table la-table compact">
+            <tbody>
+            <tr>
+                <td>
+                    <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+
+                    ${choosenOrg?.libraryType?.getI10n('value')}
+                </td>
+                <td>
+                    <g:if test="${choosenOrgCPAs}">
+                        <g:set var="oldEditable" value="${editable}"/>
+                        <g:set var="editable" value="${false}" scope="request"/>
+                        <g:each in="${choosenOrgCPAs}" var="gcp">
+                            <g:render template="/templates/cpa/person_details"
+                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                        </g:each>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                    </g:if>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </semui:form>
 </g:if>
 
 

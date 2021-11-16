@@ -34,7 +34,7 @@
         <div class="content">
 
             <!-- START TEMPLATE -->
-                <g:render template="/templates/title"
+                <g:render template="/templates/title_long"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: false, showPlattform: false, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
