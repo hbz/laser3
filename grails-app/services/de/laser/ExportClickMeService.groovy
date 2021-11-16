@@ -2060,6 +2060,16 @@ class ExportClickMeService {
 
         addr = org.name
 
+        if(address.additionFirst || address.additionSecond) {
+            addr += ', '
+            if (address.additionFirst) {
+                addr += address.additionFirst + ' '
+            }
+            if (address.additionSecond) {
+                addr += address.additionSecond + ' '
+            }
+        }
+
         if(address.street_1 || address.street_2) {
             addr += ', '
             if (address.street_1) {

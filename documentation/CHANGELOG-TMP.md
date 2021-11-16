@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
+
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
 
 3968    10.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Filter-Bookmarks

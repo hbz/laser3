@@ -29,7 +29,7 @@
             <td>
                 <!-- START TEMPLATE -->
                 <g:render template="/templates/title"
-                          model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                          model="${[ie: null, tipp: tipp,
                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->
             </td>
