@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3987    16.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
+3964    15.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Pakete
+
 3980    12.11.2021  dev     2.3         David   Feature     Reporting: ES-Schnittstelle laser
 
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
