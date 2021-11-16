@@ -130,7 +130,7 @@ class PackageFilter extends BaseFilter {
         boolean esFilterUsed = false
 
         if (idList) {
-            Map<String, Object> esr = EsIndexHelper.getEsRecords( idList )
+            Map<String, Object> esr = EsIndexHelper.getEsPackageRecords( idList )
             esRecords = esr.records as Map<String, Object>
             orphanedIdList = esr.orphanedIds as List<Long>
 //            println idList.size()
@@ -182,9 +182,9 @@ class PackageFilter extends BaseFilter {
         if (esFilterUsed) {
             idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
         }
-        filterResult.data.put('packageIdList', idList)
-        filterResult.data.put('packageESRecords', esRecords)
-        filterResult.data.put('packageOrphanedIdList', orphanedIdList)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'IdList', idList)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'OrphanedIdList', orphanedIdList)
 
         filterResult
     }

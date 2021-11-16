@@ -16,14 +16,17 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui icon button blue la-modern-button"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <g:if test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                <g:if test="${meta.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_PACKAGE}">
                                     <i class="ui icon gift" aria-hidden="true"></i>
                                 </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_PLATFORM}">
+                                    <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>
@@ -78,16 +81,19 @@
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <g:if test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                <g:if test="${fav.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_PACKAGE}">
                                     <i class="ui icon gift" aria-hidden="true"></i>
                                 </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_PLATFORM}">
+                                    <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>

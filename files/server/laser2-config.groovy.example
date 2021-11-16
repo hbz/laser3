@@ -57,6 +57,7 @@ quartzHeartbeat = 'Never'
 
 reporting.elasticSearch.url = 'http://localhost:9200'
 reporting.elasticSearch.indicies.packages = 'gokbpackages'
+reporting.elasticSearch.indicies.platforms = 'gokbplatforms'
 
 schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
 
