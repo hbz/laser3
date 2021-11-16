@@ -81,8 +81,12 @@ class EsIndexHelper {
                                         terms: [ uuid: terms.collect{ it[0] } ]
                                 ],
                                 from: 0,
-                                size: 10000
-                                //_source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*", "lastUpdatedDisplay" ]
+                                size: 10000,
+                                _source: [
+                                        "uuid", "providerUuid",
+                                        "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
+                                        "lastUpdatedDisplay"
+                                ]
                         ]
                         response.success = { resp, data ->
                             data.hits.hits.each {

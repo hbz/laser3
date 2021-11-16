@@ -143,7 +143,7 @@
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
-            $('#filter-package input.button[type=submit]').on('click', function() {
+            $('#filter-package input.button[type=submit], #filter-platform input.button[type=submit]').on('click', function() {
                 $('#loadingIndicator').show(); /* es */
             })
 
