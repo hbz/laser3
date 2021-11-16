@@ -402,6 +402,8 @@ class SubscriptionController {
         }
         else {
             params.tab = params.tab ?: 'generalProperties'
+            if(ctrlResult.result.tabPlat && !params.tabPlat)
+                params.tabPlat = ctrlResult.result.tabPlat.toString()
 
             ctrlResult.result
         }
