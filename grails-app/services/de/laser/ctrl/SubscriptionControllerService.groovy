@@ -1171,6 +1171,10 @@ class SubscriptionControllerService {
             result.previousSubscription = previousSubscription
             result.subscriber = result.newSub.getSubscriber()
 
+            if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
+                result.participant = result.subscriber
+            }
+
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
             result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
 

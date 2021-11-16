@@ -531,7 +531,7 @@ class ExportService {
 	 * @param data - the retrieved and filtered COUNTER data
 	 * @return
 	 */
-	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data) {
+	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false) {
 		Locale locale = LocaleContextHolder.getLocale()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
@@ -584,7 +584,9 @@ class ExportService {
 				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
 				columnHeaders = Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
-				columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
+				if(showPriceDate) {
+					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
+				}
 				row = sheet.createRow(7)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -615,7 +617,7 @@ class ExportService {
 							cell = row.createCell(i+8)
 							cell.setCellValue(totalRow.reportCount ?: 0)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_2:
@@ -643,7 +645,7 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_5:
@@ -671,7 +673,7 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
 						break
 				}
 			}
@@ -742,7 +744,9 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("")
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('MMM-yyyy') })
-				columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
+				if(showPriceDate) {
+					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
+				}
 				row = sheet.createRow(13)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -774,7 +778,7 @@ class ExportService {
 					}
 				}
 				else
-					titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+					titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
 			}
 			titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map> titleMetric ->
 				titleMetric.eachWithIndex { String metricType, Map titleRow, int i ->
@@ -792,13 +796,13 @@ class ExportService {
 		wb
 	}
 
-	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType) {
+	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false) {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
-			//FOR ANDY: Check Export for other Counters
-			/*if(!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
-					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {*/
+			if((showMetricType) ||
+					!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
+					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {
 				Map<String, Map> titleMetrics = titleRows.get(report.title)
 				if(!titleMetrics)
 					titleMetrics = [:]
@@ -822,7 +826,7 @@ class ExportService {
 					titleRow.put("Reporting Period Total", periodTotal)
 					titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
 
-					if (report.title.priceItems) {
+					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
 						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
 						//listprice_gbp
@@ -893,7 +897,7 @@ class ExportService {
 					}
 					titleRow.put("Reporting_Period_Total", periodTotal)
 					titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
-					if (report.title.priceItems) {
+					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
 						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
 						//listprice_gbp
@@ -904,7 +908,7 @@ class ExportService {
 				}
 				titleMetrics.put(report.metricType, titleRow)
 				titleRows.put(report.title, titleMetrics)
-			/*}*/
+			}
 		}
 		titleRows
 	}
