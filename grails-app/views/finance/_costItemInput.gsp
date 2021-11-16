@@ -12,7 +12,7 @@
             <g:hiddenField id="sub_${idSuffix}" name="sub" value="${subscription.id}"/>
         </g:if>
 
-        <div class="fields la-more-padding">
+        <div class="fields la-forms-grid">
             <div class="nine wide field">
                 <g:if test="${showVisibilitySettings}">
                     <div class="two fields la-fields-no-margin-button ">
@@ -97,7 +97,7 @@
         </div><!-- two fields -->
 
         <div class="fields">
-            <fieldset class="<g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}"> nine la-modal-fieldset-margin-right </g:if> <g:else> sixteen </g:else> wide field  la-account-currency la-more-padding">
+            <fieldset class="<g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}"> nine la-modal-fieldset-margin-right </g:if> <g:else> sixteen </g:else> wide field  la-account-currency la-forms-grid">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                 <div class="two fields">
@@ -201,7 +201,7 @@
 
 
             <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && copyToOtherSub)}">
-                <fieldset class="seven wide field la-modal-fieldset-no-margin la-more-padding">
+                <fieldset class="seven wide field la-modal-fieldset-no-margin la-forms-grid">
                     <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
                     <div class="field">
@@ -305,7 +305,7 @@
         </div><!-- three fields -->
 
         <div class="three fields">
-            <fieldset class="field la-modal-fieldset-no-margin la-more-padding">
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
                 <div class="two fields">
                     <semui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
@@ -319,7 +319,7 @@
                 </div>
             </fieldset> <!-- 1/3 field -->
 
-            <fieldset class="field la-modal-fieldset-margin la-more-padding">
+            <fieldset class="field la-modal-fieldset-margin la-forms-grid">
                 <div class="field la-more-margin">
                     <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
                 </div>
@@ -329,7 +329,7 @@
                 </div><!-- .field -->
             </fieldset> <!-- 2/3 field -->
 
-            <fieldset class="field la-modal-fieldset-no-margin la-more-padding">
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
                 <div class="field la-more-margin">
                     <label>${message(code:'financials.invoice_number')}</label>
                     <input type="text" name="newInvoiceNumber" placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>

@@ -21775,8 +21775,8 @@ form {
   padding: 15px;
 }
 
-.ui.form .fields.la-more-padding,
-.ui.form .fields .field.la-more-padding {
+.ui.form .fields.la-forms-grid,
+.ui.form .fields .field.la-forms-grid {
   padding: 25px;
   background: #e6dee2;
 }

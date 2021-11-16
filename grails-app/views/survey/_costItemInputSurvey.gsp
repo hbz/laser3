@@ -14,7 +14,7 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
-
+############################################## costItemInputSurvey #############################################################################
 <div class="fields">
     <div class="nine wide field">
         <div class="field">
