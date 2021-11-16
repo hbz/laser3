@@ -16,7 +16,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-plt',
-                            //'my-plt'
+                            'my-plt'
                     ],
                     fields: [
                             'org'               : FIELD_TYPE_CUSTOM_IMPL,
@@ -24,6 +24,10 @@ class PlatformXCfg extends BaseConfig {
                             //'type'              : FIELD_TYPE_REFDATA,
                             'serviceProvider'   : FIELD_TYPE_CUSTOM_IMPL,
                             'softwareProvider'  : FIELD_TYPE_CUSTOM_IMPL,
+                            'ipAuthentication'  : FIELD_TYPE_CUSTOM_IMPL,           // ES
+                            'shibbolethAuthentication'  : FIELD_TYPE_CUSTOM_IMPL,   // ES
+                            'passwordAuthentication'    : FIELD_TYPE_CUSTOM_IMPL,   // ES
+                            'proxySupported'    : FIELD_TYPE_CUSTOM_IMPL            // ES
                     ],
                     filter : [
                             default: [
@@ -34,10 +38,14 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'platform-org',
-                                            'platform-status',
+                                            'platform-org',     // TODO - move to query2 !?
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
+                                            'platform-status',
+                                            'platform-ipAuthentication',         // ES
+                                            'platform-shibbolethAuthentication', // ES
+                                            'platform-passwordAuthentication',   // ES
+                                            'platform-proxySupported',           // ES
                                             'platform-*'
                                     ]
                             ]

@@ -133,9 +133,6 @@ class PackageFilter extends BaseFilter {
             Map<String, Object> esr = EsIndexHelper.getEsPackageRecords( idList )
             esRecords = esr.records as Map<String, Object>
             orphanedIdList = esr.orphanedIds as List<Long>
-//            println idList.size()
-//            println esRecords.size()
-//            println orphanedIdList.size()
         }
 
         getCurrentFilterKeys(params, cmbKey).each { key ->

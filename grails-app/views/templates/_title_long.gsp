@@ -1,49 +1,49 @@
 <%@ page import="de.laser.helper.RDStore;" %>
 <div class="la-icon-list">
+<semui:listIcon type="${tipp.titleType}"/>
+<g:if test="${ie}">
+    <g:link controller="issueEntitlement" id="${ie.id}"
+            action="show"><strong>${ie.name}</strong>
+    </g:link>
+</g:if>
+<g:else>
+    <g:link controller="tipp" id="${tipp.id}"
+            action="show"><strong>${tipp.name}</strong>
+    </g:link>
+</g:else>
 
-    <semui:listIcon type="${tipp.titleType}"/>
-    <g:if test="${ie}">
-        <g:link controller="issueEntitlement" id="${ie.id}"
-                action="show"><strong>${ie.name}</strong>
-        </g:link>
-    </g:if>
-    <g:else>
-        <g:link controller="tipp" id="${tipp.id}"
-                action="show"><strong>${tipp.name}</strong>
-        </g:link>
-    </g:else>
+<g:if test="${tipp.hostPlatformURL}">
+    <semui:linkIcon
+            href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+</g:if>
+<br/>
 
-    <g:if test="${tipp.hostPlatformURL}">
-        <semui:linkIcon
-                href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-    </g:if>
+<g:if test="${!showCompact}">
     <br/>
+</g:if>
 
-    <g:if test="${!showCompact}">
-        <br/>
-    </g:if>
-
-    <g:each in="${tipp.ids.sort { it.ns.ns }}" var="title_id">
-        <span class="ui small basic image label" style="background: none">
-            ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
-        </span>
-    </g:each>
+<g:each in="${tipp.ids.sort { it.ns.ns }}" var="title_id">
+    <span class="ui small basic image label" style="background: none">
+        ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
+    </span>
+</g:each>
 <!--                  ISSN:<strong>${tipp.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${tipp.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
+<br/>
+
+<g:if test="${!showCompact}">
     <br/>
+</g:if>
 
-    <g:if test="${!showCompact}">
-        <br/>
-    </g:if>
+<div class="item">
+    <semui:listIcon type="${tipp.titleType}"/>
 
-    <div class="item">
-        <semui:listIcon type="${tipp.titleType}"/>
-
-        <div class="content">
-            ${showCompact ? '' : message(code: 'tipp.titleType') + ':'} ${tipp.titleType}
-        </div>
+    <div class="content">
+        ${showCompact ? '' : message(code: 'tipp.titleType') + ':'} ${tipp.titleType}
     </div>
+</div>
 
+<div class="la-icon-list">
     <g:if test="${ie && (ie.medium || showEmptyFields)}">
         <div class="item">
             <i class="grey medium icon la-popup-tooltip la-delay"
@@ -97,7 +97,7 @@
                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
+                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
             </div>
         </div>
     </g:if>
@@ -268,17 +268,18 @@
                     <div class="ui list">
                         <g:each in="${providers}" var="provider">
 
-                                <g:link controller="organisation" action="show" id="${provider.id}">${provider.name}</g:link>
+                            <g:link controller="organisation" action="show" target="_blank"
+                                    id="${provider.id}">${provider.name}</g:link>
 
-                                %{--<g:each in="${apisources}" var="gokbAPI">
-                                    <g:if test="${provider.gokbId}">
-                                        <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'wekb')}"
-                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
-                                           target="_blank"><i class="la-gokb  icon"></i>
-                                        </a>
-                                    </g:if>
-                                </g:each>--}%
+                        %{--<g:each in="${apisources}" var="gokbAPI">
+                            <g:if test="${provider.gokbId}">
+                                <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'wekb')}"
+                                   href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
+                                   target="_blank"><i class="la-gokb  icon"></i>
+                                </a>
+                            </g:if>
+                        </g:each>--}%
 
                         </g:each>
                     </div>
@@ -287,19 +288,19 @@
         </div>
     </g:if>
 
-    %{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
-        <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
-            ${message(code: 'default.on')} <g:formatDate
-                format="${message(code: 'default.date.format.notime')}"
-                date="${ie.accessStartDate}"/>
-        </g:if>
+%{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
+    <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
+        ${message(code: 'default.on')} <g:formatDate
+            format="${message(code: 'default.date.format.notime')}"
+            date="${ie.accessStartDate}"/>
+    </g:if>
 
-        <g:if test="${ie.availabilityStatus?.value == 'Expired'}">
-            ${message(code: 'default.on')} <g:formatDate
-                format="${message(code: 'default.date.format.notime')}"
-                date="${ie.accessEndDate}"/>
-        </g:if>
-    </g:if>--}%
+    <g:if test="${ie.availabilityStatus?.value == 'Expired'}">
+        ${message(code: 'default.on')} <g:formatDate
+            format="${message(code: 'default.date.format.notime')}"
+            date="${ie.accessEndDate}"/>
+    </g:if>
+</g:if>--}%
 
     <g:if test="${showPackage}">
         <g:if test="${tipp.pkg.id}">
@@ -308,7 +309,7 @@
                    data-content="${message(code: 'package.label')}"></i>
 
                 <div class="content">
-                    <g:link controller="package" action="show"
+                    <g:link controller="package" action="show" target="_blank"
                             id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
                 </div>
             </div>
@@ -322,7 +323,7 @@
 
                 <div class="content">
                     <g:if test="${tipp.platform.name}">
-                        <g:link controller="platform" action="show"
+                        <g:link controller="platform" action="show" target="_blank"
                                 id="${tipp.platform.id}">
                             ${tipp.platform.name}
                         </g:link>
@@ -357,7 +358,4 @@
     </g:each>
 
 </div>
-
-
-
 

@@ -35,22 +35,18 @@ class PlatformFilter extends BaseFilter {
                 )
                 break
             case 'my-plt':
-                // TODO
-                // TODO
-                // TODO
-                queryParams.platformIdList = Package.executeQuery( 'select plt.id from Platform plt where plt.status != :status',
-                        [status: RDStore.PLATFORM_STATUS_DELETED]
+                List<Long> subIdList = Subscription.executeQuery(
+                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
+                        [roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], ctx: contextService.getOrg()])
+
+                queryParams.platformIdList = Package.executeQuery(
+                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg, " +
+                        "TitleInstancePackagePlatform tipp join tipp.platform plt where tipp.pkg = pkg and sub.id in (:subIdList) " +
+                        "and (pkg.packageStatus is null or pkg.packageStatus != :pkgDeleted) " +
+                        "and (tipp.status is null or tipp.status != :tippDeleted) " +
+                        "and plt.status != :status",
+                        [status: RDStore.PLATFORM_STATUS_DELETED, subIdList: subIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippDeleted: RDStore.TIPP_STATUS_DELETED]
                 )
-//                List<Long> subIdList = Subscription.executeQuery(
-//                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
-//                        [roleTypes: [
-//                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-//                        ], ctx: contextService.getOrg()])
-//
-//                queryParams.packageIdList = Package.executeQuery(
-//                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:idList) and subPkg.pkg.packageStatus != :pkgStatus',
-//                        [idList: subIdList, status: RDStore.PLATFORM_STATUS_DELETED]
-//                )
                 break
         }
 
@@ -146,9 +142,6 @@ class PlatformFilter extends BaseFilter {
             Map<String, Object> esr = EsIndexHelper.getEsPlatformRecords( idList )
             esRecords = esr.records as Map<String, Object>
             orphanedIdList = esr.orphanedIds as List<Long>
-            println idList.size()
-            println esRecords.size()
-            println orphanedIdList.size()
         }
 
         if (esFilterUsed) {

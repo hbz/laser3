@@ -58,4 +58,4 @@
     </table>
 </div>
 
-<g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+%{-- TODO <g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" /> --}%

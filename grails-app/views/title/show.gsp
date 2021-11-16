@@ -33,8 +33,8 @@
 
                 <semui:form>
                     <!-- START TEMPLATE -->
-                    <g:render template="/templates/title"
-                              model="${[ie: null, tipp: ti, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                    <g:render template="/templates/title_long"
+                              model="${[ie: null, tipp: ti,
                                         showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
                     <!-- END TEMPLATE -->
                 </semui:form>

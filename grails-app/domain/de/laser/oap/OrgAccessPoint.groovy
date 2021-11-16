@@ -86,7 +86,9 @@ class OrgAccessPoint extends AbstractBase {
                 return ipRanges.compact().toCidrStrings()
                 break
             case 'ranges':
-                return ipRanges.compact().toRangeStrings()
+                return ipRanges.toRangeStrings()
+                //TODO: NOCHMAL PRÜFEN MOE. ERMS-3975: 500er bei Zugriff auf Zugangskonfiguration
+                //return ipRanges.compact().toRangeStrings()
                 break
             case 'input':
                 return ipRanges.toInputStrings().sort{it}

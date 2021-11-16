@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
+import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -33,6 +34,10 @@ class PlatformQuery extends BaseQuery {
                     result
             )
         }
+        else if (suffix in ['ipAuthentication']) {
+
+            _processESRefdataQuery(params.query, RDConstants.IP_AUTHENTICATION, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
+        }
         else if ( suffix in ['org']) {
 
             // TODO
@@ -45,35 +50,18 @@ class PlatformQuery extends BaseQuery {
             )
             handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
         }
-        else if ( suffix in ['serviceProvider']) {
+        else if (suffix in ['passwordAuthentication', 'proxySupported', 'shibbolethAuthentication']) {
 
-            _processSimpleRefdataQuery(params.query, 'serviceProvider', idList, result)
-
+            _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['softwareProvider']) {
+        else if ( suffix in ['serviceProvider', 'softwareProvider', 'status']) {
 
-            _processSimpleRefdataQuery(params.query, 'softwareProvider', idList, result)
-        }
-        else if ( suffix in ['status']) {
-
-            _processSimpleRefdataQuery(params.query, 'status', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['x']) {
 
-            /* if (params.query in ['platform-x-identifier']) {
+            if (params.query in ['platform-x-property']) {
 
-                handleGenericIdentifierXQuery(
-                        params.query,
-                        'select ns.id, ns.ns, count(*) from Platform plt join plt.ids ident join ident.ns ns where plt.id in (:idList)',
-                        'select plt.id from Platform plt join plt.ids ident join ident.ns ns where plt.id in (:idList)',
-                        'select plt.id from Platform plt where plt.id in (:idList)', // inversed idList
-                        idList,
-                        result
-                )
-            }
-            else */ if (params.query in ['platform-x-property']) {
-
-                // TODO : prop.isPublic = text !?
                 handleGenericPropertyXQuery(
                         params.query,
                         'select pd.id, pd.name, count(*) from Platform plt join plt.propertySet prop join prop.type pd where plt.id in (:idList)',
@@ -84,8 +72,6 @@ class PlatformQuery extends BaseQuery {
                 )
             }
         }
-
-        println result.data
         result
     }
 
