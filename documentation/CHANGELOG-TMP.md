@@ -7,7 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
+
+3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter
+
+3975    16.11.2021  rc-2.2  2.2.4       Moe     Bug         500er bei Zugriff auf Zugangskonfiguration
+
+3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
+
+--      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
+
+3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
+
+3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
+
 3968    10.11.2021  rc-2.2  2.2.4       David   Feature     Reporting: Filter-Bookmarks
+
+--      10.11.2021  rc-2.2  2.2.4       Andreas Feature     Cronjob-Intervall des Statistik-Syncs von monatlich auf wöchentlich verkürzt
 
 3974    08.11.2021  rc-2.2  2.2.4       Andreas Bug         Doppeltes Anlegen von Verknüpfungskommentaren unterbunden
 

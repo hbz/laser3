@@ -61,8 +61,8 @@
 
         <div class="content">
             <!-- START TEMPLATE -->
-            <g:render template="/templates/title"
-                      model="${[ie         : issueEntitlementInstance, tipp: issueEntitlementInstance.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+            <g:render template="/templates/title_long"
+                      model="${[ie         : issueEntitlementInstance, tipp: issueEntitlementInstance.tipp,
                                 showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
 

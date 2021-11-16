@@ -1138,19 +1138,19 @@ class ExportClickMeService {
         sheetData[messageSource.getMessage('renewalexport.renewals', null, locale)] = [titleRow: titles, columnData: renewalData]
 
         if (renewalResult.orgsContinuetoSubscription) {
-            sheetData = exportAccessPoints(renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 1")
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {
-            sheetData = exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 2")
         }
 
         if (renewalResult.orgsWithParticipationInParentSuccessor) {
-            sheetData = exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 3")
         }
 
         if (renewalResult.newOrgsContinuetoSubscription) {
-            sheetData = exportAccessPoints(renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 4")
         }
 
 
@@ -1755,7 +1755,7 @@ class ExportClickMeService {
         return fieldValue
     }
 
-    private Map exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale) {
+    private Map exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale, String sheetNameAddition) {
 
         Map export = [:]
         String sheetName = ''
@@ -1764,7 +1764,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportIPsOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
         }
@@ -1773,7 +1773,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportProxysOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -1783,7 +1783,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportEZProxysOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -1793,7 +1793,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportShibbolethsOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -2059,6 +2059,16 @@ class ExportClickMeService {
         String addr= ""
 
         addr = org.name
+
+        if(address.additionFirst || address.additionSecond) {
+            addr += ', '
+            if (address.additionFirst) {
+                addr += address.additionFirst + ' '
+            }
+            if (address.additionSecond) {
+                addr += address.additionSecond + ' '
+            }
+        }
 
         if(address.street_1 || address.street_2) {
             addr += ', '
