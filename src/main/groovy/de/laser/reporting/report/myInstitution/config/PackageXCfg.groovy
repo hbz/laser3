@@ -12,7 +12,8 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'all-pkg'
+                            'all-pkg',
+                            'my-pkg'
                     ],
                     fields: [
                             'breakable'         : FIELD_TYPE_REFDATA,
@@ -31,18 +32,23 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'package-breakable',
+                                            'package-breakable',     // ES
                                             'package-consistent',
                                             'package-contentType',
                                             'package-file',
                                             'package-packageStatus',
-                                            'package-scope',
+                                            'package-scope',     // ES
                                             'package-*'
                                     ]
                             ]
                     ],
                     query2 : [
                             'distribution' : [
+                                    'package-x-identifier' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : '2axis2values_nonMatches',
+                                            chartLabels         : [ 'base', 'x.identifiers' ]
+                                    ],
                                     'package-x-provider' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : '2axis2values_nonMatches',
@@ -53,6 +59,36 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-curatoryGroup' : [ // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-openAccess' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-nationalRange' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-regionalRange' : [   // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-language' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-ddc' : [  // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ]
                             ]
                     ]
             ]

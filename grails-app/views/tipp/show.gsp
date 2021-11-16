@@ -34,8 +34,8 @@
         <div class="content">
 
             <!-- START TEMPLATE -->
-                <g:render template="/templates/title"
-                          model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                <g:render template="/templates/title_long"
+                          model="${[ie: null, tipp: tipp,
                                     showPackage: false, showPlattform: false, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
             <br/>

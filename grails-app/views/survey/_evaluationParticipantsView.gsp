@@ -258,7 +258,7 @@
                                             </g:link>
                                         </span>
 
-                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                        <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'surveyResult.newOrg')}">
                                                 <i class="star black large  icon"></i>
@@ -290,7 +290,7 @@
                                             </span>
                                         </g:else>
 
-                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                        <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                                 <i class="exclamation triangle yellow large icon"></i>
@@ -489,7 +489,7 @@
                                         </span>
 
 
-                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                        <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'surveyResult.newOrg')}">
                                                 <i class="star black large  icon"></i>
@@ -521,7 +521,7 @@
                                             </span>
                                         </g:else>
 
-                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                        <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                                 <i class="exclamation triangle yellow large icon"></i>

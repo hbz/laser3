@@ -4,6 +4,7 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.exceptions.CreationException
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
@@ -303,12 +304,17 @@ class LinksGenerationService {
             }
             else if(!linkComment && configMap.commentContent.length() > 0) {
                 RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)
-                linkComment = new Doc([content:configMap.commentContent,type:typeNote])
-                if(linkComment.save()) {
-                    DocContext commentContext = new DocContext([doctype:typeNote,link:link,owner:linkComment])
-                    commentContext.save()
+                DocContext commentContext = DocContext.findByDoctypeAndLink(typeNote, link)
+                if(commentContext) {
+                    linkComment = commentContext.owner
                 }
                 else {
+                    linkComment = new Doc([type: typeNote])
+                    commentContext = new DocContext([doctype: typeNote, link: link, owner: linkComment])
+                    commentContext.save()
+                }
+                linkComment.content = configMap.commentContent
+                if(!linkComment.save()) {
                     log.error(linkComment.errors.toString())
                     result.error = messageSource.getMessage('default.linking.savingError',null, locale)
                     [result:result,status:STATUS_ERROR]

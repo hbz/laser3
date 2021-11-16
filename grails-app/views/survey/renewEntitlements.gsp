@@ -157,8 +157,8 @@
                             <semui:ieAcceptStatusIcon status="${ie.acceptStatus}"/>
 
                             <!-- START TEMPLATE -->
-                            <g:render template="/templates/title"
-                                      model="${[ie: ie, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                            <g:render template="/templates/title_short"
+                                      model="${[ie: ie, tipp: tipp,
                                                 showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>

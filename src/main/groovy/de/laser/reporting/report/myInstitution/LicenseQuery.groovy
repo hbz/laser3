@@ -26,7 +26,7 @@ class LicenseQuery extends BaseQuery {
 
             handleGenericAllQuery(
                     params.query,
-                    'select l.reference, l.reference, count(l.reference) from License l where l.id in (:idList) group by l.reference',
+                    'select l.reference, l.reference, count(l.reference) from License l where l.id in (:idList) group by l.reference order by l.reference',
                     'select l.id from License l where l.id in (:idList) and l.reference = :d order by l.id',
                     idList,
                     result
@@ -67,7 +67,7 @@ class LicenseQuery extends BaseQuery {
                         params.query,
                         'select ns.id, ns.ns, count(*) from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
                         'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
-                        'select lic.id from License lic where lic.id in (:idList)', // modified idList
+                        'select lic.id from License lic where lic.id in (:idList)', // inversed idList
                         idList,
                         result
                 )

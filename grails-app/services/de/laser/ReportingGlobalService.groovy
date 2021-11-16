@@ -113,20 +113,8 @@ class ReportingGlobalService {
     void doChart(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
-
             Closure getTooltipLabels = { GrailsParameterMap pm ->
-                if (pm.filter == BaseConfig.KEY_LICENSE) {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), pm).get(1)
-                }
-                else if (pm.filter == BaseConfig.KEY_ORGANISATION) {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ), pm).get(1)
-                }
-                if (pm.filter == BaseConfig.KEY_PACKAGE) {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ), pm).get(1)
-                }
-                else if (pm.filter == BaseConfig.KEY_SUBSCRIPTION) {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), pm).get(1)
-                }
+                BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( pm.filter ), pm).get(1)
             }
 
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // clone.put() ..
@@ -163,7 +151,6 @@ class ReportingGlobalService {
                 result.putAll( OrganisationQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = TMPL_PATH + 'chart/generic'
-
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
