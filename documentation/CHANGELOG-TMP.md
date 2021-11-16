@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3975    16.11.2021  rc-2.2  2.2.4       Moe     Bug         500er bei Zugriff auf Zugangskonfiguration
+
 3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
 
 --      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
