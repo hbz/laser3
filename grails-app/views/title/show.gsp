@@ -33,7 +33,7 @@
 
                 <semui:form>
                     <!-- START TEMPLATE -->
-                    <g:render template="/templates/title"
+                    <g:render template="/templates/title_long"
                               model="${[ie: null, tipp: ti,
                                         showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
                     <!-- END TEMPLATE -->

@@ -156,7 +156,7 @@
 
             <td>
                 <!-- START TEMPLATE -->
-                <g:render template="/templates/title"
+                <g:render template="/templates/title_short"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                 <!-- END TEMPLATE -->

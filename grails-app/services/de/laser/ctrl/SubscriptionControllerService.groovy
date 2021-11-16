@@ -1127,6 +1127,10 @@ class SubscriptionControllerService {
 
             if(params.tab == 'allIEsStats') {
                 //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+
+                if(!params.tabStat)
+                    params.tabStat = 'total'
+
                 String oldTab = params.tab
                 params.tab = params.tabStat
 
@@ -1147,6 +1151,7 @@ class SubscriptionControllerService {
                 }
 
                 params.tab = oldTab
+
             }else {
 
                 params.sort = params.sort ?: 'sortname'

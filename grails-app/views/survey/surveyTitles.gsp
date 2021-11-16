@@ -153,7 +153,7 @@
                                 <td>${counter++}</td>
                                 <td>
                                     <!-- START TEMPLATE -->
-                                    <g:render template="/templates/title"
+                                    <g:render template="/templates/title_short"
                                               model="${[ie: ie, tipp: ie.tipp,
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                                     <!-- END TEMPLATE -->
