@@ -1,4 +1,5 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<g:set var="esData" value="${BaseConfig.getCurrentEsData(cfgKey) ?: []}" />
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
@@ -6,13 +7,14 @@
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-1-${qci}">${BaseConfig.getMessage(field.key)}</label>
-                    <g:select name="query-chooser"
-                              id="query-chooser-1-${qci}"
-                              from="${field.value}"
-                              optionKey="${{it}}"
-                              optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
-                              class="ui selection dropdown la-not-clearable"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                    <semui:dropdownWithI18nExplanations name="query-chooser"
+                                                        id="query-chooser-1-${qci}"
+                                                        from="${field.value}"
+                                                        optionKey="${{it}}"
+                                                        optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
+                                                        optionExpl="${{esData.contains(it) ? '(we:kb)' : ''}}"
+                                                        class="ui selection dropdown la-not-clearable"
+                                                        noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
             </g:each>
         </g:each>
@@ -23,13 +25,14 @@
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-2-${qci}">${BaseConfig.getMessage(field.key)}</label>
-                         <g:select name="query-chooser"
-                              id="query-chooser-2-${qci}"
-                              from="${field.value}"
-                              optionKey="key"
-                              optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
-                              class="ui selection dropdown la-not-clearable"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                         <semui:dropdownWithI18nExplanations name="query-chooser"
+                                                             id="query-chooser-2-${qci}"
+                                                             from="${field.value}"
+                                                             optionKey="${{it.key}}"
+                                                             optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
+                                                             optionExpl="${{esData.contains(it.key) ? '(we:kb)' : ''}}"
+                                                             class="ui selection dropdown la-not-clearable"
+                                                             noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
             </g:each>
         </g:each>

@@ -3,7 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.report.EsIndexHelper
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -30,7 +30,7 @@ class PlatformFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-plt':
-                queryParams.platformIdList = Package.executeQuery( 'select plt.id from Platform plt where plt.status != :status',
+                queryParams.platformIdList = Platform.executeQuery( 'select plt.id from Platform plt where plt.status != :status',
                         [status: RDStore.PLATFORM_STATUS_DELETED]
                 )
                 break
@@ -39,7 +39,7 @@ class PlatformFilter extends BaseFilter {
                         "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
                         [roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], ctx: contextService.getOrg()])
 
-                queryParams.platformIdList = Package.executeQuery(
+                queryParams.platformIdList = Platform.executeQuery(
                         "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg, " +
                         "TitleInstancePackagePlatform tipp join tipp.platform plt where tipp.pkg = pkg and sub.id in (:subIdList) " +
                         "and (pkg.packageStatus is null or pkg.packageStatus != :pkgDeleted) " +
@@ -59,6 +59,7 @@ class PlatformFilter extends BaseFilter {
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
+                String pEsData = BaseConfig.KEY_PLATFORM + '-' + p
 
                 def filterLabelValue
 
@@ -98,11 +99,11 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation != es_data
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if ( ! PlatformXCfg.ES_DATA.contains( p )) {
+                    if ( ! PlatformXCfg.ES_DATA.contains( pEsData )) {
 
                         if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
                             whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
@@ -139,7 +140,7 @@ class PlatformFilter extends BaseFilter {
         boolean esFilterUsed = false
 
         if (idList) {
-            Map<String, Object> esr = EsIndexHelper.getEsPlatformRecords( idList )
+            Map<String, Object> esr = ElasticSearchHelper.getEsPlatformRecords( idList )
             esRecords = esr.records as Map<String, Object>
             orphanedIdList = esr.orphanedIds as List<Long>
         }

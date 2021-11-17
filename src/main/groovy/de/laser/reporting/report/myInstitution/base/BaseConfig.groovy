@@ -138,6 +138,15 @@ class BaseConfig {
         }
     }
 
+    static List<String> getCurrentEsData(String key) {
+        if (key == KEY_PACKAGE) {
+            return PackageXCfg.ES_DATA
+        }
+        else if (key == KEY_PLATFORM) {
+            return PlatformXCfg.ES_DATA
+        }
+    }
+
     static Map<String, Object> getCustomImplRefdata(String key) {
         getCustomImplRefdata(key, null)
     }

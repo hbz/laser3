@@ -28,7 +28,7 @@
                     </td>
                     <td>
                         <g:if test="${plt.org}">
-                            <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.shortname ?: plt.org.name}</g:link>
+                            <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
                         </g:if>
                     </td>
                     <td>
