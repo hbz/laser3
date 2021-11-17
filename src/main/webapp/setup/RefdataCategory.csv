@@ -140,6 +140,7 @@ sis.pricing.model,FID-Preismodell,SIS pricing model
 sis.product.type,FID - Produktart,SIS product type
 sis.proof,FID-Nachweis,SIS proof
 sis.proxy.config.status,FID-Proxykonfig-Status,SIS proxy config status
+sis.rejection.reason,FID - Grund für Nichtzustandekommen,SIS - rejection reason
 sis.user.group,FID-Nutzerkreis,SIS user group
 sis.user.group.base,FID-Nutzerkreismodell - Grundtyp,SIS user group model - base type
 sis.user.group.attr1,FID-Nutzerkreismodell - Attribute_1,SIS user group model - Attribute_1

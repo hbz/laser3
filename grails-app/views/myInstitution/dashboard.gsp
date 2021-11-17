@@ -174,7 +174,7 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <a onclick="JSPC.app.taskcreate();" class="ui icon button">
+                        <a onclick="JSPC.app.taskcreate();" class="ui button">
                             ${message(code:'task.create.new')}
                         </a>
                     </div>
@@ -327,7 +327,7 @@
                                         <g:link controller="subscription" action="workflows" id="${wf.subscription.id}"
                                                 class="ui icon button blue la-modern-button"
                                                 params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                                            <i class="icon pencil"></i>
+                                            <i class="icon edit"></i>
                                         </g:link>
                                     </td>
                                 </tr>

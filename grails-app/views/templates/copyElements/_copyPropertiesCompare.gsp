@@ -16,7 +16,7 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
-    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}"
+    <g:form controller="${controllerName}" action="${actionName}" id="${params.id ?: params.sourceObjectId}" data-confirm-id="copyElements_form"
             params="[workFlowPart: CopyElementsService.WORKFLOW_END, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
 
@@ -148,8 +148,10 @@
         </g:else>
 
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${submitButtonText}"
-                   onclick="return JSPC.app.jsConfirmation()" ${submitDisabled}/>
+            <input id="copyElementsSubmit" type="submit" class="ui button js-click-control" value="${submitButtonText}" ${submitDisabled}
+                   data-confirm-id="copyElements"
+                   data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                   data-confirm-term-how="delete"/>
         </div>
     </g:form>
 </semui:form>

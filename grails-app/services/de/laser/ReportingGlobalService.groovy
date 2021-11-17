@@ -1,10 +1,10 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.myInstitution.*
-import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.report.myInstitution.*
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
@@ -14,12 +14,14 @@ class ReportingGlobalService {
 
     def contextService
 
+    static final String TMPL_PATH = '/myInstitution/reporting/'
+
     // ----- MyInstitutionController.reporting() -----
 
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
-        result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
+        result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(16)
 
         result.cfgQueryList = [:]
         result.cfgQuery2List = [:]
@@ -33,6 +35,9 @@ class ReportingGlobalService {
         else if (params.filter == BaseConfig.KEY_ORGANISATION) {
             doFilterOrganisation(result, params.clone() as GrailsParameterMap)
         }
+        else if (params.filter == BaseConfig.KEY_PACKAGE) {
+            doFilterPackage(result, params.clone() as GrailsParameterMap)
+        }
         else if (params.filter == BaseConfig.KEY_SUBSCRIPTION) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
         }
@@ -42,16 +47,14 @@ class ReportingGlobalService {
 
     void doFilterCostItem (Map<String, Object> result, GrailsParameterMap params) {
 
-        CostItemFilter filter = new CostItemFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = CostItemFilter.filter(params)
 
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
     }
 
     void doFilterLicense (Map<String, Object> result, GrailsParameterMap params) {
 
-        LicenseFilter filter = new LicenseFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = LicenseFilter.filter(params)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( pk ).query.default )
@@ -62,8 +65,7 @@ class ReportingGlobalService {
 
     void doFilterOrganisation (Map<String, Object> result, GrailsParameterMap params) {
 
-        OrganisationFilter filter = new OrganisationFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = OrganisationFilter.filter(params)
 
         if (params.get('filter:org_source').contains('providerAndAgency')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
@@ -81,10 +83,18 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2 ) // Verteilung
     }
 
+    void doFilterPackage (Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filterResult = PackageFilter.filter(params)
+
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query.default )
+
+        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2 ) // Verteilung
+    }
+
     void doFilterSubscription (Map<String, Object> result, GrailsParameterMap params) {
 
-        SubscriptionFilter filter = new SubscriptionFilter()
-        result.filterResult = filter.filter(params)
+        result.filterResult = SubscriptionFilter.filter(params)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             //if (pk != 'memberSubscription') {
@@ -93,9 +103,8 @@ class ReportingGlobalService {
         }
 
         if (! params.get('filter:consortium_source')) {
-            result.cfgQueryList.remove('Konsortialstelle')
+            result.cfgQueryList.remove('consortium') // ?
         }
-
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2 ) // Verteilung
     }
 
@@ -104,17 +113,8 @@ class ReportingGlobalService {
     void doChart(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
-
             Closure getTooltipLabels = { GrailsParameterMap pm ->
-                if (pm.filter == 'license') {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), pm).get(1)
-                }
-                else if (pm.filter == 'organisation') {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ), pm).get(1)
-                }
-                else if (pm.filter == 'subscription') {
-                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), pm).get(1)
-                }
+                BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( pm.filter ), pm).get(1)
             }
 
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // clone.put() ..
@@ -130,46 +130,57 @@ class ReportingGlobalService {
             String prefix = params.query.split('-')[0]
             String suffix = params.query.split('-')[1]
 
-            if (prefix in ['license']) {
+            if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
+                result.putAll( CostItemQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+                result.tmpl = TMPL_PATH + 'chart/generic'
+            }
+            else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                 result.putAll( LicenseQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                result.tmpl = TMPL_PATH + 'chart/generic'
 
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.dist.chartLabel.' + it) }
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
+                    result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
                 }
             }
             else if (prefix in ['org', 'member', 'consortium', 'provider', 'agency', 'licensor']) {
                 result.putAll( OrganisationQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
-
+                result.tmpl = TMPL_PATH + 'chart/generic'
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.dist.chartLabel.' + it) }
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
+                    result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['subscription', 'memberSubscription']) {
+            else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
+                result.putAll( PackageQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+                result.tmpl = TMPL_PATH + 'chart/generic'
+
+                if (suffix in ['x']) {
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2.getAt('distribution').getAt(clone.query) as Map
+
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.dist.chartLabel.' + it) }
+                    result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
+                }
+            }
+            else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                 result.putAll(SubscriptionQuery.query(clone))
                 result.labels.tooltip = getTooltipLabels(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                result.tmpl = TMPL_PATH + 'chart/generic'
 
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
+                    result.tmpl = TMPL_PATH + 'chart/' + cfg.getAt('chartTemplate')
                 }
-            }
-            else if (prefix in ['costItem']) {
-                result.putAll( CostItemQuery.query(clone) )
-                result.labels.tooltip = getTooltipLabels(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
             }
 
             // TODO
@@ -209,10 +220,13 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
 
                     String tmpl = cfg.base.query2.get('distribution').get(params.query).detailsTemplate
-                    result.tmpl = '/myInstitution/reporting/details/' + tmpl
+                    result.tmpl = TMPL_PATH + 'details/' + tmpl
 
                     if (! idList) {
                         result.list = []
+                    }
+                    else if (tmpl == BaseConfig.KEY_COSTITEM) {
+                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_LICENSE) {
                         result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
@@ -220,30 +234,33 @@ class ReportingGlobalService {
                     else if (tmpl == BaseConfig.KEY_ORGANISATION) {
                         result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                     }
+                    else if (tmpl == BaseConfig.KEY_PACKAGE) {
+                        result.list = Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                     }
-                    else if (tmpl == BaseConfig.KEY_COSTITEM) {
-                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
-                    }
                 }
                 else {
-
-                    if (prefix in ['license']) {
-                        result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
-                        result.tmpl = '/myInstitution/reporting/details/license'
-                    }
-                    else if (prefix in ['licensor', 'org', 'member', 'consortium', 'provider', 'agency']) {
-                        result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
-                        result.tmpl = '/myInstitution/reporting/details/organisation'
-                    }
-                    else if (prefix in ['subscription', 'memberSubscription']) {
-                        result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
-                        result.tmpl = '/myInstitution/reporting/details/subscription'
-                    }
-                    else if (prefix in ['costItem']) {
+                    if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
                         result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
-                        result.tmpl = '/myInstitution/reporting/details/costItem'
+                        result.tmpl = TMPL_PATH + 'details/costItem'
+                    }
+                    else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
+                        result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/license'
+                    }
+                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', 'provider', 'agency' ]) {
+                        result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/organisation'
+                    }
+                    else if (prefix in [ BaseConfig.KEY_PACKAGE ]) {
+                        result.list = idList ? Package.executeQuery('select pkg from Package pkg where pkg.id in (:idList) order by pkg.name', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/package'
+                    }
+                    else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
+                        result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
+                        result.tmpl = TMPL_PATH + 'details/subscription'
                     }
                 }
             }

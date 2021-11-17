@@ -173,7 +173,7 @@
                                 <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
                             </g:if>
 
-                        <g:each in="${propList.sort { it.name }}" var="surveyProperty">
+                        <g:each in="${propList.sort { it.getI10n('name') }}" var="surveyProperty">
                             <th>${surveyProperty.getI10n('name')}
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -212,12 +212,15 @@
                 <g:set var="participant"
                        value="${surveyOrg.org}"/>
                 <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surResults" value="[]"/>
                     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
                     <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
                         <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
                         <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
                     </g:if>
-                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                    <g:if test="${surveyProperties}">
+                        <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                    </g:if>
                 </g:if>
                 <tr>
                     <g:if test="${showCheckbox}">
@@ -255,7 +258,7 @@
                                             </g:link>
                                         </span>
 
-                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                        <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'surveyResult.newOrg')}">
                                                 <i class="star black large  icon"></i>
@@ -287,7 +290,7 @@
                                             </span>
                                         </g:else>
 
-                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                        <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                                 <i class="exclamation triangle yellow large icon"></i>
@@ -396,7 +399,7 @@
                                 </th>
                                 <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
                             </g:if>
-                            <g:each in="${propList.sort { it.name }}" var="surveyProperty">
+                            <g:each in="${propList.sort { it.getI10n('name') }}" var="surveyProperty">
                                 <th>${surveyProperty.getI10n('name')}
                                     <g:if test="${surveyProperty.getI10n('expl')}">
                                         <span class="la-long-tooltip la-popup-tooltip la-delay"
@@ -437,12 +440,16 @@
                        value="${surveyOrg.org}"/>
 
                 <g:if test="${surveyConfig.surveyProperties}">
+                    <g:set var="surResults" value="[]"/>
                     <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
                     <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
                     <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
                         <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
                     </g:if>
-                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                    <g:if test="${surveyProperties}">
+                        <g:set var="surResults"
+                               value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
+                    </g:if>
                 </g:if>
 
                 <tr>
@@ -482,7 +489,7 @@
                                         </span>
 
 
-                                        <g:if test="${!surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}">
+                                        <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'surveyResult.newOrg')}">
                                                 <i class="star black large  icon"></i>
@@ -514,7 +521,7 @@
                                             </span>
                                         </g:else>
 
-                                        <g:if test="${participant in propertiesChangedByParticipant}">
+                                        <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                                 <i class="exclamation triangle yellow large icon"></i>

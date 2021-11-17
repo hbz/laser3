@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExport;de.laser.reporting.myInstitution.GenericHelper;de.laser.helper.DateUtils;de.laser.Links;de.laser.helper.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.helper.RDConstants;de.laser.Contact;de.laser.Identifier" %>
+<%@ page import="de.laser.helper.DateUtils;de.laser.Links;de.laser.helper.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.helper.RDConstants;de.laser.Contact;de.laser.Identifier" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -148,7 +148,7 @@
                         </g:elseif>--}%
                     </li>
                     <li>
-                        <strong><g:message code="license.licenseCategory.label"/>: </strong>${license.licenseCategory.getI10n("value")}
+                        <strong><g:message code="license.licenseCategory.label"/>: </strong>${license.licenseCategory?.getI10n("value")}
                         %{--<g:if test="${auditService.getAuditConfig(license, 'licenseCategory')}">
                             <span class="green">V</span>
                         </g:if>

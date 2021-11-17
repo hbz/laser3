@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovyx.gpars.GParsPool
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -881,7 +882,8 @@ class SubscriptionService {
 
             RefdataValue statusCurrent = RDStore.TIPP_STATUS_CURRENT
 
-            new SubscriptionPackage(subscription:target, pkg: pkg).save()
+            SubscriptionPackage newSp = new SubscriptionPackage(subscription: target, pkg: pkg)
+            newSp.save()
 
             IssueEntitlement.executeQuery(
                     "select ie from IssueEntitlement ie join ie.tipp tipp " +
@@ -1085,7 +1087,7 @@ class SubscriptionService {
                 if(issueEntitlementOverwrite.accessStartDate) {
                     if(issueEntitlementOverwrite.accessStartDate instanceof String)
                         accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
-                    else if(issueEntitlementOverwrite instanceof Date)
+                    else if(issueEntitlementOverwrite.accessStartDate instanceof Date)
                         accessStartDate = issueEntitlementOverwrite.accessStartDate
                     else accessStartDate = tipp.accessStartDate
                 }
@@ -1127,9 +1129,46 @@ class SubscriptionService {
                         throw new EntitlementCreationException(ieCoverage.errors)
                     }
                 }
-                if(withPriceData && issueEntitlementOverwrite) {
-                    if(issueEntitlementOverwrite instanceof IssueEntitlement) {
-                        issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
+                if(withPriceData) {
+                    if(issueEntitlementOverwrite) {
+                        if(issueEntitlementOverwrite instanceof IssueEntitlement) {
+                            issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
+                                PriceItem pi = new PriceItem(
+                                        startDate: priceItem.startDate ?: null,
+                                        endDate: priceItem.endDate ?: null,
+                                        listPrice: priceItem.listPrice ?: null,
+                                        listCurrency: priceItem.listCurrency ?: null,
+                                        localPrice: priceItem.localPrice ?: null,
+                                        localCurrency: priceItem.localCurrency ?: null,
+                                        issueEntitlement: new_ie
+                                )
+                                pi.setGlobalUID()
+                                if (pi.save())
+                                    return true
+                                else {
+                                    throw new EntitlementCreationException(pi.errors)
+                                }
+                            }
+
+                        }
+                        else {
+                            PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
+                                    listPrice: issueEntitlementOverwrite.listPrice,
+                                    listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
+                                    localPrice: issueEntitlementOverwrite.localPrice,
+                                    localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
+                                    issueEntitlement: new_ie
+                            )
+                            pi.setGlobalUID()
+                            if(pi.save())
+                                return true
+                            else {
+                                throw new EntitlementCreationException(pi.errors)
+                            }
+                        }
+                    }
+                    else {
+                        tipp.priceItems.each { PriceItem priceItem ->
                             PriceItem pi = new PriceItem(
                                     startDate: priceItem.startDate ?: null,
                                     endDate: priceItem.endDate ?: null,
@@ -1146,24 +1185,7 @@ class SubscriptionService {
                                 throw new EntitlementCreationException(pi.errors)
                             }
                         }
-
                     }
-                    else {
-                        PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
-                                listPrice: issueEntitlementOverwrite.listPrice,
-                                listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
-                                localPrice: issueEntitlementOverwrite.localPrice,
-                                localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
-                                issueEntitlement: new_ie
-                        )
-                        pi.setGlobalUID()
-                        if(pi.save())
-                            return true
-                        else {
-                            throw new EntitlementCreationException(pi.errors)
-                        }
-                    }
-
                 }
                 else return true
             } else {
@@ -1773,7 +1795,7 @@ class SubscriptionService {
         errors
     }
 
-    Map issueEntitlementEnrichment(InputStream stream, List<IssueEntitlement> issueEntitlements, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, Set<Long> entIds, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
@@ -1851,28 +1873,29 @@ class SubscriptionService {
             log.debug("now processing entitlement ${i}")
             ArrayList<String> cols = row.split('\t')
             Map<String, Object> idCandidate
-            if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
-                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
-            }
             if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                 idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
             }
-            if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+            else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+            }
+            else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
                 idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
             }
-            if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
-                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+            else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
             }
             if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                     ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                List<Long> titleIds = TitleInstance.executeQuery('select tipp.id from TitleInstancePackagePlatform ti join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.id in titleIds }
-                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
-                    if (issueEntitlement) {
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :deleted', [titleIds: titleIds, subId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED])
+                    if (issueEntitlements.size() > 0) {
+                        IssueEntitlement issueEntitlement = issueEntitlements[0]
+                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                         count++
                         PriceItem priceItem = issueEntitlement.priceItems ? issueEntitlement.priceItems[0] : new PriceItem(issueEntitlement: issueEntitlement)
                         colMap.each { String colName, int colNo ->
@@ -1962,7 +1985,7 @@ class SubscriptionService {
         println(countChangesCoverageDates)
         println(countChangesPrice)*/
 
-        return [issueEntitlements: issueEntitlements.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
+        return [issueEntitlements: entIds.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
     }
 
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){

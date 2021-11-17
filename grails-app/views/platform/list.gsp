@@ -74,7 +74,7 @@
 								<g:set var="primaryUrl" value="${record.primaryUrl}"/>
 							</g:elseif>
 							<g:if test="${primaryUrl}">
-								${primaryUrl}<a href="<g:createLink url="${primaryUrl}" />" target="_blank"><i class="external alternate icon"></i></a>
+								${primaryUrl}<a href="<g:createLink url="${primaryUrl}" />" target="_blank"> <i class="external alternate icon"></i></a>
 							</g:if>
 						</td>
 					</tr>

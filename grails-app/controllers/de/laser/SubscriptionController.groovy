@@ -5,8 +5,6 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
-import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -93,10 +91,8 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def stats() {
         Map<String,Object> ctrlResult
         SXSSFWorkbook wb
@@ -406,6 +402,8 @@ class SubscriptionController {
         }
         else {
             params.tab = params.tab ?: 'generalProperties'
+            if(ctrlResult.result.tabPlat && !params.tabPlat)
+                params.tabPlat = ctrlResult.result.tabPlat.toString()
 
             ctrlResult.result
         }
@@ -417,7 +415,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        managementService.deleteCustomerIdentifier(params.deleteCI)
+        managementService.deleteCustomerIdentifier(params.long("deleteCI"))
         redirect(url: request.getHeader("referer"))
     }
 
@@ -737,7 +735,21 @@ class SubscriptionController {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
 
+                boolean tippExistsInParentSub = false
+
                 if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    tippExistsInParentSub = true
+                }else {
+                   List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                    titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                        if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                            tippExistsInParentSub = true
+                            tipp = titleInstancePackagePlatform
+                        }
+                    }
+                }
+
+                if(tippExistsInParentSub) {
                     try {
                         if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                             flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
@@ -752,7 +764,7 @@ class SubscriptionController {
             log.error("Unable to locate subscription instance")
         }
 
-        redirect action: "renewEntitlementsWithSurvey", id: result.subscription.id, params: [surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs']
+        redirect(url: request.getHeader("referer"))
 
     }
 
@@ -970,7 +982,16 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this,params)
+        Map<String,Object> ctrlResult
+        SXSSFWorkbook wb
+        if(params.exportXLSStats) {
+            params.tab = params.tabStat
+            ctrlResult = subscriptionControllerService.statsForExport(params)
+            wb = exportService.exportReport(params, ctrlResult.result, true,  true)
+        }
+        else {
+            ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+        }
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
@@ -1009,12 +1030,26 @@ class SubscriptionController {
                 Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
-                SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-                workbook.write(response.outputStream)
+                wb = exportService.generateXLSXWorkbook(sheetData)
+                wb.write(response.outputStream)
                 response.outputStream.flush()
                 response.outputStream.close()
-                workbook.dispose()
-            } else {
+                wb.dispose()
+            } else if (params.exportXLSStats) {
+                    if(wb) {
+                        response.setHeader "Content-disposition", "attachment; filename=report_${ctrlResult.result.dateRun.format('yyyy-MM-dd')}.xlsx"
+                        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        wb.write(response.outputStream)
+                        response.outputStream.flush()
+                        response.outputStream.close()
+                        wb.dispose()
+                    }
+            }else {
+
+                if(params.tab == 'allIEsStats') {
+                    params.metricType = ctrlResult.result.metricType
+                    params.reportType = ctrlResult.result.reportType
+                }
                 ctrlResult.result
             }
         }
@@ -1034,7 +1069,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect action: "renewEntitlementsWithSurvey", id: ctrlResult.result.subscription.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, tab: 'selectedIEs']
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -1390,6 +1425,9 @@ class SubscriptionController {
     @DebugAnnotation(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
     def reporting() {
+        if (! params.token) {
+            params.token = 'static#' + params.id
+        }
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1397,7 +1435,6 @@ class SubscriptionController {
                 return
         }
         else {
-            ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
     }

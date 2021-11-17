@@ -8,12 +8,14 @@ import de.laser.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService
+import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.ReportingFilter
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.Subscription
@@ -30,25 +32,28 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.SessionCacheWrapper
 import de.laser.helper.SwissKnife
-import de.laser.reporting.ReportingCache
-import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.report.ReportingCache
+import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
-import de.laser.reporting.export.local.ExportLocalHelper
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.LocalExportHelper
+import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
-import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflow
@@ -500,6 +505,54 @@ class AjaxHtmlController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
+    def reporting() {
+        Map<String, Object> result = [
+            tab: params.tab
+        ]
+
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Closure getReportingKeys = {
+            sessionCache.list().keySet().findAll{ it.startsWith("MyInstitutionController/reporting/") }
+        }
+
+        if (params.context == BaseConfig.KEY_MYINST) {
+
+            if (params.cmd == 'deleteHistory') {
+                getReportingKeys().each {it ->
+                    sessionCache.remove( it )
+                }
+            }
+            else if (params.token) {
+                if (params.cmd == 'addBookmark') {
+                    ReportingCache rc = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token)
+                    ReportingFilter rf = ReportingFilter.construct(
+                            rc,
+                            contextService.getUser(),
+                            BaseConfig.getMessage('base.filter.' + rc.readMeta().filter) + ' - ' + DateUtils.getSDF_NoTime().format(System.currentTimeMillis()),
+                            rc.readFilterCache().result.replaceAll('<strong>', '').replaceAll('</strong>', '') as String
+                    )
+                    result.lastAddedBookmarkId = rf.id
+                }
+                else if (params.cmd == 'deleteBookmark') {
+                    ReportingFilter rf = ReportingFilter.findByTokenAndOwner(params.token, contextService.getUser())
+                    if (rf) {
+                        rf.delete()
+                    }
+                }
+            }
+        }
+        result.bookmarks = ReportingFilter.findAllByOwner( contextService.getUser(), [sort: 'lastUpdated', order: 'desc'] )
+
+        result.filterHistory = getReportingKeys().sort { a,b -> sessionCache.get(b).meta.timestamp <=> sessionCache.get(a).meta.timestamp }.take(5)
+        getReportingKeys().findAll{ it -> ! result.filterHistory.contains( it ) }.each { it -> sessionCache.remove(it) }
+
+        render template: '/myInstitution/reporting/historyAndBookmarks', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
 
@@ -536,14 +589,14 @@ class AjaxHtmlController {
 
         String filename = params.filename ?: BaseExportHelper.getFileName()
         ReportingCache rCache
-        BaseExport export
+        BaseDetailsExport export
         Map<String, Object> detailsCache
 
         if (params.context == BaseConfig.KEY_MYINST) {
             rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
             if (rCache.exists()) {
-                detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                detailsCache = GlobalExportHelper.getDetailsCache(params.token)
                 export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
             else {
@@ -552,10 +605,10 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             if (rCache.exists()) {
-                detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                detailsCache = LocalExportHelper.getDetailsCache(params.token)
                 export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }
             else {
@@ -571,7 +624,12 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
-                List<String> rows = DetailsExportManager.exportAsList(export, 'csv', detailsCache.idList as List<Long>)
+                List<String> rows = DetailsExportManager.exportAsList(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'csv',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-csv')]
+                )
 
                 ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
@@ -586,7 +644,12 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
                 response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
-                Workbook wb = DetailsExportManager.exportAsWorkbook(export, 'xlsx', detailsCache.idList as List<Long>)
+                Workbook wb = DetailsExportManager.exportAsWorkbook(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'xlsx',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'), insertNewLines: params.containsKey('insertNewLines-xlsx')]
+                )
 
                 ServletOutputStream out = response.outputStream
                 wb.write(out)
@@ -594,20 +657,25 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
 
-                List<List<String>> content = DetailsExportManager.exportAsList(export, 'pdf', detailsCache.idList as List<Long>)
-                Map<String, Object> struct = [:]
+                List<List<String>> content = DetailsExportManager.exportAsList(
+                        export,
+                        detailsCache.idList as List<Long>,
+                        'pdf',
+                        [hideEmptyResults: params.containsKey('hideEmptyResults-pdf')]
+                )
 
+                Map<String, Object> struct = [:]
                 String view = ''
                 Map<String, Object> model = [:]
 
                 if (params.context == BaseConfig.KEY_MYINST) {
 
-                    struct  = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/myInstitution/reporting/export/pdf/generic_details'
                     model   = [
-                            filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
+                            filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: GlobalExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : GlobalExportHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
@@ -616,12 +684,12 @@ class AjaxHtmlController {
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
-                    struct  = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/subscription/reporting/export/pdf/generic_details'
                     model   = [
-                            //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                            //filterLabels: LocalExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: LocalExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : LocalExportHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
@@ -665,8 +733,8 @@ class AjaxHtmlController {
 
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
-                queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
-                //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                queryLabels = GlobalExportHelper.getIncompleteQueryLabels( params.token )
+                //detailsCache = GlobalExportHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
             else {
@@ -675,12 +743,12 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION ) // TODO
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION, params.token )
 
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
-                queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
-                //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                queryLabels = LocalExportHelper.getCachedQueryLabels( params.token )
+                //detailsCache = LocalExportHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }
             else {
@@ -748,8 +816,8 @@ class AjaxHtmlController {
 
             Map<String, Object> model = [
                     token:        params.token,
-                    filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
-                    filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                    filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
+                    filterResult: GlobalExportHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
                     //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),
@@ -1007,5 +1075,22 @@ class AjaxHtmlController {
 
             render template: '/templates/workflow/forms/modalWrapper', model: result
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    Map<String,Object> showAllTitleInfos() {
+        Map<String, Object> result = [:]
+
+        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+        result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
+        result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
+        result.showPackage = params.showPackage
+        result.showPlattform = params.showPlattform
+        result.showCompact = params.showCompact
+        result.showEmptyFields = params.showEmptyFields
+
+        render template: "/templates/title_modal", model: result
+
     }
 }

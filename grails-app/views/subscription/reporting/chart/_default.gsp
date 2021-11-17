@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 <g:if test="${data}">
     JSPC.app.reporting.current.chart.option = {
         title: {
@@ -56,9 +56,9 @@
                 itemStyle: {
                     color: function(params) {
                         if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series.color.redInactive
+                            return JSPC.app.reporting.helper.series._color.redInactive
                         } else {
-                            return JSPC.app.reporting.helper.series.color.blue
+                            return JSPC.app.reporting.helper.series._color.blue
                         }
                     }
                 }

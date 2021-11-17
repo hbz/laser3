@@ -56,7 +56,7 @@ data-confirm-term-how="concludeBinding":
 #### Use in Link
 
 ```
-<g:link class="ui icon negative button js-open-confirm-modal"
+<g:link class="ui icon la-modern-button negative button js-open-confirm-modal"
         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
         data-confirm-term-how="delete"
         controller="costConfiguration" action="deleteCostConfiguration"
@@ -83,7 +83,7 @@ Mind the convention of data-confirm-id in form element and inner button element
         <g:link class="ui icon button blue la-modern-button" controller="person" action="show" id="${person?.id}">
             <i aria-hidden="true" class="write icon"></i>
         </g:link>
-        <div class="ui icon negative button js-open-confirm-modal"
+        <div class="ui icon negative button la-modern-button js-open-confirm-modal"
              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person?.toString()])}"
              data-confirm-term-how="delete"
              data-confirm-id="${person?.id}" >
@@ -126,7 +126,7 @@ Mind the convention of data-confirm-id in form element and inner button element
 #### Use in Link with AJAX Call
 
 ```
-<laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+<laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                   controller="ajax"
                   action="deletePrivateProperty"
                   params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'

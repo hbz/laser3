@@ -256,7 +256,7 @@
 
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                        class="ui button blue icon la-modern-button">
+                                                        class="ui button positive icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                         <i class="ui icon pie chart"></i>
@@ -265,7 +265,7 @@
                                             </g:if>
                                             <g:else>
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                        class="ui button positive icon la-modern-button">
+                                                        class="ui button blue icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                         <i class="ui icon pie chart"></i>
@@ -291,7 +291,7 @@
                                     </g:if>
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
-                                    <laser:statsLink class="ui icon button"
+                                    <laser:statsLink class="ui icon button la-modern-button"
                                                      base="${ConfigUtils.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
@@ -309,12 +309,12 @@
                             <g:if test="${'showLinking' in tableConfig}">
                             <%--<g:if test="${license in s.licenses}"></g:if>--%>
                                 <g:if test="${s in linkedSubscriptions}">
-                                    <g:link class="ui icon negative button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
+                                    <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
                                         <i class="ui minus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon positive button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
+                                    <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
                                         <i class="ui plus icon"></i>
                                     </g:link>
                                 </g:else>
@@ -344,7 +344,7 @@
 </g:form>
 
 <g:if test="${subscriptions}">
-    <semui:paginate action="${actionName}" controller="${controllerNamr}" params="${params}"
+    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>

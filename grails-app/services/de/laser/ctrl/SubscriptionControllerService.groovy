@@ -3,8 +3,6 @@ package de.laser.ctrl
 import com.k_int.kbplus.*
 import de.laser.*
 import de.laser.auth.User
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -15,7 +13,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.local.SubscriptionReporting
+import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
 import de.laser.workflow.WfWorkflow
@@ -23,10 +21,10 @@ import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -333,6 +331,9 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
+            }
             Subscription refSub = subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0 ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -396,12 +397,18 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
+
                     c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
                     c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange, queryParams))
                     result.total = count4check.get(0)
                     result.sums = c4sums
                     result.usages = c4usages
+                    Map<String, Object> monthQueryParams = queryParams.clone()
+                    monthQueryParams.remove('startDate')
+                    monthQueryParams.remove('endDate')
+                    monthQueryParams.monthsInRing = monthsInRing
+                    result.monthsInRing = Counter4Report.executeQuery('select r.reportFrom from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
                 else {
                     Set availableReportTypes = Counter5Report.executeQuery('select lower(r.reportType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
@@ -429,9 +436,18 @@ class SubscriptionControllerService {
                     result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null)'+filter+dateRange, queryParams).get(0)
                     result.sums = c5sums
                     result.usages = c5usages
+                    Map<String, Object> monthQueryParams = queryParams.clone()
+                    monthQueryParams.remove('startDate')
+                    monthQueryParams.remove('endDate')
+                    monthQueryParams.monthsInRing = monthsInRing
+                    result.monthsInRing = Counter5Report.executeQuery('select r.reportFrom from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
             }
-            result.monthsInRing = monthsInRing
+            else {
+                result.metricTypes = []
+                result.reportTypes = []
+                result.monthsInRing = []
+            }
             [result: result, status: STATUS_OK]
         }
     }
@@ -524,12 +540,12 @@ class SubscriptionControllerService {
                 endTime.setTime(result.subscription.endDate)
         }
         else if(result.subscription.startDate) {
-            dateRange = " and r.reportFrom >= :startDate "
+            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
+                queryParams.endDate = new Date()
             }
             else {
-                dateRange += "and r.reportTo <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
                 Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                 filterTime.setTime(filterDate)
@@ -538,9 +554,10 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.setTime(result.subscription.startDate)
+            endTime.setTime(new Date())
         }
         else {
-            if(params.tab != 'total') {
+            if(params.tab == 'total') {
                 dateRange = ''
             }
             else {
@@ -553,6 +570,7 @@ class SubscriptionControllerService {
                 queryParams.endDate = filterTime.getTime()
             }
             startTime.set(2018, 0, 1)
+            endTime.setTime(new Date())
         }
         while(startTime.before(endTime)) {
             monthsInRing << startTime.getTime()
@@ -581,6 +599,50 @@ class SubscriptionControllerService {
                     queryParams.languages << Long.parseLong(lang)
                 }
             }
+
+            if (params.filter) {
+                filter += "and ( ( lower(title.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) or ((lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+                queryParams.title = "%${params.filter.trim().toLowerCase()}%"
+                queryParams.identifier = "%${params.filter}%"
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            }
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                filter += " and title.pkg.id = :pkgId "
+                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            if(params.summaryOfContent) {
+                filter += " and lower(title.summaryOfContent) like :summaryOfContent "
+                queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                filter += " and (lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            }
+
+            if(params.yearsFirstOnline) {
+                filter += " and (Year(title.dateFirstOnline) in (:yearsFirstOnline)) "
+                queryParams.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            }
+
+            if (params.identifier) {
+                filter += "and ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) "
+                queryParams.identifier = "${params.identifier}"
+            }
+
+            if (params.publishers) {
+                filter += "and lower(title.publisherName) in (:publishers) "
+                queryParams.publishers = params.list('publishers').collect { it.toLowerCase() }
+            }
+
+
+            if (params.title_types && params.title_types != "" && params.list('title_types')) {
+                filter += " and lower(title.titleType) in (:title_types)"
+                queryParams.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            }
+
         }
         [filter, dateRange, queryParams, monthsInRing]
     }
@@ -1036,11 +1098,6 @@ class SubscriptionControllerService {
             Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
 
-            result.newSub = newSub
-            result.subscription = baseSub
-            result.previousSubscription = previousSubscription
-            result.subscriber = result.newSub.getSubscriber()
-
             List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
@@ -1069,7 +1126,32 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
 
             if(params.tab == 'allIEsStats') {
-                result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+                //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+
+                if(!params.tabStat)
+                    params.tabStat = 'total'
+
+                String oldTab = params.tab
+                params.tab = params.tabStat
+
+                params.sort= params.sort ?: 'r.reportCount'
+                params.order= params.order ?: 'desc'
+
+                Map<String,Object> statsResult
+
+                statsResult = stats(params)
+
+                if (statsResult.status == SubscriptionControllerService.STATUS_ERROR) {
+                    if (!statsResult.result) {
+                        [result: null, status: STATUS_ERROR]
+                        return
+                    }
+                } else {
+                    result = result + statsResult.result
+                }
+
+                params.tab = oldTab
+
             }else {
 
                 params.sort = params.sort ?: 'sortname'
@@ -1084,7 +1166,25 @@ class SubscriptionControllerService {
                 }*/
             }
 
+            result.newSub = newSub
+            result.subscription = baseSub
+            result.previousSubscription = previousSubscription
+            result.subscriber = result.newSub.getSubscriber()
+
+            if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
+                result.participant = result.subscriber
+            }
+
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+
+
+            result.subscriberSubs = []
+            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            if(subscriptions) {
+                result.subscriberSubs = subscriptions
+            }
+
 
             if (result.editable) {
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -1258,17 +1358,17 @@ class SubscriptionControllerService {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
                 String addTypeChildren = params.addTypeChildren
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                result.source = apiSource.baseUrl
+                GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
+                log.debug("linkPackage. Global Record Source URL: " +source.uri)
+                globalSourceSyncService.source = source
+                globalSourceSyncService.defineMapFields()
                 if(!Package.findByGokbId(pkgUUID)) {
-                    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                    result.source = apiSource.baseUrl
-                    GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
-                    log.debug("linkPackage. Global Record Source URL: " +source.uri)
-                    globalSourceSyncService.source = source
                     //to be deployed in parallel thread
                     executorService.execute({
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
-                            globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
@@ -1302,7 +1402,7 @@ class SubscriptionControllerService {
                     })
                 }
                 else {
-                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
                     log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                     if(addTypeChildren) {
@@ -1390,8 +1490,7 @@ class SubscriptionControllerService {
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
-                List issueEntitlements = entitlements.toList()
-                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, issueEntitlements, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
                 params.remove("kbartPreselect")
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
@@ -1897,13 +1996,16 @@ class SubscriptionControllerService {
         RefdataValue oldStatus = ie.status
         ie.status = RDStore.TIPP_STATUS_DELETED
         if(ie.save()){
-            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
-            {
-                return [result:null,status:STATUS_OK]
-            }else {
-                ie.status = oldStatus
-                ie.save()
-                return [result:null,status:STATUS_ERROR]
+            if(IssueEntitlementGroupItem.findByIe(ie)) {
+                if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
+                    return [result: null, status: STATUS_OK]
+                } else {
+                    ie.status = oldStatus
+                    ie.save()
+                    return [result: null, status: STATUS_ERROR]
+                }
+            }else{
+                return [result: null, status: STATUS_OK]
             }
         }
         else {
@@ -1967,7 +2069,7 @@ class SubscriptionControllerService {
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, false, ie_accept_status))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, ie_accept_status))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
@@ -2237,8 +2339,21 @@ class SubscriptionControllerService {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
 
-                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    boolean tippExistsInParentSub = false
 
+                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                        tippExistsInParentSub = true
+                    }else {
+                        List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                        titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                            if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                                tippExistsInParentSub = true
+                                tipp = titleInstancePackagePlatform
+                            }
+                        }
+                    }
+
+                    if(tippExistsInParentSub) {
                         try {
                             if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
@@ -2644,9 +2759,9 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
-        result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
-        result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
+        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+        result.cfgQueryList  = SubscriptionReport.CONFIG.base.query.default
+        result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

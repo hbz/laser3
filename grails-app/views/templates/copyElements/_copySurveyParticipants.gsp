@@ -9,7 +9,7 @@
             targetObject          : targetObject,
             allObjects_readRights : allObjects_readRights,
             allObjects_writeRights: allObjects_writeRights]"/>
-    <g:form action="copyElementsIntoSurvey" controller="survey"
+    <g:form action="copyElementsIntoSurvey" controller="survey" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -118,7 +118,7 @@
                                 <th>${message(code: 'default.name.label')}</th>
                                 <th class=" center aligned">
                                     <g:if test="${targetObject}">
-                                        <input type="checkbox" data-action="delete"
+                                        <input class="setDeletionConfirm" type="checkbox" data-action="delete"
                                                onClick="JSPC.app.toggleAllCheckboxes(this)"/>
                                     </g:if>
                                 </th>
@@ -181,7 +181,7 @@
 
                                     </td>
                                     <td class="center aligned">
-                                        <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                             <g:checkBox name="copyObject.deleteParticipants"
                                                         value="${genericOIDService.getOID(surveyOrg.org)}"
                                                         data-action="delete" checked="${true}"/>
@@ -197,7 +197,9 @@
 
             <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control"
+                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" data-confirm-id="copyElements"
+                       data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
+                       data-confirm-term-how="delete"
                        value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
             </div>
             </tbody>

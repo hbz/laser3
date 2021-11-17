@@ -1,9 +1,15 @@
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.jsConfirmation = function () {
-        if ($("td input[data-action='delete']").is(":checked")) {
-            return confirm("${g.message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}")
+    $(".setDeletionConfirm").click( function() {
+        console.log($('[data-action="delete"]:checked'));
+        if($('[data-action="delete"]:checked').length === 0){
+            $("#copyElementsSubmit").removeClass("js-open-confirm-modal");
+            $("#copyElementsSubmit").off("click");
         }
-    }
+        else if(!$("#copyElementsSubmit").hasClass("js-open-confirm-modal")) {
+            $("#copyElementsSubmit").addClass("js-open-confirm-modal");
+            r2d2.initDynamicSemuiStuff('form');
+        }
+    });
     // FOR ALL THE OTHER TABLES THEN PROPERTIES
     JSPC.app.toggleAllCheckboxes = function (source) {
         var action = $(source).attr("data-action")

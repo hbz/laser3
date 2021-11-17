@@ -142,7 +142,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <td>${i + 1}</td>
+                        <td>${(offset ?: 0) + i + 1}</td>
                         <g:if test="${controllerName == "subscription"}">
                             <td>
                                 ${subscr.sortname}

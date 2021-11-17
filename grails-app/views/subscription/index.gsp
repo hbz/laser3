@@ -102,7 +102,7 @@
                                     <input type="text" readonly="readonly"
                                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                                     <input type="file" id="kbartPreselect" name="kbartPreselect"
-                                           accept="text/tab-separated-values"
+                                           accept="text/tab-separated-values, text/plain"
                                            style="display: none;">
 
                                     <div class="ui icon button">
@@ -337,8 +337,8 @@
                                 <td>${counter++}</td>
                                 <td>
                                     <!-- START TEMPLATE -->
-                                    <g:render template="/templates/title"
-                                              model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                    <g:render template="/templates/title_short"
+                                              model="${[ie: ie, tipp: ie.tipp,
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>

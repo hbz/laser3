@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.ReportingCache" %>
+<%@page import="de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -18,7 +18,23 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <div class="ui message info">
+        <div style="margin: 0 0.5em">
+            <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+                    data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
+                    <i class="icon bookmark"></i>
+            </div>
+            <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+                    data-content="${message(code:'reporting.filter.history')}" data-position="top right">
+                    <i class="icon history"></i>
+            </div>
+            <div id="info-toggle" class="ui icon button right floated">
+                <i class="icon question"></i>
+            </div>
+        </div>
+
+        <div id="hab-wrapper"></div>
+
+        <div id="info-content" class="ui message info hidden">
             <p>
                 <strong>${message(code:'reporting.macro.step1')}</strong> <br />
                 ${message(code:'reporting.macro.info1')}
@@ -31,15 +47,17 @@
                 <strong>${message(code:'reporting.macro.step3')}</strong> <br />
                 ${message(code:'reporting.macro.info3')}
             </p>
+            <p>
+                <i class="icon history"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
+                ${message(code:'reporting.macro.infoHistory')}
+            </p>
+            <p>
+                <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
+                ${message(code:'reporting.macro.infoBookmarks')}
+            </p>
         </div>
 
-       %{-- <g:if test="${filterHistory}">
-            ${filterHistory}
-        </g:if> --}%
-
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
-
-        <g:set var="hidden" value="hidden" />
 
         <g:if test="${!filter}">
             <div class="ui segment form">
@@ -56,15 +74,22 @@
                 </div>
             </div>
         </g:if>
-        <g:else>
-            <g:set var="hidden" value="" />
-        </g:else>
 
         <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
             <g:if test="${!filter || filter == filterItem}">
-                <div id="filter-${filterItem}" class="filter-form-wrapper ${hidden}">
-                    <g:render template="/myInstitution/reporting/filter/${filterItem}" />
+                <div id="filter-${filterItem}" class="filter-form-wrapper ${filter ? '' : 'hidden'}">
+                    <g:form action="reporting" method="POST" class="ui form">
+                        <g:render template="/myInstitution/reporting/filter/${filterItem}" />
+
+                        <div class="field">
+                            %{-- <g:link action="reporting" class="ui button">${message(code:'reporting.filter.save')}</g:link> --}%
+                            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
+                            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
+                            <input type="hidden" name="filter" value="${filterItem}" />
+                            <input type="hidden" name="token" value="${token}" />
+                        </div>
+                    </g:form>
                 </div>
             </g:if>
         </g:each>
@@ -86,14 +111,38 @@
         </g:if>
 
         <style>
+            #history-content, #bookmark-content, #info-content { margin-top: 4em; }
+            #history-content table .description ,
+            #bookmark-content table .description { margin: 0.3em 0; }
+            #last-added-bookmark { margin-left: 1em; }
             #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
-
             h3.ui.header { margin-top: 3em !important; }
-
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.app.reporting.updateHabMenu = function (current) {
+                var base = ['info', 'bookmark', 'history']
+                var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
+
+                $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
+                $( '#' + current + '-content').toggleClass('hidden');
+                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue');
+                $( '#' + current + '-toggle').toggleClass('blue');
+            }
+
+            $('#info-toggle').on( 'click', function() {
+                JSPC.app.reporting.updateHabMenu('info');
+            })
+            $('#bookmark-toggle').on( 'click', function() {
+                JSPC.app.reporting.updateHabMenu('bookmark');
+                $('#bookmark-content #last-added-bookmark').fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250);
+            })
+            $('#history-toggle').on( 'click', function() {
+                JSPC.app.reporting.updateHabMenu('history');
+            })
+            $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
+
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
@@ -216,6 +265,50 @@
                 'setting', 'onChange', function(value, text, $choice) {
                     $("input[name=filter\\:org_region]").attr('value', value);
             });
+
+            $("*[name$='_propertyKey']").on('change', function(){
+                var defaults = {}
+                <%
+                    params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->
+                        println "defaults['${it.key}'] = '${it.value}';"
+                    }
+                %>
+                var $key = $(this);
+                var $value = $("*[name='" + $key.attr('name').replace('_propertyKey', '_propertyValue') + "']");
+                $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
+
+                var kValue  = $key.dropdown('get value');
+                if (kValue) {
+                    $.ajax({
+                        url: '<g:createLink controller="ajaxJson" action="getPropRdValues"/>?oid=${PropertyDefinition.class.name}:' + kValue,
+                        success: function (data) {
+                            var pdv;
+                            if (data.length > 0) {
+                                $value.removeAttr('disabled').parent().removeClass('disabled');
+
+                                if (defaults[$key.attr('name')] == kValue && defaults[$value.attr('name')]) {
+                                    pdv = defaults[$value.attr('name')];
+                                }
+                                for (var i=0; i < data.length; i++) {
+                                    if (data[i].value == pdv) {
+                                        $value.append('<option selected="selected" value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    } else {
+                                        $value.append('<option value="' + data[i].value + '">' + data[i].name + '</option>');
+                                    }
+                                }
+                            }
+                            $value.dropdown().dropdown({ clearable: true, values: data });
+                            if (pdv) {
+                                $value.dropdown('set selected', defaults[$value.attr('name')]);
+                            }
+                        },
+                        async: false
+                    });
+                } else {
+                    $value.dropdown('restore defaults');
+                }
+            });
+            $("*[name$='_propertyKey']").trigger('change');
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

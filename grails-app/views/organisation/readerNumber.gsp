@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.ReaderNumber;de.laser.helper.DateUtils" %>
+<%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.ReaderNumber;de.laser.helper.DateUtils; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -11,10 +11,13 @@
     <body>
 
         <semui:breadcrumbs>
-            <g:if test="${!inContextOrg}">
-                <semui:crumb text="${orgInstance.getDesignation()}"/>
+            <g:if test="${institutionalView}">
+                <semui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <semui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
-            <semui:crumb text="${message(code:"menu.institutions.readerNumbers")}" class="active"/>
+            <g:else>
+                <semui:crumb text="${orgInstance.sortname}" class="active"/>
+            </g:else>
         </semui:breadcrumbs>
 
         <g:if test="${editable}">

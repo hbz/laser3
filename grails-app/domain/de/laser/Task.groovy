@@ -99,7 +99,7 @@ class Task {
     }
 
     def getDisplayArgs() {
-        Map<String, Object> displayArgs = [action: 'show']
+        Map<String, Object> displayArgs = [action: 'show', absolute: true]
         if (license) {
             displayArgs.controller = 'license'
             displayArgs.id = license.id
@@ -120,6 +120,10 @@ class Task {
             displayArgs.controller = 'survey'
             displayArgs.id = surveyConfig.surveyInfo.id
             displayArgs.surveyConfigID = surveyConfig.id
+        }
+        else {
+            displayArgs.controller = 'myInstitution'
+            displayArgs.action = 'tasks'
         }
         displayArgs
     }

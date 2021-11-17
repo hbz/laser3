@@ -163,7 +163,7 @@ class ExportClickMeService {
                             'costItemsElements' : [:],
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -259,7 +259,7 @@ class ExportClickMeService {
                             'costItemsElements' : [:],
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -293,7 +293,7 @@ class ExportClickMeService {
                             'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
                             'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
                             'costItem.reference'                        : [field: 'reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
                             'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
                             'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
@@ -478,7 +478,7 @@ class ExportClickMeService {
                             'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetCodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
                             'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
                             'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
                             'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
@@ -527,6 +527,12 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
+        def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
+
+        removeSurveyProperties.each {
+            exportFields.remove(it)
+        }
+
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
@@ -534,6 +540,13 @@ class ExportClickMeService {
         if(!(RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) && !(RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id)){
             exportFields.remove('survey.period')
             exportFields.remove('survey.periodComment')
+        }else{
+            if(!exportFields.containsKey('survey.period')){
+                exportFields.put('survey.period', [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'])
+            }
+            if(!exportFields.containsKey('survey.periodComment')){
+                exportFields.put('survey.periodComment', [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'] )
+            }
         }
 
         exportFields
@@ -556,6 +569,12 @@ class ExportClickMeService {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
+        def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
+
+        removeSurveyProperties.each {
+            fields.survey.fields.remove(it)
+        }
+
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
@@ -563,6 +582,13 @@ class ExportClickMeService {
         if(!(RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id)){
             fields.survey.fields.remove('survey.period')
             fields.survey.fields.remove('survey.periodComment')
+        }else{
+            if(!fields.survey.fields.containsKey('survey.period')){
+                fields.survey.fields <<['survey.period': [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true']]
+            }
+            if(!fields.survey.fields.containsKey('survey.periodComment')){
+                fields.survey.fields << ['survey.periodComment': [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true']]
+            }
         }
 
         fields
@@ -852,16 +878,75 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
+        def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
+
+        removeSurveyProperties.each {
+            exportFields.remove(it)
+        }
+
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
 
         if(!surveyConfig.subscription){
             exportFields.remove('subscription')
+        }else {
+            if(!exportFields.containsKey('subscription')){
+                exportFields.put('subscription', [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                                'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                                'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                                'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                        ]
+                ])
+            }
         }
 
-        if(surveyConfig.pickAndChoose){
+        if(surveyConfig.pickAndChoose || !surveyConfig.subscription){
             exportFields.remove('participantSurveyCostItems')
+        }else {
+            if(!exportFields.containsKey('participantSurveyCostItems')){
+                exportFields.put('participantSurveyCostItems',[
+                        label: 'Cost Items',
+                        message: 'surveyCostItems.label',
+                        fields: [
+                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
+                                'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
+                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                                'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                        ]
+                ])
+            }
         }
 
 
@@ -885,16 +970,75 @@ class ExportClickMeService {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
+        def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
+
+        removeSurveyProperties.each {
+            fields.survey.fields.remove(it)
+        }
+
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
 
         if(!surveyConfig.subscription){
             fields.remove('subscription')
+        }else {
+            if(!fields.containsKey('subscription')){
+                fields.put('subscription', [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                                'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                                'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                                'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                        ]
+                ])
+            }
         }
 
-        if(surveyConfig.pickAndChoose){
+        if(surveyConfig.pickAndChoose || !surveyConfig.subscription){
             fields.remove('participantSurveyCostItems')
+        }else {
+            if(!fields.containsKey('participantSurveyCostItems')){
+                fields.put('participantSurveyCostItems',[
+                        label: 'Cost Items',
+                        message: 'surveyCostItems.label',
+                        fields: [
+                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
+                                'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
+                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
+                                'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                        ]
+                ])
+            }
         }
 
         fields
@@ -939,12 +1083,10 @@ class ExportClickMeService {
         renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})", style: 'positive']])
 
 
-        renewalResult.orgsWithMultiYearTermSub.each { sub ->
+        renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriber().sortname}.each { sub ->
 
-            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
+            setRenewalRow([participant: sub.getSubscriber(), sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
 
-            }
         }
 
         renewalData.add([[field: '', style: null]])
@@ -994,19 +1136,19 @@ class ExportClickMeService {
         sheetData[messageSource.getMessage('renewalexport.renewals', null, locale)] = [titleRow: titles, columnData: renewalData]
 
         if (renewalResult.orgsContinuetoSubscription) {
-            sheetData = exportAccessPoints(renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 1")
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {
-            sheetData = exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 2")
         }
 
         if (renewalResult.orgsWithParticipationInParentSuccessor) {
-            sheetData = exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, sheetData, selectedExportFields, locale, " - 3")
         }
 
         if (renewalResult.newOrgsContinuetoSubscription) {
-            sheetData = exportAccessPoints(renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 4")
         }
 
 
@@ -1611,7 +1753,7 @@ class ExportClickMeService {
         return fieldValue
     }
 
-    private Map exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale) {
+    private Map exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale, String sheetNameAddition) {
 
         Map export = [:]
         String sheetName = ''
@@ -1620,7 +1762,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportIPsOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
         }
@@ -1629,7 +1771,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportProxysOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -1639,7 +1781,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportEZProxysOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -1649,7 +1791,7 @@ class ExportClickMeService {
             if (orgList) {
 
                 export = accessPointService.exportShibbolethsOfOrgs(orgList, true)
-                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${orgList.size()})"
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -1694,7 +1836,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -1709,7 +1851,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '')+ ', ' +((address.pob ?: '') + ', ' +(address.pobZipcode ?: '')+ ', ' +(address.pobCity ?: ''))}.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -1760,44 +1902,55 @@ class ExportClickMeService {
             }
         }else if (fieldKey == 'participant.readerNumbers') {
             if (org) {
+                ReaderNumber readerNumberStudents
+                ReaderNumber readerNumberStaff
+                ReaderNumber readerNumberFTE
 
-                RefdataValue currentSemester = RefdataValue.getCurrentSemester()
-
-                ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
-                ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
-                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
-
-                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
-                    row.add([field: currentSemester.getI10n('value'), style: null])
-                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
-                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
-                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                ReaderNumber readerNumberFTEwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
+                if(readerNumberFTEwithDueDate){
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: '', style: null])
+                    row.add([field: readerNumberFTEwithDueDate.value, style: null])
                 }else{
-                    boolean nextSemester = false
+                    RefdataValue currentSemester = RefdataValue.getCurrentSemester()
 
-                    List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
-                    for(def count = 0; count < refdataValueList.size(); count = count + 1) {
-                        if (refdataValueList[count] == currentSemester) {
-                            nextSemester = true
-                        }
-                        if (nextSemester) {
-                            readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
-                            readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
-                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
-                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
-                                row.add([field: refdataValueList[count].getI10n('value'), style: null])
-                                row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
-                                row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
-                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
-                                break
+                    readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
+                    readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                    readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
+
+                    if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
+                        row.add([field: currentSemester.getI10n('value'), style: null])
+                        row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                        row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                        row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                    }else{
+                        boolean nextSemester = false
+
+                        List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
+                        for(def count = 0; count < refdataValueList.size(); count = count + 1) {
+                            if (refdataValueList[count] == currentSemester) {
+                                nextSemester = true
+                            }
+                            if (nextSemester) {
+                                readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
+                                readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
+                                readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                                if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
+                                    row.add([field: refdataValueList[count].getI10n('value'), style: null])
+                                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
+                                    break
+                                }
                             }
                         }
-                    }
-                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                            row.add([field: '', style: null])
+                        }
                     }
                 }
 
@@ -1818,9 +1971,12 @@ class ExportClickMeService {
                 if(readerNumberFTE){
                     sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
+                if(readerNumberFTEwithDueDate){
+                    sum = sum + (readerNumberFTEwithDueDate.value != null ? readerNumberFTEwithDueDate.value : 0)
+                }
                 row.add([field: sum, style: null])
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : ''))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberFTEwithDueDate ? readerNumberFTEwithDueDate.dateGroupNote : '')))
 
                 row.add([field: note, style: null])
 
@@ -1895,5 +2051,63 @@ class ExportClickMeService {
         }
 
         titles
+    }
+
+    private String getAddress(Address address, Org org){
+        String addr= ""
+
+        addr = org.name
+
+        if(address.additionFirst || address.additionSecond) {
+            addr += ', '
+            if (address.additionFirst) {
+                addr += address.additionFirst + ' '
+            }
+            if (address.additionSecond) {
+                addr += address.additionSecond + ' '
+            }
+        }
+
+        if(address.street_1 || address.street_2) {
+            addr += ', '
+            if (address.street_1) {
+                addr += address.street_1 + ' '
+            }
+            if (address.street_2) {
+                addr += address.street_2 + ' '
+            }
+        }
+
+        if(address.zipcode || address.city) {
+            addr += ', '
+            if (address.zipcode) {
+                addr += address.zipcode + ' '
+            }
+            if (address.city) {
+                addr += address.city + ' '
+            }
+        }
+
+        if (address.region) {
+                addr += ', ' + address.region.getI10n('value') + ' '
+        }
+
+        if (address.country) {
+                addr += ', ' + address.country.getI10n('value') + ' '
+        }
+
+        if(address.pob){
+            addr += ', ' + address.pob + ' '
+        }
+
+        if(address.pobZipcode){
+            addr += ', ' + address.pobZipcode + ' '
+        }
+
+        if(address.pobCity){
+            addr += ', ' + address.pobCity + ' '
+        }
+
+        return addr
     }
 }

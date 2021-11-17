@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
@@ -12,15 +12,7 @@
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part1" model="${[cfgKey: "${BaseConfig.KEY_SUBSCRIPTION}"]}"/>
-
-        <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY_MYINST}',
-                filter: '${BaseConfig.KEY_SUBSCRIPTION}',
-                token: '${token}'
-            }
-        </laser:script>
+        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_SUBSCRIPTION}"]}"/>
 
     </g:if>
     <g:else>
