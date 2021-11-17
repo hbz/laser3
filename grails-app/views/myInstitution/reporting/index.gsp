@@ -55,6 +55,10 @@
                 <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
                 ${message(code:'reporting.macro.infoBookmarks')}
             </p>
+            <p>
+                <i class="icon question"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
+                ${message(code:'reporting.macro.infoHelp')}
+            </p>
         </div>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>

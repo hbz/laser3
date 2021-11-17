@@ -13,7 +13,6 @@ class PackageXCfg extends BaseConfig {
             'package-x-curatoryGroup',
             'package-x-nationalRange',
             'package-x-regionalRange',
-            'package-x-language',
            // 'package-x-ddc'
     ]
 
@@ -48,13 +47,13 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'package-breakable',        // ES
-                                            'package-consistent',       // ES
                                             'package-contentType',
-                                            'package-file',
-                                            'package-openAccess',       // ES
                                             'package-packageStatus',
+                                            'package-file',
+                                            'package-breakable',        // ES
                                             'package-paymentType',      // ES
+                                            'package-openAccess',       // ES
+                                            'package-consistent',       // ES
                                             'package-scope',            // ES
                                             'package-*'
                                     ]
@@ -82,17 +81,17 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-language' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-nationalRange' : [   // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
                                     'package-x-regionalRange' : [   // ES
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ],
-                                    'package-x-language' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []

@@ -242,6 +242,14 @@
         </p>
     </div>
 
+    %{-- package --}%
+    %{-- package-x-identifier package-x-provider package-x-platform package-x-language --}%
+    %{-- package-x-curatoryGroup package-x-nationalRange 'package-x-regionalRange --}%
+    %{-- package-x-ddc --}%
+
+    %{-- platform --}%
+    %{-- platform-x-property --}%
+
     <div class="help-section" data-help-section="default">
         ${message(code:'reporting.help.infoMissing')}
     </div>
