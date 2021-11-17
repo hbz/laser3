@@ -37,6 +37,9 @@ class SystemService {
             if (! ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers()) {
                 checks.SendEmailsForDueDatesOfAllUsers = "Send Emails for DueDates Of All Users is not active"
             }
+            if (! ConfigUtils.getReporting()) {
+                checks.Reporting = "ElasticSearch Config for Reporting not found"
+            }
 
             if (grailsApplication.config.grails.mail.disabled ) {
                 checks.MailService = "Mail Service not active"

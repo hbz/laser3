@@ -7,7 +7,7 @@ import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
-class EsIndexHelper {
+class ElasticSearchHelper {
 
     static Map<String, Object> getEsPackageRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
@@ -85,6 +85,8 @@ class EsIndexHelper {
                                 _source: [
                                         "uuid", "providerUuid",
                                         "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
+                                        "statisticsFormat", "statisticsUpdate", "counterCertified",
+                                        "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
                                         "lastUpdatedDisplay"
                                 ]
                         ]

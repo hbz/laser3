@@ -30,7 +30,7 @@
                     <td>
                         <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
                             %{-- ${ro.roleType.id}  ${ro.roleType.getI10n('value')} --}%
-                            <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.shortname ?: ro.org.name}</g:link><br />
+                            <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
                         </g:each>
                     </td>
                     <td>

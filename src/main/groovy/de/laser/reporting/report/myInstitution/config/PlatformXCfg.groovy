@@ -5,6 +5,18 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 class PlatformXCfg extends BaseConfig {
 
     static List<String> ES_DATA = [
+            'platform-ipAuthentication',
+            'platform-shibbolethAuthentication',
+            'platform-passwordAuthentication',
+            'platform-proxySupported',
+            'platform-counterCertified',
+            'platform-counterR3Supported',
+            'platform-counterR4Supported',
+            'platform-counterR4SushiApiSupported',
+            'platform-counterR5Supported',
+            'platform-counterR5SushiApiSupported',
+            'platform-statisticsFormat',
+            'platform-statisticsUpdate'
     ]
 
     static Map<String, Object> CONFIG = [
@@ -37,15 +49,23 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'package' : [
+                                    'platform' : [
                                             'platform-org',     // TODO - move to query2 !?
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
                                             'platform-status',
-                                            'platform-ipAuthentication',         // ES
-                                            'platform-shibbolethAuthentication', // ES
-                                            'platform-passwordAuthentication',   // ES
-                                            'platform-proxySupported',           // ES
+                                            'platform-ipAuthentication',            // ES
+                                            'platform-shibbolethAuthentication',    // ES
+                                            'platform-passwordAuthentication',      // ES
+                                            'platform-proxySupported',              // ES
+                                            'platform-statisticsFormat',            // ES
+                                            'platform-statisticsUpdate',            // ES
+                                            'platform-counterCertified',            // ES
+                                            'platform-counterR3Supported',          // ES
+                                            'platform-counterR4Supported',          // ES
+                                            'platform-counterR4SushiApiSupported',  // ES
+                                            'platform-counterR5Supported',          // ES
+                                            'platform-counterR5SushiApiSupported',  // ES
                                             'platform-*'
                                     ]
                             ]
