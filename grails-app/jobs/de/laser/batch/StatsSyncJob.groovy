@@ -15,7 +15,7 @@ class StatsSyncJob extends AbstractJob {
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
         // Example - every 10 mins 0 0/10 * * * ?
         // At 4am each Sunday - Sync stats
-        cron name:'statsSyncTrigger', cronExpression: "0 0 4 ? * 1"
+        cron name:'statsSyncTrigger', cronExpression: "0 0 4 ? * *"
         //cron name:'statsSyncTrigger', cronExpression: "0 0/10 * * * ?" //debug only!
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]
