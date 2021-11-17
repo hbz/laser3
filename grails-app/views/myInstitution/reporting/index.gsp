@@ -153,9 +153,9 @@
             })
 
             $('*[id^=query-chooser').on( 'change', function(e) {
-                var value = $(e.target).dropdown('get value');
+                var value = $(e.target).val();
                 if (value) {
-                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    $('*[id^=query-chooser').not( $('#' + this.id)).dropdown('clear');
                     JSPC.app.reporting.current.request.query = value;
                     JSPC.app.reporting.requestChartJsonData();
                 }

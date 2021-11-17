@@ -5,11 +5,11 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 class PackageXCfg extends BaseConfig {
 
     static List<String> ES_DATA = [
-            'breakable',
-            'consistent',
-            'openAccess',
-            'paymentType',
-            'scope',
+            'package-breakable',
+            'package-consistent',
+            'package-openAccess',
+            'package-paymentType',
+            'package-scope',
             'package-x-curatoryGroup',
             'package-x-nationalRange',
             'package-x-regionalRange',
@@ -48,14 +48,14 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'package-breakable',     // ES
-                                            'package-consistent',    // ES
+                                            'package-breakable',        // ES
+                                            'package-consistent',       // ES
                                             'package-contentType',
                                             'package-file',
-                                            'package-openAccess',   // ES
+                                            'package-openAccess',       // ES
                                             'package-packageStatus',
-                                            'package-paymentType',  // ES
-                                            'package-scope',        // ES
+                                            'package-paymentType',      // ES
+                                            'package-scope',            // ES
                                             'package-*'
                                     ]
                             ]
