@@ -39,6 +39,28 @@
             <i class="info icon"></i>
             <g:message code="default.usage.exports.warning"/>
         </div>
+        <g:if test="${wekbServerUnavailable}">
+            <div class="ui icon error message">
+                <i class="exclamation icon"></i>
+                ${wekbServerUnavailable}
+            </div>
+        </g:if>
+        <g:else>
+            <aside class="ui segment metaboxContent accordion">
+                <div class="title">
+                    <g:message code="default.usage.platformMetadataHeader"/><i class="dropdown icon la-dropdown-accordion"></i>
+                </div>
+                <div class="content">
+                    <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
+                        <h4>
+                            ${platformInstanceRecord.name}
+                        </h4>
+                        <g:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
+                    </g:each>
+                </div>
+            </aside>
+            <div class="metaboxContent-spacer"></div>
+        </g:else>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <div class="ui segment">
                 <table class="ui celled table">

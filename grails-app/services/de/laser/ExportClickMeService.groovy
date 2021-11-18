@@ -1083,12 +1083,10 @@ class ExportClickMeService {
         renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})", style: 'positive']])
 
 
-        renewalResult.orgsWithMultiYearTermSub.each { sub ->
+        renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriber().sortname}.each { sub ->
 
-            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
+            setRenewalRow([participant: sub.getSubscriber(), sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
 
-            }
         }
 
         renewalData.add([[field: '', style: null]])
@@ -1218,7 +1216,7 @@ class ExportClickMeService {
         Map sheetData = [:]
         sheetData[messageSource.getMessage('subscriptionDetails.members.members', null, locale)] = [titleRow: titles, columnData: exportData]
 
-        sheetData =  exportAccessPoints(orgList, sheetData, selectedExportFields, locale)
+        sheetData =  exportAccessPoints(orgList, sheetData, selectedExportFields, locale, "")
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
@@ -1346,7 +1344,7 @@ class ExportClickMeService {
         Map sheetData = [:]
         sheetData[messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)] = [titleRow: titles, columnData: exportData]
 
-        sheetData =  exportAccessPoints(result, sheetData, selectedExportFields, locale)
+        sheetData =  exportAccessPoints(result, sheetData, selectedExportFields, locale, "")
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
@@ -1427,11 +1425,11 @@ class ExportClickMeService {
         sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
 
         if (participantsFinish) {
-            sheetData = exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale, " - 1")
         }
 
         if (participantsNotFinish) {
-            sheetData = exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale)
+            sheetData = exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2")
         }
 
         return exportService.generateXLSXWorkbook(sheetData)
