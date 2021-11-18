@@ -23,9 +23,12 @@ import java.text.SimpleDateFormat
  *     <li>subscription survey</li>
  * </ul>
  * whilst a subscription survey may also control the renewal of a survey. The survey type is represented by the constants listed below,
- * just as the state of the subscription completion; latter is an indicator for the consortium performing the survey
+ * just as the state of the subscription completion; latter is an indicator for the consortium performing the survey.
+ * The participants of a survey are tracked for each surveyed target individually; that is why the {@link SurveyOrg} connector class points from here
+ * to the participant institution (of {@link Org} type) and not {@link SurveyInfo}
  * @see SurveyInfo
  * @see SurveyResult
+ * @see SurveyOrg
  */
 class SurveyConfig {
 
