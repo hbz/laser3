@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3999    17.11.2021  rc-2.2  2.2.5       Andreas Feature     Schnellansicht der Plattform-Statistik-Details in Lizenzstatistik eingeblendet
 
 3997    17.11.2021  rc-2.2  2.2.5       Moe     Bug         500er bei ClickMe Excel: Meine Einrichtungen
