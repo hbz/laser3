@@ -15,6 +15,9 @@
             <th></th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'platform.provider')}</th>
+            <g:if test="${query in [ 'platform-x-property' ]}">
+                <th>${message(code:'reporting.details.property.value')}</th>
+            </g:if>
             <th>${message(code:'package.lastUpdated.label')}</th>
             <th>${message(code:'wekb')}</th>
         </tr>
@@ -31,6 +34,11 @@
                             <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
                         </g:if>
                     </td>
+                    <g:if test="${query in [ 'platform-x-property' ]}">
+                        <td>
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                        </td>
+                    </g:if>
                     <td>
                         <g:if test="${esRecordIds.contains(plt.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(plt.id.toString()).lastUpdatedDisplay)}" />

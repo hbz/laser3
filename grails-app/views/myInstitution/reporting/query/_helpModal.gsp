@@ -28,7 +28,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Lizenz-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Lizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Lizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
         <p>
@@ -43,7 +43,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Teilnehmerlizenz-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Teilnehmerlizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Teilnehmerlizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
         </p>
         <p>
@@ -181,7 +181,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Vertrags-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Verträge konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Verträge konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>
         <p>
@@ -232,7 +232,7 @@
             Diese Abfrage liefert eine Übersicht über vergebene Organisations-Merkmale
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>eigene oder allgemeine Merkmale</strong>, die für Organisationen konkret vergeben wurden.
+            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Organisationen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
         </p>
         <p>
@@ -248,7 +248,21 @@
     %{-- package-x-ddc --}%
 
     %{-- platform --}%
-    %{-- platform-x-property --}%
+
+    <div class="help-section" data-help-section="platform-x-property">
+        <p class="ui header">
+            Diese Abfrage liefert eine Übersicht über vergebene Plattform-Merkmale
+        </p>
+        <p>
+            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Plattformen konkret vergeben wurden.
+            Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
+        </p>
+        <p>
+            Im Detail sind folgende Informationen verfügbar: <br/>
+            <i class="icon circle blue"></i> Plattform mit Merkmal X, <br />
+            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Plattformen <br />
+        </p>
+    </div>
 
     <div class="help-section" data-help-section="default">
         ${message(code:'reporting.help.infoMissing')}
