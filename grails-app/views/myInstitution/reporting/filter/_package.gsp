@@ -29,8 +29,7 @@
         <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
             <div class="field">
                 <div style="text-align:center; padding:2em 0">
-                    %{--<asset:image src="help/reporting/package.png" absolute="true" style="width:85%" />--}%
-                    Hilfe in Arbeit ..
+                    <asset:image src="help/reporting.packages.png" absolute="true" style="width:96%" />
                 </div>
             </div>
         </div><!-- .tab -->

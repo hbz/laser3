@@ -48,20 +48,7 @@
                     </g:if>
                     <g:elseif test="${query == 'license-x-property'}">
                         <td>
-                            <%
-                                List<LicenseProperty> properties = BaseDetails.getPropertiesGeneric(lic, id as Long, contextService.getOrg()) as List<LicenseProperty>
-
-                                println properties.collect { lp ->
-                                    String result = (lp.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
-
-                                    if (lp.getType().isRefdataValueType()) {
-                                        result += (lp.getRefValue() ? lp.getRefValue().getI10n('value') : '')
-                                    } else {
-                                        result += (lp.getValue() ?: '')
-                                    }
-                                    result
-                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
-                            %>
+                            <laser:reportObjectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:elseif>
 

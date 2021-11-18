@@ -2,10 +2,12 @@ package de.laser.reporting.report.myInstitution.base
 
 import de.laser.License
 import de.laser.Org
+import de.laser.Platform
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
+import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
 
 
@@ -28,14 +30,7 @@ class BaseDetails {
 
         List<AbstractPropertyWithCalculatedLastUpdated> properties = []
 
-        if (obj instanceof Subscription) {
-            properties = SubscriptionProperty.executeQuery(
-                    "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
-                            "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [sub: obj, pdId: pdId, ctxOrg: ctxOrg]
-            )
-        }
-        else if (obj instanceof License) {
+        if (obj instanceof License) {
             properties = LicenseProperty.executeQuery(
                     "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
                             "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
@@ -47,6 +42,20 @@ class BaseDetails {
                     "select op from OrgProperty op join op.type pd where op.owner = :org and pd.id = :pdId " +
                             "and (op.isPublic = true or op.tenant = :ctxOrg) and pd.descr like '%Property' ",
                     [org: obj, pdId: pdId, ctxOrg: ctxOrg]
+            )
+        }
+        else if (obj instanceof Platform) {
+            properties = PlatformProperty.executeQuery(
+                    "select pp from PlatformProperty pp join pp.type pd where pp.owner = :plt and pd.id = :pdId " +
+                            "and (pp.isPublic = true or pp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                    [plt: obj, pdId: pdId, ctxOrg: ctxOrg]
+            )
+        }
+        else if (obj instanceof Subscription) {
+            properties = SubscriptionProperty.executeQuery(
+                    "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
+                            "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                    [sub: obj, pdId: pdId, ctxOrg: ctxOrg]
             )
         }
         properties
