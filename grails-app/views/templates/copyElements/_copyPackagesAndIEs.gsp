@@ -53,10 +53,7 @@
             <tr>
                 <g:set var="excludes"
                        value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                 PendingChangeConfiguration.PACKAGE_DELETED,
-                                 PendingChangeConfiguration.NEW_PRICE,
-                                 PendingChangeConfiguration.PRICE_UPDATED,
-                                 PendingChangeConfiguration.PRICE_DELETED]}"/>
+                                 PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
                     <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
@@ -119,19 +116,23 @@
                                                 <ul>
                                                     <g:each in="${packageSettings}"
                                                             var="pcc">
-                                                        <li class="la-copyPack-item">
-                                                            <g:message
-                                                                    code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
-                                                                code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                                                                <g:if test="${!(pcc.settingKey in excludes)}">
-                                                                    <g:if test="${auditService.getAuditConfig(sourceObject, pcc.settingKey)}">
-                                                                        <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
-                                                                                class="ui thumbtack icon"></i></span>
+                                                        <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
+                                                                                           PendingChangeConfiguration.PRICE_UPDATED,
+                                                                                           PendingChangeConfiguration.PRICE_DELETED])}">
+                                                            <li class="la-copyPack-item">
+                                                                <g:message
+                                                                        code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
+                                                                    code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
+                                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                                        <g:if test="${auditService.getAuditConfig(sourceObject, pcc.settingKey)}">
+                                                                            <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
+                                                                                    class="ui thumbtack icon"></i></span>
+                                                                        </g:if>
                                                                     </g:if>
                                                                 </g:if>
-                                                            </g:if>
-                                                        </li>
+                                                            </li>
+                                                        </g:if>
                                                     </g:each>
                                                 </ul>
                                             </div>
@@ -217,19 +218,23 @@
                                                 <ul>
                                                     <g:each in="${packageSettings}"
                                                             var="pcc">
-                                                        <li class="la-copyPack-item">
-                                                            <g:message
-                                                                    code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
-                                                                code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                                                                <g:if test="${!(pcc.settingKey in excludes)}">
-                                                                    <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
-                                                                        <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
-                                                                                class="ui thumbtack icon"></i></span>
+                                                        <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
+                                                                                           PendingChangeConfiguration.PRICE_UPDATED,
+                                                                                           PendingChangeConfiguration.PRICE_DELETED])}">
+                                                            <li class="la-copyPack-item">
+                                                                <g:message
+                                                                        code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
+                                                                    code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
+                                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                    <g:if test="${!(pcc.settingKey in excludes)}">
+                                                                        <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
+                                                                            <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
+                                                                                    class="ui thumbtack icon"></i></span>
+                                                                        </g:if>
                                                                     </g:if>
                                                                 </g:if>
-                                                            </g:if>
-                                                        </li>
+                                                            </li>
+                                                        </g:if>
                                                     </g:each>
                                                 </ul>
                                             </div>
