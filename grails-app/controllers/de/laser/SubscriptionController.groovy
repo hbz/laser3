@@ -987,7 +987,7 @@ class SubscriptionController {
         if(params.exportXLSStats) {
             params.tab = params.tabStat
             ctrlResult = subscriptionControllerService.statsForExport(params)
-            wb = exportService.exportReport(params, ctrlResult.result, true,  true)
+            wb = exportService.exportReport(params, ctrlResult.result, true,  true, true)
         }
         else {
             ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)

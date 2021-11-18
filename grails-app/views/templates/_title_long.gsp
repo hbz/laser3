@@ -126,7 +126,7 @@
 
     <g:if test="${(tipp.titleType == 'Book') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon user circle la-popup-tooltip la-delay"
+            <i class="grey icon industry circle la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.firstEditor')}"></i>
 
             <div class="content">

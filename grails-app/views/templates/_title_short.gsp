@@ -58,6 +58,17 @@
         </div>
     </g:if>
 
+    <g:if test="${(tipp.titleType == 'Book') && (tipp.firstEditor || showEmptyFields)}">
+        <div class="item">
+            <i class="grey icon industry circle la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.firstEditor')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
+            </div>
+        </div>
+    </g:if>
+
     <div class="ui grid">
         <div class="right aligned wide column">
             <a class="ui mini button" onclick="JSPC.app.showAllTitleInfos(${tipp.id}, ${ie ? ie.id : null});">

@@ -672,8 +672,8 @@ class StatsSyncService {
 
     Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
         Map<String, Object> result = [:]
-        HTTPBuilder http = new HTTPBuilder(url)
         try {
+            HTTPBuilder http = new HTTPBuilder(url)
             http.request(Method.GET, ContentType.JSON) { req ->
                 response.success = { resp, json ->
                     if(resp.status == 200) {
@@ -696,19 +696,19 @@ class StatsSyncService {
                     log.error("server response: ${resp.statusLine} - ${reader}")
                 }
             }
+            http.shutdown()
         }
         catch (Exception e) {
             log.error("invalid response returned for ${url}!")
             log.error("stack trace: ", e)
         }
-        http.shutdown()
         result
     }
 
     GPathResult fetchXMLData(String url, requestBody) {
-        HTTPBuilder http = new HTTPBuilder(url)
         GPathResult result = null
         try  {
+            HTTPBuilder http = new HTTPBuilder(url)
             http.request(Method.POST, ContentType.XML) { req ->
                 headers."Content-Type" = "application/soap+xml; charset=utf-8"
                 headers."Accept" = "application/soap+xml; charset=utf-8"
@@ -725,13 +725,13 @@ class StatsSyncService {
                     log.error("server response: ${resp.statusLine} - ${reader}")
                 }
             }
+            http.shutdown()
         }
         catch (Exception e) {
             log.error("invalid response returned for ${url}!")
             log.error("stack trace: ", e)
             log.error("Request body was: ${requestBody}")
         }
-        http.shutdown()
         result
     }
 

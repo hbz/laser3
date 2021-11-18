@@ -745,39 +745,42 @@ class CopyElementsService {
             if(!bulkOperationRunning) {
                 bulkOperationRunning = true
                 executorService.execute({
-                    Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
-                    if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                        List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
-                        deletePackages(packagesToDelete, targetObject, flash)
-                        isTargetSubChanged = true
-                    }
-                    if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                        List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
-                        copyPackages(packagesToTake, targetObject, flash)
-                        isTargetSubChanged = true
-                    }
-
-                    if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                        List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
-                            genericOIDService.resolveOID(it)
+                    try {
+                        Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
+                        if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                            List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
+                            deletePackages(packagesToDelete, targetObject, flash)
+                            isTargetSubChanged = true
                         }
-                        packageSettingsToTake.each { SubscriptionPackage sp ->
-                            //explicit loading of service needed because lazy initialisation gives null
-                            copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
+                        if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                            List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
+                            copyPackages(packagesToTake, targetObject, flash)
+                            isTargetSubChanged = true
                         }
-                        isTargetSubChanged = true
+
+                        if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect { genericOIDService.resolveOID(it) }
+                            packageSettingsToTake.each { SubscriptionPackage sp ->
+                                //explicit loading of service needed because lazy initialisation gives null
+                                copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
+                            }
+                            isTargetSubChanged = true
+                        }
+
+                        if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                            List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
+                            copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
+
+                        }
+
+                        if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                            List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
+                            deleteIssueEntitlementGroupItem(deleteTitleGroups)
+
+                        }
                     }
-
-                    if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                        List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
-                        copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
-
-                    }
-
-                    if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                        List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
-                        deleteIssueEntitlementGroupItem(deleteTitleGroups)
-
+                    catch (Exception e) {
+                        e.printStackTrace()
                     }
                     bulkOperationRunning = false
                 })
