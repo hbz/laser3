@@ -6,6 +6,8 @@ UPDATE "user" SET
     display = CONCAT('User ', id),
     email = 'local@localhost.local',
     password = 'paradoxon'
+    enabled = false,
+    account_locked = true
 WHERE id NOT IN (
     SELECT DISTINCT u.id
     FROM "user" u
