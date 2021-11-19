@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
+
 3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
 
 4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
@@ -13,6 +15,8 @@
 3999    17.11.2021  rc-2.2  2.2.5       Andreas Feature     Schnellansicht der Plattform-Statistik-Details in Lizenzstatistik eingeblendet
 
 3997    17.11.2021  rc-2.2  2.2.5       Moe     Bug         500er bei ClickMe Excel: Meine Einrichtungen
+
+3987    17.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
 
 3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
 

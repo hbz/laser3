@@ -262,17 +262,24 @@ class BaseQuery {
         result.data.each { d ->
             d[1] = PropertyDefinition.get(d[0]).getI10n('name')
 
-            List<Long> objIdList =  Org.executeQuery(
-                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
+            List<Long> obj2IdList =  Org.executeQuery(
+                    dataDetailsHqlPart + ' and (prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
+                    [idList: idList, d: d[0]]
+            )
+            List<Long> obj3IdList =  Org.executeQuery(
+                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg and prop.isPublic != true) and pd.id = :d order by pd.name_' + locale,
                     [idList: idList, d: d[0], ctxOrg: ctxOrg]
             )
+            int obj2IdListSize = obj2IdList.size()
+            int obj3IdListSize = obj3IdList.size()
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
                     label : d[1],
-                    idList: objIdList,
-                    value1: objIdList.size(),
-                    value2: objIdList.unique().size()
+                    idList: obj3IdList + obj2IdList,
+                    value1: obj3IdList.unique().size() + obj2IdList.unique().size(),
+                    value2: obj2IdListSize,
+                    value3: obj3IdListSize
             ])
         }
     }
