@@ -6,7 +6,7 @@ import grails.util.Holders
 
 /**
  * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs
- * @see {@link de.laser.ajax.AjaxController#notifyProfiler()}
+ * @see de.laser.ajax.AjaxController#notifyProfiler()
  */
 class SystemProfiler {
 
