@@ -74,8 +74,8 @@ class PlatformXCfg extends BaseConfig {
                             'distribution' : [
                                     'platform-x-property' : [
                                             detailsTemplate     : 'platform',
-                                            chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'base', 'x.properties' ]
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                     ]
                             ]
                     ]

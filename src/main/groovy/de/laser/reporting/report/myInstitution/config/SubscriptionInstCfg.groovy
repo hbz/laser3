@@ -67,8 +67,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                      ],
                                      'subscription-x-property' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'base', 'x.properties' ]
+                                             chartTemplate      : '2axis3values',
+                                             chartLabels        : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                      ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
