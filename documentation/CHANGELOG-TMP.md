@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4003    18.11.2021  rc-2.2  2.2.5       Mor     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
+
 4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
 
 3999    17.11.2021  rc-2.2  2.2.5       Andreas Feature     Schnellansicht der Plattform-Statistik-Details in Lizenzstatistik eingeblendet

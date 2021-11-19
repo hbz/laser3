@@ -2056,7 +2056,11 @@ class ExportClickMeService {
     private String getAddress(Address address, Org org){
         String addr= ""
 
-        addr = org.name
+        if(address.name){
+            addr = address.name
+        }else {
+            addr = org.name
+        }
 
         if(address.additionFirst || address.additionSecond) {
             addr += ', '
