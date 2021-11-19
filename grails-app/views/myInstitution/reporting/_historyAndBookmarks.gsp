@@ -14,7 +14,7 @@
                     <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
                                 <g:if test="${meta.filter == BaseConfig.KEY_LICENSE}">
                                     <i class="ui icon clipboard" aria-hidden="true"></i>
@@ -81,7 +81,7 @@
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
                                 <g:if test="${fav.filter == BaseConfig.KEY_LICENSE}">
                                     <i class="ui icon clipboard" aria-hidden="true"></i>

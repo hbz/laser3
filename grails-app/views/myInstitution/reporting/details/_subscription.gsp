@@ -57,20 +57,7 @@
 
                     <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                         <td>
-                            <%
-                                List<SubscriptionProperty> properties = BaseDetails.getPropertiesGeneric(sub, id as Long, contextService.getOrg()) as List<SubscriptionProperty>
-
-                                println properties.collect { sp ->
-                                    String result = (sp.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
-
-                                    if (sp.getType().isRefdataValueType()) {
-                                        result += (sp.getRefValue() ? sp.getRefValue().getI10n('value') : '')
-                                    } else {
-                                        result += (sp.getValue() ?: '')
-                                    }
-                                    result
-                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
-                            %>
+                            <laser:reportObjectProperties owner="${sub}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
                     <g:elseif test="${query == 'subscription-x-platform'}">
