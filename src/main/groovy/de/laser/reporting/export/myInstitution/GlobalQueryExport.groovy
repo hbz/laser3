@@ -36,7 +36,12 @@ class GlobalQueryExport extends BaseQueryExport {
         else {
             result.cols.addAll( chart )
             result.rows = data.collect{ e ->
-                [e.label.toString(), e.value2, e.value1] // changed order
+                if (e.keySet().contains('value3')) {
+                    [e.label.toString(), e.value1, e.value2, e.value3] // changed order - properties - TODO
+                }
+                else {
+                    [e.label.toString(), e.value2, e.value1] // changed order - default - TODO
+                }
             }
         }
         result
