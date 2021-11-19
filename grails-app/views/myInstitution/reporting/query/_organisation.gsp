@@ -11,7 +11,6 @@
                 <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
         </div>
-
         <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_ORGANISATION}"]}" />
 
     </g:if>

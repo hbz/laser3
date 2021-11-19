@@ -140,9 +140,14 @@ class PlatformFilter extends BaseFilter {
         boolean esFilterUsed = false
 
         if (idList) {
-            Map<String, Object> esr = ElasticSearchHelper.getEsPlatformRecords( idList )
-            esRecords = esr.records as Map<String, Object>
-            orphanedIdList = esr.orphanedIds as List<Long>
+            if (ElasticSearchHelper.isReachable()) {
+                Map<String, Object> esr = ElasticSearchHelper.getEsPlatformRecords( idList )
+                esRecords = esr.records as Map<String, Object>
+                orphanedIdList = esr.orphanedIds as List<Long>
+            }
+            else {
+                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+            }
         }
 
         if (esFilterUsed) {
