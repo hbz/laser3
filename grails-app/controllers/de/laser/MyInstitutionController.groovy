@@ -3454,7 +3454,11 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Display and manage PrivateProperties for this institution
+     * Displays and manages private property definitions for this institution.
+     * If the add command is specified (i.e. params.cmd is set), this method inserts a new private property definition;
+     * usage is restricted to the context institution.
+     * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
+     * (but consider the annotation there!)
      */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
