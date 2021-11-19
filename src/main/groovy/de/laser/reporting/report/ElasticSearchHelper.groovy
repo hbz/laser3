@@ -9,6 +9,8 @@ import groovyx.net.http.Method
 
 class ElasticSearchHelper {
 
+    static final String ELASTIC_SEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
+
     static Map<String, Object> getEsPackageRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
 
@@ -111,5 +113,19 @@ class ElasticSearchHelper {
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
         result
+    }
+
+    static boolean isReachable() {
+
+        boolean reachable = false
+        try {
+            Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+            URI uri = new URI( rConfig.elasticSearch.url )
+            InetAddress es = InetAddress.getByName( uri.getHost() )
+            reachable = es.isReachable( 7000 )
+        } catch (Exception e) {
+            println e.printStackTrace()
+        }
+        reachable
     }
 }

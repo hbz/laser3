@@ -152,12 +152,10 @@ class PackageQuery extends BaseQuery {
                     ])
                 }
 
-                handleGenericNonMatchingData(
-                        params.query,
-                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null',
-                        idList,
-                        result
-                )
+                List<Long> noDataList = idList ? Package.executeQuery(
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null', [idList: idList]
+                ) : []
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-curatoryGroup']) {
 
