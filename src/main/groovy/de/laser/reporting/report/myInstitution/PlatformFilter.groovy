@@ -150,6 +150,34 @@ class PlatformFilter extends BaseFilter {
             }
         }
 
+        getCurrentFilterKeys(params, cmbKey).each { key ->
+            if (params.get(key)) {
+                String p = key.replaceFirst(cmbKey,'')
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
+                String pEsData = BaseConfig.KEY_PLATFORM + '-' + p
+
+                String filterLabelValue
+
+                // --> es_data
+                if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL && PlatformXCfg.ES_DATA.contains( pEsData )) {
+
+                    RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                    if (p in [ BaseConfig.CUSTOM_IMPL_KEY_PLT_IP_AUTHENTICATION, BaseConfig.CUSTOM_IMPL_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
+                               BaseConfig.CUSTOM_IMPL_KEY_PLT_PASSWORD_AUTHENTICATION, BaseConfig.CUSTOM_IMPL_KEY_PLT_PROXY_SUPPORTED ]) {
+
+                        esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
+                        filterLabelValue = rdv.getI10n('value')
+                    }
+                }
+
+                if (filterLabelValue) {
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p), value: filterLabelValue])
+                    esFilterUsed = true
+                }
+            }
+        }
+
         if (esFilterUsed) {
             idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
         }

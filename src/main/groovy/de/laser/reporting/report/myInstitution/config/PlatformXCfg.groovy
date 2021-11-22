@@ -36,15 +36,17 @@ class PlatformXCfg extends BaseConfig {
                             //'type'              : FIELD_TYPE_REFDATA,
                             'serviceProvider'   : FIELD_TYPE_CUSTOM_IMPL,
                             'softwareProvider'  : FIELD_TYPE_CUSTOM_IMPL,
-                            'ipAuthentication'  : FIELD_TYPE_CUSTOM_IMPL,           // ES
+                            'ipAuthentication'          : FIELD_TYPE_CUSTOM_IMPL,   // ES
                             'shibbolethAuthentication'  : FIELD_TYPE_CUSTOM_IMPL,   // ES
                             'passwordAuthentication'    : FIELD_TYPE_CUSTOM_IMPL,   // ES
-                            'proxySupported'    : FIELD_TYPE_CUSTOM_IMPL            // ES
+                            'proxySupported'            : FIELD_TYPE_CUSTOM_IMPL    // ES
                     ],
                     filter : [
                             default: [
                                     [ 'org', 'status'],
                                     [ 'serviceProvider', 'softwareProvider'],
+                                    [ 'ipAuthentication', 'shibbolethAuthentication', 'proxySupported' ],
+                                    [ 'passwordAuthentication' ]
                             ]
                     ],
                     query : [

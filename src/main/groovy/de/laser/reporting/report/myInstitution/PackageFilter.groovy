@@ -154,24 +154,10 @@ class PackageFilter extends BaseFilter {
 
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_BREAKABLE) {
-                        esRecords = esRecords.findAll{ it.value.breakable == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_CONSISTENT) {
-                        esRecords = esRecords.findAll{ it.value.consistent == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_OPENACCESS) {
-                        esRecords = esRecords.findAll{ it.value.openAccess == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE) {
-                        esRecords = esRecords.findAll{ it.value.paymentType == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_SCOPE) {
-                        esRecords = esRecords.findAll{ it.value.scope == rdv.value }
+                    if (p in [ BaseConfig.CUSTOM_IMPL_KEY_PKG_BREAKABLE, BaseConfig.CUSTOM_IMPL_KEY_PKG_CONSISTENT, BaseConfig.CUSTOM_IMPL_KEY_PKG_OPENACCESS,
+                               BaseConfig.CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE, BaseConfig.CUSTOM_IMPL_KEY_PKG_SCOPE
+                            ]) {
+                        esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')
                     }
                 }

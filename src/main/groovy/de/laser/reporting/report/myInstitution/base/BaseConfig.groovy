@@ -68,6 +68,11 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
 
+    static String CUSTOM_IMPL_KEY_PLT_IP_AUTHENTICATION         = 'ipAuthentication'
+    static String CUSTOM_IMPL_KEY_PLT_SHIBBOLETH_AUTHENTICATION = 'shibbolethAuthentication'
+    static String CUSTOM_IMPL_KEY_PLT_PASSWORD_AUTHENTICATION   = 'passwordAuthentication'
+    static String CUSTOM_IMPL_KEY_PLT_PROXY_SUPPORTED           = 'proxySupported'
+
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM // 'costItem'
     ]
@@ -305,6 +310,30 @@ class BaseConfig {
         else if (key == CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
             return [
                     label: messageSource.getMessage('platform.softwareProvider', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_IP_AUTHENTICATION) {
+            return [
+                    label: messageSource.getMessage('platform.auth.ip.supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_SHIBBOLETH_AUTHENTICATION) {
+            return [
+                    label: messageSource.getMessage('platform.auth.shibboleth.supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_PASSWORD_AUTHENTICATION) {
+            return [
+                    label: messageSource.getMessage('platform.auth.userPass.supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_PROXY_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.auth.proxy.supported', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
