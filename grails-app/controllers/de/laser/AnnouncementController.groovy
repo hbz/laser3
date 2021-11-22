@@ -10,6 +10,9 @@ class AnnouncementController  {
 
     def contextService
 
+    /**
+     * Lists all current announcements
+     */
     @Secured(['ROLE_ADMIN'])
     def index() {
         Map<String, Object> result = [:]
@@ -19,6 +22,9 @@ class AnnouncementController  {
         result
     }
 
+    /**
+     * Creates a new announcement with to the given parameters and returns to the list of announcements
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def createAnnouncement() {

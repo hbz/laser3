@@ -69,6 +69,7 @@ class YodaService {
         }
     }
 
+    @Deprecated
     Map<String,Object> listDuplicateTitles() {
         Map<String,Object> result = [:]
         List rows = TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1')
