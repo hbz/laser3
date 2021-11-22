@@ -54,8 +54,7 @@ class GenericHelper {
 //                label = messageSource.getMessage(csn + '.' + prop.getName(), null, locale)
 //            }
         }
-
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
+        else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
@@ -65,21 +64,29 @@ class GenericHelper {
 
             label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataAnnotation
         }
-
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
-            // LaserReportingTagLib:reportFilterRefdata
+        else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
             Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             label = customRdv.get('label')
         }
-        if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
-            // LaserReportingTagLib:reportFilterRefdata
+        else if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
-            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
-            if (!customRdv) {
+            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(fieldName)
+            if (!rdv) {
                 println '>> ' + fieldName + ' : ' + type + ' not found!'
             }
-            label = customRdv.get('label')
+            label = rdv.get('label')
+        }
+        else if (type in [BaseConfig.FIELD_TYPE_ELASTICSEARCH, BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
+
+            Map<String, Object> rdv = BaseConfig.getElasticSearchRefdata(fieldName)
+            if (!rdv) {
+                println '>> ' + fieldName + ' : ' + type + ' not found!'
+            }
+            label = rdv.get('label')
         }
 
         label

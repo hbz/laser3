@@ -31,15 +31,15 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'               : FIELD_TYPE_CUSTOM_IMPL,
-                            'status'            : FIELD_TYPE_REFDATA,
-                            //'type'              : FIELD_TYPE_REFDATA,
-                            'serviceProvider'   : FIELD_TYPE_CUSTOM_IMPL,
-                            'softwareProvider'  : FIELD_TYPE_CUSTOM_IMPL,
-                            'ipAuthentication'          : FIELD_TYPE_CUSTOM_IMPL,   // ES
-                            'shibbolethAuthentication'  : FIELD_TYPE_CUSTOM_IMPL,   // ES
-                            'passwordAuthentication'    : FIELD_TYPE_CUSTOM_IMPL,   // ES
-                            'proxySupported'            : FIELD_TYPE_CUSTOM_IMPL    // ES
+                            'org'                       : FIELD_TYPE_CUSTOM_IMPL,
+                            'ipAuthentication'          : FIELD_TYPE_ELASTICSEARCH,
+                            'passwordAuthentication'    : FIELD_TYPE_ELASTICSEARCH,
+                            'proxySupported'            : FIELD_TYPE_ELASTICSEARCH,
+                            'serviceProvider'           : FIELD_TYPE_CUSTOM_IMPL,
+                            'shibbolethAuthentication'  : FIELD_TYPE_ELASTICSEARCH,
+                            'softwareProvider'          : FIELD_TYPE_CUSTOM_IMPL,
+                            'status'                    : FIELD_TYPE_REFDATA,
+                            //'type'                    : FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default: [

@@ -4,7 +4,6 @@ import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataCategory
-import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
@@ -47,6 +46,7 @@ class BaseConfig {
     static String FIELD_TYPE_REFDATA            = 'refdata'
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
+    static String FIELD_TYPE_ELASTICSEARCH      = 'elasticSearch'
 
     static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
     static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
@@ -58,20 +58,20 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
-    static String CUSTOM_IMPL_KEY_PKG_BREAKABLE     = 'breakable'
-    static String CUSTOM_IMPL_KEY_PKG_CONSISTENT    = 'consistent'
-    static String CUSTOM_IMPL_KEY_PKG_OPENACCESS    = 'openAccess'
-    static String CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE   = 'paymentType'
-    static String CUSTOM_IMPL_KEY_PKG_SCOPE         = 'scope'
+    static String ELASTICSEARCH_KEY_PKG_BREAKABLE   = 'breakable'
+    static String ELASTICSEARCH_KEY_PKG_CONSISTENT  = 'consistent'
+    static String ELASTICSEARCH_KEY_PKG_OPENACCESS  = 'openAccess'
+    static String ELASTICSEARCH_KEY_PKG_PAYMENTTYPE = 'paymentType'
+    static String ELASTICSEARCH_KEY_PKG_SCOPE       = 'scope'
 
     static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
     static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
 
-    static String CUSTOM_IMPL_KEY_PLT_IP_AUTHENTICATION         = 'ipAuthentication'
-    static String CUSTOM_IMPL_KEY_PLT_SHIBBOLETH_AUTHENTICATION = 'shibbolethAuthentication'
-    static String CUSTOM_IMPL_KEY_PLT_PASSWORD_AUTHENTICATION   = 'passwordAuthentication'
-    static String CUSTOM_IMPL_KEY_PLT_PROXY_SUPPORTED           = 'proxySupported'
+    static String ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION           = 'ipAuthentication'
+    static String ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION   = 'shibbolethAuthentication'
+    static String ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION     = 'passwordAuthentication'
+    static String ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED             = 'proxySupported'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM // 'costItem'
@@ -260,37 +260,6 @@ class BaseConfig {
                     from: []
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PKG_BREAKABLE) {
-            return [
-                    label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_BREAKABLE )
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_PKG_CONSISTENT) {
-            return [
-                    label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_CONSISTENT )
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_PKG_OPENACCESS) {
-            return [
-                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.LICENSE_OA_TYPE )
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE) {
-            return [
-                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PAYMENT_TYPE )
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_PKG_SCOPE) {
-            return [
-
-                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
-            ]
-        }
         else if (key == CUSTOM_IMPL_KEY_PLT_ORG) { // TODO
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
@@ -313,25 +282,68 @@ class BaseConfig {
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_IP_AUTHENTICATION) {
+        else {
+            getElasticSearchRefdata(key) // TODO
+        }
+    }
+
+    static Map<String, Object> getElasticSearchRefdata(String key) {
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        MessageSource messageSource = mainContext.getBean('messageSource')
+
+        Locale locale = LocaleContextHolder.getLocale()
+
+        if (key == ELASTICSEARCH_KEY_PKG_BREAKABLE) {
+            return [
+                    label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_BREAKABLE )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PKG_CONSISTENT) {
+            return [
+                    label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_CONSISTENT )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PKG_OPENACCESS) {
+            return [
+                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.LICENSE_OA_TYPE )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PKG_PAYMENTTYPE) {
+            return [
+                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PAYMENT_TYPE )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PKG_SCOPE) {
+            return [
+
+                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.ip.supported', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_SHIBBOLETH_AUTHENTICATION) {
+        else if (key == ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.shibboleth.supported', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_PASSWORD_AUTHENTICATION) {
+        else if (key == ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.userPass.supported', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_PROXY_SUPPORTED) {
+        else if (key == ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED) {
             return [
                     label: messageSource.getMessage('platform.auth.proxy.supported', null, locale) + ' (we:kb)',
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)

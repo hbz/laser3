@@ -24,6 +24,24 @@ class PlatformExport extends BaseDetailsExport {
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
+                                    'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
+                                    'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    'org'                   : FIELD_TYPE_CUSTOM_IMPL,
+                                    'ipAuthentication'             : FIELD_TYPE_ELASTICSEARCH,
+                                    'shibbolethAuthentication'     : FIELD_TYPE_ELASTICSEARCH,
+                                    'passwordAuthentication'       : FIELD_TYPE_ELASTICSEARCH,
+                                    'proxySupported'               : FIELD_TYPE_ELASTICSEARCH,
+                                    /*
+                                    'statisticsFormat'             : FIELD_TYPE_ELASTICSEARCH,
+                                    'statisticsUpdate'             : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterCertified'             : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterR3Supported'           : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterR4Supported'           : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterR4SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterR5Supported'           : FIELD_TYPE_ELASTICSEARCH,
+                                    'counterR5SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
+                                     */
                             ]
                     ]
             ]
@@ -94,6 +112,19 @@ class PlatformExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
+                else if (key == 'org') {
+                    if (plt.org) {
+                        content.add( plt.org.name )
+                    } else {
+                        content.add('')
+                    }
+                }
+                else if (key == 'serviceProvider') {
+                    content.add( getRefdataContent(plt, key) )
+                }
+                else if (key == 'softwareProvider') {
+                    content.add( getRefdataContent(plt, key) )
+                }
                 else {
                     content.add( '- not implemented -' )
                 }
@@ -110,6 +141,10 @@ class PlatformExport extends BaseDetailsExport {
                 else {
                     content.add( '- not implemented -' )
                 }
+            }
+            // --> elastic search
+            else if (type == FIELD_TYPE_ELASTICSEARCH) {
+                content.add( '- not implemented -' )
             }
             else {
                 content.add( '- not implemented -' )

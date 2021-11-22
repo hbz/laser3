@@ -35,6 +35,7 @@ abstract class BaseDetailsExport {
     static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
     static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
     static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+    static String FIELD_TYPE_ELASTICSEARCH      = BaseConfig.FIELD_TYPE_ELASTICSEARCH
 
     static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
 

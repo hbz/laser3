@@ -103,11 +103,9 @@ class PackageFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' --- ' + pType +' not implemented --- '
                 }
-                // --> custom filter implementation != es_data
+                // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if ( ! PackageXCfg.ES_DATA.contains( pEsData )) {
-                        println ' --- ' + pType +' not implemented --- '
-                    }
+                    println ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {
@@ -149,13 +147,11 @@ class PackageFilter extends BaseFilter {
 
                 String filterLabelValue
 
-                // --> es_data
-                if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL && PackageXCfg.ES_DATA.contains( pEsData )) {
-
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PackageXCfg.ES_DATA.contains( pEsData )) {
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                    if (p in [ BaseConfig.CUSTOM_IMPL_KEY_PKG_BREAKABLE, BaseConfig.CUSTOM_IMPL_KEY_PKG_CONSISTENT, BaseConfig.CUSTOM_IMPL_KEY_PKG_OPENACCESS,
-                               BaseConfig.CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE, BaseConfig.CUSTOM_IMPL_KEY_PKG_SCOPE
+                    if (p in [BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE, BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT, BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
+                              BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE, BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE
                             ]) {
                         esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')

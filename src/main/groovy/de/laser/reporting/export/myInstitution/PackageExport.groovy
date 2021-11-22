@@ -24,6 +24,9 @@ class PackageExport extends BaseDetailsExport {
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
+                                    'contentType'           : FIELD_TYPE_REFDATA,
+                                    'file'                  : FIELD_TYPE_REFDATA,
+                                    'packageStatus'         : FIELD_TYPE_REFDATA,
                             ]
                     ]
             ]
@@ -110,6 +113,10 @@ class PackageExport extends BaseDetailsExport {
                 else {
                     content.add( '- not implemented -' )
                 }
+            }
+            // --> elastic search
+            else if (type == FIELD_TYPE_ELASTICSEARCH) {
+                content.add( '- not implemented -' )
             }
             else {
                 content.add( '- not implemented -' )

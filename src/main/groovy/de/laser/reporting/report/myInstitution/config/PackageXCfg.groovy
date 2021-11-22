@@ -28,14 +28,14 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : FIELD_TYPE_CUSTOM_IMPL, // ES
-                            'consistent'        : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'breakable'         : FIELD_TYPE_ELASTICSEARCH,
+                            'consistent'        : FIELD_TYPE_ELASTICSEARCH,
                             'contentType'       : FIELD_TYPE_REFDATA,
                             'file'              : FIELD_TYPE_REFDATA,
-                            'openAccess'        : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
                             'packageStatus'     : FIELD_TYPE_REFDATA,
-                            'paymentType'       : FIELD_TYPE_CUSTOM_IMPL, // ES
-                            'scope'             : FIELD_TYPE_CUSTOM_IMPL  // ES
+                            'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
+                            'scope'             : FIELD_TYPE_ELASTICSEARCH
                     ],
                     filter : [
                             default: [
