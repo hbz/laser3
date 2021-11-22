@@ -145,7 +145,7 @@
                 <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                     ${message(code: 'surveyCostItems.bulkOption.label')}
                         <i class="question circle icon"></i>
-                    </span>:</h3>
+                    </span></h3>
 
                 <div class="ui basic segment">
 
@@ -154,14 +154,13 @@
                     <g:if test="${params.tab == 'selectedSubParticipants' }">
                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
-                    <div class="fields">
-                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                    <div class="fields la-forms-grid">
+                        <fieldset class="sixteen wide field la-account-currency">
                             <div class="field center aligned">
 
                                 <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
                                 <div class="ui right labeled input">
                                 <input type="number"
-                                       style="width:50%"
                                        name="percentOnOldPrice"
                                        placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
                                        value="" step="0.01"/>

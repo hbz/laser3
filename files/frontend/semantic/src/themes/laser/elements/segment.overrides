@@ -10,7 +10,9 @@
   &:last-child {
     margin-bottom: 1em;
   }
-
+}
+.ui.segment.la-form {
+  border: none;
 }
 .ui.segment.la-filter-temp {
   background: @laFilterBackground;

@@ -322,17 +322,15 @@
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
-                                            <i class="icon copy-send"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
-                                            <i class="icon copy-send"></i>
                                         </g:link>
                                     </span>
                                 </g:else>

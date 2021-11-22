@@ -1,11 +1,13 @@
-.finance_index .ui.ribbon.label {
+.finance_index .ui.ribbon.label,
+.finance_subFinancialData .ui.ribbon.label{
   left: calc(-1rem - 1.8em);
   top: -22px;
 }
 .ui.modal>.content.la-twoSided-ribbon {
   padding: 0 1.5rem 0 1.5rem;
 }
-.finance_index .ui.right.ribbon.label {
+.finance_index .ui.right.ribbon.label,
+ .finance_subFinancialData .ui.right.ribbon.label{
   left: calc(104.2%);
   top: -22px;
 }
@@ -62,14 +64,14 @@
 }
 // annual rings modern
 .ui.la-annual-rings-modern {
-  display: inline-block;
-  position: relative;
+  display: inline-flex;
   padding-left: 0.2em;
   padding-right: 0.2em;
   margin-bottom: 1.2em;
   background-color: transparent;
   border: none;
   vertical-align: super;
+  align-items:center;
   .icon {
     //margin: 0em @iconDistance 0em @iconDistance;
   }
@@ -99,9 +101,9 @@
     opacity: 1;
   }
   .la-annual-rings-text {
-    vertical-align: sub;
+    padding: 3px;
+    margin-top: 0.3rem;
     margin-right: -0.3em;
-    display: inline-block;
     color: rgba(0,0,0,.6);
     letter-spacing: 0.05em;
     font-weight: 700;

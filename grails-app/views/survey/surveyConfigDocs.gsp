@@ -97,6 +97,7 @@
                     <th>${message(code: 'surveyConfigDocs.docs.table.title')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
+                    <th>${message(code: 'property.share.tooltip.sharedFrom')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -113,15 +114,16 @@
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
-
-                        <td class="x">
+                        <td>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
+                        </td>
+                        <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
@@ -130,7 +132,7 @@
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                                         <i class="pencil icon"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="ui icon negative button js-open-confirm-modal"
+                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
