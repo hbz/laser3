@@ -56,8 +56,8 @@ class LicenseInstCfg extends BaseConfig {
                                      ],
                                      'license-x-property' : [
                                              detailsTemplate    : 'license',
-                                             chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'base', 'x.properties' ]
+                                             chartTemplate      : '2axis3values',
+                                             chartLabels        : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                      ],
                                      'license-x-annual' : [
                                              detailsTemplate    : 'license',

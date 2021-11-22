@@ -196,11 +196,11 @@ class LaserReportingTagLib {
             }
             if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
-                tmp.icons.add( '<i class="icon eye slash alternate la-light-grey"></i>' )
+                tmp.icons.add( '<i class="icon eye slash alternate yellow"></i>' )
             }
             if (tmp.icons) {
                 result = result + '&nbsp;&nbsp;&nbsp;'
-                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join('/') + '" data-position="top right">'
+                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
                 result = result + tmp.icons.join('')
                 result = result + '</span>'
             }

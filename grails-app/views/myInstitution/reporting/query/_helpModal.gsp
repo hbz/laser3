@@ -65,7 +65,7 @@
         <p>
             Lizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
             Lizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Lizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> gelistet. <br />
+            Lizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
         </p>
     </div>
 
@@ -81,7 +81,7 @@
         <p>
             Teilnehmerlizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
             Teilnehmerlizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Teilnehmerlizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> gelistet. <br />
+            Teilnehmerlizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
         </p>
     </div>
 
@@ -203,7 +203,7 @@
         <p>
             Verträge ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
             Verträge ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Verträge ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> gelistet. <br />
+            Verträge ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
         </p>
     </div>
 
@@ -297,7 +297,7 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Pakete ohne ausgewiesene Sprachen werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> zusammmen gefasst. <br />
+            Pakete ohne ausgewiesene Sprachen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
         </p>
     </div>
 
@@ -310,11 +310,11 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus der <strong>we:kb</strong> herangezogen und versucht auf Objekte in <strong>LAS:eR</strong> abzubilden.
+            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
         </p>
         <p>
-            Pakete ohne ausgewiesene Kuratorengruppen werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant können nicht untersucht werden und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Pakete ohne ausgewiesene Kuratorengruppen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
@@ -327,11 +327,11 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus der <strong>we:kb</strong> herangezogen und versucht auf Objekte in <strong>LAS:eR</strong> abzubilden.
+            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
         </p>
         <p>
-            Pakete ohne ausgewiesene Länder werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant können nicht untersucht werden und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Pakete ohne ausgewiesene Länder werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
@@ -344,11 +344,11 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus der <strong>we:kb</strong> herangezogen und versucht auf Objekte in <strong>LAS:eR</strong> abzubilden.
+            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
         </p>
         <p>
-            Pakete ohne ausgewiesene Regionen werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant können nicht untersucht werden und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Pakete ohne ausgewiesene Regionen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
