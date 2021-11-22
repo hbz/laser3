@@ -19,6 +19,8 @@ import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportL
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
@@ -109,8 +111,15 @@ abstract class BaseDetailsExport {
 
     Map<String, Object> getCurrentConfig(String key) {
 
-        if (key == LicenseExportGlobal.KEY) {
-
+        if (key == CostItemExportLocal.KEY) {
+            if (ctxConsortium()) {
+                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
+            }
+        }
+        else if (key == IssueEntitlementExportLocal.KEY) {
+            IssueEntitlementExportLocal.CONFIG_X
+        }
+        else if (key == LicenseExportGlobal.KEY) {
             if (ctxConsortium()) {
                 LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
             }
@@ -119,7 +128,6 @@ abstract class BaseDetailsExport {
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
-
             if (isGlobal(this)) {
                 OrgExportGlobal.CONFIG_X
             }
@@ -127,9 +135,14 @@ abstract class BaseDetailsExport {
                 OrgExportLocal.CONFIG_X
             }
         }
+        else if (key == PackageExport.KEY) {
+            PackageExport.CONFIG_X
+        }
+        else if (key == PlatformExport.KEY) {
+            PlatformExport.CONFIG_X
+        }
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
             if (isGlobal(this)) {
-
                 if (ctxConsortium()) {
                     SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
                 }
@@ -138,23 +151,12 @@ abstract class BaseDetailsExport {
                 }
             }
             else if (isLocal(this)) {
-
                 if (ctxConsortium()) {
                     SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
                 }
                 else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
-            }
-        }
-        else if (key == IssueEntitlementExportLocal.KEY) {
-
-            IssueEntitlementExportLocal.CONFIG_X
-        }
-        else if (key == CostItemExportLocal.KEY) {
-
-            if (ctxConsortium()) {
-                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
             }
         }
     }

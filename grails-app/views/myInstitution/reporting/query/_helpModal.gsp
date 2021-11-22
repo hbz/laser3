@@ -34,7 +34,8 @@
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Lizenzen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Lizenzen <br />
+            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Lizenzen <br />
+            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Lizenzen <br />
         </p>
     </div>
 
@@ -49,7 +50,8 @@
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Teilnehmerlizenzen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Teilnehmerlizenzen <br />
+            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Teilnehmerlizenzen <br />
+            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Teilnehmerlizenzen <br />
         </p>
     </div>
 
@@ -187,7 +189,8 @@
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Verträge mit Merkmal X, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Verträge <br />
+            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Verträge <br />
+            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Verträge <br />
         </p>
     </div>
 
@@ -238,7 +241,8 @@
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Organisationen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Organisationen <br />
+            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Organisationen <br />
+            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Organisationen <br />
         </p>
     </div>
 
@@ -368,7 +372,8 @@
         <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Plattform mit Merkmal X, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Merkmale X für die betrachteten Plattformen <br />
+            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Plattformen <br />
+            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Plattformen <br />
         </p>
     </div>
 
