@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4003    18.11.2021  rc-2.2  2.2.5       Mor     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
+4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
+4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
 
 4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
 
