@@ -20,6 +20,10 @@ class AccessPointService {
         accessPointData.delete()
     }
 
+    /**
+     * Links the given platform to the given access point if no link exists between them
+     * @return an empty {@link Map} in case of success; an error message otherwise
+     */
     Map<String,Object> linkPlatform(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         OrgAccessPoint accessPoint = OrgAccessPoint.get(params.accessPointId)
@@ -40,6 +44,10 @@ class AccessPointService {
         result
     }
 
+    /**
+     * Deactivates the given access point link
+     * @result error if a such occurs
+     */
     Map<String,Object> unlinkPlatform(OrgAccessPointLink aoplInstance) {
         Map<String,Object> result = [:]
         aoplInstance.active = false
