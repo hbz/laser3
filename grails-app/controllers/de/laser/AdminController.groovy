@@ -44,6 +44,11 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 
+/**
+ * This controller contains methods which are at least ROLE_ADMIN secured. Those are among the
+ * dangerous calls the less dangerous ones. The really dangerous methods are located in the
+ * {@link YodaController}; those are bulk operations which are - once done - irreversible
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
@@ -69,10 +74,21 @@ class AdminController  {
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
+    /**
+     * Empty call, loads empty admin dashboard
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def index() { }
 
+    /**
+     * This method manages system-wide announcements. Those are made if system-relevant messages need to be transmit to every
+     * registered account like maintenance shutdowns or general announcements are being made which may concern every account, too,
+     * like training course availabilities or new releases of the software. Those messages can be sent via mail as well and it is
+     * possible to retire a message from publishing; if a system announcement is being published, it will be displayed on the landing
+     * page of the webapp
+     * @return a view containing the all system announcements
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def systemAnnouncements() {
@@ -122,6 +138,10 @@ class AdminController  {
         result
     }
 
+    /**
+     * This controller processes data and creates a new system announcement; if an ID is being provided,
+     * a record matching the ID will be retrieved and if successful, the data is being updated
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def createSystemAnnouncement() {
@@ -155,6 +175,9 @@ class AdminController  {
         redirect(action: 'systemAnnouncements')
     }
 
+    /**
+     * Enumerates the types and counts of deleted objects in the system
+     */
     @Secured(['ROLE_ADMIN'])
     def manageDeletedObjects() {
         Map<String, Object> result = [:]
@@ -191,12 +214,17 @@ class AdminController  {
         result
     }
 
+    /**
+     * Lists the differences in the implementation among the servers. The differences are written in the Groovy
+     * server page directly
+     */
     @Secured(['ROLE_ADMIN'])
     def serverDifferences() {
       Map<String, Object> result = [:]
       result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def hardDeletePkgs(){
         Map<String, Object> result = [:]
@@ -264,6 +292,7 @@ class AdminController  {
         result
     }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def performPackageDelete(){
    if (request.method == 'POST'){
@@ -295,6 +324,7 @@ class AdminController  {
 
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def userMerge(){
@@ -369,6 +399,7 @@ class AdminController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
@@ -412,6 +443,9 @@ class AdminController  {
     return true
   }
 
+    /**
+     * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
+     */
     @Secured(['ROLE_ADMIN'])
     def manageWorkflows() {
         Map<String, Object> result = [:]
@@ -444,6 +478,7 @@ class AdminController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
         Map<String, Object> result = [:]
@@ -477,6 +512,10 @@ class AdminController  {
         }
     }
 
+    /**
+     * Shows the last 200 recorded system events
+     * @see SystemEvent
+     */
     @Secured(['ROLE_ADMIN'])
     def systemEvents() {
         Map<String, Object> result = [:]
@@ -489,12 +528,16 @@ class AdminController  {
         result
     }
 
+    /**
+     * Cleanup method for titles, packages, platforms; currently out of order
+     */
     @Secured(['ROLE_YODA'])
     def dataCleanse() {
         // Sets nominal platform
         dataloadService.dataCleanse()
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
         if (ServerUtils.getCurrentServer() in [ServerUtils.SERVER_QA, ServerUtils.SERVER_LOCAL]) {
@@ -509,6 +552,7 @@ class AdminController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def manageContentItems() {
     Map<String, Object> result = [:]
@@ -518,6 +562,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Enumerates the database collations currently used in the tables
+     */
     @Secured(['ROLE_ADMIN'])
     def databaseCollations() {
         Map<String, Object> result = [:]
@@ -550,6 +597,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Delivers the counts of rows in the database tables
+     */
     @Secured(['ROLE_ADMIN'])
     def databaseStatistics() {
         Map<String, Object> result = [:]
@@ -561,6 +611,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Reveals duplicate objects, i.e. different objects named equally
+     */
     @Secured(['ROLE_ADMIN'])
     def dataConsistency() {
         Map<String, Object> result = [:]
@@ -596,6 +649,12 @@ class AdminController  {
         result
     }
 
+    /**
+     * Checks the state of the files in the data storage, namely if the files have a database record and if there
+     * are files matching the UUIDs from the database and if the database records are attached to an object
+     * @see Doc
+     * @see DocContext
+     */
     @Secured(['ROLE_ADMIN'])
     def fileConsistency() {
         Map<String, Object> result = [:]
@@ -689,6 +748,9 @@ class AdminController  {
         result
     }
 
+    /**
+     * Searches for a given document context if the file is missing and proposes an alternative based on database record matching
+     */
     @Secured(['ROLE_ADMIN'])
     def recoveryDoc() {
         Map<String, Object> result = [:]
@@ -730,6 +792,9 @@ class AdminController  {
 
     }
 
+    /**
+     * Restores the file by copying back a matched alternative
+     */
     @Secured(['ROLE_ADMIN'])
     def processRecoveryDoc() {
         Map<String, Object> result = [:]
@@ -770,6 +835,7 @@ class AdminController  {
 
     }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {
     Map<String, Object> result = [:]
@@ -790,6 +856,7 @@ class AdminController  {
         result
     }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def editContentItem() {
     Map<String, Object> result = [:]
@@ -820,12 +887,14 @@ class AdminController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def forceSendNotifications() {
         changeNotificationService.aggregateAndNotifyChanges()
         redirect(controller:'home')
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     Map<String,Object> listDuplicateTitles() {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -837,6 +906,7 @@ class AdminController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def executeTiCleanup() {
         log.debug("WARNING: bulk deletion of title entries triggered! Start nuking!")
@@ -860,6 +930,7 @@ class AdminController  {
         }
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def orgsExport() {
         Date now = new Date()
@@ -1275,6 +1346,7 @@ class AdminController  {
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def orgsImport() {
         File basicDataDir = new File(ConfigUtils.getDocumentStorageLocation() + "/basic_data_dumps/")
@@ -1298,6 +1370,9 @@ class AdminController  {
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
+    /**
+     * Lists all organisations (i.e. institutions, providers, agencies), their customer types, GASCO entry, legal information and API information
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageOrganisations() {
@@ -1381,6 +1456,11 @@ class AdminController  {
         result
     }
 
+    /**
+     * Lists the identifier namespaces along with their attributes and usages. If a such command is being passed, a new identifier namespace is being created with the given
+     * parameters. Note: identifier namespaces created by frontend do not persist database resets and are not present instance-wide. To hard-code identifier namespaces,
+     * use {@link BootStrapService#setIdentifierNamespace()} instead
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageNamespaces() {
@@ -1473,6 +1553,17 @@ SELECT * FROM (
         ]
     }
 
+    /**
+     * Lists all public property definitions in the system. If a command is being supplied, the following actions
+     * may be done:
+     * <ul>
+     *     <li>switch mandatory on/off</li>
+     *     <li>switch multiple occurrence on/off</li>
+     *     <li>delete a property definition</li>
+     *     <li>replace a property definition by another</li>
+     * </ul>
+     * @return
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def managePropertyDefinitions() {
@@ -1543,6 +1634,9 @@ SELECT * FROM (
         ]
     }
 
+    /**
+     * Copies a subscription property type into a survey property type
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def transferSubPropToSurProp() {
@@ -1572,6 +1666,7 @@ SELECT * FROM (
         redirect(action: 'managePropertyDefinitions')
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         Map<String, Object> result = [:]
@@ -1651,6 +1746,9 @@ SELECT * FROM (
         result
     }
 
+    /**
+     * Lists all reference data values, grouped by their categories
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageRefdatas() {
@@ -1728,6 +1826,7 @@ SELECT * FROM (
         ]
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def titleEnrichment() {
@@ -1831,6 +1930,10 @@ SELECT * FROM (
 
     }
 
+    /**
+     * Lists all system messages in the system
+     * @see SystemMessage
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def systemMessages() {
@@ -1857,6 +1960,10 @@ SELECT * FROM (
         result
     }
 
+    /**
+     * Deletes the given {@link SystemMessage}
+     * @param id the system message to delete
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def deleteSystemMessage(Long id) {
