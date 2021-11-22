@@ -1,10 +1,20 @@
 package de.laser
 
-
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This domain defines the general attributes of a survey and completes the {@link SurveyConfig} definition which in turn connects the survey to its target.
+ * Here, general attributes of the survey are being defined (survey information!) which are technically independent from the object being in the focus. This
+ * class holds also the information whether it is a subscription survey (this enables further, specific functionality) or if there is any kind of reply mandatory or
+ * if the renewal has been sent already. The survey information follows a generalistical approach; although not used in production for LAS:eR, it is possible to link
+ * multiple targets to the same survey (i.e. several subscriptions with the same survey information); each subscription is then connected by an independent {@link SurveyConfig}.
+ * The participants of a survey are tracked for each surveyed target individually; that is why the {@link SurveyOrg} connector class points from {@link SurveyConfig}
+ * to the participant institution (of {@link Org} type) and not from here
+ * @see SurveyConfig
+ * @see SurveyOrg
+ */
 class SurveyInfo {
 
     def contextService
@@ -65,9 +75,13 @@ class SurveyInfo {
         isRenewalSent column: 'surin_is_renewal_sent'
     }
 
-
-    boolean checkOpenSurvey()
-    {
+    /**
+     * Used in survey/_actions
+     * Checks if this survey is ready to be opened
+     * @return true if there are survey configs (i.e. objects in focus of this survey) and if in each configuration, there are survey properties (i.e. questions being asked) (unless it is a pick and choose title survey)
+     * and participants in the survey, false otherwise
+     */
+    boolean checkOpenSurvey() {
         boolean check = this.surveyConfigs.size() > 0 ? true : false
 
         this.surveyConfigs.each {
@@ -94,6 +108,7 @@ class SurveyInfo {
         return check
     }
 
+    @Deprecated
     def checkSurveyInfoFinishByOrg(Org org) {
         Map<String, Object> result = [:]
 
@@ -128,6 +143,11 @@ class SurveyInfo {
             return null
         }
     }
+
+    /**
+     * Checks edit permissions for this survey
+     * @return true if the user belongs to the institution which created (= owns) this survey and if it is at least an editor or general admin, false otherwise
+     */
     boolean isEditable() {
         if(accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg().id)
         {
@@ -137,6 +157,11 @@ class SurveyInfo {
         return false
     }
 
+    /**
+     * Checks if this survey has been completed
+     * @return true if the survey status is in one of {@link RDStore#SURVEY_SURVEY_COMPLETED}, {@link RDStore#SURVEY_IN_EVALUATION} or {@link RDStore#SURVEY_COMPLETED}
+     * and the viewing user belongs to the survey tenant institution, false otherwise
+     */
     boolean isCompletedforOwner() {
         if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg().id)
         {

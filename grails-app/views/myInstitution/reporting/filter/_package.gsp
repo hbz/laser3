@@ -3,6 +3,7 @@
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="package-filter-tab-1">${message(code:'package.plural')}</a>
+            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="package-filter-tab-1">
             <div class="field">
@@ -24,4 +25,11 @@
                 </div>
             </g:each>
 
+        </div><!-- .tab -->
+        <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
+            <div class="field">
+                <div style="text-align:center; padding:2em 0">
+                    <asset:image src="help/reporting.packages.png" absolute="true" style="width:96%" />
+                </div>
+            </div>
         </div><!-- .tab -->

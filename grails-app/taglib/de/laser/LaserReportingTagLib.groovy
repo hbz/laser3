@@ -1,9 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -171,6 +173,41 @@ class LaserReportingTagLib {
 
         //println '> reportFilterCustomImpl: ' + attrs.field
         out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+    }
+
+    def reportObjectProperties = { attrs, body ->
+
+        Long pdId = attrs.propDefId as Long
+        Org tenant = attrs.tenant as Org
+        List<AbstractPropertyWithCalculatedLastUpdated> properties = BaseDetails.getPropertiesGeneric(attrs.owner, pdId, tenant) as List<AbstractPropertyWithCalculatedLastUpdated>
+
+        List<String> props = properties.collect { prop ->
+            String result = ''
+            Map<String, List> tmp = [ tooltips:[], icons:[] ]
+            if (prop.getType().isRefdataValueType()) {
+                result += (prop.getRefValue() ? prop.getRefValue().getI10n('value') : '')
+            } else {
+                result += (prop.getValue() ?: '')
+            }
+
+            if (prop.type.tenant?.id == tenant.id) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
+                tmp.icons.add( '<i class="icon shield alternate la-light-grey"></i>' )
+            }
+            if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
+                tmp.icons.add( '<i class="icon eye slash alternate yellow"></i>' )
+            }
+            if (tmp.icons) {
+                result = result + '&nbsp;&nbsp;&nbsp;'
+                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
+                result = result + tmp.icons.join('')
+                result = result + '</span>'
+            }
+            result
+        }.sort().findAll() // removing empty and null values
+
+        out << props.join(' ,<br/>')
     }
 
     static String getUniqueId(String id) {

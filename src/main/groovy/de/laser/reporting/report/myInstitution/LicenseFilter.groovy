@@ -108,7 +108,7 @@ class LicenseFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

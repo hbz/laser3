@@ -71,7 +71,7 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${params.mode != 'advanced' && !showStatsFilter}">
+            <g:if test="${params.mode != 'advanced' && !showStatsFilter && actionName != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
                     <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
@@ -264,6 +264,9 @@
                                 ${metricType}
                             </option>
                         </g:each>
+                        <g:if test="${metricTypes.size() == 0}">
+                            <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
+                        </g:if>
                     </select>
                 </div>
 
@@ -277,6 +280,9 @@
                                 <g:message code="default.usage.${reportType}"/>
                             </option>
                         </g:each>
+                        <g:if test="${reportTypes.size() == 0}">
+                            <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
+                        </g:if>
                     </select>
                 </div>
             </div>

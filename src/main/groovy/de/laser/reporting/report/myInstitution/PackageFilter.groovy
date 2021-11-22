@@ -7,7 +7,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.report.EsIndexHelper
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -61,6 +61,7 @@ class PackageFilter extends BaseFilter {
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p)
+                String pEsData = BaseConfig.KEY_PACKAGE + '-' + p
 
                 def filterLabelValue
 
@@ -100,12 +101,12 @@ class PackageFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation != es_data
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if ( ! PackageXCfg.ES_DATA.contains( p )) {
-                        println ' ------------ not implemented ------------ '
+                    if ( ! PackageXCfg.ES_DATA.contains( pEsData )) {
+                        println ' --- ' + pType +' not implemented --- '
                     }
                 }
 
@@ -130,23 +131,26 @@ class PackageFilter extends BaseFilter {
         boolean esFilterUsed = false
 
         if (idList) {
-            Map<String, Object> esr = EsIndexHelper.getEsRecords( idList )
-            esRecords = esr.records as Map<String, Object>
-            orphanedIdList = esr.orphanedIds as List<Long>
-//            println idList.size()
-//            println esRecords.size()
-//            println orphanedIdList.size()
+            if (ElasticSearchHelper.isReachable()) {
+                Map<String, Object> esr = ElasticSearchHelper.getEsPackageRecords( idList )
+                esRecords = esr.records as Map<String, Object>
+                orphanedIdList = esr.orphanedIds as List<Long>
+            }
+            else {
+                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+            }
         }
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p)
+                String pEsData = BaseConfig.KEY_PACKAGE + '-' + p
 
                 String filterLabelValue
 
                 // --> es_data
-                if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL && PackageXCfg.ES_DATA.contains( p )) {
+                if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL && PackageXCfg.ES_DATA.contains( pEsData )) {
 
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
@@ -182,9 +186,9 @@ class PackageFilter extends BaseFilter {
         if (esFilterUsed) {
             idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
         }
-        filterResult.data.put('packageIdList', idList)
-        filterResult.data.put('packageESRecords', esRecords)
-        filterResult.data.put('packageOrphanedIdList', orphanedIdList)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'IdList', idList)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)
+        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'OrphanedIdList', orphanedIdList)
 
         filterResult
     }

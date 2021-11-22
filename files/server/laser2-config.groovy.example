@@ -55,6 +55,10 @@ pgDumpPath = '/usr/bin/pg_dump'
 
 quartzHeartbeat = 'Never'
 
+reporting.elasticSearch.url = 'http://localhost:9200'
+reporting.elasticSearch.indicies.packages = 'wekbpackages'
+reporting.elasticSearch.indicies.platforms = 'wekbplatforms'
+
 schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
 
 showDebugInfo = true

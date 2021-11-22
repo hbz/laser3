@@ -45,21 +45,13 @@ class PackageQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.PACKAGE_CONSISTENT, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['contentType']) {
+        else if ( suffix in ['contentType', 'file', 'packageStatus']) {
 
-            _processSimpleRefdataQuery(params.query, 'contentType', idList, result)
-        }
-        else if ( suffix in ['file']) {
-
-            _processSimpleRefdataQuery(params.query, 'file', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['openAccess']) {
 
             _processESRefdataQuery(params.query, RDConstants.LICENSE_OA_TYPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
-        }
-        else if ( suffix in ['packageStatus']) {
-
-            _processSimpleRefdataQuery(params.query, 'packageStatus', idList, result)
         }
         else if ( suffix in ['paymentType']) {
 
@@ -160,12 +152,10 @@ class PackageQuery extends BaseQuery {
                     ])
                 }
 
-                handleGenericNonMatchingData(
-                        params.query,
-                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null',
-                        idList,
-                        result
-                )
+                List<Long> noDataList = idList ? Package.executeQuery(
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null', [idList: idList]
+                ) : []
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-curatoryGroup']) {
 
@@ -189,7 +179,8 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.each {
                     Map<String, Object> cg = helper.get(it.key)
-                    List d = [Long.parseLong(cg.curatoryGroup.split(':')[1]), cg.name + ' (' + cg.type + ')', it.value.size()]
+                    String cgType = cg.type ? (RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: cg.type) : null
+                    List d = [Long.parseLong(cg.curatoryGroup.split(':')[1]), cg.name + ( cgType ? ' (' + cgType + ')' : '' ), it.value.size()]
                     result.data.add( d )
                     result.dataDetails.add([
                             query : params.query,
@@ -350,8 +341,6 @@ class PackageQuery extends BaseQuery {
             }
 
         }
-
-        println result.data
         result
     }
 

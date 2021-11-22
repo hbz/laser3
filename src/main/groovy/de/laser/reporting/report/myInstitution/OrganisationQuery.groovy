@@ -40,29 +40,9 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['libraryType']) {
+        else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
 
-            _processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
-        }
-        else if ( suffix in ['region']) {
-
-            _processSimpleRefdataQuery(params.query,'region', idList, result)
-        }
-        else if ( suffix in ['country']) {
-
-            _processSimpleRefdataQuery(params.query,'country', idList, result)
-        }
-        else if ( suffix in ['libraryNetwork']) {
-
-            _processSimpleRefdataQuery(params.query, 'libraryNetwork', idList, result)
-        }
-        else if ( suffix in ['funderType']) {
-
-            _processSimpleRefdataQuery(params.query, 'funderType', idList, result)
-        }
-        else if ( suffix in ['funderHskType']) {
-
-            _processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['orgType']) {
 

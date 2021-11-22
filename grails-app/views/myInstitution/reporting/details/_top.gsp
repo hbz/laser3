@@ -2,7 +2,7 @@
 <h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
 
 <div style="text-align: right">
-    %{-- TODO --}%<g:if test="${params.filter != 'package'}">%{-- TODO --}%
+    %{-- TODO --}%<g:if test="${! ['package', 'platform'].contains(params.filter)}">%{-- TODO --}%
         <button id="details-export-button la-modern-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
             <i class="ui icon download"></i>
         </button>

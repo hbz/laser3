@@ -127,7 +127,7 @@ class OrganisationControllerService {
         Locale locale = LocaleContextHolder.getLocale()
         CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
         Org owner = ci.owner
-        if (ci && owner.id == result.institution.id) {
+        if (ci) {
             ci.delete()
             log.debug("CustomerIdentifier deleted: ${params}")
             [result:result,status:STATUS_OK]
@@ -135,8 +135,6 @@ class OrganisationControllerService {
             if ( ! ci ) {
                 Object[] args = [messageSource.getMessage('org.customerIdentifier',null,locale), params.deleteCI]
                 result.error = messageSource.getMessage('default.not.found.message', args, locale)
-            } else {
-                result.error = messageSource.getMessage('org.customerIdentifier.delete.norights',null,locale)
             }
             log.error("CustomerIdentifier NOT deleted: ${params}; CustomerIdentifier not found or ContextOrg is not " +
                     "owner of this CustomerIdentifier and has no rights to delete it!")

@@ -32,17 +32,9 @@ class LicenseQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['licenseCategory']) {
+        else if ( suffix in ['licenseCategory', 'type', 'status']) {
 
-            _processSimpleRefdataQuery(params.query,'licenseCategory', idList, result)
-        }
-        else if ( suffix in ['type']) {
-
-            _processSimpleRefdataQuery(params.query,'type', idList, result)
-        }
-        else if ( suffix in ['status']) {
-
-            _processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['x']) {
 

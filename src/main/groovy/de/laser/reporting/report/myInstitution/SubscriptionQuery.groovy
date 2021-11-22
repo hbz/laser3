@@ -37,21 +37,9 @@ class SubscriptionQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['form']) {
+        else if ( suffix in ['form', 'kind', 'resource', 'status']) {
 
-            _processSimpleRefdataQuery(params.query,'form', idList, result)
-        }
-        else if ( suffix in ['kind']) {
-
-            _processSimpleRefdataQuery(params.query,'kind', idList, result)
-        }
-        else if ( suffix in ['resource']) {
-
-            _processSimpleRefdataQuery(params.query,'resource', idList, result)
-        }
-        else if ( suffix in ['status']) {
-
-            _processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['manualCancellationDate']) {
 

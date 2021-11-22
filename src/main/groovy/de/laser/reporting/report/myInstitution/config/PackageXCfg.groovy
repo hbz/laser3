@@ -5,15 +5,14 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 class PackageXCfg extends BaseConfig {
 
     static List<String> ES_DATA = [
-            'breakable',
-            'consistent',
-            'openAccess',
-            'paymentType',
-            'scope',
+            'package-breakable',
+            'package-consistent',
+            'package-openAccess',
+            'package-paymentType',
+            'package-scope',
             'package-x-curatoryGroup',
             'package-x-nationalRange',
             'package-x-regionalRange',
-            'package-x-language',
            // 'package-x-ddc'
     ]
 
@@ -48,14 +47,14 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'package' : [
-                                            'package-breakable',     // ES
-                                            'package-consistent',    // ES
                                             'package-contentType',
-                                            'package-file',
-                                            'package-openAccess',   // ES
                                             'package-packageStatus',
-                                            'package-paymentType',  // ES
-                                            'package-scope',        // ES
+                                            'package-file',
+                                            'package-breakable',        // ES
+                                            'package-paymentType',      // ES
+                                            'package-openAccess',       // ES
+                                            'package-consistent',       // ES
+                                            'package-scope',            // ES
                                             'package-*'
                                     ]
                             ]
@@ -82,17 +81,17 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-language' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-nationalRange' : [   // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
                                     'package-x-regionalRange' : [   // ES
-                                            detailsTemplate     : 'package',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ],
-                                    'package-x-language' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
