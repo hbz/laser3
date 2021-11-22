@@ -1,7 +1,44 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 <g:if test="${data && chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
-        dataset: { source: [] }
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        dataset: {
+            source: [
+                ['id', 'name', 'value1', 'value2', 'value3' ],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails) * -1}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value3', dataDetails)}]," } %>
+            ]
+        },
+        legend: JSPC.app.reporting.helper._pie.legend,
+        toolbox: JSPC.app.reporting.helper.toolbox,
+        tooltip: {
+            trigger: 'item',
+            formatter (params) {
+                var str = params.name
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', Math.abs(params.value[2]))
+                str += JSPC.app.reporting.helper.tooltip.getEntry(null, '${labels.chart[1]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(null, '${labels.chart[2]}', params.value[4])
+                return str
+           }
+        },
+        series: [
+            {
+                name: '${labels.chart[0]}',
+                type: 'pie',
+                radius: '70%',
+                center: ['60%', '45%'],
+                minAngle: 1,
+                minShowLabelAngle: 1,
+                encode: {
+                    itemName: 'name',
+                    value: 'value2',
+                    id: 'id'
+                },
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis
+            },
+        ]
     };
 </g:if>
 <g:elseif test="${data && chart == BaseConfig.CHART_BAR}">
