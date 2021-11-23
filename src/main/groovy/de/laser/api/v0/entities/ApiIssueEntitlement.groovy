@@ -5,6 +5,9 @@ import de.laser.Org
 import de.laser.api.v0.*
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link IssueEntitlement}, currently unused
+ */
 @Slf4j
 class ApiIssueEntitlement {
 

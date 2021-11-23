@@ -10,6 +10,9 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link Package}
+ */
 @Slf4j
 class ApiPkg {
 

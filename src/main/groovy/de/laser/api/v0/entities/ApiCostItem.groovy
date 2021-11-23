@@ -10,6 +10,9 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.sql.Timestamp
 
+/**
+ * An API representation of a {@link CostItem}
+ */
 class ApiCostItem {
 
     /**

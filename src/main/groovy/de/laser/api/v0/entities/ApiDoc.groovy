@@ -9,6 +9,9 @@ import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link Doc}
+ */
 @Slf4j
 class ApiDoc {
 

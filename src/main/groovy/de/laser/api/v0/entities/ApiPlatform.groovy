@@ -9,6 +9,9 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link Platform}
+ */
 @Slf4j
 class ApiPlatform {
 

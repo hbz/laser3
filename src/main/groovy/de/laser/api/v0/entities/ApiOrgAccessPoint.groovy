@@ -7,6 +7,9 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link OrgAccessPoint}
+ */
 class ApiOrgAccessPoint {
 
     /**
