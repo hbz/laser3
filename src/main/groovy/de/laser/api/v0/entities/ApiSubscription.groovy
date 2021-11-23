@@ -17,7 +17,11 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiSubscription {
 
     /**
-     * @return ApiBox(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * Locates the given {@link Subscription} and returns the object (or null if not found) and the request status for further processing
+	 * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+	 * @param the identifier value with namespace, if needed
+     * @return {@link ApiBox}(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findSubscriptionBy(String query, String value) {
 		ApiBox result = ApiBox.get()
@@ -46,7 +50,10 @@ class ApiSubscription {
     }
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given subscription
+	 * @param sub the {@link Subscription} to which access is being requested
+	 * @param context the institution ({@link Org}) requesting access
+	 * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(Subscription sub, Org context) {
 
@@ -69,6 +76,10 @@ class ApiSubscription {
     }
 
     /**
+	 * Checks if the given institution can access the given subscription.
+	 * The subscription is returned in case of success
+	 * @param sub the {@link Subscription} whose details should be retrieved
+	 * @param context the institution ({@link Org}) requesting the subscription
      * @return JSON | FORBIDDEN
      */
     static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool){
@@ -83,6 +94,11 @@ class ApiSubscription {
     }
 
     /**
+	 * Retrieves the list of subscriptions the requested institution has. Only those subscriptions appear in the result
+	 * list which have been marked as public for API. This can be enabled for each subscription individually by
+	 * setting the {@link Subscription#isPublicForApi} flag
+	 * @param owner the institution ({@link Org}) whose subscriptions should be requested
+	 * @param context the institution ({@link Org}) requesting
      * @return JSON
      */
     static JSON getSubscriptionList(Org owner, Org context){
@@ -108,6 +124,11 @@ class ApiSubscription {
     }
 
 	/**
+	 * Assembles the given subscription attributes into a {@link Map}. The schema of the map can be seen in schemas.gsp
+	 * @param subscription the {@link Subscription} which should be output
+	 * @param ignoreRelation currently unused
+	 * @param context the institution ({@link Org}) requesting
+	 * @param isInvoiceTool is the hbz invoice tool doing the request?
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool){

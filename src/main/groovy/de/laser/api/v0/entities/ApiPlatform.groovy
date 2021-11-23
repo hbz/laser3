@@ -13,7 +13,11 @@ import groovy.util.logging.Slf4j
 class ApiPlatform {
 
     /**
-     * @return ApiBox(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * Locates the given {@link de.laser.Platform} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the identifier value
+     * @return {@link ApiBox}(obj: Platform | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findPlatformBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -46,7 +50,9 @@ class ApiPlatform {
     }
 
     /**
-     *
+     * Retrieves a list of platforms recorded in the app.
+     * NOTE: if the app is connected to a we:kb/GOKb source, use the we:kb/GOKb source instead as the data in this app
+     * is mirrored and arrives only with delay!
      * @return JSON
      */
     static JSON getPlatformList() {
@@ -61,6 +67,9 @@ class ApiPlatform {
     }
 
     /**
+     * Retrieves details of the given platform for the requesting institution
+     * @param pform the {@link Platform} whose details should be retrieved
+     * @param context the institution ({@link Org})
      * @return JSON
      */
     static getPlatform(Platform pform, Org context) {
