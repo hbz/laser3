@@ -1,5 +1,5 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
-<g:set var="esData" value="${BaseConfig.getCurrentEsData(cfgKey) ?: []}" />
+<g:set var="esData" value="${BaseConfig.getCurrentEsDataKeys(cfgKey) ?: []}" />
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">

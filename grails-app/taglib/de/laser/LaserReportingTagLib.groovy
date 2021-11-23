@@ -53,14 +53,17 @@ class LaserReportingTagLib {
         if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
             out << laser.reportFilterCustomImpl(config: attrs.config, field: attrs.field, key: attrs.key)
+        }
+        else if (fieldType == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
+            out << laser.reportFilterElasticSearch(config: attrs.config, field: attrs.field, key: attrs.key)
         }
     }
 
@@ -139,6 +142,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
+        // TODO
         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
@@ -170,9 +174,13 @@ class LaserReportingTagLib {
     }
 
     def reportFilterCustomImpl = { attrs, body ->
-
         //println '> reportFilterCustomImpl: ' + attrs.field
         out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+    }
+
+    def reportFilterElasticSearch = { attrs, body ->
+        //println '> reportFilterElasticSearch: ' + attrs.field
+        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key) // TODO
     }
 
     def reportObjectProperties = { attrs, body ->

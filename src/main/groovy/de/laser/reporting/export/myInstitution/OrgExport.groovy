@@ -21,6 +21,7 @@ import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -29,7 +30,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class OrgExport extends BaseDetailsExport {
 
-    static String KEY = 'organisation'
+    static String KEY = BaseConfig.KEY_ORGANISATION
 
     static Map<String, Object> CONFIG_X = [
 
@@ -306,6 +307,9 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( oapList.join( CSV_VALUE_SEPARATOR ) )
                 }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -315,6 +319,9 @@ class OrgExport extends BaseDetailsExport {
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
+                }
+                else {
+                    content.add( '- not implemented -' )
                 }
             }
             else {

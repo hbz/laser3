@@ -101,22 +101,19 @@ class PlatformFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' --- ' + pType +' not implemented --- '
                 }
-                // --> custom filter implementation != es_data
+                // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if ( ! PlatformXCfg.ES_DATA.contains( pEsData )) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
+                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, params.long(key) )
 
-                        if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
-                            whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
-                            queryParams.put( 'p' + pCount, params.long(key) )
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
+                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, params.long(key) )
 
-                            filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                        }
-                        else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
-                            whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
-                            queryParams.put( 'p' + pCount, params.long(key) )
-
-                            filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                        }
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                 }
 
@@ -147,6 +144,35 @@ class PlatformFilter extends BaseFilter {
             }
             else {
                 filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+            }
+        }
+
+        getCurrentFilterKeys(params, cmbKey).each { key ->
+            if (params.get(key)) {
+                String p = key.replaceFirst(cmbKey,'')
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
+                String pEsData = BaseConfig.KEY_PLATFORM + '-' + p
+
+                String filterLabelValue
+
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.containsKey( pEsData )) {
+                    RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                    if (p in [
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED ]) {
+
+                        esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
+                        filterLabelValue = rdv.getI10n('value')
+                    }
+                }
+
+                if (filterLabelValue) {
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p), value: filterLabelValue])
+                    esFilterUsed = true
+                }
             }
         }
 

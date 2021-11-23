@@ -7,13 +7,14 @@ import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class SubscriptionExport extends BaseDetailsExport {
 
-    static String KEY = 'subscription'
+    static String KEY = BaseConfig.KEY_SUBSCRIPTION
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
@@ -148,6 +149,9 @@ class SubscriptionExport extends BaseDetailsExport {
                     )[0]
                     content.add( members )
                 }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -163,6 +167,9 @@ class SubscriptionExport extends BaseDetailsExport {
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
+                }
+                else {
+                    content.add( '- not implemented -' )
                 }
             }
             else {
