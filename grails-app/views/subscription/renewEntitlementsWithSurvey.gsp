@@ -270,7 +270,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    <g:if test="${params.tab != 'allIEsStats'}">
+
         JSPC.app.selectAll = function () {
             $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
             $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
@@ -311,7 +311,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     $("#select-all").change(function() {
         JSPC.app.selectAll();
     });
-    </g:if>
+
 
 
     $(".bulkcheck").change(function() {
@@ -321,9 +321,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
             }
-    <g:if test="${params.tab != 'allIEsStats'}">
         JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
-    </g:if>
     });
 
 </laser:script>

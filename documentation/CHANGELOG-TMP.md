@@ -12,7 +12,11 @@
 
 4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
 
+4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
 3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
+
+4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
 
 4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
 

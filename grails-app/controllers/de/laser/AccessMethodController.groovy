@@ -8,6 +8,10 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller is responsible for access method manipulations. See the domain definition for the use of a platform access method
+ * @see PlatformAccessMethod
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessMethodController  {
 
@@ -15,6 +19,9 @@ class AccessMethodController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
 
+    /**
+     * Creates a new platform access method with the given parameters and redirects to the list after having created it
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def create() {
@@ -58,7 +65,10 @@ class AccessMethodController  {
         
         //[personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
-    
+
+    /**
+     * Deletes the given platform access method
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def delete() {
@@ -80,7 +90,9 @@ class AccessMethodController  {
         }
     }
 
-
+    /**
+     * Opens the edit view and loads the given platform access method for editing
+     */
     @Secured(['ROLE_USER'])
     def edit() {
         PlatformAccessMethod accessMethod= PlatformAccessMethod.get(params.id)
@@ -90,6 +102,10 @@ class AccessMethodController  {
 
     }
 
+    /**
+     * Updates the given platform access method with the given parameters
+     * @return renders the access method list on success, the platform access method edit view upon failure
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def update() {

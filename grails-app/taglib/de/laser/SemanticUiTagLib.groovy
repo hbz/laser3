@@ -458,7 +458,7 @@ class SemanticUiTagLib {
         String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
-        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out << '<div role="dialog" class="ui large modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out << '<div class="header">' + title + '</div>'
 
         if (attrs.contentClass) {
