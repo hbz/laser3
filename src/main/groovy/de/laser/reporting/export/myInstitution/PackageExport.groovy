@@ -136,7 +136,7 @@ class PackageExport extends BaseDetailsExport {
 
                     String value = record?.get( key )
                     if (value) {
-                        String rdc = PackageXCfg.ES_DATA.get( BaseConfig.KEY_PACKAGE + '-' + key )
+                        String rdc = PackageXCfg.ES_DATA.fields.get( BaseConfig.KEY_PACKAGE + '-' + key )?.rdc
                         RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
 
                         if (rdv) {

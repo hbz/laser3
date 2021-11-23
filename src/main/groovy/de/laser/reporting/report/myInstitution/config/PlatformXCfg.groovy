@@ -5,19 +5,23 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PlatformXCfg extends BaseConfig {
 
-    static Map<String, String> ES_DATA = [
-            'platform-ipAuthentication'             : RDConstants.IP_AUTHENTICATION,
-            'platform-shibbolethAuthentication'     : RDConstants.Y_N,
-            'platform-passwordAuthentication'       : RDConstants.Y_N,
-            'platform-proxySupported'               : RDConstants.Y_N,
-            'platform-counterCertified'             : RDConstants.Y_N,
-            'platform-counterR3Supported'           : RDConstants.Y_N,
-            'platform-counterR4Supported'           : RDConstants.Y_N,
-            'platform-counterR4SushiApiSupported'   : RDConstants.Y_N,
-            'platform-counterR5Supported'           : RDConstants.Y_N,
-            'platform-counterR5SushiApiSupported'   : RDConstants.Y_N,
-            'platform-statisticsFormat'             : RDConstants.PLATFORM_STATISTICS_FORMAT,
-            'platform-statisticsUpdate'             : RDConstants.PLATFORM_STATISTICS_FREQUENCY
+    static Map<String, Map> ES_DATA = [
+
+            fields : [
+                    'platform-ipAuthentication'             : [label: 'platform.auth.ip.supported',         rdc: RDConstants.IP_AUTHENTICATION],
+                    'platform-shibbolethAuthentication'     : [label: 'platform.auth.shibboleth.supported', rdc: RDConstants.Y_N],
+                    'platform-passwordAuthentication'       : [label: 'platform.auth.userPass.supported',   rdc: RDConstants.Y_N],
+                    'platform-proxySupported'               : [label: 'platform.auth.proxy.supported',      rdc: RDConstants.Y_N],
+                    'platform-counterCertified'             : [label: 'platform.stats.counter.certified',   rdc: RDConstants.Y_N],
+                    'platform-counterR3Supported'           : [label: 'platform.stats.counter.r3supported', rdc: RDConstants.Y_N],
+                    'platform-counterR4Supported'           : [label: 'platform.stats.counter.r4supported', rdc: RDConstants.Y_N],
+                    'platform-counterR5Supported'           : [label: 'platform.stats.counter.r5supported', rdc: RDConstants.Y_N],
+                    'platform-counterR4SushiApiSupported'   : [label: 'platform.stats.counter.r4sushi',     rdc: RDConstants.Y_N],
+                    'platform-counterR5SushiApiSupported'   : [label: 'platform.stats.counter.r5sushi',     rdc: RDConstants.Y_N],
+                    'platform-statisticsFormat'             : [label: 'platform.stats.format',              rdc: RDConstants.PLATFORM_STATISTICS_FORMAT],
+                    'platform-statisticsUpdate'             : [label: 'platform.stats.update',              rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY],
+            ],
+            flags : [:]
     ]
 
     static Map<String, Object> CONFIG = [

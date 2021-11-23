@@ -164,7 +164,7 @@ class PlatformExport extends BaseDetailsExport {
 
                     String value = record?.get( key )
                     if (value) {
-                        String rdc = PlatformXCfg.ES_DATA.get( BaseConfig.KEY_PLATFORM + '-' + key )
+                        String rdc = PlatformXCfg.ES_DATA.fields.get( BaseConfig.KEY_PLATFORM + '-' + key )?.rdc
                         RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
 
                         if (rdv) {
