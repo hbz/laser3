@@ -147,12 +147,16 @@ class PackageFilter extends BaseFilter {
 
                 String filterLabelValue
 
-                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PackageXCfg.ES_DATA.contains( pEsData )) {
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PackageXCfg.ES_DATA.containsKey( pEsData )) {
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                    if (p in [BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE, BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT, BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
-                              BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE, BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE
-                            ]) {
+                    if (p in [
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE ]) {
+
                         esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')
                     }

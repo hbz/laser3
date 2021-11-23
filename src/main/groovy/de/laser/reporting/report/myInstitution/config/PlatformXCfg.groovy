@@ -1,22 +1,23 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PlatformXCfg extends BaseConfig {
 
-    static List<String> ES_DATA = [
-            'platform-ipAuthentication',
-            'platform-shibbolethAuthentication',
-            'platform-passwordAuthentication',
-            'platform-proxySupported',
-            'platform-counterCertified',
-            'platform-counterR3Supported',
-            'platform-counterR4Supported',
-            'platform-counterR4SushiApiSupported',
-            'platform-counterR5Supported',
-            'platform-counterR5SushiApiSupported',
-            'platform-statisticsFormat',
-            'platform-statisticsUpdate'
+    static Map<String, String> ES_DATA = [
+            'platform-ipAuthentication'             : RDConstants.IP_AUTHENTICATION,
+            'platform-shibbolethAuthentication'     : RDConstants.Y_N,
+            'platform-passwordAuthentication'       : RDConstants.Y_N,
+            'platform-proxySupported'               : RDConstants.Y_N,
+            'platform-counterCertified'             : RDConstants.Y_N,
+            'platform-counterR3Supported'           : RDConstants.Y_N,
+            'platform-counterR4Supported'           : RDConstants.Y_N,
+            'platform-counterR4SushiApiSupported'   : RDConstants.Y_N,
+            'platform-counterR5Supported'           : RDConstants.Y_N,
+            'platform-counterR5SushiApiSupported'   : RDConstants.Y_N,
+            'platform-statisticsFormat'             : RDConstants.PLATFORM_STATISTICS_FORMAT,
+            'platform-statisticsUpdate'             : RDConstants.PLATFORM_STATISTICS_FREQUENCY
     ]
 
     static Map<String, Object> CONFIG = [
@@ -65,8 +66,8 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-counterCertified',            // ES
                                             'platform-counterR3Supported',          // ES
                                             'platform-counterR4Supported',          // ES
-                                            'platform-counterR4SushiApiSupported',  // ES
                                             'platform-counterR5Supported',          // ES
+                                            'platform-counterR4SushiApiSupported',  // ES
                                             'platform-counterR5SushiApiSupported',  // ES
                                             'platform-*'
                                     ]

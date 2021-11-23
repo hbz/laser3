@@ -3,10 +3,12 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Package
+import de.laser.RefdataValue
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -27,6 +29,12 @@ class PackageExport extends BaseDetailsExport {
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
                                     'packageStatus'         : FIELD_TYPE_REFDATA,
+                                    'scope'             : FIELD_TYPE_ELASTICSEARCH,
+                                    'consistent'        : FIELD_TYPE_ELASTICSEARCH,
+                                    'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
+                                    'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
+                                    'breakable'         : FIELD_TYPE_ELASTICSEARCH,
+
                             ]
                     ]
             ]
@@ -116,7 +124,34 @@ class PackageExport extends BaseDetailsExport {
             }
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
-                content.add( '- not implemented -' )
+
+                if (key in [
+                        BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE,
+                        BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT,
+                        BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
+                        BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE,
+                        BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE
+                ]) {
+                    Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.packageESRecords.get(obj.id.toString())
+
+                    String value = record?.get( key )
+                    if (value) {
+                        String rdc = PackageXCfg.ES_DATA.get( BaseConfig.KEY_PACKAGE + '-' + key )
+                        RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
+
+                        if (rdv) {
+                            content.add(rdv.getI10n('value'))
+                        } else {
+                            content.add( '(' + value + ')' )
+                        }
+                    }
+                    else {
+                        content.add( '' )
+                    }
+                }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             else {
                 content.add( '- not implemented -' )

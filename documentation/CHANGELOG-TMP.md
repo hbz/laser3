@@ -6,6 +6,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
+
+4005    23.11.2021  dev     2.3         David   Feature     Reporting: Plattform-Export
+
 4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
 
 3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten

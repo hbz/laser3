@@ -73,6 +73,15 @@ class BaseConfig {
     static String ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION     = 'passwordAuthentication'
     static String ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED             = 'proxySupported'
 
+    static String ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT           = 'statisticsFormat'
+    static String ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE           = 'statisticsUpdate'
+    static String ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED           = 'counterCertified'
+    static String ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED         = 'counterR3Supported'
+    static String ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED         = 'counterR4Supported'
+    static String ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED         = 'counterR5Supported'
+    static String ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED   = 'counterR4SushiApiSupported'
+    static String ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED   = 'counterR5SushiApiSupported'
+
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM // 'costItem'
     ]
@@ -143,12 +152,12 @@ class BaseConfig {
         }
     }
 
-    static List<String> getCurrentEsData(String key) {
+    static Set<String> getCurrentEsDataKeys(String key) {
         if (key == KEY_PACKAGE) {
-            return PackageXCfg.ES_DATA
+            return PackageXCfg.ES_DATA.keySet()
         }
         else if (key == KEY_PLATFORM) {
-            return PlatformXCfg.ES_DATA
+            return PlatformXCfg.ES_DATA.keySet()
         }
     }
 
@@ -292,61 +301,111 @@ class BaseConfig {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         MessageSource messageSource = mainContext.getBean('messageSource')
 
+        String pkgRdc = PackageXCfg.ES_DATA.get(KEY_PACKAGE + '-' + key)
+        String pltRdc = PlatformXCfg.ES_DATA.get(KEY_PLATFORM + '-' + key)
+
         Locale locale = LocaleContextHolder.getLocale()
 
         if (key == ELASTICSEARCH_KEY_PKG_BREAKABLE) {
             return [
                     label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_BREAKABLE )
+                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PKG_CONSISTENT) {
             return [
                     label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_CONSISTENT )
+                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PKG_OPENACCESS) {
             return [
                     label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.LICENSE_OA_TYPE )
+                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PKG_PAYMENTTYPE) {
             return [
                     label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PAYMENT_TYPE )
+                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PKG_SCOPE) {
             return [
-
                     label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( RDConstants.PACKAGE_SCOPE )
+                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.ip.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.shibboleth.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION) {
             return [
                     label: messageSource.getMessage('platform.auth.userPass.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
             ]
         }
         else if (key == ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED) {
             return [
                     label: messageSource.getMessage('platform.auth.proxy.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT) {
+            return [
+                    label: messageSource.getMessage('platform.stats.format', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE) {
+            return [
+                    label: messageSource.getMessage('platform.stats.update', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.certified', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.r3supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.r4supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.r5supported', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.r4sushi', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+            ]
+        }
+        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED) {
+            return [
+                    label: messageSource.getMessage('platform.stats.counter.r5sushi', null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltRdc )
             ]
         }
     }

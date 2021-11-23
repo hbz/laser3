@@ -3,10 +3,13 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Platform
+import de.laser.RefdataValue
+import de.laser.helper.RDConstants
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -24,15 +27,14 @@ class PlatformExport extends BaseDetailsExport {
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
+                                    'org'                   : FIELD_TYPE_CUSTOM_IMPL,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
                                     'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'status'                : FIELD_TYPE_REFDATA,
-                                    'org'                   : FIELD_TYPE_CUSTOM_IMPL,
                                     'ipAuthentication'             : FIELD_TYPE_ELASTICSEARCH,
                                     'shibbolethAuthentication'     : FIELD_TYPE_ELASTICSEARCH,
                                     'passwordAuthentication'       : FIELD_TYPE_ELASTICSEARCH,
                                     'proxySupported'               : FIELD_TYPE_ELASTICSEARCH,
-                                    /*
                                     'statisticsFormat'             : FIELD_TYPE_ELASTICSEARCH,
                                     'statisticsUpdate'             : FIELD_TYPE_ELASTICSEARCH,
                                     'counterCertified'             : FIELD_TYPE_ELASTICSEARCH,
@@ -41,7 +43,6 @@ class PlatformExport extends BaseDetailsExport {
                                     'counterR4SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
                                     'counterR5Supported'           : FIELD_TYPE_ELASTICSEARCH,
                                     'counterR5SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
-                                     */
                             ]
                     ]
             ]
@@ -144,7 +145,41 @@ class PlatformExport extends BaseDetailsExport {
             }
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
-                content.add( '- not implemented -' )
+
+                if (key in [
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED,
+                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED
+                ]) {
+                    Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.platformESRecords.get(obj.id.toString())
+
+                    String value = record?.get( key )
+                    if (value) {
+                        String rdc = PlatformXCfg.ES_DATA.get( BaseConfig.KEY_PLATFORM + '-' + key )
+                        RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
+
+                        if (rdv) {
+                            content.add(rdv.getI10n('value'))
+                        } else {
+                            content.add( '(' + value + ')' )
+                        }
+                    }
+                    else {
+                        content.add( '' )
+                    }
+                }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             else {
                 content.add( '- not implemented -' )

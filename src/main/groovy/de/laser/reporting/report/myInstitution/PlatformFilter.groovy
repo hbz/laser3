@@ -155,11 +155,14 @@ class PlatformFilter extends BaseFilter {
 
                 String filterLabelValue
 
-                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.contains( pEsData )) {
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.containsKey( pEsData )) {
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                    if (p in [BaseConfig.ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION, BaseConfig.ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
-                              BaseConfig.ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION, BaseConfig.ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED ]) {
+                    if (p in [
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION,
+                            BaseConfig.ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED ]) {
 
                         esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')

@@ -1,18 +1,19 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PackageXCfg extends BaseConfig {
 
-    static List<String> ES_DATA = [
-            'package-breakable',
-            'package-consistent',
-            'package-openAccess',
-            'package-paymentType',
-            'package-scope',
-            'package-x-curatoryGroup',
-            'package-x-nationalRange',
-            'package-x-regionalRange',
+    static Map<String, String> ES_DATA = [
+            'package-breakable'         : RDConstants.PACKAGE_BREAKABLE,
+            'package-consistent'        : RDConstants.PACKAGE_CONSISTENT,
+            'package-openAccess'        : RDConstants.LICENSE_OA_TYPE,
+            'package-paymentType'       : RDConstants.PAYMENT_TYPE,
+            'package-scope'             : RDConstants.PACKAGE_SCOPE,
+            'package-x-curatoryGroup'   : null,
+            'package-x-nationalRange'   : null,
+            'package-x-regionalRange'   : null,
            // 'package-x-ddc'
     ]
 
