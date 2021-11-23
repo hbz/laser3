@@ -1,18 +1,19 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PackageXCfg extends BaseConfig {
 
-    static List<String> ES_DATA = [
-            'package-breakable',
-            'package-consistent',
-            'package-openAccess',
-            'package-paymentType',
-            'package-scope',
-            'package-x-curatoryGroup',
-            'package-x-nationalRange',
-            'package-x-regionalRange',
+    static Map<String, String> ES_DATA = [
+            'package-breakable'         : RDConstants.PACKAGE_BREAKABLE,
+            'package-consistent'        : RDConstants.PACKAGE_CONSISTENT,
+            'package-openAccess'        : RDConstants.LICENSE_OA_TYPE,
+            'package-paymentType'       : RDConstants.PAYMENT_TYPE,
+            'package-scope'             : RDConstants.PACKAGE_SCOPE,
+            'package-x-curatoryGroup'   : null,
+            'package-x-nationalRange'   : null,
+            'package-x-regionalRange'   : null,
            // 'package-x-ddc'
     ]
 
@@ -28,14 +29,14 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : FIELD_TYPE_CUSTOM_IMPL, // ES
-                            'consistent'        : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'breakable'         : FIELD_TYPE_ELASTICSEARCH,
+                            'consistent'        : FIELD_TYPE_ELASTICSEARCH,
                             'contentType'       : FIELD_TYPE_REFDATA,
                             'file'              : FIELD_TYPE_REFDATA,
-                            'openAccess'        : FIELD_TYPE_CUSTOM_IMPL, // ES
+                            'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
                             'packageStatus'     : FIELD_TYPE_REFDATA,
-                            'paymentType'       : FIELD_TYPE_CUSTOM_IMPL, // ES
-                            'scope'             : FIELD_TYPE_CUSTOM_IMPL  // ES
+                            'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
+                            'scope'             : FIELD_TYPE_ELASTICSEARCH
                     ],
                     filter : [
                             default: [

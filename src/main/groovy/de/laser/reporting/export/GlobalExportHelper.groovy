@@ -4,6 +4,8 @@ import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -24,6 +26,12 @@ class GlobalExportHelper extends BaseExportHelper {
         }
         else if (tmpl == OrgExport.KEY) {
             return new OrgExport( token, selectedFields )
+        }
+        else if (tmpl == PackageExport.KEY) {
+            return new PackageExport( token, selectedFields )
+        }
+        else if (tmpl == PlatformExport.KEY) {
+            return new PlatformExport( token, selectedFields )
         }
         else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )

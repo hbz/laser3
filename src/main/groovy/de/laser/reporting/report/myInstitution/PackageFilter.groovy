@@ -103,11 +103,9 @@ class PackageFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' --- ' + pType +' not implemented --- '
                 }
-                // --> custom filter implementation != es_data
+                // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if ( ! PackageXCfg.ES_DATA.contains( pEsData )) {
-                        println ' --- ' + pType +' not implemented --- '
-                    }
+                    println ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {
@@ -149,29 +147,17 @@ class PackageFilter extends BaseFilter {
 
                 String filterLabelValue
 
-                // --> es_data
-                if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL && PackageXCfg.ES_DATA.contains( pEsData )) {
-
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PackageXCfg.ES_DATA.containsKey( pEsData )) {
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_BREAKABLE) {
-                        esRecords = esRecords.findAll{ it.value.breakable == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_CONSISTENT) {
-                        esRecords = esRecords.findAll{ it.value.consistent == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_OPENACCESS) {
-                        esRecords = esRecords.findAll{ it.value.openAccess == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PAYMENTTYPE) {
-                        esRecords = esRecords.findAll{ it.value.paymentType == rdv.value }
-                        filterLabelValue = rdv.getI10n('value')
-                    }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_SCOPE) {
-                        esRecords = esRecords.findAll{ it.value.scope == rdv.value }
+                    if (p in [
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE,
+                            BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE ]) {
+
+                        esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')
                     }
                 }

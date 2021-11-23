@@ -7,6 +7,7 @@ import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -14,7 +15,7 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class LicenseExport extends BaseDetailsExport {
 
-    static String KEY = 'license'
+    static String KEY = BaseConfig.KEY_LICENSE
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
@@ -160,6 +161,9 @@ class LicenseExport extends BaseDetailsExport {
 
                     content.add( counts )
                 }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -169,6 +173,9 @@ class LicenseExport extends BaseDetailsExport {
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
+                }
+                else {
+                    content.add( '- not implemented -' )
                 }
             }
             else {
