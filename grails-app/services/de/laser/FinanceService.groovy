@@ -1573,6 +1573,10 @@ class FinanceService {
 
     //------------------------------------------- cost element section -------------------------------------------
 
+    /**
+     * Creates a new {@link CostItemElementConfiguration} with the given parameter map
+     * @param params the parameter map with the attributes of the new configuration
+     */
     void processConfigurationCreation(GrailsParameterMap params) {
         CostItemElementConfiguration ciec = new CostItemElementConfiguration()
         ciec.costItemElement = genericOIDService.resolveOID(params.cie)
@@ -1586,6 +1590,10 @@ class FinanceService {
         else ciec.save()
     }
 
+    /**
+     * Deletes the given {@link CostItemElementConfiguration}
+     * @param ciec the cost item element configuration to delete
+     */
     void deleteCostConfiguration(CostItemElementConfiguration ciec) {
         ciec.delete()
     }
