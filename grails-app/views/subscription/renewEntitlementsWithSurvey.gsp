@@ -137,6 +137,78 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </semui:form>
 </g:if>
 
+<g:if test="${selectProcess}">
+    <div class="ui positive message">
+        <i class="close icon"></i>
+
+        <div class="header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/></div>
+
+        <p>
+            <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
+                       args="[selectProcess.processCount, countAllIEs, selectProcess.countSelectIEs]"/>
+        </p>
+    </div>
+</g:if>
+
+
+<g:if test="${params.tab == 'allIEs' && editable}">
+
+    <semui:form>
+        <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
+                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']}"
+                method="post" enctype="multipart/form-data">
+
+            <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
+                <i class="question circle icon"></i>
+            </span></h4>
+
+            <div class="three fields">
+                <div class="field">
+                    ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info')}
+                    <g:link class="item" action="renewEntitlementsWithSurvey"
+                            id="${newSub.id}"
+                            params="${[surveyConfigID: surveyConfig.id,
+                                       exportForImport   : true,
+                                       tab           : 'allIEs']}">
+                        ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info2')}
+                    </g:link> ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info3')}
+                </div>
+
+                <div class="field">
+                    <div class="ui fluid action input">
+                        <input type="text" readonly="readonly"
+                               placeholder="${message(code: 'template.addDocument.selectFile')}">
+                        <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
+                               style="display: none;">
+
+                        <div class="ui icon button">
+                            <i class="attach icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <input type="submit"
+                           value="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadButton')}"
+                           class="fluid ui button"/>
+                </div>
+            </div>
+        </g:form>
+
+        <laser:script file="${this.getGroovyPageFileName()}">
+            $('.action .icon.button').click(function () {
+                $(this).parent('.action').find('input:file').click();
+            });
+
+            $('input:file', '.ui.action.input').on('change', function (e) {
+                var name = e.target.files[0].name;
+                $('input:text', $(e.target).parent()).val(name);
+            });
+        </laser:script>
+    </semui:form>
+</g:if>
+
 
 <div class="row">
     <div class="column">
