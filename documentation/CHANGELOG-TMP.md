@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
+
 1111    24.11.2021  dev     2.3         Andreas Feature     interne Dokumentation der LAS:eR-API
 
 4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
