@@ -19,6 +19,7 @@ import de.laser.helper.Constants
 import de.laser.helper.RDConstants
 import groovy.util.logging.Slf4j
 
+@Deprecated
 @Slf4j
 class ApiWriterHelper {
 

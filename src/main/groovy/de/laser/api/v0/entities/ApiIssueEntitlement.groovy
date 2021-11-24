@@ -5,6 +5,9 @@ import de.laser.Org
 import de.laser.api.v0.*
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link IssueEntitlement}, currently unused
+ */
 @Slf4j
 class ApiIssueEntitlement {
 
@@ -61,6 +64,10 @@ class ApiIssueEntitlement {
 //    }
 
     /**
+     * Assembles the given issue entitlement attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param ie the {@link IssueEntitlement} which should be output
+     * @param ignoreRelation should a relation the issue entitlement has being ignored and thus not output?
      * @return Map<String, Object>
      */
     static Map<String, Object> getIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {

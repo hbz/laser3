@@ -34,11 +34,11 @@ class ApiMapReader {
     }
 
     /**
+     * Assembles the given title details into a {@link Map}. The schema may be viewed in schemas.gsp.
      * Access rights due wrapping object. Some relations may be blocked
-     *
-     * @param de.laser.TitleInstancePackagePlatform tipp
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
+     * @param tipp the {@link TitleInstancePackagePlatform} subject of output
+     * @param ignoreRelation which relations should be blocked
+     * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
     static Map<String, Object> getTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {

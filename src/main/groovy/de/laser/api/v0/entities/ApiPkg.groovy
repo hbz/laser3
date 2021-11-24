@@ -10,11 +10,18 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link Package}
+ */
 @Slf4j
 class ApiPkg {
 
     /**
-     * @return ApiBox(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * Locates the given {@link Package} and returns the object (or null if not found) and the request status for further processing
+	 * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+	 * @param the identifier value
+     * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findPackageBy(String query, String value) {
 		ApiBox result = ApiBox.get()
@@ -46,6 +53,9 @@ class ApiPkg {
     }
 
     /**
+	 * Retrieves the given {@link Package} for the given institution
+	 * @param pkg the {@link Package} to retrieve
+	 * @param context the institution ({@link Org}) requesting the record
      * @return JSON
      */
     static getPackage(Package pkg, Org context) {
@@ -57,6 +67,10 @@ class ApiPkg {
     }
 
 	/**
+	 * Assembles the given package attributes into a {@link Map}. The schema of the map can be seen in
+	 * schemas.gsp
+	 * @param pkg the {@link Package} which should be output
+	 * @param context the institution ({@link Org}) requesting
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> getPackageMap(Package pkg, Org context) {

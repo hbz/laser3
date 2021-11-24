@@ -9,11 +9,18 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of an {@link Org}
+ */
 @Slf4j
 class ApiOrg {
 
     /**
-     * @return ApiBox(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * Locates the given {@link Org} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the identifier value
+     * @return {@link ApiBox}(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findOrganisationBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -45,6 +52,11 @@ class ApiOrg {
     }
 
     /**
+     * Checks if the given institution can access the given target organisation. The organisation
+     * is returned in case of success
+     * @param org the {@link Org} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the organisation
+     * @param isInvoiceTool is the request done by the hbz invoice tool?
      * @return JSON | FORBIDDEN
      */
     static requestOrganisation(Org org, Org context, boolean isInvoiceTool) {
@@ -59,6 +71,10 @@ class ApiOrg {
     }
 
     /**
+     * Assembles the given organisation attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param org the {@link Org} which should be output
+     * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
     static Map<String, Object> getOrganisationMap(Org org, Org context) {
