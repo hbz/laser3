@@ -1866,10 +1866,10 @@ class SubscriptionService {
         //after having read off the header row, pop the first row
         rows.remove(0)
         //now, assemble the identifiers available to highlight
-        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
-                                                       eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
-                                                       issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn'),
-                                                       doi  : IdentifierNamespace.findByNs('doi')]
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
             ArrayList<String> cols = row.split('\t')
@@ -1987,6 +1987,88 @@ class SubscriptionService {
         println(countChangesPrice)*/
 
         return [issueEntitlements: entIds.size(), processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice]
+    }
+
+
+    Map issueEntitlementSelect(InputStream stream, Subscription subscription) {
+
+        Integer count = 0
+        Integer countSelectIEs = 0
+        Map<String, Object> selectedIEs = [:]
+
+        ArrayList<String> rows = stream.text.split('\n')
+        Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
+        //read off first line of KBART file
+        rows[0].split('\t').eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "zdb_id": colMap.zdbCol = c
+                    break
+                case "print_identifier": colMap.printIdentifierCol = c
+                    break
+                case "online_identifier": colMap.onlineIdentifierCol = c
+                    break
+                case "print identifier": colMap.printIdentifierCol = c
+                    break
+                case "online identifier": colMap.onlineIdentifierCol = c
+                    break
+                case "pick": colMap.pick = c
+                    break
+            }
+        }
+        //after having read off the header row, pop the first row
+        rows.remove(0)
+        //now, assemble the identifiers available to highlight
+        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                       doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
+        rows.eachWithIndex { row, int i ->
+            log.debug("now processing entitlement ${i}")
+            ArrayList<String> cols = row.split('\t')
+            Map<String, Object> idCandidate
+            if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+            }
+            else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+            }
+            else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+            }
+            else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
+            }
+            if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+            } else {
+
+                List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                if (titleIds.size() > 0) {
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :deleted', [titleIds: titleIds, subId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED])
+                    if (issueEntitlements.size() > 0) {
+                        IssueEntitlement issueEntitlement = issueEntitlements[0]
+                        count++
+
+                        colMap.each { String colName, int colNo ->
+                            if (colNo > -1 && cols[colNo]) {
+                                String cellEntry = cols[colNo].trim()
+                                    switch (colName) {
+                                        case "pick":
+                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry == RDStore.YN_YES.value_en.toLowerCase()) {
+                                                selectedIEs[issueEntitlement.id.toString()] = 'checked'
+                                                countSelectIEs++
+                                            }
+                                            break
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return [processCount: count, selectedIEs: selectedIEs, countSelectIEs: countSelectIEs]
     }
 
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
