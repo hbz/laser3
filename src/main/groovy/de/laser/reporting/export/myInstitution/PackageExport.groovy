@@ -1,5 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
+import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Package
@@ -25,6 +26,7 @@ class PackageExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
@@ -80,6 +82,21 @@ class PackageExport extends BaseDetailsExport {
 
                 if (key == 'globalUID') {
                     content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) as String )
+                }
+                else if (key == 'gokbId') {
+                    String prop = ''
+                    if (pkg.getProperty(key)) {
+                        Map<String, Object> fCache = GlobalExportHelper.getFilterCache(token)
+                        List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
+
+                        if (esRecordIdList.contains(pkg.id)) {
+                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            if (wekb?.baseUrl) {
+                                prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) as String
+                            }
+                        }
+                    }
+                    content.add( prop )
                 }
                 else {
                     content.add( getPropertyContent(pkg, key, Package.getDeclaredField(key).getType()))

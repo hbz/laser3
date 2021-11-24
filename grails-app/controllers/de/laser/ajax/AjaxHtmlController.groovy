@@ -648,7 +648,9 @@ class AjaxHtmlController {
                         export,
                         detailsCache.idList as List<Long>,
                         'xlsx',
-                        [hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'), insertNewLines: params.containsKey('insertNewLines-xlsx')]
+                        [   hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'),
+                            insertNewLines: params.containsKey('insertNewLines-xlsx'),
+                            useHyperlinks: params.containsKey('useHyperlinks-xlsx') ]
                 )
 
                 ServletOutputStream out = response.outputStream
@@ -657,11 +659,16 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
 
+                Map<String, Boolean> options = [
+                        hideEmptyResults: params.containsKey('hideEmptyResults-pdf'),
+                        useHyperlinks: params.containsKey('useHyperlinks-pdf')
+                ]
+
                 List<List<String>> content = DetailsExportManager.exportAsList(
                         export,
                         detailsCache.idList as List<Long>,
                         'pdf',
-                        [hideEmptyResults: params.containsKey('hideEmptyResults-pdf')]
+                        options
                 )
 
                 Map<String, Object> struct = [:]
@@ -679,7 +686,8 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            options     : options
                     ]
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
@@ -693,7 +701,8 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            options     : options
                     ]
                 }
 

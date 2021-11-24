@@ -87,6 +87,10 @@ class DetailsExportManager {
                 if (options.hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
+                if (options.useHyperlinks) {
+                    println 'DetailsExportManager------- options.useHyperlinks ---> TODO' // TODO
+                    println row
+                }
                 rows.add( row )
             }
         }
@@ -182,7 +186,7 @@ class DetailsExportManager {
                 Row entry = sheet.createRow(idx + 1)
                 int cellHeight = 1
                 row.eachWithIndex { val, i ->
-                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
+                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines, options.useHyperlinks)
                     cellHeight = h > cellHeight ? h : cellHeight
                 }
                 if (cellHeight > 1) {

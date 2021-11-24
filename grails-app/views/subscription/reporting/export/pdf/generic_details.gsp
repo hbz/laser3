@@ -35,7 +35,12 @@
                     <g:each in="${row}" var="cell" status="j">
                         <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
                             <g:each in="${cell}" var="cp">
-                                ${cp}<br/>
+                                <g:if test="${options.useHyperlinks && (cp.startsWith('http://') || cp.startsWith('https://'))}">
+                                    <a href="${cp}">${cp}</a><br/>
+                                </g:if>
+                                <g:else>
+                                    ${cp}<br/>
+                                </g:else>
                             </g:each>
                         </td>
                     </g:each>

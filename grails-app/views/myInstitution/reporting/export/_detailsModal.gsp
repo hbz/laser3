@@ -117,6 +117,11 @@
                                 <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
                                 <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="useHyperlinks-xlsx" id="useHyperlinks-xlsx" />
+                                <label for="useHyperlinks-xlsx">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
+                            </span>
                         </p>
                     </div>
                     <div id="fileformat-details-pdf" class="wide eight field">
@@ -129,6 +134,11 @@
                             <span class="ui checkbox">
                                 <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
                                 <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="useHyperlinks-pdf" id="useHyperlinks-pdf" />
+                                <label for="useHyperlinks-pdf">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
                             </span>
                         </p>
                     </div>
