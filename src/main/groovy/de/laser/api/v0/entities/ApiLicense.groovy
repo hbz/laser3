@@ -11,10 +11,16 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link License}
+ */
 @Slf4j
 class ApiLicense {
 
     /**
+     * Locates the given {@link License} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+     * @param the identifier value with namespace, if needed
      * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
     static ApiBox findLicenseBy(String query, String value) {
@@ -45,7 +51,10 @@ class ApiLicense {
 
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given license
+     * @param lic the {@link License} to which access is being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(License lic, Org context) {
 
@@ -68,6 +77,10 @@ class ApiLicense {
     }
 
     /**
+     * Checks if the given institution can access the given license. The license
+     * is returned in case of success
+     * @param lic the {@link License} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the license
      * @return JSON | FORBIDDEN
      */
     static requestLicense(License lic, Org context){
@@ -82,7 +95,12 @@ class ApiLicense {
     }
 
     /**
+     * Checks if the requesting institution can access the license list of the requested institution.
+     * The list of license is returned in case of success
+     * @param owner the institution whose licenses should be retrieved
+     * @param context the institution who requests the list
      * @return JSON
+     * @see Org
      */
     static JSON getLicenseList(Org owner, Org context){
         Collection<Object> result = []
@@ -107,6 +125,11 @@ class ApiLicense {
     }
 
     /**
+     * Assembles the given license attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param lic the {@link License} which should be output
+     * @param ignoreRelation should outgoing links be included in the output or not?
+     * @param context the institution doing the request
      * @return Map<String, Object>
      */
     static Map<String, Object> getLicenseMap(License lic, def ignoreRelation, Org context){
