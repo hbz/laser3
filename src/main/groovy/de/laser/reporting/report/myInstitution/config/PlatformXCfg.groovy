@@ -1,5 +1,6 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.Platform
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -28,7 +29,7 @@ class PlatformXCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class:  de.laser.Platform,
+                            class:  Platform,
                             cfgKey: KEY_PLATFORM
                     ],
                     source : [

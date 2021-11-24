@@ -159,6 +159,9 @@ class BaseConfig {
         else if (key == KEY_PLATFORM) {
             PlatformXCfg.ES_DATA
         }
+        else {
+            [ fields : [:], flags : [:] ]
+        }
     }
 
     static Map<String, Object> getCustomImplRefdata(String key) {
