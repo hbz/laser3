@@ -1,5 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
+import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Package
@@ -25,6 +26,7 @@ class PackageExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
@@ -79,7 +81,22 @@ class PackageExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) + '@' + pkg.getProperty(key) )
+                }
+                else if (key == 'gokbId') {
+                    String prop = ''
+                    if (pkg.getProperty(key)) {
+                        Map<String, Object> fCache = GlobalExportHelper.getFilterCache(token)
+                        List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
+
+                        if (esRecordIdList.contains(pkg.id)) {
+                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            if (wekb?.baseUrl) {
+                                prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
+                            }
+                        }
+                    }
+                    content.add( prop )
                 }
                 else {
                     content.add( getPropertyContent(pkg, key, Package.getDeclaredField(key).getType()))
@@ -136,7 +153,7 @@ class PackageExport extends BaseDetailsExport {
 
                     String value = record?.get( key )
                     if (value) {
-                        String rdc = PackageXCfg.ES_DATA.get( BaseConfig.KEY_PACKAGE + '-' + key )
+                        String rdc = PackageXCfg.ES_DATA.fields.get( BaseConfig.KEY_PACKAGE + '-' + key )?.rdc
                         RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
 
                         if (rdv) {

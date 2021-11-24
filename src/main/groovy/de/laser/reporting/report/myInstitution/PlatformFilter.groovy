@@ -155,7 +155,7 @@ class PlatformFilter extends BaseFilter {
 
                 String filterLabelValue
 
-                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.containsKey( pEsData )) {
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.fields.containsKey( pEsData )) {
                     RefdataValue rdv = RefdataValue.get(params.long(key))
 
                     if (p in [

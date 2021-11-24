@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.usermodel.XSSFHyperlink
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -14,7 +15,7 @@ import java.time.Year
 
 class BaseExportHelper {
 
-    static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
+    static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines, boolean useHyperlinks) {
 
         int lineCount = 1
 
@@ -54,6 +55,20 @@ class BaseExportHelper {
                     value = value.split( BaseDetailsExport.CSV_VALUE_SEPARATOR )
                     lineCount = value.size()
                     value = value.join('\n')
+                }
+                if (useHyperlinks) {
+                    if (value.startsWith('http://') || value.startsWith('https://')) {
+                        XSSFHyperlink link = new XSSFHyperlink( XSSFHyperlink.LINK_URL ) // TODO
+                        // masking globalUID and gokbId
+                        if (value.indexOf('@') > 0) {
+                            List<String> parts = value.split('@')
+                            link.setAddress(parts[0])
+                            value = parts[1]
+                        } else {
+                            link.setAddress(value as String)
+                        }
+                        cell.setHyperlink(link)
+                    }
                 }
                 cell.setCellValue(value.trim())
             }

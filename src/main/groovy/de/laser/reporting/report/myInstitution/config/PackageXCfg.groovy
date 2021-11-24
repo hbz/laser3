@@ -5,16 +5,21 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PackageXCfg extends BaseConfig {
 
-    static Map<String, String> ES_DATA = [
-            'package-breakable'         : RDConstants.PACKAGE_BREAKABLE,
-            'package-consistent'        : RDConstants.PACKAGE_CONSISTENT,
-            'package-openAccess'        : RDConstants.LICENSE_OA_TYPE,
-            'package-paymentType'       : RDConstants.PAYMENT_TYPE,
-            'package-scope'             : RDConstants.PACKAGE_SCOPE,
-            'package-x-curatoryGroup'   : null,
-            'package-x-nationalRange'   : null,
-            'package-x-regionalRange'   : null,
-           // 'package-x-ddc'
+    static Map<String, Map> ES_DATA = [
+
+            fields : [
+                    'package-breakable'         : [label: 'package.breakable',          rdc: RDConstants.PACKAGE_BREAKABLE],
+                    'package-consistent'        : [label: 'package.consistent',         rdc: RDConstants.PACKAGE_CONSISTENT],
+                    'package-openAccess'        : [label: 'package.openAccess.label',   rdc: RDConstants.LICENSE_OA_TYPE],
+                    'package-paymentType'       : [label: 'package.paymentType.label',  rdc: RDConstants.PAYMENT_TYPE],
+                    'package-scope'             : [label: 'package.scope.label',        rdc: RDConstants.PACKAGE_SCOPE],
+            ],
+            flags : [
+                    'package-x-curatoryGroup'   : [:],
+                    'package-x-nationalRange'   : [:],
+                    'package-x-regionalRange'   : [:]
+            ]
+            //'package-x-ddc'
     ]
 
     static Map<String, Object> CONFIG = [

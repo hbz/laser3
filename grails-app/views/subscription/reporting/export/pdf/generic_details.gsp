@@ -35,7 +35,18 @@
                     <g:each in="${row}" var="cell" status="j">
                         <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
                             <g:each in="${cell}" var="cp">
-                                ${cp}<br/>
+                                <g:if test="${options.useHyperlinks && (cp.startsWith('http://') || cp.startsWith('https://'))}">
+                                    %{-- masking globalUID and gokbId --}%
+                                    <g:if test="${cp.indexOf('@') > 0}">
+                                        <a href="${cp.split('@')[0]}">${cp.split('@')[1]}</a><br/>
+                                    </g:if>
+                                    <g:else>
+                                        <a href="${cp}">${cp}</a><br/>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${cp}<br/>
+                                </g:else>
                             </g:each>
                         </td>
                     </g:each>

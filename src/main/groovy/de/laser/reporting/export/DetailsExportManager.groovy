@@ -120,6 +120,12 @@ class DetailsExportManager {
                 else if (it instanceof Double) {
                     return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
                 }
+                else if (it instanceof String && (it.startsWith('http://') || it.startsWith('https://'))) {
+                    // masking globalUID and gokbId
+                    if (it.indexOf('@') > 0) {
+                        it = it.split('@')[1]
+                    }
+                }
                 return it as String
             } // TODO date, double, etc
 
@@ -182,7 +188,7 @@ class DetailsExportManager {
                 Row entry = sheet.createRow(idx + 1)
                 int cellHeight = 1
                 row.eachWithIndex { val, i ->
-                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
+                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines, options.useHyperlinks)
                     cellHeight = h > cellHeight ? h : cellHeight
                 }
                 if (cellHeight > 1) {

@@ -101,7 +101,7 @@ class LicenseExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) + '@' + lic.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
