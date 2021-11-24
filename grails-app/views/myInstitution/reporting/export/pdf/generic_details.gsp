@@ -70,7 +70,13 @@
                         <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
                             <g:each in="${cell}" var="cp">
                                 <g:if test="${options.useHyperlinks && (cp.startsWith('http://') || cp.startsWith('https://'))}">
-                                    <a href="${cp}">${cp}</a><br/>
+                                    %{-- masking globalUID and gokbId --}%
+                                    <g:if test="${cp.indexOf('@') > 0}">
+                                        <a href="${cp.split('@')[0]}">${cp.split('@')[1]}</a><br/>
+                                    </g:if>
+                                    <g:else>
+                                        <a href="${cp}">${cp}</a><br/>
+                                    </g:else>
                                 </g:if>
                                 <g:else>
                                     ${cp}<br/>

@@ -81,7 +81,7 @@ class PackageExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) + '@' + pkg.getProperty(key) )
                 }
                 else if (key == 'gokbId') {
                     String prop = ''
@@ -92,7 +92,7 @@ class PackageExport extends BaseDetailsExport {
                         if (esRecordIdList.contains(pkg.id)) {
                             ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                             if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) as String
+                                prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
                             }
                         }
                     }

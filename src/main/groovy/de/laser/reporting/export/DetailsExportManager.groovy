@@ -87,10 +87,6 @@ class DetailsExportManager {
                 if (options.hideEmptyResults) {
                     ici.each { i -> row.removeAt(i) }
                 }
-                if (options.useHyperlinks) {
-                    println 'DetailsExportManager------- options.useHyperlinks ---> TODO' // TODO
-                    println row
-                }
                 rows.add( row )
             }
         }
@@ -123,6 +119,12 @@ class DetailsExportManager {
                 }
                 else if (it instanceof Double) {
                     return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
+                }
+                else if (it instanceof String && (it.startsWith('http://') || it.startsWith('https://'))) {
+                    // masking globalUID and gokbId
+                    if (it.indexOf('@') > 0) {
+                        it = it.split('@')[1]
+                    }
                 }
                 return it as String
             } // TODO date, double, etc

@@ -88,7 +88,7 @@ class PlatformExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'platform', action: 'show', absolute: true ) + '/' + plt.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'platform', action: 'show', absolute: true ) + '/' + plt.getProperty(key) + '@' + plt.getProperty(key) )
                 }
                 else if (key == 'gokbId') {
                     String prop = ''
@@ -99,7 +99,7 @@ class PlatformExport extends BaseDetailsExport {
                         if (esRecordIdList.contains(pkg.id)) {
                             ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                             if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) as String
+                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }
                         }
                     }

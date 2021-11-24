@@ -59,7 +59,14 @@ class BaseExportHelper {
                 if (useHyperlinks) {
                     if (value.startsWith('http://') || value.startsWith('https://')) {
                         XSSFHyperlink link = new XSSFHyperlink( XSSFHyperlink.LINK_URL ) // TODO
-                        link.setAddress(value as String)
+                        // masking globalUID and gokbId
+                        if (value.indexOf('@') > 0) {
+                            List<String> parts = value.split('@')
+                            link.setAddress(parts[0])
+                            value = parts[1]
+                        } else {
+                            link.setAddress(value as String)
+                        }
                         cell.setHyperlink(link)
                     }
                 }
