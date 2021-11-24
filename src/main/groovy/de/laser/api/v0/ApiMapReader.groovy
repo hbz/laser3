@@ -9,6 +9,14 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class ApiMapReader {
 
+    /**
+     * Assembles the given person details into a {@link Map}. The schema may be viewed in schemas.gsp
+     * @param prs the {@link Person} subject of output
+     * @param allowedContactTypes the types of contacts which can be returned
+     * @param allowedAddressTypes the types of addresses which can be returned
+     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
+     * @return a {@link Map} reflecting the person details for API output
+     */
     static Map<String, Object> getPersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
         Map<String, Object> result = [:]
 
