@@ -96,7 +96,7 @@ class PlatformExport extends BaseDetailsExport {
                         Map<String, Object> fCache = GlobalExportHelper.getFilterCache(token)
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
-                        if (esRecordIdList.contains(pkg.id)) {
+                        if (esRecordIdList.contains(plt.id)) {
                             ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)

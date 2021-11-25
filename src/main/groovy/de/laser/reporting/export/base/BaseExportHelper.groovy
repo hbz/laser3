@@ -56,16 +56,17 @@ class BaseExportHelper {
                     lineCount = value.size()
                     value = value.join('\n')
                 }
-                if (useHyperlinks) {
-                    if (value.startsWith('http://') || value.startsWith('https://')) {
+                if (value.startsWith('http://') || value.startsWith('https://')) {
+                    List<String> parts = value.split('@') // masking globalUID and gokbId
+                    value = parts[0]
+
+                    if (useHyperlinks) {
                         XSSFHyperlink link = new XSSFHyperlink( XSSFHyperlink.LINK_URL ) // TODO
-                        // masking globalUID and gokbId
-                        if (value.indexOf('@') > 0) {
-                            List<String> parts = value.split('@')
-                            link.setAddress(parts[0])
+                        link.setAddress(parts[0])
+                        value = parts[0]
+
+                        if (parts.size()>1) {
                             value = parts[1]
-                        } else {
-                            link.setAddress(value as String)
                         }
                         cell.setHyperlink(link)
                     }
