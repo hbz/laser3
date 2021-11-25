@@ -15,7 +15,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
- * This class is a service mirror for {@link FinanceController} to capsulate the complex data manipulation
+ * This class is a service mirror for {@link FinanceController} to capsule the complex data manipulation
  * methods of the controller
  */
 @Transactional
