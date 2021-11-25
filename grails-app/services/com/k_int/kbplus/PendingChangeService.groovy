@@ -1263,6 +1263,10 @@ class PendingChangeService extends AbstractLockableService {
         else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
+    /**
+     * Marks a change as acknowledged, i.e. deletes it
+     * @param changeAccepted the change being acknowledged
+     */
     void acknowledgeChange(PendingChange changeAccepted) {
         changeAccepted.delete()
     }

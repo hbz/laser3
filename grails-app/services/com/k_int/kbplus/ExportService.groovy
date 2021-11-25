@@ -1342,7 +1342,7 @@ class ExportService {
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
 	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
 	 *
-	 * @param entitlementData - a {@link Collection} containing the actual data
+	 * @param entitlementData a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
 	Map<String,List> generateTitleExportKBART(Collection<Long> entitlementIDs, String entitlementInstance) {
@@ -1637,6 +1637,10 @@ class ExportService {
 		joined
 	}
 
+	/**
+	 * became a duplicate of generateTitleExportKBART - separate usage intended???
+	 */
+	@Deprecated
 	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportCSV")
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -1922,8 +1926,17 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance) {
-		log.debug("Begin generateTitleExportXLS")
+	/**
+	 * Was initially set up for generating Excel-export; as for some reason, the CSV export has been abandoned, this export is now
+	 * generic export for non-KBART headers, used for purposes where the KBART headers are not needed in full.
+	 * To use this export for tab-separated values, access result.rows.field directly for the data; it is like PHP's array_column()
+	 * @param entitlementIDs the IDs of the issue entitlements or title instances to export
+	 * @param entitlementInstance the class name to look for the complete objects
+	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
+	 * raw text output; access rows.field for the bare data
+	 */
+	Map<String, List> generateTitleExportCustom(Collection entitlementIDs, String entitlementInstance) {
+		log.debug("Begin generateTitleExportCustom")
 		Locale locale = LocaleContextHolder.getLocale()
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		Set<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -2143,7 +2156,7 @@ class ExportService {
 			}
 		}
 		export.rows = rows
-		log.debug("End generateTitleExportXLS")
+		log.debug("End generateTitleExportCustom")
 		export
 	}
 

@@ -22,8 +22,8 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
- * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
- *
+ * This service replaced very complicatedly written methods in the FinanceController class and delivers financial data
+ * for finance and survey cost views
  * @author agalffy
  */
 @Transactional
@@ -43,6 +43,15 @@ class FinanceService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    /**
+     * Creates or updates the given cost item(s) with the given parameter. Multiple cost items may be
+     * created at once when more than one subscription has been picked upon which the cost should be applied;
+     * this is the case whenever the consortium distributes costs among subscription members.
+     * New cost items will be created if no cost item identifier has been submitted or if there is no cost item
+     * matching to the given identifier
+     * @param params the cost item data to persist
+     * @return result status map: OK upon success, ERROR on failure
+     */
     Map<String,Object> createOrUpdateCostItem(GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
@@ -215,6 +224,11 @@ class FinanceService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Takes the params submitted by the bulk processing form and applies the changes
+     * @param params the parameter map containing the changes to apply and the items on which the changes should take effect
+     * @return result status map; OK if the editing was successful, ERROR otherwise
+     */
     Map<String,Object> processCostItemsBulk(GrailsParameterMap params) {
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -323,6 +337,12 @@ class FinanceService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Deletes the given cost item and unsets eventual links. If it is the last item in a cost item group,
+     * the group will be deleted as well for that it will not appear in dropdowns any more
+     * @param params the parameter map containing the cost item id to delete and the tab which should be displayed after deletion
+     * @return result status map: OK if succeeded, error otherwise
+     */
     Map<String,Object> deleteCostItem(GrailsParameterMap params) {
         Map<String, Object> result = [showView:params.showView]
         CostItem ci = CostItem.get(params.id)
@@ -358,6 +378,11 @@ class FinanceService {
         else [result:result,status:STATUS_ERROR]
     }
 
+    /**
+     * Parses the given tax input and returns the matching tax enum key
+     * @param newTaxRateString the tax input from any cost input modal
+     * @return the tax key if a match was found, null otherwise
+     */
     CostItem.TAX_TYPES setTaxKey(String newTaxRateString) {
         CostItem.TAX_TYPES tax_key = null //on invoice, self declared, etc
         if(newTaxRateString && !newTaxRateString.contains("null")) {
@@ -400,6 +425,12 @@ class FinanceService {
         tax_key
     }
 
+    /**
+     * Configures the fields for the cost item input modal
+     * @param params the parameters with which the modal has been called and which serve as configuration base
+     * @param contextOrg the institution ({@link Org}) whose perspective is going to be considered
+     * @return a {@link Map} containing the display parameters for the cost item editing modal
+     */
     Map<String, Object> setupConfigMap(GrailsParameterMap params, Org contextOrg) {
         //structure according to the cost item input modal
         //block header
@@ -465,6 +496,12 @@ class FinanceService {
          order: order]
     }
 
+    /**
+     * Gets the given order for the given institution; if it does not exist, it will be created
+     * @param newOrderNumber the order number being requested
+     * @param contextOrg the institution whose order number should be retrieved
+     * @return the new or retrieved order number
+     */
     Order resolveOrder(String newOrderNumber, Org contextOrg) {
         Order order = null
         if (newOrderNumber) {
@@ -477,6 +514,12 @@ class FinanceService {
         order
     }
 
+    /**
+     * Gets the given invoice for the given institution; if it does not exist, it will be created
+     * @param newInvoiceNumber the invoice number being requested
+     * @param contextOrg the institution whose invoice number should be retrieved
+     * @return the new or retrieved invoice number
+     */
     Invoice resolveInvoice(String newInvoiceNumber, Org contextOrg) {
         Invoice invoice = null
         if (newInvoiceNumber) {
@@ -492,9 +535,7 @@ class FinanceService {
     //---------------------------------------------- display section ---------------------------------------------------
 
     /**
-     * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
-     * Retrieves the cost item data for the given subscription type and returns a map grouping the cost items per view.
-     *
+     * Retrieves the cost item data for the given subscription type and returns a map grouping the cost items per view
      * @param subscription - the subscription for which the financial data is retrieved. Its type determines the views displayed on return.
      * @return a LinkedHashMap with the cost items for each tab to display
      */
@@ -578,10 +619,9 @@ class FinanceService {
     }
 
     /**
-     * Will replace the methods index and financialData methods in FinanceController class for the institution-wide overview.
-     * Retrieves the cost item data for the given subscription type and returns a map grouping the cost items per view.
-     *
-     * @return a LinkedHashMap with the cost items for each tab to display
+     * Retrieves the cost item data according to the given parameter and configuration maps and returns a map grouping the cost items per view.
+     * @return a {@link Map} with the cost items for each tab to display
+     * @see CostItem
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
         ProfilerUtils pu = new ProfilerUtils()
@@ -676,8 +716,7 @@ class FinanceService {
 
     /**
      * Processes the given parameters to build a query part which will be included into the base query strings
-     *
-     * @param params - a GrailsParameterMap containing parameters to be processed
+     * @param params a GrailsParameterMap containing parameters to be processed
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
@@ -895,11 +934,10 @@ class FinanceService {
     }
 
     /**
-     * Will replace the current client-side calculation of the sums.
-     * Calculates to a given key the sums (local and for each currency) and assigns the resulting map to a given key.
-     *
-     * @param key - the key for which the sum is being calculated
-     * @param costItems - a list of cost items to count
+     * Replaced the client-side calculation of the sums.
+     * Calculates to a given key the sums (local and for each currency) and assigns the resulting map to a given key
+     * @param key the key for which the sum is being calculated
+     * @param costItems a list of cost items to count
      * @return a map with the following structure:
      * {
      *     localSum (means the actual value and not the amount which is going to be paid)
@@ -987,10 +1025,9 @@ class FinanceService {
     }
 
     /**
-     * Finds the given currency in the given list of entries, returns -1 if the corrency is not found in the list.
-     *
-     * @param entryList - the list of currency entries
-     * @param currency - the currency to be retrieved
+     * Finds the given currency in the given list of entries, returns -1 if the currency is not found in the list.
+     * @param entryList the list of currency entries
+     * @param currency the currency to be retrieved
      * @return the position index
      */
     int getCurrencyIndexInList(List entryList,String currency) {
@@ -1005,8 +1042,8 @@ class FinanceService {
 
     /**
      * Processes the given TSV file with financial data and puts together a {@link Map} with the information read off the file
-     * @param tsvFile - the input file
-     * @return a {@link Map} with the data red off
+     * @param tsvFile the input file
+     * @return a {@link Map} with the data read off
      */
     Map<String,Map> financeImport(MultipartFile tsvFile) {
         Org contextOrg = contextService.getOrg()
@@ -1481,6 +1518,11 @@ class FinanceService {
         result
     }
 
+    /**
+     * Takes the submitted form params which contain the cost item data to import and persists the new records
+     * @param params the cost item data checked by the user and submitted by post processing form
+     * @return result map OK on success or ERROR on fail
+     */
     Map<String,Object> importCostItems(GrailsParameterMap params) {
         Map<String,Object> result = [error:[]]
         Org contextOrg = contextService.getOrg()
@@ -1600,6 +1642,7 @@ class FinanceService {
 
     //---------------------------------------------- poison cupboard ---------------------------------------------
 
+    @Deprecated
     void updateTaxRates() {
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 7 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_7])
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 19 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_19])
@@ -1608,6 +1651,11 @@ class FinanceService {
         CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_APPLICABLE,value: RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE)])
     }
 
+    /**
+     * Currently unused; should backwards-correct cost items to calculate the costs in local currency
+     * @param dryRun do the execution or not?
+     * @return a list of concerned cost items with their corrected value
+     */
     Map correctCostsInLocalCurrency(boolean dryRun) {
         Map<CostItem,Double> result = [:]
         List res = CostItem.executeQuery('select ci, (ci.costInBillingCurrency * ci.currencyRate) as costInLocalCurrency from CostItem ci where ci.costInLocalCurrency = 0 and ci.costInBillingCurrency != 0')
