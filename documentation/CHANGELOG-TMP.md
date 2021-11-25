@@ -6,13 +6,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
+
 4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
 
 4005    23.11.2021  dev     2.3         David   Feature     Reporting: Plattform-Export
 
+4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
 4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
 
 3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
+
+4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
 
 4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
 
