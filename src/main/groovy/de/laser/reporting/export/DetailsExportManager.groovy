@@ -123,7 +123,7 @@ class DetailsExportManager {
                 else if (it instanceof String && (it.startsWith('http://') || it.startsWith('https://'))) {
                     // masking globalUID and gokbId
                     if (it.indexOf('@') > 0) {
-                        it = it.split('@')[1]
+                        it = it.split('@')[0]
                     }
                 }
                 return it as String
