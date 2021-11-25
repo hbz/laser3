@@ -189,7 +189,7 @@ class DocstoreController  {
     }
 
     /**
-     * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the refererer where result may be shown in case of an error
+     * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
