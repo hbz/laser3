@@ -114,7 +114,7 @@ class SubscriptionExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) + '@' + sub.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()) )

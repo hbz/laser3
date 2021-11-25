@@ -86,7 +86,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) + '@' + ie.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))

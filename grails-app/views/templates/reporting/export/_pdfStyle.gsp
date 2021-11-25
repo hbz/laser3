@@ -31,6 +31,12 @@ table tbody tr td {
     padding: 0.35em 0.6em;
 }
 
+a, a:hover, a:active, a:visited {
+    color: #000;
+    text-decoration: none;
+    border-bottom: 1px dashed #666666;
+}
+
 .filterInfo,
 .filterResult,
 .queryInfo {

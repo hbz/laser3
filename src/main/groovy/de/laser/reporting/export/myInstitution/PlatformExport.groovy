@@ -1,10 +1,10 @@
 package de.laser.reporting.export.myInstitution
 
+import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Platform
 import de.laser.RefdataValue
-import de.laser.helper.RDConstants
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -26,6 +26,7 @@ class PlatformExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'org'                   : FIELD_TYPE_CUSTOM_IMPL,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
@@ -87,7 +88,22 @@ class PlatformExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'platform', action: 'show', absolute: true ) + '/' + plt.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'platform', action: 'show', absolute: true ) + '/' + plt.getProperty(key) + '@' + plt.getProperty(key) )
+                }
+                else if (key == 'gokbId') {
+                    String prop = ''
+                    if (plt.getProperty(key)) {
+                        Map<String, Object> fCache = GlobalExportHelper.getFilterCache(token)
+                        List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
+
+                        if (esRecordIdList.contains(plt.id)) {
+                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            if (wekb?.baseUrl) {
+                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
+                            }
+                        }
+                    }
+                    content.add( prop )
                 }
                 else {
                     content.add( getPropertyContent(plt, key, Platform.getDeclaredField(key).getType()))
@@ -164,7 +180,7 @@ class PlatformExport extends BaseDetailsExport {
 
                     String value = record?.get( key )
                     if (value) {
-                        String rdc = PlatformXCfg.ES_DATA.get( BaseConfig.KEY_PLATFORM + '-' + key )
+                        String rdc = PlatformXCfg.ES_DATA.fields.get( BaseConfig.KEY_PLATFORM + '-' + key )?.rdc
                         RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
 
                         if (rdv) {

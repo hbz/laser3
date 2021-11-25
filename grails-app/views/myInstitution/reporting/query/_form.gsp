@@ -1,5 +1,5 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
-<g:set var="esData" value="${BaseConfig.getCurrentEsDataKeys(cfgKey) ?: []}" />
+<g:set var="esData" value="${BaseConfig.getCurrentEsData(cfgKey) ?: []}" />
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
@@ -12,7 +12,7 @@
                                                         from="${field.value}"
                                                         optionKey="${{it}}"
                                                         optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
-                                                        optionExpl="${{esData.contains(it) ? '(we:kb)' : ''}}"
+                                                        optionExpl="${{esData.fields.keySet().contains(it) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"
                                                         noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
@@ -30,7 +30,7 @@
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"
                                                              optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
-                                                             optionExpl="${{esData.contains(it.key) ? '(we:kb)' : ''}}"
+                                                             optionExpl="${{esData.flags.keySet().contains(it.key) ? '(we:kb)' : ''}}"
                                                              class="ui selection dropdown la-not-clearable"
                                                              noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>

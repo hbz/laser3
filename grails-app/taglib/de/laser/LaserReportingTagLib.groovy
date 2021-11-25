@@ -144,6 +144,9 @@ class LaserReportingTagLib {
 
         // TODO
         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
+        if (!customRdv) {
+            customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata)
+        }
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

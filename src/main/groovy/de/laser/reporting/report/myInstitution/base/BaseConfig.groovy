@@ -152,12 +152,15 @@ class BaseConfig {
         }
     }
 
-    static Set<String> getCurrentEsDataKeys(String key) {
+    static Map<String, Map> getCurrentEsData(String key) {
         if (key == KEY_PACKAGE) {
-            return PackageXCfg.ES_DATA.keySet()
+            PackageXCfg.ES_DATA
         }
         else if (key == KEY_PLATFORM) {
-            return PlatformXCfg.ES_DATA.keySet()
+            PlatformXCfg.ES_DATA
+        }
+        else {
+            [ fields : [:], flags : [:] ]
         }
     }
 
@@ -291,121 +294,27 @@ class BaseConfig {
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
-        else {
-            getElasticSearchRefdata(key) // TODO
-        }
     }
 
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         MessageSource messageSource = mainContext.getBean('messageSource')
-
-        String pkgRdc = PackageXCfg.ES_DATA.get(KEY_PACKAGE + '-' + key)
-        String pltRdc = PlatformXCfg.ES_DATA.get(KEY_PLATFORM + '-' + key)
-
         Locale locale = LocaleContextHolder.getLocale()
 
-        if (key == ELASTICSEARCH_KEY_PKG_BREAKABLE) {
+        Map pkgMap = PackageXCfg.ES_DATA.fields.get(KEY_PACKAGE + '-' + key) as Map<String, String>
+        Map pltMap = PlatformXCfg.ES_DATA.fields.get(KEY_PLATFORM + '-' + key)  as Map<String, String>
+
+        if (pkgMap) {
             return [
-                    label: messageSource.getMessage('package.breakable', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
+                    label: messageSource.getMessage(pkgMap.label, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pkgMap.rdc )
             ]
         }
-        else if (key == ELASTICSEARCH_KEY_PKG_CONSISTENT) {
+        else if (pltMap) {
             return [
-                    label: messageSource.getMessage('package.consistent', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PKG_OPENACCESS) {
-            return [
-                    label: messageSource.getMessage('package.openAccess.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PKG_PAYMENTTYPE) {
-            return [
-                    label: messageSource.getMessage('package.paymentType.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PKG_SCOPE) {
-            return [
-                    label: messageSource.getMessage('package.scope.label', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION) {
-            return [
-                    label: messageSource.getMessage('platform.auth.ip.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION) {
-            return [
-                    label: messageSource.getMessage('platform.auth.shibboleth.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION) {
-            return [
-                    label: messageSource.getMessage('platform.auth.userPass.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.auth.proxy.supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT) {
-            return [
-                    label: messageSource.getMessage('platform.stats.format', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE) {
-            return [
-                    label: messageSource.getMessage('platform.stats.update', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.certified', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.r3supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.r4supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.r5supported', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.r4sushi', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
-            ]
-        }
-        else if (key == ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED) {
-            return [
-                    label: messageSource.getMessage('platform.stats.counter.r5sushi', null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltRdc )
+                    label: messageSource.getMessage(pltMap.label, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltMap.rdc )
             ]
         }
     }
