@@ -297,6 +297,12 @@ class YodaService {
         [missingTitles:missingTitles,mergingTitles:mergingTitles,remappingTitles:remappingTitles,titlesWithoutTIPPs:titlesWithoutTIPPs,nextPhase:nextPhase,tippMergers:tippMergers]
     }
 
+    /**
+     * Checks the titles marked as deleted and verifies its holding state and we:kb equivalency state. It needs
+     * refactoring because it uses the OAI endpoint to determine titles. The complex decision procedure to mark a record
+     * as purgeable is explained along the code
+     * @return a {@link Map} containing the concerned title records, grouped by their state
+     */
     Map<String,Object> listDeletedTIPPs() {
         globalService.cleanUpGorm()
         //merge duplicate tipps
@@ -523,6 +529,13 @@ class YodaService {
         [deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,deletedWithGOKbRecord:deletedWithGOKbRecord,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys,excludes:excludes]
     }
 
+    /**
+     * Remaps the issue entitlements which hang on duplicates, merges title duplicates and deletes false records.
+     * Very dangerous method, handle with extreme care!
+     * Deprecated in its current form, it needs update if the cleanup needs to be used again one time
+     * @param result the decision map build in {@link #listDeletedTIPPs()}
+     * @return a {@link List} of title records which should be reported because there are holdings on them
+     */
     List<List<String>> executeTIPPCleanup(Map result) {
         //first: merge duplicate entries
         result.mergingTIPPs.each { mergingTIPP ->
@@ -700,6 +713,12 @@ class YodaService {
         result
     }
 
+    /**
+     * Deprecated in its current form as it uses the obsolete OAI endpoint to retrieve data; was used to
+     * compare the LAS:eR platform data against the we:kb (then still GOKb) mirror instance and to determine
+     * those records which are obsolete in LAS:eR
+     * @return a {@link Map} containing obsolete platform records
+     */
     Map<String, Object> listPlatformDuplicates() {
         Map<String,Object> result = [:]
         Map<String, GPathResult> oaiRecords = [:]
@@ -782,6 +801,14 @@ class YodaService {
         result
     }
 
+    /**
+     * Clears the retrieved platform duplicates from the database:
+     * <ul>
+     *     <li>duplicates without titles</li>
+     *     <li>platforms without we:kb IDs</li>
+     *     <li>platforms without we:kb record</li>
+     * </ul>
+     */
     @Transactional
     void executePlatformCleanup(Map result) {
         List<String> toDelete = []
