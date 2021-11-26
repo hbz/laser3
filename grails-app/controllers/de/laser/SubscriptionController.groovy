@@ -1024,7 +1024,23 @@ class SubscriptionController {
                 }
                 out.flush()
                 out.close()
-            } else if (params.exportXLS) {
+            }
+            if (params.exportForImport) {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+                response.contentType = "text/tsv"
+                ServletOutputStream out = response.outputStream
+                Map<String, List> tableData = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
+
+                tableData.titles << "Pick"
+                List columnData = tableData.rows ? tableData.rows.field : []
+
+                out.withWriter { Writer writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titles, columnData, '\t'))
+                }
+                out.flush()
+                out.close()
+            }
+            else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)

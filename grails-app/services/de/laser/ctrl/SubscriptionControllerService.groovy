@@ -1105,6 +1105,8 @@ class SubscriptionControllerService {
 
             params.tab = params.tab ?: 'allIEs'
 
+            result.preselectValues = params.preselectValues == 'on'
+
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
@@ -1206,6 +1208,20 @@ class SubscriptionControllerService {
                 if (!checkedCache) {
                     sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
                     checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                }
+
+                if (params.kbartPreselect) {
+                    //checkedCache.put('checked', [:])
+
+                    MultipartFile kbartFile = params.kbartPreselect
+                    InputStream stream = kbartFile.getInputStream()
+                    result.selectProcess = subscriptionService.issueEntitlementSelect(stream, result.subscription)
+
+                        if (result.selectProcess.selectedIEs) {
+                            checkedCache.put('checked', result.selectProcess.selectedIEs)
+                        }
+
+                    params.remove("kbartPreselect")
                 }
 
                 result.checkedCache = checkedCache.get('checked')

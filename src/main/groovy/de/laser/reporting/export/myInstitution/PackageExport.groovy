@@ -5,6 +5,8 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Package
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -31,11 +33,12 @@ class PackageExport extends BaseDetailsExport {
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
                                     'packageStatus'         : FIELD_TYPE_REFDATA,
-                                    'scope'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'consistent'        : FIELD_TYPE_ELASTICSEARCH,
-                                    'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
-                                    'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
-                                    'breakable'         : FIELD_TYPE_ELASTICSEARCH,
+                                    '@-package-titleCount'  : FIELD_TYPE_CUSTOM_IMPL,
+                                    'scope'                 : FIELD_TYPE_ELASTICSEARCH,
+                                    'consistent'            : FIELD_TYPE_ELASTICSEARCH,
+                                    'paymentType'           : FIELD_TYPE_ELASTICSEARCH,
+                                    'openAccess'            : FIELD_TYPE_ELASTICSEARCH,
+                                    'breakable'             : FIELD_TYPE_ELASTICSEARCH,
 
                             ]
                     ]
@@ -43,15 +46,7 @@ class PackageExport extends BaseDetailsExport {
     ]
 
     PackageExport(String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -121,6 +116,12 @@ class PackageExport extends BaseDetailsExport {
                                 [pkg: pkg, idnsList: f.value] )
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == '@-package-titleCount') {
+                    int titles = TitleInstancePackagePlatform.executeQuery( 'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
+                            [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
+                    )[0]
+                    content.add( titles )
                 }
                 else {
                     content.add( '- not implemented -' )

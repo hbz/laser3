@@ -31,11 +31,11 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
@@ -56,22 +56,14 @@ class LicenseExport extends BaseDetailsExport {
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
     ]
 
     LicenseExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override

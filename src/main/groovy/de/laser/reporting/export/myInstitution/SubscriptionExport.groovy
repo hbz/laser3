@@ -32,14 +32,14 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-memberCount'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-subscription-memberCount' : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'                    : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                                    'x-memberSubscriptionProperty'  : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'x-memberSubscriptionProperty' : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
@@ -66,22 +66,14 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
     ]
 
     SubscriptionExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override

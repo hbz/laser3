@@ -59,6 +59,10 @@
                 <i class="icon question"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
                 ${message(code:'reporting.macro.infoHelp')}
             </p>
+            <p>
+                <strong>we:kb</strong> <br />
+                ${message(code:'reporting.macro.infoWekb')}
+            </p>
         </div>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
@@ -102,9 +106,9 @@
 
         <g:if test="${filterResult}">
 
-            %{-- <sec:ifAnyGranted roles="ROLE_YODA">
+            <sec:ifAnyGranted roles="ROLE_YODA">
                 <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
-            </sec:ifAnyGranted> --}%
+            </sec:ifAnyGranted>
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
