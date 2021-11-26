@@ -33,14 +33,14 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
-                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
@@ -62,13 +62,13 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]

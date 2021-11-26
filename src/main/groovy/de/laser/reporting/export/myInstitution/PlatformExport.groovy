@@ -120,7 +120,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'x-identifier') {
+                if (key == '@-identifier') {
                     List<Identifier> ids = []
 
                     if (f.value) {
@@ -149,7 +149,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == 'x-property') {
+                if (key == '@-property') {
                     Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(plt, pdId, contextService.getOrg())

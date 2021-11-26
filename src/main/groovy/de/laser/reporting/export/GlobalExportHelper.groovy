@@ -116,7 +116,7 @@ class GlobalExportHelper extends BaseExportHelper {
             //String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
             String label = BaseDetailsExport.getMessage(fieldName)
 
-            if (fieldName == 'x-identifier') {
+            if (fieldName == '@-identifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
@@ -140,10 +140,10 @@ class GlobalExportHelper extends BaseExportHelper {
 
             return label
         }
-        else if (fieldName == 'x-property') {
+        else if (fieldName == '@-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (fieldName == 'x-memberSubscriptionProperty') {
+        else if (fieldName == '@-subscription-memberSubscriptionProperty') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
         else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
@@ -16,6 +16,7 @@
             <th>${message(code:'package.label')}</th>
             <th>${message(code:'package.content_provider')}</th>
             <th>${message(code:'package.nominalPlatform')}</th>
+            <th>${message(code:'package.show.nav.current')}</th>
             <th>${message(code:'package.lastUpdated.label')}</th>
             <th>${message(code:'wekb')}</th>
         </tr>
@@ -37,6 +38,15 @@
                         <g:if test="${pkg.nominalPlatform}">
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>
                         </g:if>
+                    </td>
+                    <td>
+                        <%
+                            List tipps = TitleInstancePackagePlatform.executeQuery(
+                                    'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
+                                    [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
+                            )
+                            println tipps[0] > 0 ? tipps[0] : ''
+                        %>
                     </td>
                     <td>
                         <g:if test="${esRecordIds.contains(pkg.id)}">

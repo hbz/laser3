@@ -35,9 +35,8 @@ abstract class BaseDetailsExport {
     static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
     static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
     static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
-    static String FIELD_TYPE_ELASTICSEARCH      = BaseConfig.FIELD_TYPE_ELASTICSEARCH
-
     static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
+    static String FIELD_TYPE_ELASTICSEARCH      = BaseConfig.FIELD_TYPE_ELASTICSEARCH
 
     static String CSV_VALUE_SEPARATOR   = ';'
     static String CSV_FIELD_SEPARATOR   = ','
@@ -54,25 +53,22 @@ abstract class BaseDetailsExport {
 
             'globalUID',
 
-            'x-identifier',                     // dyn.value
-            'x-provider',                       // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property',                       // QDP; dyn.value
+            // --- reporting suffix keys ---
+            'x-identifier',
+            'x-property',
+            'x-provider',
+            'x-memberSubscriptionProperty',
 
-            // virtual; without XY.CONFIG.base.x
+            // @ - virtual - without <X>.CONFIG.base.y
 
-            '@-subscription-member',
-            '@-subscription-memberCount',
-            '@-subscription-prevNext',
-
-            'x-memberSubscriptionProperty',     // QDP; dyn.value
-
-            '@-license-subscriptionCount',
-            '@-license-memberCount',
-            '@-license-memberSubscriptionCount',
-
-            '@-org-accessPoint',      // dyn.value
-            '@-org-contact',          // dyn.value
-            '@-org-readerNumber',     // dyn.value
+            '@-cost-entitlement',
+            '@-cost-entitlementGroup',
+            '@-cost-invoice',
+            '@-cost-member',
+            '@-cost-order',
+            '@-cost-package',
+            '@-cost-subscription',
+            '@-cost-taxKey',
 
             '@-entitlement-priceItem',
             '@-entitlement-tippName',
@@ -92,14 +88,20 @@ abstract class BaseDetailsExport {
             '@-entitlement-tippSubjectReference',
             '@-entitlement-tippTitleType',
 
-            '@-cost-entitlement',
-            '@-cost-entitlementGroup',
-            '@-cost-invoice',
-            '@-cost-member',
-            '@-cost-order',
-            '@-cost-package',
-            '@-cost-subscription',
-            '@-cost-taxKey'
+            '@-license-subscriptionCount',
+            '@-license-memberCount',
+            '@-license-memberSubscriptionCount',
+
+            '@-org-accessPoint',      // dyn.value
+            '@-org-contact',          // dyn.value
+            '@-org-readerNumber',     // dyn.value
+
+            '@-package-titleCount',
+
+            '@-subscription-member',
+            '@-subscription-memberCount',
+            '@-subscription-prevNext',
+            'x-provider'
     ]
 
     Map<String, Object> selectedExportFields = [:]
@@ -176,6 +178,8 @@ abstract class BaseDetailsExport {
         }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
+
+        println 'BaseDetails.getAllFields() ---> ' + cfg + ' : ' + field + ' : ' + base.fields.keySet()
 
         if (! base.fields.keySet().contains(cfg)) {
             cfg = 'default'
@@ -329,10 +333,16 @@ abstract class BaseDetailsExport {
     // -----
 
     static String getMessage(String token) {
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
+        String msg = '[reporting.export.base.custom.' + token + ']'
+        try {
+            MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+            Locale locale = LocaleContextHolder.getLocale()
+            msg = messageSource.getMessage('reporting.export.base.custom.' + token, null, locale)
+        }
+        catch (Exception e) {
+            println e.getMessage()
+        }
 
-        // println ' ---> ' + 'reporting.export.base.custom.' + token
-        messageSource.getMessage('reporting.export.base.custom.' + token, null, locale)
+        msg
     }
 }

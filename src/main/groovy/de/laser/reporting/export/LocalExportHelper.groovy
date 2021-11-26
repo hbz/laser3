@@ -101,7 +101,7 @@ class LocalExportHelper extends BaseExportHelper {
             // String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
             String label = BaseDetailsExport.getMessage(fieldName)
 
-            if (fieldName == 'x-identifier' || fieldName == '@-entitlement-tippIdentifier') {
+            if (fieldName == '@-identifier' || fieldName == '@-entitlement-tippIdentifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
@@ -125,7 +125,7 @@ class LocalExportHelper extends BaseExportHelper {
 
             return label
         }
-        else if (fieldName == 'x-property') {
+        else if (fieldName == '@-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
         else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {

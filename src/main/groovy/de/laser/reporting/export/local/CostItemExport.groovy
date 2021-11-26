@@ -45,7 +45,7 @@ class CostItemExport extends BaseDetailsExport {
                                     'billingCurrency'               : FIELD_TYPE_REFDATA,
                                     'costInLocalCurrency'           : FIELD_TYPE_PROPERTY,
                                     'costInLocalCurrencyAfterTax'   : FIELD_TYPE_PROPERTY,
-                                    '@-cost-taxKey'               : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@-cost-taxKey'                 : FIELD_TYPE_CUSTOM_IMPL,
                                     'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
                                     'costItemStatus'                : FIELD_TYPE_REFDATA,
                                     'startDate'                     : FIELD_TYPE_PROPERTY,
@@ -53,7 +53,7 @@ class CostItemExport extends BaseDetailsExport {
                                     'datePaid'                      : FIELD_TYPE_PROPERTY,
                                     'financialYear'                 : FIELD_TYPE_PROPERTY,
 
-                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,

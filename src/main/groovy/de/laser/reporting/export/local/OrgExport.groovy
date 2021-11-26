@@ -35,11 +35,11 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-org-accessPoint' : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-org-readerNumber': FIELD_TYPE_CUSTOM_IMPL,
+                                    'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -47,7 +47,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
                             agency: [
@@ -56,7 +56,7 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
