@@ -22,9 +22,18 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import groovy.util.logging.Slf4j
 
+/**
+ * This class delivers given lists as maps of stubs or full objects
+ */
 @Slf4j
 class ApiCollectionReader {
 
+    /**
+     * Processes a collection of addresses and builds a collection of entries for API output
+     * @param list the {@link Collection} of {@link Address}es to output
+     * @param allowedTypes the conditions which permit output of a value
+     * @return a {@link Collection} of address details
+     */
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
         Collection<Object> result = []
 
@@ -57,6 +66,12 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Processes a collection of contacts and builds a collection of entries for API output
+     * @param list the {@link Collection} of {@link Contact}s to output
+     * @param allowedTypes the conditions which permit output of a value
+     * @return a {@link Collection} of contact details
+     */
     static Collection<Object> getContactCollection(Collection<Contact> list, allowedTypes) {
         Collection<Object> result = []
 
@@ -79,6 +94,11 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a map of cost item API records from the filtered list of {@link CostItem}s
+     * @param filteredList a pre-filtered and cleared list of public {@link CostItem}s
+     * @return a {@link Collection} of {@link Map}s of cost item records for API output
+     */
     static Collection<Object> getCostItemCollection(Collection<CostItem> filteredList) {
         Collection<Object> result = []
 
@@ -135,6 +155,13 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a collection of custom (= general) properties for the given object and respecting the settings of the requestor institution
+     * @param list the {@link Collection} of properties to enumerate
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.Platform})
+     * @param context the requestor institution ({@link Org})
+     * @return a {@link Collection} of {@link Map}s containing property details for API output
+     */
     static Collection<Object> getCustomPropertyCollection(Collection<Object> list, def generic, Org context) {
         Collection<Object> result = []
 
@@ -199,6 +226,13 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a collection of document records for API output
+     * @param list a {@link List} of document relations outgoing from the given object
+     * @return a {@link Collection} of document map stubs
+     * @see DocContext
+     * @see ApiDoc#getDocumentMap(de.laser.Doc)
+     */
     static Collection<Object> getDocumentCollection(Collection<DocContext> list) {
         Collection<Object> result = []
         list.each { it -> // de.laser.DocContext
@@ -207,6 +241,11 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a collection of identifier records for API output
+     * @param list a {@link List} of {@link Identifier}s
+     * @return a {@link Collection} of identifier namespace:value pairs
+     */
     static Collection<Object> getIdentifierCollection(Collection<Identifier> list) {
         Collection<Object> result = []
         list.each { it ->   // de.laser.Identifier
@@ -222,10 +261,11 @@ class ApiCollectionReader {
     }
 
     /**
-     * @param de.laser.SubscriptionPackage subPkg
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
+     * Puts together a collection of issue entitlement stubs which belong to the given subscription package
+     * @param subPkg the {@link de.laser.SubscriptionPackage} to process
+     * @param ignoreRelation should relations followed up (and stubs returned) or not?
+     * @param context the requesting institution ({@link Org}) whose perspective should be taken
+     * @return a {@link Collection<Object>} reflecting the result
      */
     static Collection<Object> getIssueEntitlementCollection(SubscriptionPackage subPkg, ignoreRelation, Org context){
         Collection<Object> result = []
@@ -242,6 +282,11 @@ class ApiCollectionReader {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Builds a collection of maps reflecting the given {@link IssueEntitlementCoverage} collection for API output
+     * @param list a {@link Collection} of {@link IssueEntitlementCoverage}s to be processed for API output
+     * @return a {@link Collection} of {@link Map}s reflecting the issue entitlement coverage collection
+     */
     static Collection<Object> getIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list) {
         Collection<Object> result = []
 
@@ -253,10 +298,10 @@ class ApiCollectionReader {
     }
 
     /**
-     *
-     * @param list
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
+     * Delivers a package stub map with the issue entitlements (!) belonging to each package subscribed
+     * @param list the {@link Collection} of {@link SubscriptionPackage}s which should be returned along with the respective holdings
+     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during the checks
+     * @return a {@link Collection<Object>} reflecting the packages and holdings
     */
     static Collection<Object> getPackageWithIssueEntitlementsCollection(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
         Collection<Object> result = []
@@ -273,6 +318,14 @@ class ApiCollectionReader {
         return ApiToolkit.cleanUp(result, true, false)
     }
 
+    /**
+     * Collects the information on the other ends of the outgoing organisation relations list and returns the stub map
+     * of informations about the objects linked
+     * @param list a {@link List} of {@link OrgRole}s to process
+     * @param ignoreRelationType should futher relations be ignored?
+     * @param context the requestor institution ({@link Org}) whose perspective is going to be taken during the checks
+     * @return a {@link Collection} of map entries reflecting the information about the outgoing relations
+     */
     static Collection<Object> getOrgLinkCollection(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
         Collection<Object> result = []
 
@@ -307,6 +360,11 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a collection of map entries reflecting the given {@link Collection} of {@link OrgAccessPoint}s
+     * @param list a {@link Collection} of {@link OrgAccessPoint}s to process
+     * @return a {@link Collection} of entries reflecting the access point records
+     */
     static Collection<Object> getOrgAccessPointCollection(Collection<OrgAccessPoint> list) {
         Collection<Object> result = []
         list.each { it -> // com.k_int.kbplus.OrgAccessPoint
@@ -315,6 +373,12 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Builds a collection of private properties for the given object and respecting the settings of the requestor institution
+     * @param list the {@link Collection} of properties to enumerate
+     * @param context the requestor institution ({@link Org})
+     * @return a {@link Collection} of {@link Map}s containing property details for API output
+     */
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
         Collection<Object> result = []
 
@@ -354,6 +418,13 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Collects the properties (general and private) of the given object and outputs the collections
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.Platform})
+     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
+     * @param ignoreFlag should certain properties being left out from output (private or custom)?
+     * @return a {@link Collection} of both general and private properties
+     */
     static Collection<Object> getPropertyCollection(Object generic, Org context, def ignoreFlag) {
         Collection<Object> cp = getCustomPropertyCollection(generic.propertySet, generic, context)
         Collection<Object> pp = getPrivatePropertyCollection(generic.propertySet, context)
@@ -369,6 +440,15 @@ class ApiCollectionReader {
         cp
     }
 
+    /**
+     * Builds a list of entries showing person links from a certain object
+     * @param list a {@link List} of links pointing to contact entities
+     * @param allowedAddressTypes the types of addresses which can be returned
+     * @param allowedContactTypes the types of contacts which can be returned
+     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
+     * @return a {@link List} of map entries reflecting the contact entity details
+     * @see de.laser.Person
+     */
     static Collection<Object> getPrsLinkCollection(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         List result = []
         List tmp = []
@@ -445,12 +525,12 @@ class ApiCollectionReader {
     }
 
     /**
+     * Builds a collection of title entries for API output.
      * Access rights due wrapping object
-     *
-     * @param list
-     * @param ignoreRelation
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
+     * @param list a {@link Collection} of {@link TitleInstancePackagePlatform}
+     * @param ignoreRelation should further relations be followed up?
+     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
+     * @return a {@link Collection<Object>} reflecting the titles in the list
      */
     static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
@@ -462,6 +542,13 @@ class ApiCollectionReader {
         result
     }
 
+    /**
+     * Collects for the given list of subscription packages the stubs for API output
+     * @param list a {@link List} of {@link SubscriptionPackage}s to be processed
+     * @param ignoreRelation should further relations being followed up?
+     * @param context the requesting institution ({@link Org}) whose prespective is going to be taken for checks
+     * @return a {@link Collection} of maps reflecting the packages with their entitlements
+     */
     static Collection<Object> getSubscriptionPackageStubCollection(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
 

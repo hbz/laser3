@@ -566,7 +566,7 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                Map<String,List> export = exportService.generateTitleExportCustom(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -637,7 +637,7 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String,List> export = exportService.generateTitleExportCustom(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -961,7 +961,7 @@ class SubscriptionController {
         else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(result.ieIDs,IssueEntitlement.class.name)
+            Map<String,List> export = exportService.generateTitleExportCustom(result.ieIDs,IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1029,7 +1029,8 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
+                //is correct; the generateTitleExportCSV has been adapted to KBART headers, thus, we use the Excel data to return it as TSV
+                Map<String, List> tableData = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name)
 
                 tableData.titles << "Pick"
                 List columnData = tableData.rows ? tableData.rows.field : []
@@ -1043,7 +1044,7 @@ class SubscriptionController {
             else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
+                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)

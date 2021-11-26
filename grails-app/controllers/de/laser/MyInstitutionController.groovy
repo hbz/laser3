@@ -1312,7 +1312,7 @@ join sub.orgRelations or_sub where
         else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements, IssueEntitlement.class.name)
+            Map<String,List> export = exportService.generateTitleExportCustom(currentIssueEntitlements, IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)

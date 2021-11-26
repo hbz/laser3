@@ -8,13 +8,15 @@
 
 4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
 
+1111    24.11.2021  dev     2.3         Andreas Feature     interne Dokumentation der LAS:eR-API
+
 4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
 
 4005    23.11.2021  dev     2.3         David   Feature     Reporting: Plattform-Export
 
-4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
-
 4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
+
+4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
 
 3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
 
