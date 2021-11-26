@@ -48,61 +48,17 @@ abstract class BaseDetailsExport {
             'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
     ]
 
-    // checked via <X>ExportHelper.getFieldLabel()
-    static List<String> CUSTOM_FIELD_KEYS = [
+    void init(String token, Map<String, Object> fields)  {
+        this.token = token
 
-            'globalUID',
-
-            // --- reporting suffix keys ---
-            'x-identifier',
-            'x-property',
-            'x-provider',
-            'x-memberSubscriptionProperty',
-
-            // @ - virtual - without <X>.CONFIG.base.y
-
-            '@-cost-entitlement',
-            '@-cost-entitlementGroup',
-            '@-cost-invoice',
-            '@-cost-member',
-            '@-cost-order',
-            '@-cost-package',
-            '@-cost-subscription',
-            '@-cost-taxKey',
-
-            '@-entitlement-priceItem',
-            '@-entitlement-tippName',
-            '@-entitlement-tippDeweyDecimalClassification',
-            '@-entitlement-tippEditionStatement',
-            '@-entitlement-tippFirstAuthor',
-            '@-entitlement-tippFirstEditor',
-            '@-entitlement-tippHostPlatformURL',
-            '@-entitlement-tippIdentifier',            // dyn.value
-            '@-entitlement-tippLanguage',
-            '@-entitlement-tippOpenAccessX',
-            '@-entitlement-tippPackage',
-            '@-entitlement-tippPlatform',
-            '@-entitlement-tippProvider',
-            '@-entitlement-tippPublisherName',
-            '@-entitlement-tippSeriesName',
-            '@-entitlement-tippSubjectReference',
-            '@-entitlement-tippTitleType',
-
-            '@-license-subscriptionCount',
-            '@-license-memberCount',
-            '@-license-memberSubscriptionCount',
-
-            '@-org-accessPoint',      // dyn.value
-            '@-org-contact',          // dyn.value
-            '@-org-readerNumber',     // dyn.value
-
-            '@-package-titleCount',
-
-            '@-subscription-member',
-            '@-subscription-memberCount',
-            '@-subscription-prevNext',
-            'x-provider'
-    ]
+        // keeping order ..
+        getAllFields().keySet().each { k ->
+            if (k in fields.keySet() ) {
+                selectedExportFields.put(k, fields.get(k))
+            }
+        }
+        normalizeSelectedMultipleFields( this )
+    }
 
     Map<String, Object> selectedExportFields = [:]
 
@@ -174,12 +130,11 @@ abstract class BaseDetailsExport {
         }
         else if (isLocal(this)) {
             cfg   = LocalExportHelper.getCachedConfigStrategy( token )
-            field = LocalExportHelper.getCachedFieldStrategy( token )
+            field = LocalExportHelper.getCachedFieldsStrategy( token )
         }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
-
-        println 'BaseDetails.getAllFields() ---> ' + cfg + ' : ' + field + ' : ' + base.fields.keySet()
+        // println 'BaseDetails.getAllFields() ---> ' + cfg + ' : ' + field + ' : ' + base.fields.keySet()
 
         if (! base.fields.keySet().contains(cfg)) {
             cfg = 'default'

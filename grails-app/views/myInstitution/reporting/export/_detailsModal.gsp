@@ -65,7 +65,7 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['@-identifier','@-org-accessPoint','@-org-contact','@-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll{ BaseDetailsExport.CUSTOM_MULTIPLE_FIELDS.contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
                             <g:set var="multiList" value="${BaseDetailsExport.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />

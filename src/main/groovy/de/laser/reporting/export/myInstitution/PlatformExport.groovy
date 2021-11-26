@@ -50,15 +50,7 @@ class PlatformExport extends BaseDetailsExport {
     ]
 
     PlatformExport(String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -120,7 +112,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == '@-identifier') {
+                if (key == 'x-identifier') {
                     List<Identifier> ids = []
 
                     if (f.value) {
@@ -149,7 +141,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == '@-property') {
+                if (key == 'x-property') {
                     Long pdId = GlobalExportHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(plt, pdId, contextService.getOrg())

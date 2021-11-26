@@ -63,15 +63,7 @@ class LicenseExport extends BaseDetailsExport {
     ]
 
     LicenseExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override

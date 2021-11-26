@@ -16,18 +16,6 @@ class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
-    CostItemExport(String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
-    }
-
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
             base : [
@@ -62,6 +50,10 @@ class CostItemExport extends BaseDetailsExport {
                     ],
             ]
     ]
+
+    CostItemExport(String token, Map<String, Object> fields) {
+        init(token, fields)
+    }
 
     @Override
     Map<String, Object> getSelectedFields() {
