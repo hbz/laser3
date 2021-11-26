@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
-import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -12,7 +11,6 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.util.slurpersupport.GPathResult
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -464,7 +462,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = titlesList ? exportService.generateTitleExportXLS(titlesList,TitleInstancePackagePlatform.class.name) : []
+            Map<String, List> export = titlesList ? exportService.generateTitleExportCustom(titlesList,TitleInstancePackagePlatform.class.name) : []
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -599,7 +597,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = exportService.generateTitleExportXLS(titlesList,TitleInstancePackagePlatform.class.name)
+            Map<String, List> export = exportService.generateTitleExportCustom(titlesList,TitleInstancePackagePlatform.class.name)
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
