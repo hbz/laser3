@@ -123,6 +123,7 @@ class PackageFilter extends BaseFilter {
 //        println whereParts
 
         List<Long> idList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
+        // println 'local matches: ' + idList.size()
 
         Map<String, Object> esRecords = [:]
         List<Long> orphanedIdList = []
@@ -136,6 +137,7 @@ class PackageFilter extends BaseFilter {
             }
             else {
                 filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+                orphanedIdList = idList
             }
         }
 
