@@ -46,15 +46,17 @@
                                tab           : 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
         </semui:exportDropdownItem>
 
-        <semui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLSStats     : true,
-                               data             : 'fetchAll',
-                               tab           : 'allIEsStats',
-                               tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
-        </semui:exportDropdownItem>
+        <g:if test="${showStatisticByParticipant}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportXLSStats     : true,
+                                   data             : 'fetchAll',
+                                   tab           : 'allIEsStats',
+                                   tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
+            </semui:exportDropdownItem>
+        </g:if>
     </semui:exportDropdown>
 </semui:controlButtons>
 
