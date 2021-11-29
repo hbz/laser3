@@ -21,10 +21,9 @@
            }
         },
         legend: {
-            align:  'left',
-            type:   'scroll',
-            orient: 'vertical',
-            left:   'left',
+            bottom: 0,
+            left: 'center',
+            z: 1,
             formatter: function (value) {
                 return value.replace(/\s\(ID:[0-9]*\)/,'')
             }
@@ -33,7 +32,7 @@
             {
                 type: 'pie',
                 radius: '70%',
-                center: ['60%', '45%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {

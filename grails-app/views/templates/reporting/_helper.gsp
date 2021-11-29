@@ -7,11 +7,16 @@ if (! JSPC.app.reporting) {
         },
         helper: {
             _pie: {
-                legend: {
+                /* legend: {
                     align:  'left',
                     orient: 'vertical',
                     type:   'scroll',
                     left:   'left'
+                } */
+                legend: {
+                    bottom: 0,
+                    left: 'center',
+                    z: 1
                 }
             },
             series: {
@@ -38,9 +43,10 @@ if (! JSPC.app.reporting) {
                         label: {
                             padding: [10, 10, 7, 10],
                             backgroundColor: '#f4f8f9',
-                            borderColor: 'rgba(0,0,0,0.2)',
+                            borderColor: 'rgba(0,0,0,0.3)',
                             borderWidth: 1,
-                            borderRadius: 3
+                            borderRadius: 3,
+                            z: 100
                         },
                         itemStyle: {
                             shadowBlur: 7,
