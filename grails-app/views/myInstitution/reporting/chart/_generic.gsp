@@ -21,10 +21,9 @@
            }
         },
         legend: {
-            align:  'left',
-            type:   'scroll',
-            orient: 'vertical',
-            left:   'left',
+            bottom: 0,
+            left: 'center',
+            z: 1,
             formatter: function (value) {
                 return value.replace(/\s\(ID:[0-9]*\)/,'')
             }
@@ -33,7 +32,7 @@
             {
                 type: 'pie',
                 radius: '70%',
-                center: ['60%', '45%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -50,7 +49,7 @@
                 itemStyle: {
                     color: function(params) {
                         if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series._color.redInactive
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
                         }
                         else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.ice

@@ -31,7 +31,7 @@
                 name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
-                center: ['60%', '45%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -43,7 +43,7 @@
                 itemStyle: {
                     color: function(params) {
                         if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series._color.redInactive
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
                         }
                         else {
                             return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];

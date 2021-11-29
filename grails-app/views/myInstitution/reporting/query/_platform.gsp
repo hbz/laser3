@@ -18,7 +18,7 @@
                             return $(this).text().indexOf('we:kb')>0 }
                         ).each( function(){
                             $(this)
-                                .css('opacity', '0.3').css('color', '#333')
+                                .css('opacity', '0.2').css('color', '#333')
                                 .next('.dropdown')
                                     .addClass('disabled').css('opacity', '0.2').css('color', '#333').css('background-color', '#fffaf3').css('border-color', '#fffaf3')
                                     .find('select').attr('disabled', 'disabled');
