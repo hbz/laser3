@@ -22,6 +22,7 @@ if (! JSPC.app.reporting) {
             series: {
                 _color: {
                     palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc' ],
+                    redInactiveSolid: '#f2cccd',
 
                     red:    'rgb(238,102,102)',
                     green:  'rgb(144,202,117)',
