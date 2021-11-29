@@ -131,6 +131,7 @@ class PlatformFilter extends BaseFilter {
 //        println whereParts
 
         List<Long> idList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
+        // println 'local matches: ' + idList.size()
 
         Map<String, Object> esRecords = [:]
         List<Long> orphanedIdList = []
@@ -144,6 +145,7 @@ class PlatformFilter extends BaseFilter {
             }
             else {
                 filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+                orphanedIdList = idList
             }
         }
 

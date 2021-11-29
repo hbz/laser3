@@ -11,7 +11,19 @@
                 <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
             <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
-                <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filterResult.elasticSearchIsNotReachable')}</p>
+                <p><i class="icon large exclamation triangle"></i> ${message(code:'reporting.filterResult.elasticSearchIsNotReachable')}</p>
+
+                <laser:script file="${this.getGroovyPageFileName()}">
+                    $('#filter-platform label').filter( function(){
+                            return $(this).text().indexOf('we:kb')>0 }
+                        ).each( function(){
+                            $(this)
+                                .css('opacity', '0.2').css('color', '#333')
+                                .next('.dropdown')
+                                    .addClass('disabled').css('opacity', '0.2').css('color', '#333').css('background-color', '#fffaf3').css('border-color', '#fffaf3')
+                                    .find('select').attr('disabled', 'disabled');
+                        })
+                </laser:script>
             </g:if>
         </div>
         <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PLATFORM}"]}" />

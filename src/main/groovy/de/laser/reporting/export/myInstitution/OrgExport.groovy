@@ -52,12 +52,12 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-org-accessPoint' : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-org-readerNumber': FIELD_TYPE_CUSTOM_IMPL,
+                                    'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -65,8 +65,8 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
                             agency: [
@@ -75,8 +75,8 @@ class OrgExport extends BaseDetailsExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
@@ -84,15 +84,7 @@ class OrgExport extends BaseDetailsExport {
     ]
 
     OrgExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override

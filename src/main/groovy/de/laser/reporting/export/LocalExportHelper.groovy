@@ -67,7 +67,7 @@ class LocalExportHelper extends BaseExportHelper {
         queryParts.size() == 3 ? queryParts[2] : queryParts[0]
     }
 
-    static String getCachedFieldStrategy(String token) {
+    static String getCachedFieldsStrategy(String token) {
 
         Map<String, Object> detailsCache = getDetailsCache(token)
         detailsCache.query.substring( detailsCache.query.indexOf('-') + 1 )
@@ -117,7 +117,7 @@ class LocalExportHelper extends BaseExportHelper {
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
             else if (fieldName == '@-org-readerNumber') {
-                List selList = export.getSelectedFields().get(fieldName)
+                List selList = export.getSelectedFields().get(fieldName) as List
                 List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }
                 List ddList  = selList.findAll{ it.startsWith('dd-') }.collect{ it.replace('dd-', 'Stichtage ') }
                 label += (selList ? ': ' + (semList + ddList).join(', ') : '') // TODO - export
@@ -125,14 +125,15 @@ class LocalExportHelper extends BaseExportHelper {
 
             return label
         }
-        else if (fieldName == 'x-property') {
-            return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
+        else if (fieldName in ['x-property']) {
+            return BaseDetailsExport.getMessage('x-property') + ': ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {
+        else if (fieldName in ['globalUID', 'x-provider'] || fieldName.startsWith('@')) {
             return BaseDetailsExport.getMessage(fieldName)
         }
 
-        // --- adapter ---
+        // --- adapter - label from config ---
+        // println 'LocalExportHelper.getFieldLabel() - adapter: ' + fieldName
 
         String cfg = getCachedConfigStrategy( export.token )
         Map<String, Object> objConfig = export.getCurrentConfig( export.KEY ).base

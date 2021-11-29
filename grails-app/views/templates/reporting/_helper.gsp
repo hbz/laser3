@@ -7,15 +7,23 @@ if (! JSPC.app.reporting) {
         },
         helper: {
             _pie: {
-                legend: {
+                /* legend: {
                     align:  'left',
                     orient: 'vertical',
                     type:   'scroll',
                     left:   'left'
+                } */
+                legend: {
+                    bottom: 0,
+                    left: 'center',
+                    z: 1
                 }
             },
             series: {
                 _color: {
+                    palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc' ],
+                    redInactiveSolid: '#f2cccd',
+
                     red:    'rgb(238,102,102)',
                     green:  'rgb(144,202,117)',
                     blue:   'rgb(58,111,196)',
@@ -36,9 +44,10 @@ if (! JSPC.app.reporting) {
                         label: {
                             padding: [10, 10, 7, 10],
                             backgroundColor: '#f4f8f9',
-                            borderColor: 'rgba(0,0,0,0.2)',
+                            borderColor: 'rgba(0,0,0,0.3)',
                             borderWidth: 1,
-                            borderRadius: 3
+                            borderRadius: 3,
+                            z: 100
                         },
                         itemStyle: {
                             shadowBlur: 7,
