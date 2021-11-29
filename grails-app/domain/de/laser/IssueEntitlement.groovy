@@ -256,7 +256,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
   }
 
     def getCounterReport(Date date, Org subscriber){
-        String sort = 'r.reportCount asc'
+        String sort = 'r.reportCount desc'
 
         String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
 
