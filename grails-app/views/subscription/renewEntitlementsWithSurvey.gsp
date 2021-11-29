@@ -153,11 +153,11 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:if>
 
 
-<g:if test="${params.tab == 'allIEs' && editable}">
+<g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats') && editable}">
 
     <semui:form>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
-                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']}"
+                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
                 method="post" enctype="multipart/form-data">
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>

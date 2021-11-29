@@ -1043,7 +1043,6 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                 }
-                println(monthsInRing)
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
