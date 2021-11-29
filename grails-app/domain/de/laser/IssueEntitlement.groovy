@@ -260,7 +260,13 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
         String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
 
-        Map<String, Object> queryParams = [customer: subscriber, platform: this.tipp.platform, startDate: date, endDate: date, title: this.tipp]
+        Calendar filterTime = GregorianCalendar.getInstance()
+        filterTime.setTime(date)
+        Date startDate = date
+        filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+        Date endDate = filterTime.getTime()
+
+        Map<String, Object> queryParams = [customer: subscriber, platform: this.tipp.platform, startDate: startDate, endDate: endDate, title: this.tipp]
 
         List counterReports
 
