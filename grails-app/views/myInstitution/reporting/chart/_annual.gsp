@@ -46,6 +46,19 @@
                     formatter: function (obj) {
                         return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
                     }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactive
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.ice
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
+                    }
                 }
             }
         ]
