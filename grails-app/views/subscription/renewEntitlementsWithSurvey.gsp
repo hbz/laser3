@@ -165,8 +165,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 <i class="question circle icon"></i>
             </span></h4>
 
-            <div class="three fields">
-                <div class="field">
+            <div class="two fields">
+                %{--<div class="field">
                     ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info')}
                     <g:link class="item" action="renewEntitlementsWithSurvey"
                             id="${newSub.id}"
@@ -175,7 +175,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                                        tab           : 'allIEs']}">
                         ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info2')}
                     </g:link> ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info3')}
-                </div>
+                </div>--}%
 
                 <div class="field">
                     <div class="ui fluid action input">

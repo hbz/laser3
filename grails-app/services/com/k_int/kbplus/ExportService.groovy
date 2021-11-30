@@ -2143,7 +2143,9 @@ class ExportService {
 							def counterReport = entitlement.getCounterReport(date, subscriber)
 							//println(counterReport)
 							if(counterReport){
-								row.add([field: counterReport.reportCount, style:null])
+								//println(counterReport)
+								//println(counterReport.reportCount ?: '')
+								row.add([field: counterReport.reportCount ?: '', style:null])
 							}else{
 								row.add([field: ' ', style:null])
 							}
