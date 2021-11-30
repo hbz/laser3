@@ -3,13 +3,13 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
-import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -29,6 +29,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
+                                    'altname'               : FIELD_TYPE_ELASTICSEARCH,
                                     'org'                   : FIELD_TYPE_CUSTOM_IMPL,
                                     'primaryUrl'            : FIELD_TYPE_PROPERTY,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
@@ -114,19 +115,11 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'x-identifier') {
-                    List<Identifier> ids = []
-
-                    if (f.value) {
-                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.plt = :plt and i.ns.id in (:idnsList)",
-                                [plt: plt, idnsList: f.value] )
-                    }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
-                }
-                else if (key == 'org') {
+                if (key == 'org') {
                     if (plt.org) {
                         content.add( plt.org.name )
-                    } else {
+                    }
+                    else {
                         content.add('')
                     }
                 }
@@ -161,21 +154,29 @@ class PlatformExport extends BaseDetailsExport {
                 if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.platformESRecords.get(obj.id.toString())
 
-                    String value = record?.get( esData.mapping ?: key )
-                    if (value) {
-                        String rdc = esData.rdc
-                        RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
-
-                        if (rdv) {
-                            content.add(rdv.getI10n('value'))
-                        } else if (rdc) {
-                            content.add( '(' + value + ')' )
-                        } else {
-                            content.add( value )
+                    if (key == 'altname') {
+                        List<String> altNames = record?.get( key )?.collect { an ->
+                            an.toString()
                         }
+                        content.add (altNames ? altNames.join( CSV_VALUE_SEPARATOR ) : '')
                     }
                     else {
-                        content.add( '' )
+                        String value = record?.get( esData.mapping ?: key )
+                        if (value) {
+                            String rdc = esData.rdc
+                            RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
+
+                            if (rdv) {
+                                content.add(rdv.getI10n('value'))
+                            } else if (rdc) {
+                                content.add( '(' + value + ')' )
+                            } else {
+                                content.add( value )
+                            }
+                        }
+                        else {
+                            content.add( '' )
+                        }
                     }
                 }
                 else {

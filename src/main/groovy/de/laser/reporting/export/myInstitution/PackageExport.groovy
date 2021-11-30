@@ -3,9 +3,11 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.Package
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -30,6 +32,8 @@ class PackageExport extends BaseDetailsExport {
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
+                                    'altname'               : FIELD_TYPE_ELASTICSEARCH,
+                                    'x-id'                  : FIELD_TYPE_ELASTICSEARCH,
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
                                     'packageStatus'         : FIELD_TYPE_REFDATA,
@@ -40,6 +44,7 @@ class PackageExport extends BaseDetailsExport {
                                     'openAccess'            : FIELD_TYPE_ELASTICSEARCH,
                                     'breakable'             : FIELD_TYPE_ELASTICSEARCH,
                                     'x-ddc'                 : FIELD_TYPE_ELASTICSEARCH,
+                                    'x-curatoryGroup'       : FIELD_TYPE_ELASTICSEARCH,
                                     'description'           : FIELD_TYPE_ELASTICSEARCH,
                                     'descriptionURL'        : FIELD_TYPE_ELASTICSEARCH
                             ]
@@ -110,7 +115,7 @@ class PackageExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'x-identifier') {
+                /* if (key == 'x-identifier') { // not used ?
                     List<Identifier> ids = []
 
                     if (f.value) {
@@ -119,7 +124,8 @@ class PackageExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@-package-titleCount') {
+                else */
+                if (key == '@-package-titleCount') {
                     int titles = TitleInstancePackagePlatform.executeQuery( 'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
                             [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
                     )[0]
@@ -150,7 +156,20 @@ class PackageExport extends BaseDetailsExport {
                 if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.packageESRecords.get(obj.id.toString())
 
-                    if (key == 'x-ddc') {
+                    if (key == 'altname') {
+                        List<String> altNames = record?.get( key )?.collect { an ->
+                            an.toString()
+                        }
+                        content.add (altNames ? altNames.join( CSV_VALUE_SEPARATOR ) : '')
+                    }
+                    else if (key == 'x-curatoryGroup') {
+                        List<String> cgList = record?.get( esData.mapping )?.collect{ cg ->
+                            String cgType = RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: '(' + cg.type + ')'
+                            cg.name + ( cgType ? ' - ' + cgType : '')
+                        }
+                        content.add (cgList ? cgList.join( CSV_VALUE_SEPARATOR ) : '')
+                    }
+                    else if (key == 'x-ddc') {
                         List<String> ddcList = record?.get( esData.mapping )?.collect{ ddc ->
                             RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value as String, esData.rdc as String)
                             if (rdv) {
@@ -160,6 +179,14 @@ class PackageExport extends BaseDetailsExport {
                             }
                         }
                         content.add (ddcList ? ddcList.join( CSV_VALUE_SEPARATOR ) : '')
+                    }
+                    else if (key == 'x-id') {
+                        // TODO * != ()
+                        List<String> idList = record?.get( esData.mapping )?.collect{ id ->
+                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                            ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : '(' + (id.namespaceName ?: id.namespace) + ' *):' + id.value
+                        }
+                        content.add (idList ? idList.join( CSV_VALUE_SEPARATOR ) : '')
                     }
                     else {
                         String value = record?.get( esData.mapping ?: key )
