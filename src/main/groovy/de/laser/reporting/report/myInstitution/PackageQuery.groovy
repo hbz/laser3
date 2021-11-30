@@ -63,18 +63,47 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['package-x-identifier']) {
+//            if (params.query in ['package-x-identifier']) { // not used ??
+//
+//                handleGenericIdentifierXQuery(
+//                        params.query,
+//                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+//                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+//                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
+//                        idList,
+//                        result
+//                )
+//            }
 
-                handleGenericIdentifierXQuery(
-                        params.query,
-                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
-                        idList,
-                        result
-                )
-            }
-            else if (params.query in ['package-x-language']) {
+//            else if (params.query in ['package-x-id']) {
+//
+//                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+//                Map<String, Object> struct = [:]
+//                Map<String, Object> helper = [:]
+//                List<Long> noDataList = []
+//
+//                // TODO
+//                // TODO
+//                // TODO
+//                // TODO
+//                // TODO
+//
+//                esRecords.each { it ->
+//                    List idfsList = it.value.get('identifiers')
+//                    idfsList.each { id ->
+//                        if (! struct.containsKey(id.value)) {
+//                            struct.put(id.value, [])
+//                            helper.put(id.value, id)
+//                        }
+//                        struct.get(id.value).add( Long.parseLong(it.key) )
+//                    }
+//                    if (!idfsList) {
+//                        noDataList.add(Long.parseLong(it.key))
+//                    }
+//                }
+//
+//            }
+            if (params.query in ['package-x-language']) {
 
                 result.data = idList ? Language.executeQuery(
                         'select lang.id, lang.language.id, count(*) from Package pkg join pkg.languages lang where pkg.id in (:idList) group by lang.id, lang.language.id order by lang.id',
@@ -229,9 +258,9 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
-                if (noDataList) {
-                    handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-                }
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
             else if (params.query in ['package-x-nationalRange']) {
 
