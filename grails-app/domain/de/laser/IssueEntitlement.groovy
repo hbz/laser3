@@ -285,6 +285,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
             return counterReports[0]
         }
 
+        if(!counterReports) {
+            return null
+        }
+
     }
 
 }
