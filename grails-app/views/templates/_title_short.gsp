@@ -42,7 +42,14 @@
                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+
+                <g:if test="${participantPerpetualAccessToTitle}">
+                    ${RDStore.YN_YES.getI10n('value')}
+                </g:if>
+                <g:else>
+                    ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                </g:else>
             </div>
         </div>
     </g:if>
@@ -54,6 +61,17 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstAuthor') + ':'} ${tipp.firstAuthor}
+            </div>
+        </div>
+    </g:if>
+
+    <g:if test="${(tipp.titleType == 'Book') && (tipp.firstEditor || showEmptyFields)}">
+        <div class="item">
+            <i class="grey icon industry circle la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.firstEditor')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
             </div>
         </div>
     </g:if>

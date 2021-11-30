@@ -48,7 +48,7 @@
                 <td>${counter++}</td>
                 <td class="titleCell">
 
-                    <g:if test="${ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                    <g:if test="${params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
                             <i class="icon redo alternate yellow"></i>
                         </div>
@@ -73,7 +73,7 @@
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title_short"
                                   model="${[ie: ie, tipp: ie.tipp,
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
+                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: (participantPerpetualAccessToTitle && params.tab != 'currentIEs')]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <td>

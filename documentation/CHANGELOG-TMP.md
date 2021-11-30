@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet
+
+4014    30.11.2021  rc-2.2  2.2.5       Andreas Bug         Seite wird bei Bearbeiten von Kosten beibehalten
+
+4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
+
+4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
+4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
+
+4001    18.11.2021  rc-2.2  2.2.5       Andreas Bug         Lock bei Exception aufheben
+
+3999    17.11.2021  rc-2.2  2.2.5       Andreas Feature     Schnellansicht der Plattform-Statistik-Details in Lizenzstatistik eingeblendet
+
+3997    17.11.2021  rc-2.2  2.2.5       Moe     Bug         500er bei ClickMe Excel: Meine Einrichtungen
+
 3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
 
 3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter

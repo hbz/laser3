@@ -531,7 +531,7 @@ class ExportService {
 	 * @param data - the retrieved and filtered COUNTER data
 	 * @return
 	 */
-	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false) {
+	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		Locale locale = LocaleContextHolder.getLocale()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
@@ -587,6 +587,11 @@ class ExportService {
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
+
+				if(showOtherData) {
+					columnHeaders.addAll(["Year First Online", "Date First Online"])
+				}
+
 				row = sheet.createRow(7)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -617,7 +622,7 @@ class ExportService {
 							cell = row.createCell(i+8)
 							cell.setCellValue(totalRow.reportCount ?: 0)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_2:
@@ -645,7 +650,7 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_5:
@@ -673,7 +678,7 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
 						break
 				}
 			}
@@ -747,6 +752,11 @@ class ExportService {
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
+
+				if(showOtherData) {
+					columnHeaders.addAll(["Year First Online", "Date First Online"])
+				}
+
 				row = sheet.createRow(13)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
 					cell = row.createCell(i)
@@ -778,7 +788,7 @@ class ExportService {
 					}
 				}
 				else
-					titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType)
+					titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
 			}
 			titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map> titleMetric ->
 				titleMetric.eachWithIndex { String metricType, Map titleRow, int i ->
@@ -796,7 +806,7 @@ class ExportService {
 		wb
 	}
 
-	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false) {
+	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
@@ -833,6 +843,11 @@ class ExportService {
 						titleRow.put("List Price GBP", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
 						//listprice_usd
 						titleRow.put("List Price USD", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+					}
+
+					if (showOtherData) {
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy'): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy-MM-dd'): ' ')
 					}
 				}
 				else if(report instanceof Counter5Report) {
@@ -905,6 +920,12 @@ class ExportService {
 						//listprice_usd
 						titleRow.put("List Price USD", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
 					}
+
+					if (showOtherData) {
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy'): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy-MM-dd'): ' ')
+					}
+
 				}
 				titleMetrics.put(report.metricType, titleRow)
 				titleRows.put(report.title, titleMetrics)
@@ -1897,9 +1918,10 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance) {
+	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null) {
 		log.debug("Begin generateTitleExportXLS")
 		Locale locale = LocaleContextHolder.getLocale()
+
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		Set<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		List<String> titleHeaders = [
@@ -1939,6 +1961,10 @@ class ExportService {
 				messageSource.getMessage('tipp.localprice_usd',null,locale)]
 		titleHeaders.addAll(coreTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
+
+		if(showStatsInMonthRings){
+		titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
+		}
 
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
@@ -2111,6 +2137,22 @@ class ExportService {
 					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
 						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
 					}
+
+					if(entitlement && showStatsInMonthRings){
+						showStatsInMonthRings.each {Date date ->
+							def counterReport = entitlement.getCounterReport(date, subscriber)
+							//println(counterReport)
+							if(counterReport){
+								//println(counterReport)
+								//println(counterReport.reportCount ?: '')
+								row.add([field: counterReport.reportCount ?: '', style:null])
+							}else{
+								row.add([field: ' ', style:null])
+							}
+
+						}
+					}
+
 					rows.add(row)
 				}
 				println("flushing after ${offset} ...")

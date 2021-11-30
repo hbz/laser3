@@ -330,10 +330,23 @@ class SubscriptionControllerService {
         if(!result)
             [result: null, status: STATUS_ERROR]
         else {
+            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
             }
+            result.platformInstanceRecords = [:]
+            subscribedPlatforms.each { Platform platformInstance ->
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                if (queryResult.error && queryResult.error == 404) {
+                    result.wekbServerUnavailable = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                }
+                else if (queryResult.warning) {
+                    List records = queryResult.warning.records
+                    result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
+                }
+            }
+
             Subscription refSub = subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0 ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -1092,6 +1105,8 @@ class SubscriptionControllerService {
 
             params.tab = params.tab ?: 'allIEs'
 
+            result.preselectValues = params.preselectValues == 'on'
+
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
@@ -1193,6 +1208,20 @@ class SubscriptionControllerService {
                 if (!checkedCache) {
                     sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
                     checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                }
+
+                if (params.kbartPreselect) {
+                    //checkedCache.put('checked', [:])
+
+                    MultipartFile kbartFile = params.kbartPreselect
+                    InputStream stream = kbartFile.getInputStream()
+                    result.selectProcess = subscriptionService.issueEntitlementSelect(stream, result.subscription)
+
+                        if (result.selectProcess.selectedIEs) {
+                            checkedCache.put('checked', result.selectProcess.selectedIEs)
+                        }
+
+                    params.remove("kbartPreselect")
                 }
 
                 result.checkedCache = checkedCache.get('checked')
