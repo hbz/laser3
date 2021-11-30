@@ -3,11 +3,11 @@ buildscript {
         mavenLocal()
         maven { url 'https://repo.grails.org/core' }
     }
+    //cf. https://github.com/n0mer/gradle-git-properties/issues/195
+    configurations.all {
+        resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
+    }
     dependencies {
-        //cf. https://github.com/n0mer/gradle-git-properties/issues/195
-        classpath("org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r") {
-            force = true
-        }
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
         classpath 'org.grails.plugins:database-migration:3.0.3'
