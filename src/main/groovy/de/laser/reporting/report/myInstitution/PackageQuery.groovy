@@ -195,71 +195,43 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-ddc']) {
 
-                // TODO
-                // TODO
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
 
-//                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
-//                Map<String, Object> struct = [:]
-//                Map<String, Object> helper = [:]
-//                List<Long> noDataList = []
-//
-//                esRecords.each { it ->
-//                    List ddcList = it.value.get('ddcs')
-//                    ddcList.each { nr ->
-//                        if (! struct.containsKey(nr.value)) {
-//                            struct.put(nr.value, [])
-//                            helper.put(nr.value, nr)
-//                        }
-//                        struct.get(nr.value).add( Long.parseLong(it.key) )
-//                    }
-//                    if (!ddcList) {
-//                        noDataList.add(Long.parseLong(it.key))
-//                    }
-//                }
-//                struct.eachWithIndex { it, idx ->
-//                    Map<String, Object> ddc = helper.get(it.key)
-//                    List d = [idx * -1,  '(' + ddc.value + ')', it.value.size()]
-//                    RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value, RDConstants.DDC).getI10n('value')
-//                    if (rdv) {
-//                        d = [rdv.id, rdv.getI10n('value'), it.value.size()]
-//                    }
-//                    result.data.add( d )
-//                    result.dataDetails.add([
-//                            query : params.query,
-//                            id    : d[0],
-//                            label : d[1],
-//                            idList: it.value
-//                    ])
-//                }
-//                if (noDataList) {
-//                    handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-//                }
+                esRecords.each { it ->
+                    List ddcList = it.value.get('ddcs')
+                    ddcList.each { ddc ->
+                        if (! struct.containsKey(ddc.value)) {
+                            struct.put(ddc.value, [])
+                            helper.put(ddc.value, ddc)
+                        }
+                        struct.get(ddc.value).add( Long.parseLong(it.key) )
+                    }
+                    if (!ddcList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
 
-//                result.data = idList ? DeweyDecimalClassification.executeQuery(
-//                        'select ddc.id, ddc.ddc.id, count(*) from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) group by ddc.id, ddc.ddc.id order by ddc.id',
-//                        [idList: idList]
-//                ) : []
-//
-//                result.data.each { d ->
-//                    d[1] = RefdataValue.get(d[1]).getI10n('value')
-//
-//                    result.dataDetails.add([
-//                            query : params.query,
-//                            id    : d[0],
-//                            label : d[1],
-//                            idList: Package.executeQuery(
-//                                    'select pkg.id from Package pkg join pkg.ddcs ddc where pkg.id in (:idList) and ddc.id = :d order by pkg.name',
-//                                    [d: d[0], idList: idList]
-//                            )
-//                    ])
-//                }
-//
-//                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
-//                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select pkg.id from Package pkg where pkg.id in (:idList)', [idList: nonMatchingIdList]) : []
-//
-//                if (noDataList) {
-//                    handleGenericNonMatchingData2Values_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-//                }
+                struct.eachWithIndex { it, idx ->
+                    Map<String, Object> ddc = helper.get(it.key)
+                    List d = [idx * -1,  '(' + ddc.value_de + ')', it.value.size()]
+                    RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)
+                    if (rdv) {
+                        d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+                    }
+                    result.data.add( d )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: it.value
+                    ])
+                }
+                if (noDataList) {
+                    handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                }
             }
             else if (params.query in ['package-x-nationalRange']) {
 

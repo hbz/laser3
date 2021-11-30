@@ -9,6 +9,7 @@ import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -29,6 +30,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'org'                   : FIELD_TYPE_CUSTOM_IMPL,
+                                    'primaryUrl'            : FIELD_TYPE_PROPERTY,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
                                     'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'status'                : FIELD_TYPE_REFDATA,
@@ -153,32 +155,23 @@ class PlatformExport extends BaseDetailsExport {
             }
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
+                String esDataKey = BaseConfig.KEY_PLATFORM + '-' + key
+                Map<String, Object> esData = PlatformXCfg.ES_DATA.get( esDataKey )
 
-                if (key in [
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED,
-                        BaseConfig.ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED
-                ]) {
+                if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.platformESRecords.get(obj.id.toString())
 
-                    String value = record?.get( key )
+                    String value = record?.get( esData.mapping ?: key )
                     if (value) {
-                        String rdc = PlatformXCfg.ES_DATA.fields.get( BaseConfig.KEY_PLATFORM + '-' + key )?.rdc
+                        String rdc = esData.rdc
                         RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
 
                         if (rdv) {
                             content.add(rdv.getI10n('value'))
-                        } else {
+                        } else if (rdc) {
                             content.add( '(' + value + ')' )
+                        } else {
+                            content.add( value )
                         }
                     }
                     else {

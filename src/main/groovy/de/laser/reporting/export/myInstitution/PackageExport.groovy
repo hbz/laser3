@@ -39,7 +39,9 @@ class PackageExport extends BaseDetailsExport {
                                     'paymentType'           : FIELD_TYPE_ELASTICSEARCH,
                                     'openAccess'            : FIELD_TYPE_ELASTICSEARCH,
                                     'breakable'             : FIELD_TYPE_ELASTICSEARCH,
-
+                                    'x-ddc'                 : FIELD_TYPE_ELASTICSEARCH,
+                                    'description'           : FIELD_TYPE_ELASTICSEARCH,
+                                    'descriptionURL'        : FIELD_TYPE_ELASTICSEARCH
                             ]
                     ]
             ]
@@ -142,29 +144,40 @@ class PackageExport extends BaseDetailsExport {
             }
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
+                String esDataKey = BaseConfig.KEY_PACKAGE + '-' + key
+                Map<String, Object> esData = PackageXCfg.ES_DATA.get( esDataKey )
 
-                if (key in [
-                        BaseConfig.ELASTICSEARCH_KEY_PKG_BREAKABLE,
-                        BaseConfig.ELASTICSEARCH_KEY_PKG_CONSISTENT,
-                        BaseConfig.ELASTICSEARCH_KEY_PKG_OPENACCESS,
-                        BaseConfig.ELASTICSEARCH_KEY_PKG_PAYMENTTYPE,
-                        BaseConfig.ELASTICSEARCH_KEY_PKG_SCOPE
-                ]) {
+                if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.packageESRecords.get(obj.id.toString())
 
-                    String value = record?.get( key )
-                    if (value) {
-                        String rdc = PackageXCfg.ES_DATA.fields.get( BaseConfig.KEY_PACKAGE + '-' + key )?.rdc
-                        RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
-
-                        if (rdv) {
-                            content.add(rdv.getI10n('value'))
-                        } else {
-                            content.add( '(' + value + ')' )
+                    if (key == 'x-ddc') {
+                        List<String> ddcList = record?.get( esData.mapping )?.collect{ ddc ->
+                            RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value as String, esData.rdc as String)
+                            if (rdv) {
+                                rdv.getI10n('value')
+                            } else {
+                                '(' + value + ')'
+                            }
                         }
+                        content.add (ddcList ? ddcList.join( CSV_VALUE_SEPARATOR ) : '')
                     }
                     else {
-                        content.add( '' )
+                        String value = record?.get( esData.mapping ?: key )
+                        if (value) {
+                            String rdc = esData.rdc
+                            RefdataValue rdv = rdc ? RefdataValue.getByValueAndCategory(value, rdc) : null
+
+                            if (rdv) {
+                                content.add(rdv.getI10n('value'))
+                            } else if (rdc) {
+                                content.add( '(' + value + ')' )
+                            } else {
+                                content.add( value )
+                            }
+                        }
+                        else {
+                            content.add( '' )
+                        }
                     }
                 }
                 else {

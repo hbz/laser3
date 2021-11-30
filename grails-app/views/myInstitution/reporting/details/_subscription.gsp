@@ -12,6 +12,13 @@
             <g:if test="${query.startsWith('subscription-x-member') || query.startsWith('memberSubscription-')}">
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:if>
+            <g:else>
+                <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                    <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+                </g:if>
+                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                </g:elseif>
+            </g:else>
             <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -24,13 +31,6 @@
             <g:elseif test="${query == 'subscription-x-memberProvider'}">
                 <th>${message(code:'default.provider.label')}</th>
             </g:elseif>
-            <g:if test="${! (query.startsWith('subscription-x-member') || query.startsWith('memberSubscription-'))}">
-                <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
-                    <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
-                </g:if>
-                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
-                </g:elseif>
-            </g:if>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
         </tr>
@@ -54,6 +54,19 @@
                             %>
                         </td>
                     </g:if>
+                    <g:else>
+                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                            <td>
+                                <%
+                                    println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
+                                            [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                                    )[0]
+                                %>
+                            </td>
+                        </g:if>
+                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        </g:elseif>
+                    </g:else>
 
                     <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                         <td>
@@ -90,19 +103,6 @@
                             %>
                         </td>
                     </g:elseif>
-                    <g:if test="${! (query.startsWith('subscription-x-member') || query.startsWith( 'memberSubscription-'))}">
-                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
-                            <td>
-                                <%
-                                    println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
-                                            [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-                                    )[0]
-                                %>
-                            </td>
-                        </g:if>
-                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
-                        </g:elseif>
-                    </g:if>
 
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />

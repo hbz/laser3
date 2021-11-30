@@ -19,9 +19,8 @@
                         ).each( function(){
                             $(this)
                                 .css('opacity', '0.2').css('color', '#333')
-                                .next('.dropdown')
-                                    .addClass('disabled').css('opacity', '0.2').css('color', '#333').css('background-color', '#fffaf3').css('border-color', '#fffaf3')
-                                    .find('select').attr('disabled', 'disabled');
+                                .next('.dropdown').addClass('disabled').css('opacity', '0.2').css('color', '#333')
+                                .find('select').attr('disabled', 'disabled');
                         })
                 </laser:script>
             </g:if>

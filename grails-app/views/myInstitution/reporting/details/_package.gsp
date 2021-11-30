@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
@@ -16,7 +16,14 @@
             <th>${message(code:'package.label')}</th>
             <th>${message(code:'package.content_provider')}</th>
             <th>${message(code:'package.nominalPlatform')}</th>
-            <th>${message(code:'package.show.nav.current')}</th>
+            <th>
+                <g:if test="${query == 'package-x-ddc'}">
+                    ${message(code:'package.ddc.label')}
+                </g:if>
+                <g:else>
+                    ${message(code:'package.show.nav.current')}
+                </g:else>
+            </th>
             <th>${message(code:'package.lastUpdated.label')}</th>
             <th>${message(code:'wekb')}</th>
         </tr>
@@ -40,13 +47,22 @@
                         </g:if>
                     </td>
                     <td>
-                        <%
-                            List tipps = TitleInstancePackagePlatform.executeQuery(
-                                    'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
-                                    [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
-                            )
-                            println tipps[0] > 0 ? tipps[0] : ''
-                        %>
+                        <g:if test="${query == 'package-x-ddc'}">
+                            <g:if test="${esRecordIds.contains(pkg.id)}">
+                                <g:each in="${esRecords.get(pkg.id as String).ddcs}" var="ddc">
+                                    ${ RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)?.getI10n('value') ?: '(' + ddc.value_de + ')' } <br />
+                                </g:each>
+                            </g:if>
+                        </g:if>
+                        <g:else>
+                            <%
+                                List tipps = TitleInstancePackagePlatform.executeQuery(
+                                        'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
+                                        [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
+                                )
+                                println tipps[0] > 0 ? tipps[0] : ''
+                            %>
+                        </g:else>
                     </td>
                     <td>
                         <g:if test="${esRecordIds.contains(pkg.id)}">

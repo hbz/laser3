@@ -9,7 +9,7 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            %{-- TODO --}%<th>${(labels.first().trim() != 'distribution') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
+            %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
