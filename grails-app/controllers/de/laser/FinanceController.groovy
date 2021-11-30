@@ -436,7 +436,7 @@ class FinanceController  {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
-        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView, offset: params.offset])
         Set<String> pickedSubscriptions = []
         JSON.parse(params.preselectedSubscriptions).each { String ciId ->
             CostItem ci = CostItem.get(Long.parseLong(ciId))
@@ -459,7 +459,7 @@ class FinanceController  {
             result.taxKey = result.costItem.taxKey
         result.modalText = message(code: 'financials.editCost')
         result.submitButtonLabel = message(code:'default.button.save.label')
-        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView, offset: params.offset])
         result.idSuffix = "edit_${params.id}"
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -480,7 +480,7 @@ class FinanceController  {
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.getCustomerType() == 'ORG_INST'
         result.taxKey = result.costItem.taxKey
-        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
+        result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy", offset: params.offset])
         result.mode = "copy"
         result.idSuffix = "copy_${params.id}"
         render template: "/finance/ajaxModal", model: result
@@ -495,7 +495,7 @@ class FinanceController  {
         Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
         if(ctrlResult.error == FinanceService.STATUS_ERROR)
             flash.error = ctrlResult.result.error
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
     }
 
     /**
@@ -511,7 +511,7 @@ class FinanceController  {
         else {
             params.remove("Add")
         }
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
     }
 
     /**

@@ -6,6 +6,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet
+
+4014    30.11.2021  rc-2.2  2.2.5       Andreas Bug         Seite wird bei Bearbeiten von Kosten beibehalten
+
 4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
 
 1111    24.11.2021  dev     2.3         Andreas Feature     interne Dokumentation der LAS:eR-API
