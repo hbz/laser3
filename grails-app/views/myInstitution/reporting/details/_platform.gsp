@@ -15,6 +15,7 @@
             <th></th>
             <th>${message(code:'platform.label')}</th>
             <th>${message(code:'platform.provider')}</th>
+            <th>${message(code:'platform.primaryURL')}</th>
             <g:if test="${query in [ 'platform-x-property' ]}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -32,6 +33,11 @@
                     <td>
                         <g:if test="${plt.org}">
                             <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${plt.primaryUrl}">
+                            <a href="${plt.primaryUrl}" target="_blank">${plt.primaryUrl}</a>
                         </g:if>
                     </td>
                     <g:if test="${query in [ 'platform-x-property' ]}">
