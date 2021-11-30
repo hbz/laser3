@@ -12,10 +12,6 @@
                     <g:if test="${query == 'license-x-identifier'}">
                         <th>${message(code:'identifier.label')}</th>
                     </g:if>
-                    <g:elseif test="${query == 'license-x-property'}">
-                        <th>${message(code:'reporting.details.property.value')}</th>
-                    </g:elseif>
-
                     <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
                         <th>${message(code:'subscription.plural')}</th>
 
@@ -24,8 +20,9 @@
                             <th>${message(code:'subscription.member.plural')}</th>
                         </g:if>
                     </g:if>
-                    <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
-                    </g:elseif>
+                    <g:if test="${query == 'license-x-property'}">
+                        <th>${message(code:'reporting.details.property.value')}</th>
+                    </g:if>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
             </tr>
@@ -46,11 +43,6 @@
                             %>
                         </td>
                     </g:if>
-                    <g:elseif test="${query == 'license-x-property'}">
-                        <td>
-                            <laser:reportObjectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
-                        </td>
-                    </g:elseif>
 
                     <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
                         <td>
@@ -80,8 +72,12 @@
                             </td>
                         </g:if>
                     </g:if>
-                    <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
-                    </g:elseif>
+
+                    <g:if test="${query == 'license-x-property'}">
+                        <td>
+                            <laser:reportObjectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                        </td>
+                    </g:if>
 
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" />

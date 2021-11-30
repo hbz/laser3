@@ -29,6 +29,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'org'                   : FIELD_TYPE_CUSTOM_IMPL,
+                                    'primaryUrl'            : FIELD_TYPE_PROPERTY,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
                                     'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'status'                : FIELD_TYPE_REFDATA,
