@@ -58,29 +58,9 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
-    static String ELASTICSEARCH_KEY_PKG_BREAKABLE   = 'breakable'
-    static String ELASTICSEARCH_KEY_PKG_CONSISTENT  = 'consistent'
-    static String ELASTICSEARCH_KEY_PKG_OPENACCESS  = 'openAccess'
-    static String ELASTICSEARCH_KEY_PKG_PAYMENTTYPE = 'paymentType'
-    static String ELASTICSEARCH_KEY_PKG_SCOPE       = 'scope'
-
     static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
     static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
-
-    static String ELASTICSEARCH_KEY_PLT_IP_AUTHENTICATION           = 'ipAuthentication'
-    static String ELASTICSEARCH_KEY_PLT_SHIBBOLETH_AUTHENTICATION   = 'shibbolethAuthentication'
-    static String ELASTICSEARCH_KEY_PLT_PASSWORD_AUTHENTICATION     = 'passwordAuthentication'
-    static String ELASTICSEARCH_KEY_PLT_PROXY_SUPPORTED             = 'proxySupported'
-
-    static String ELASTICSEARCH_KEY_PLT_STATISTICS_FORMAT           = 'statisticsFormat'
-    static String ELASTICSEARCH_KEY_PLT_STATISTICS_UPDATE           = 'statisticsUpdate'
-    static String ELASTICSEARCH_KEY_PLT_COUNTER_CERTIFIED           = 'counterCertified'
-    static String ELASTICSEARCH_KEY_PLT_COUNTERR3_SUPPORTED         = 'counterR3Supported'
-    static String ELASTICSEARCH_KEY_PLT_COUNTERR4_SUPPORTED         = 'counterR4Supported'
-    static String ELASTICSEARCH_KEY_PLT_COUNTERR5_SUPPORTED         = 'counterR5Supported'
-    static String ELASTICSEARCH_KEY_PLT_COUNTERR4_SUSHI_SUPPORTED   = 'counterR4SushiApiSupported'
-    static String ELASTICSEARCH_KEY_PLT_COUNTERR5_SUSHI_SUPPORTED   = 'counterR5SushiApiSupported'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM // 'costItem'
@@ -160,7 +140,7 @@ class BaseConfig {
             PlatformXCfg.ES_DATA
         }
         else {
-            [ fields : [:], flags : [:] ]
+            [:]
         }
     }
 
@@ -302,8 +282,8 @@ class BaseConfig {
         MessageSource messageSource = mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        Map pkgMap = PackageXCfg.ES_DATA.fields.get(KEY_PACKAGE + '-' + key) as Map<String, String>
-        Map pltMap = PlatformXCfg.ES_DATA.fields.get(KEY_PLATFORM + '-' + key)  as Map<String, String>
+        Map pkgMap = PackageXCfg.ES_DATA.get(KEY_PACKAGE + '-' + key) as Map<String, String>
+        Map pltMap = PlatformXCfg.ES_DATA.get(KEY_PLATFORM + '-' + key)  as Map<String, String>
 
         if (pkgMap) {
             return [

@@ -35,7 +35,12 @@ class ElasticSearchHelper {
                                 ],
                                 from: 0,
                                 size: 10000,
-                                _source: [ "uuid", "openAccess", "paymentType", "curatoryGroups.*", "scope", "nationalRanges.*", "regionalRanges.*", "lastUpdatedDisplay" ]
+                                _source: [
+                                        "uuid", "openAccess", "paymentType", "scope",
+                                        "description", "descriptionURL",
+                                        "curatoryGroups.*", "ddcs.*", "nationalRanges.*", "regionalRanges.*",
+                                        "lastUpdatedDisplay"
+                                ]
                         ]
                         response.success = { resp, data ->
                             data.hits.hits.each {

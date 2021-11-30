@@ -7,19 +7,18 @@ class PackageXCfg extends BaseConfig {
 
     static Map<String, Map> ES_DATA = [
 
-            fields : [
-                    'package-breakable'         : [label: 'package.breakable',          rdc: RDConstants.PACKAGE_BREAKABLE],
-                    'package-consistent'        : [label: 'package.consistent',         rdc: RDConstants.PACKAGE_CONSISTENT],
-                    'package-openAccess'        : [label: 'package.openAccess.label',   rdc: RDConstants.LICENSE_OA_TYPE],
-                    'package-paymentType'       : [label: 'package.paymentType.label',  rdc: RDConstants.PAYMENT_TYPE],
-                    'package-scope'             : [label: 'package.scope.label',        rdc: RDConstants.PACKAGE_SCOPE],
-            ],
-            flags : [
-                    'package-x-curatoryGroup'   : [:],
-                    'package-x-nationalRange'   : [:],
-                    'package-x-regionalRange'   : [:]
-            ]
-            //'package-x-ddc'
+            'package-breakable'         : [filter: true,    export: true,   label: 'package.breakable',          rdc: RDConstants.PACKAGE_BREAKABLE],
+            'package-consistent'        : [filter: true,    export: true,   label: 'package.consistent',         rdc: RDConstants.PACKAGE_CONSISTENT],
+            'package-description'       : [                 export: true,   label: 'package.description.label'],
+            'package-descriptionURL'    : [                 export: true,   label: 'package.descriptionURL.label'],
+            'package-openAccess'        : [filter: true,    export: true,   label: 'package.openAccess.label',   rdc: RDConstants.LICENSE_OA_TYPE],
+            'package-paymentType'       : [filter: true,    export: true,   label: 'package.paymentType.label',  rdc: RDConstants.PAYMENT_TYPE],
+            'package-scope'             : [filter: true,    export: true,   label: 'package.scope.label',        rdc: RDConstants.PACKAGE_SCOPE],
+
+            'package-x-curatoryGroup'   : [:],
+            'package-x-nationalRange'   : [:],
+            'package-x-regionalRange'   : [:],
+            'package-x-ddc'             : [                 export: true,   mapping: 'ddcs',    label: 'package.ddc.label',     rdc: RDConstants.DDC]
     ]
 
     static Map<String, Object> CONFIG = [
@@ -87,6 +86,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-ddc' : [  // ES
+                                             detailsTemplate     : 'package',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                    ],
                                     'package-x-language' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -101,12 +105,7 @@ class PackageXCfg extends BaseConfig {
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
-                                    ],
-//                                    'package-x-ddc' : [  // ES
-//                                            detailsTemplate     : 'package',
-//                                            chartTemplate       : 'generic',
-//                                            chartLabels         : []
-//                                    ]
+                                    ]
                             ]
                     ]
             ]
