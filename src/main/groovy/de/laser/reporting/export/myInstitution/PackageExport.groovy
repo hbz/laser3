@@ -184,7 +184,7 @@ class PackageExport extends BaseDetailsExport {
                         // TODO * != ()
                         List<String> idList = record?.get( esData.mapping )?.collect{ id ->
                             IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
-                            ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : '(' + id.namespace + ' *):' + id.value
+                            ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : '(' + (id.namespaceName ?: id.namespace) + ' *):' + id.value
                         }
                         content.add (idList ? idList.join( CSV_VALUE_SEPARATOR ) : '')
                     }

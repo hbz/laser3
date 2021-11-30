@@ -74,11 +74,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'base', 'x.identifiers' ]
                                     ], */
-                                    /* 'package-x-id' : [ // ES
+                                    'package-x-id' : [ // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
-                                    ], */
+                                    ],
                                     'package-x-provider' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : '2axis2values_nonMatches',

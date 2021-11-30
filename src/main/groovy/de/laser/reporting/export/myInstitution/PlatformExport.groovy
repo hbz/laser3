@@ -115,16 +115,6 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                /* if (key == 'x-identifier') { // not used ?
-                    List<Identifier> ids = []
-
-                    if (f.value) {
-                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.plt = :plt and i.ns.id in (:idnsList)",
-                                [plt: plt, idnsList: f.value] )
-                    }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
-                }
-                else */
                 if (key == 'org') {
                     if (plt.org) {
                         content.add( plt.org.name )
