@@ -150,7 +150,7 @@
                     <td class="x">
                         <g:if test="${editable}">
                             <g:if test="${fixedSubcription}">
-                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
@@ -162,7 +162,7 @@
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
@@ -175,7 +175,7 @@
                             </g:else>
                         </g:if>
                         <g:if test="${editable}">
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'own']" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'own', offset: params.offset]" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem",args: [ci.costTitle])}"
                                         data-confirm-term-how="delete"
                                         role="button"
