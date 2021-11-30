@@ -286,7 +286,7 @@
                         <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
-                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -298,7 +298,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -309,7 +309,7 @@
                                         </g:link>
                                     </span>
                                 </g:else>
-                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons']" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons', offset: params.offset]" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
                                         data-confirm-term-how="delete"
                                         role="button"

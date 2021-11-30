@@ -4,9 +4,12 @@ package de.laser
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -270,4 +273,41 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
       result
   }
+
+    def getCounterReport(Date date, Org subscriber){
+        String sort = 'r.reportCount desc'
+
+        String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+
+        Calendar filterTime = GregorianCalendar.getInstance()
+        filterTime.setTime(date)
+        Date startDate = date
+        filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+        Date endDate = filterTime.getTime()
+
+        Map<String, Object> queryParams = [customer: subscriber, platform: this.tipp.platform, startDate: startDate, endDate: endDate, title: this.tipp]
+
+        List counterReports
+
+
+        counterReports = Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
+
+        if(counterReports.size() > 0){
+            //println(counterReports.size())
+            return counterReports[0]
+        }
+
+        counterReports =  Counter4Report.executeQuery('select r from Counter4Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
+
+        if(counterReports.size() > 0){
+            //println(counterReports.size())
+            return counterReports[0]
+        }
+
+        if(!counterReports) {
+            return null
+        }
+
+    }
+
 }

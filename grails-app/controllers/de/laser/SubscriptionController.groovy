@@ -1026,20 +1026,36 @@ class SubscriptionController {
                 out.close()
             }
             if (params.exportForImport) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                //is correct; the generateTitleExportCSV has been adapted to KBART headers, thus, we use the Excel data to return it as TSV
-                Map<String, List> tableData = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name)
 
-                tableData.titles << "Pick"
-                List columnData = tableData.rows ? tableData.rows.field : []
-
-                out.withWriter { Writer writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titles, columnData, '\t'))
+                List monthsInRing = []
+                if(ctrlResult.result.showStatisticByParticipant) {
+                    Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
+                    if (ctrlResult.result.subscription.startDate && ctrlResult.result.subscription.endDate) {
+                        startTime.setTime(ctrlResult.result.subscription.startDate)
+                        if (ctrlResult.result.subscription.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.subscription.endDate)
+                    } else if (ctrlResult.result.subscription.startDate) {
+                        startTime.setTime(ctrlResult.result.subscription.startDate)
+                        endTime.setTime(new Date())
+                    }
+                    while (startTime.before(endTime)) {
+                        monthsInRing << startTime.getTime()
+                        startTime.add(Calendar.MONTH, 1)
+                    }
                 }
-                out.flush()
-                out.close()
+
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name, monthsInRing, ctrlResult.result.subscriber)
+                export.titles << "Pick"
+
+                Map sheetData = [:]
+                sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
+                wb = exportService.generateXLSXWorkbook(sheetData)
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
             else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
