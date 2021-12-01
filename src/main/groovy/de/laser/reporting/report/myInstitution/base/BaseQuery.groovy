@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.local.SubscriptionReport
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -232,7 +233,7 @@ class BaseQuery {
                     dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
                     [idList: idList, d: d[0]]
             )
-            d[1] = IdentifierNamespace.get(d[0]).getI10n('name') ?: d[1] + ' *'
+            d[1] = IdentifierNamespace.get(d[0]).getI10n('name') ?: GenericHelper.flagUnmatched(d[1])
 
             result.dataDetails.add([
                     query : query,

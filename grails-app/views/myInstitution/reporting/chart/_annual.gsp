@@ -11,7 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {

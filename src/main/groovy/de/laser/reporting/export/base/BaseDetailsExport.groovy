@@ -22,6 +22,7 @@ import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlo
 import de.laser.reporting.export.myInstitution.PackageExport
 import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.MessageSource
@@ -250,7 +251,7 @@ abstract class BaseDetailsExport {
         }
 
         idnsList.collect{ it ->
-            [ it.id, it.getI10n('name') ?: it.ns + ' *' ]
+            [ it.id, it.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns )]
         }.sort { a,b -> a[1] <=> b[1] }
     }
 

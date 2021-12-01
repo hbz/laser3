@@ -9,6 +9,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -100,7 +101,7 @@ class PackageQuery extends BaseQuery {
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> id = helper.get(it.key)
                     IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
-                    String label = ns ? (ns.getI10n('name') ?: ns.ns) : '(' + (id.namespaceName ?: id.namespace) + ' *)'
+                    String label = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace )
                     List d = [ ns ? ns.id : (idx * -1), label, it.value.size()]
 
                     // TODO * != ()
@@ -259,7 +260,7 @@ class PackageQuery extends BaseQuery {
 
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> ddc = helper.get(it.key)
-                    List d = [idx * -1,  '(' + ddc.value_de + ')', it.value.size()]
+                    List d = [idx * -1,  GenericHelper.flagUnmatched( ddc.value_de ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -298,7 +299,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> nr = helper.get(it.key)
-                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    List d = [idx * -1, GenericHelper.flagUnmatched( nr.value ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.COUNTRY)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -337,7 +338,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> nr = helper.get(it.key)
-                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    List d = [idx * -1, GenericHelper.flagUnmatched( nr.value ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.REGIONS_DE)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -390,7 +391,7 @@ class PackageQuery extends BaseQuery {
                 if (rdv) {
                     d = [rdv.id, rdv.getI10n('value'), it.value.size()]
                 } else {
-                    d = [idx * -1, '(' + it.key + ')', it.value.size()]
+                    d = [idx * -1, GenericHelper.flagUnmatched( it.key ), it.value.size()]
                 }
             }
             result.data.add( d )

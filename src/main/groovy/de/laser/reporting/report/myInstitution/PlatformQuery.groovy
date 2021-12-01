@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.helper.RDConstants
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -118,7 +119,7 @@ class PlatformQuery extends BaseQuery {
                 if (rdv) {
                     d = [rdv.id, rdv.getI10n('value'), it.value.size()]
                 } else {
-                    d = [idx * -1, '(' + it.key + ')', it.value.size()]
+                    d = [idx * -1, GenericHelper.flagUnmatched( it.key ), it.value.size()]
                 }
             }
             result.data.add( d )
