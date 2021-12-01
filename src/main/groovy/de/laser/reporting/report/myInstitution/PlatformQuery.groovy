@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.helper.RDConstants
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -130,6 +131,7 @@ class PlatformQuery extends BaseQuery {
                     idList: it.value
             ])
         }
+        ElasticSearchHelper.sortResultDataList( result.data )
 
         _handleGenericNoCounterpartData_TMP(query, orphanedIdList, result)
     }

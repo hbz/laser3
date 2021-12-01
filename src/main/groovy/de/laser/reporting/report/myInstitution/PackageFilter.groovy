@@ -3,6 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.Package
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -105,7 +106,26 @@ class PackageFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    println ' --- ' + pType +' not implemented --- '
+
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PLATFORM) {
+                        queryParts.add('Platform plt')
+                        whereParts.add('pkg.nominalPlatform = plt and plt.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = Platform.get(params.long(key)).name
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PROVIDER) {
+                        queryParts.add('OrgRole ro')
+                        whereParts.add('ro.pkg = pkg and ro.org.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+                        whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
+                        queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
+
+                        filterLabelValue = Org.get(params.long(key)).name
+                    }
+                    else {
+                        println ' --- ' + pType +' not implemented --- '
+                    }
                 }
 
                 if (filterLabelValue) {
@@ -117,7 +137,6 @@ class PackageFilter extends BaseFilter {
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
 //        println 'PackageFilter.filter() -->'
-//
 //        println query
 //        println queryParams
 //        println whereParts
