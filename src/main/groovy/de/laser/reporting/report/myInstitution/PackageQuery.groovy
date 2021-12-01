@@ -1,5 +1,6 @@
 package de.laser.reporting.report.myInstitution
 
+import de.laser.IdentifierNamespace
 import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
@@ -8,6 +9,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -63,16 +65,58 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['package-x-identifier']) {
+//            if (params.query in ['package-x-identifier']) { // not used ??
+//
+//                handleGenericIdentifierXQuery(
+//                        params.query,
+//                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+//                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
+//                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
+//                        idList,
+//                        result
+//                )
+//            }
 
-                handleGenericIdentifierXQuery(
-                        params.query,
-                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
-                        idList,
-                        result
-                )
+            if (params.query in ['package-x-id']) {
+
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
+
+                esRecords.each { it ->
+                    List idfsList = it.value.get('identifiers')
+                    idfsList.each { id ->
+                        if (! struct.containsKey(id.namespace)) {
+                            struct.put(id.namespace, [])
+                            helper.put(id.namespace, id)
+                        }
+                        struct.get(id.namespace).add( Long.parseLong(it.key) )
+                    }
+                    if (!idfsList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
+
+                struct.eachWithIndex { it, idx ->
+                    Map<String, Object> id = helper.get(it.key)
+                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                    String label = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace )
+                    List d = [ ns ? ns.id : (idx * -1), label, it.value.size()]
+
+                    // TODO * != ()
+
+                    result.data.add( d )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: it.value
+                    ])
+                }
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
             else if (params.query in ['package-x-language']) {
 
@@ -216,7 +260,7 @@ class PackageQuery extends BaseQuery {
 
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> ddc = helper.get(it.key)
-                    List d = [idx * -1,  '(' + ddc.value_de + ')', it.value.size()]
+                    List d = [idx * -1,  GenericHelper.flagUnmatched( ddc.value_de ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -229,9 +273,9 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
-                if (noDataList) {
-                    handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
-                }
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
             else if (params.query in ['package-x-nationalRange']) {
 
@@ -255,7 +299,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> nr = helper.get(it.key)
-                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    List d = [idx * -1, GenericHelper.flagUnmatched( nr.value ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.COUNTRY)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -294,7 +338,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> nr = helper.get(it.key)
-                    List d = [idx * -1,  '(' + nr.value + ')', it.value.size()]
+                    List d = [idx * -1, GenericHelper.flagUnmatched( nr.value ), it.value.size()]
                     RefdataValue rdv = RefdataValue.getByValueAndCategory(nr.value as String, RDConstants.REGIONS_DE)
                     if (rdv) {
                         d = [rdv.id, rdv.getI10n('value'), it.value.size()]
@@ -347,7 +391,7 @@ class PackageQuery extends BaseQuery {
                 if (rdv) {
                     d = [rdv.id, rdv.getI10n('value'), it.value.size()]
                 } else {
-                    d = [idx * -1, '(' + it.key + ')', it.value.size()]
+                    d = [idx * -1, GenericHelper.flagUnmatched( it.key ), it.value.size()]
                 }
             }
             result.data.add( d )

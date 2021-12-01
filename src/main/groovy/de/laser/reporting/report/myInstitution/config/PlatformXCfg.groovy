@@ -8,6 +8,8 @@ class PlatformXCfg extends BaseConfig {
 
     static Map<String, Map> ES_DATA = [
 
+            'platform-altname'      : [                 export: true,   label: 'package.show.altname'],
+
             'platform-ipAuthentication'             : [filter: true,    export: true,   label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION],
             'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
             'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],

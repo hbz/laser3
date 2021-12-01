@@ -17,7 +17,25 @@ if (! JSPC.app.reporting) {
                     bottom: 0,
                     left: 'center',
                     z: 1
-                }
+                },
+                toolbox: {
+                    showTitle: true,
+                    orient: 'vertical',
+                    right: 0,
+                    feature: {
+                        saveAsImage: {
+                            title: '${message(code:'reporting.chart.toolbox.saveAsImage')}'
+                        },
+                        myLegendToggle: {
+                            title: '${message(code:'reporting.chart.toolbox.toggleLegend')}',
+                            icon: 'path://M28,0C12.561,0,0,12.561,0,28s12.561,28,28,28s28-12.561,28-28S43.439,0,28,0z M40,41H16c-1.104,0-2-0.896-2-2s0.896-2,2-2 h24c1.104,0,2,0.896,2,2S41.104,41,40,41z M40,30H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,30,40,30z M40,19H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,19,40,19z',
+                            /* icon: 'path://M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z', */
+                            onclick: function (){
+                                JSPC.app.reporting.current.chart.echart.setOption({ legend: {show: ! JSPC.app.reporting.current.chart.echart.getOption().legend[0].show} })
+                            }
+                        }
+                    }
+                },
             },
             series: {
                 _color: {
@@ -76,11 +94,13 @@ if (! JSPC.app.reporting) {
                 }
             },
             toolbox: {
-                showTitle: false,
+                showTitle: true,
+                orient: 'vertical',
+                right: 0,
                 feature: {
                     saveAsImage: {
                         title: 'Exportieren'
-                    },
+                    }
                 }
             },
         },

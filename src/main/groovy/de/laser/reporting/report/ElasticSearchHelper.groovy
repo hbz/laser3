@@ -22,9 +22,9 @@ class ElasticSearchHelper {
                 HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
                 println 'Request: ' + hb.getUri()
 
-                print 'Queue: '
+                print 'Queue:'
                 while (pkgList) {
-                    print '[' + pkgList.size() + '~ '
+                    print ' ~' + pkgList.size()
                     List terms = pkgList.take(500)
                     pkgList = pkgList.drop(500) as List<List>
 
@@ -37,8 +37,8 @@ class ElasticSearchHelper {
                                 size: 10000,
                                 _source: [
                                         "uuid", "openAccess", "paymentType", "scope",
-                                        "description", "descriptionURL",
-                                        "curatoryGroups.*", "ddcs.*", "nationalRanges.*", "regionalRanges.*",
+                                        "altname", "description", "descriptionURL",
+                                        "curatoryGroups.*", "ddcs.*", "identifiers.*", "nationalRanges.*", "regionalRanges.*",
                                         "lastUpdatedDisplay"
                                 ]
                         ]
@@ -76,9 +76,9 @@ class ElasticSearchHelper {
                 HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
                 println 'Request: ' + hb.getUri()
 
-                print 'Queue: '
+                print 'Queue:'
                 while (pkgList) {
-                    print '[' + pkgList.size() + '~ '
+                    print ' ~' + pkgList.size()
                     List terms = pkgList.take(500)
                     pkgList = pkgList.drop(500) as List<List>
 
@@ -91,6 +91,7 @@ class ElasticSearchHelper {
                                 size: 10000,
                                 _source: [
                                         "uuid", "providerUuid",
+                                        "altname",
                                         "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
                                         "statisticsFormat", "statisticsUpdate", "counterCertified",
                                         "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",

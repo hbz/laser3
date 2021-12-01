@@ -120,7 +120,7 @@ class GlobalExportHelper extends BaseExportHelper {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
-                    idns.getI10n('name') ?: idns.ns + ' *'
+                    idns.getI10n('name') ?: GenericHelper.flagUnmatched( idns.ns )
                 }.join(', ') : '')
             }
             else if (fieldName == '@-org-accessPoint') {
