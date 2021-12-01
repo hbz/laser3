@@ -12,7 +12,7 @@
             ]
         },
         legend: JSPC.app.reporting.helper._pie.legend,
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {

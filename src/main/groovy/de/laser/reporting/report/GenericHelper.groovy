@@ -91,4 +91,8 @@ class GenericHelper {
 
         label
     }
+
+    static String flagUnmatched(String value) {
+        '(' + value + ' *)'
+    }
 }

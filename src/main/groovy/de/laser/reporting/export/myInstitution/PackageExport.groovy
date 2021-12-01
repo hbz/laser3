@@ -11,6 +11,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
@@ -122,7 +123,7 @@ class PackageExport extends BaseDetailsExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.pkg = :pkg and i.ns.id in (:idnsList)",
                                 [pkg: pkg, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else */
                 if (key == '@-package-titleCount') {
@@ -184,7 +185,7 @@ class PackageExport extends BaseDetailsExport {
                         // TODO * != ()
                         List<String> idList = record?.get( esData.mapping )?.collect{ id ->
                             IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
-                            ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : '(' + (id.namespaceName ?: id.namespace) + ' *):' + id.value
+                            ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace ) + ':' + id.value
                         }
                         content.add (idList ? idList.join( CSV_VALUE_SEPARATOR ) : '')
                     }
