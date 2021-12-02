@@ -281,7 +281,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
         Calendar filterTime = GregorianCalendar.getInstance()
         filterTime.setTime(date)
-        Date startDate = date
+        filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+        Date startDate = filterTime.getTime()
         filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
         Date endDate = filterTime.getTime()
 

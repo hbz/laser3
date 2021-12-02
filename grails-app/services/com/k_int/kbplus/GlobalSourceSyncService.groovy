@@ -69,6 +69,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             orgStatus = [:],
             orgTypes = [:],
             currency = [:],
+            accessType = [:],
             ddc = [:],
             contactTypes = [:]
     Long maxTimestamp
@@ -239,6 +240,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
                         ddc.put(rdv.value, rdv)
+                    }
+                    max = 5000
+                    break
+                case "accessType": triggeredTypes = ['TitleInstancePackagePlatform']
+                    RefdataCategory.getAllRefdataValues(RDConstants.TIPP_ACCESS_TYPE).each { RefdataValue rdv ->
+                        accessType.put(rdv.value, rdv)
                     }
                     max = 5000
                     break
@@ -1930,6 +1937,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
             ddc.put(rdv.value, rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.TIPP_ACCESS_TYPE).each { RefdataValue rdv ->
+            accessType.put(rdv.value, rdv)
         }
         initialPackagesCounter = [:]
         pkgPropDiffsContainer = [:]

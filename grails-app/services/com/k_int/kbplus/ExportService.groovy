@@ -2155,7 +2155,7 @@ class ExportService {
 						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
 					}
 
-					if(entitlement && showStatsInMonthRings){
+					if(entitlement && showStatsInMonthRings && subscriber){
 						showStatsInMonthRings.each {Date date ->
 							def counterReport = entitlement.getCounterReport(date, subscriber)
 							//println(counterReport)
