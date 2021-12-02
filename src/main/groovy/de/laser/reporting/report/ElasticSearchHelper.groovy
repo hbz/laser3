@@ -122,8 +122,8 @@ class ElasticSearchHelper {
     }
 
     static boolean isReachable() {
-
         boolean reachable = false
+
         try {
             Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
             URI uri = new URI( rConfig.elasticSearch.url )
@@ -133,5 +133,11 @@ class ElasticSearchHelper {
             println e.printStackTrace()
         }
         reachable
+    }
+
+    static void sortResultDataList(List<List> list) {
+        list.sort{ a, b ->
+            if (a[1].startsWith('*')) { return 1 } else if (b[1].startsWith('*')) { return -1 } else { (a[1] as String).toLowerCase() <=> (b[1] as String).toLowerCase() }
+        }
     }
 }

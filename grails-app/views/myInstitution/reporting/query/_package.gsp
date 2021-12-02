@@ -2,10 +2,9 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
-    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
+    <g:set var="validFilterResult" value="${filterResult.data.packageIdList}" />
 
-    <g:if test="${filterResult.data.packageIdList}">
-
+    <g:if test="${validFilterResult}">
         <div class="ui message ${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE) ? 'warning' : 'success'}">
             <p>
                 <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
@@ -25,8 +24,6 @@
                 </laser:script>
             </g:if>
         </div>
-        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PACKAGE}"]}" />
-
     </g:if>
     <g:else>
         <div class="ui message negative">
@@ -37,4 +34,10 @@
             </g:if>
         </div>
     </g:else>
+
+    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
+
+    <g:if test="${validFilterResult}">
+        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PACKAGE}"]}" />
+    </g:if>
 </g:if>
