@@ -162,9 +162,9 @@ termination.condition,Kündigung Voraussetzung,Termination Condition
 ticket.category,Kategorie,Ticket Category
 ticket.status,Ticketstatus,Ticket Status
 tipp.access.status,TIPP Access Status,TIPP Access Status
+tipp.access.type,Zugangstyp,TIPP Access Type
 tipp.delayed.oa,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
 tipp.hybrid.oa,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
-tipp.payment.type,TitleInstancePackagePlatform.PaymentType,TitleInstancePackagePlatform.PaymentType
 tipp.status,TIPP Status,TIPP Status
 tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
 title.status,TitleInstanceStatus,TitleInstanceStatus

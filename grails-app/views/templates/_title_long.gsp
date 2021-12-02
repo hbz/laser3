@@ -256,6 +256,18 @@
         </div>
     </g:if>
 
+    <%-- TODO we:kb data missing, tipp.openAccess needs to be implemented as well
+    <g:if test="${(tipp.accessType || showEmptyFields)}">
+        <div class="item">
+            <i class="grey key icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.accessType')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.accessType') + ':'} ${tipp.accessType}
+            </div>
+        </div>
+    </g:if>--%>
+
     <g:set var="providers" value="${tipp.getPublishers()}"/>
     <g:if test="${(providers || showEmptyFields)}">
         <div class="item">

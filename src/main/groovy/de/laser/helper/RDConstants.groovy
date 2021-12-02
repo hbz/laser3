@@ -164,7 +164,7 @@ class RDConstants {
 
     public static final String TIPP_DELAYED_OA        = 'tipp.delayed.oa'
     public static final String TIPP_HYBRID_OA         = 'tipp.hybrid.oa'
-    public static final String TIPP_PAYMENT_TYPE      = 'tipp.payment.type'
+    public static final String TIPP_ACCESS_TYPE       = 'tipp.access.type'
     public static final String TITLE_STATUS           = 'title.status'
     public static final String TRANSFORM_FORMAT       = 'transform.format'
     public static final String TRANSFORM_TYPE         = 'transform.type'

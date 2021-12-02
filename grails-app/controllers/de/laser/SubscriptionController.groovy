@@ -983,6 +983,7 @@ class SubscriptionController {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String,Object> ctrlResult
+        params.statsForSurvey = true
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
             params.tab = params.tabStat
