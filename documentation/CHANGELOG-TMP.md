@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
+
 4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
 
 4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
