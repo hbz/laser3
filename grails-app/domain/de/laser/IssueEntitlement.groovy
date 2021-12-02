@@ -135,6 +135,12 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         perpetualAccessBySub (nullable: true)
     }
 
+    /**
+     * Constructs a new issue entitlement record with the given configuration map
+     * @param configMap the parameter map containing the new holding's properties
+     * @return a new or updated issue entitlement
+     * @throws EntitlementCreationException
+     */
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
         static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
@@ -207,6 +213,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
+    /**
+     * Removes stopwords from the title and generates a sortable title string.
+     * @see Normalizer.Form#NFKD
+     */
     void generateSortTitle() {
         if ( name ) {
             sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -274,6 +284,13 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       result
   }
 
+    /**
+     * Currently unused, is subject of refactoring.
+     * Retrieves usage details for the title to which this issue entitlement is linked
+     * @param date the month for which usage should be retrieved
+     * @param subscriber the subscriber institution ({@link Org}) whose report should be retrieved
+     * @return the first available usage report, TODO: extend with metricType and reportType
+     */
     def getCounterReport(Date date, Org subscriber){
         String sort = 'r.reportCount desc'
 

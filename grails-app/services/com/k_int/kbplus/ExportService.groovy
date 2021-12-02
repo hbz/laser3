@@ -162,14 +162,14 @@ class ExportService {
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
 							cell.setCellValue((String) cellData.field)
+							if(cellData.field.contains('\n'))
+								cell.setCellStyle(lb)
 						} else if (cellData.field instanceof Integer) {
 							cell.setCellValue((Integer) cellData.field)
 						} else if (cellData.field instanceof Double || cellData.field instanceof BigDecimal) {
 							cell.setCellValue((Double) cellData.field)
 							cell.setCellStyle(numberStyle)
 						}
-						if(cellData.field.contains('\n'))
-							cell.setCellStyle(lb)
 						switch(cellData.style) {
 							case 'positive': cell.setCellStyle(csPositive)
 								break
