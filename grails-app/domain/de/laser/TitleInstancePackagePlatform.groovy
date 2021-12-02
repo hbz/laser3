@@ -249,7 +249,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     /**
      * Removes stopwords from the title and generates a sortable title string.
-     * @see Normalizer
+     * @see Normalizer.Form#NFKD
      */
     void generateSortTitle() {
         if ( name ) {
