@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      02.12.2021  rc-2.2  2.2.6       Andreas Feature     Nutzungsdaten werden jetzt zu allen Paketkontexten hinzugefügt
+
 --      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet
 
 4014    30.11.2021  rc-2.2  2.2.5       Andreas Bug         Seite wird bei Bearbeiten von Kosten beibehalten
