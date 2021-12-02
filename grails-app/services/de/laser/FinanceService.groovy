@@ -420,15 +420,15 @@ class FinanceService {
         //block sum
         NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
         //row 1
-        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
+        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
         //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
-        Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : null //1.00
+        Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.0 //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
-        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : null //0.00
+        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.0 //0.00
         //value is transient
         Double costLocalCurrencyAfterTax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : costLocalCurrency
         //block footer
@@ -635,7 +635,7 @@ class FinanceService {
                     if(consortialCostRows) {
                         Set<Long> consortialCostItems = consortialCostRows.toSet()
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'oo.org.sortname') {
                             result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
@@ -663,7 +663,7 @@ class FinanceService {
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-                        result.subscr.costItems = CostItem.findAllByIdInList(consortialMemberSubscriptionCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
+                        result.subscr.costItems = CostItem.findAllByIdInList(consortialMemberSubscriptionCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset]).toSet()
                     }
                     break
                 default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")
