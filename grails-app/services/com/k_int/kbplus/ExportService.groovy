@@ -1918,9 +1918,10 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance) {
+	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null) {
 		log.debug("Begin generateTitleExportXLS")
 		Locale locale = LocaleContextHolder.getLocale()
+
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		Set<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		List<String> titleHeaders = [
@@ -1960,6 +1961,10 @@ class ExportService {
 				messageSource.getMessage('tipp.localprice_usd',null,locale)]
 		titleHeaders.addAll(coreTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
+
+		if(showStatsInMonthRings){
+		titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
+		}
 
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
@@ -2132,6 +2137,22 @@ class ExportService {
 					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
 						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
 					}
+
+					if(entitlement && showStatsInMonthRings){
+						showStatsInMonthRings.each {Date date ->
+							def counterReport = entitlement.getCounterReport(date, subscriber)
+							//println(counterReport)
+							if(counterReport){
+								//println(counterReport)
+								//println(counterReport.reportCount ?: '')
+								row.add([field: counterReport.reportCount ?: '', style:null])
+							}else{
+								row.add([field: ' ', style:null])
+							}
+
+						}
+					}
+
 					rows.add(row)
 				}
 				println("flushing after ${offset} ...")

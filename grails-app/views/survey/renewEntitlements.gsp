@@ -133,7 +133,6 @@
                         </th>
                         <th>${message(code: 'sidewide.number')}</th>
                         <th><g:message code="title.label"/></th>
-                        <th><g:message code="tipp.coverage"/></th>
                         <th class="two wide"><g:message code="tipp.price"/></th>
 
                     </tr>
@@ -162,23 +161,16 @@
                                                 showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>
-                        <td class="coverageStatements la-tableCard">
-
-                            <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: tipp]}"/>
-
-                        </td>
                         <td>
                             <g:if test="${ie.priceItems}">
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
-                                                                                             owner="${priceItem}"
-                                                                                             format=""/> <semui:xEditableRefData
-                                            field="listCurrency" owner="${priceItem}"
-                                            config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                              owner="${priceItem}"/> <semui:xEditableRefData
-                                            field="localCurrency" owner="${priceItem}"
-                                            config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice" owner="${priceItem}" format="" overwriteEditable="${false}"/>
+                                        <semui:xEditableRefData field="listCurrency" owner="${priceItem}" config="Currency" overwriteEditable="${false}"/>
+                                    <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+                                        %{--<g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                          owner="${priceItem}"/> <semui:xEditableRefData
+                                        field="localCurrency" owner="${priceItem}"
+                                        config="Currency"/>--}% <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
                                         <%--<semui:xEditable field="startDate" type="date"
                                                          owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
                                             field="endDate" type="date"

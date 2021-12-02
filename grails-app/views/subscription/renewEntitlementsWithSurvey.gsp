@@ -46,15 +46,17 @@
                                tab           : 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
         </semui:exportDropdownItem>
 
-        <semui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLSStats     : true,
-                               data             : 'fetchAll',
-                               tab           : 'allIEsStats',
-                               tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
-        </semui:exportDropdownItem>
+        <g:if test="${showStatisticByParticipant}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportXLSStats     : true,
+                                   data             : 'fetchAll',
+                                   tab           : 'allIEsStats',
+                                   tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
+            </semui:exportDropdownItem>
+        </g:if>
     </semui:exportDropdown>
 </semui:controlButtons>
 
@@ -151,11 +153,11 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:if>
 
 
-<g:if test="${params.tab == 'allIEs' && editable}">
+<g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats') && editable}">
 
     <semui:form>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
-                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']}"
+                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
                 method="post" enctype="multipart/form-data">
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
@@ -163,8 +165,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 <i class="question circle icon"></i>
             </span></h4>
 
-            <div class="three fields">
-                <div class="field">
+            <div class="two fields">
+                %{--<div class="field">
                     ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info')}
                     <g:link class="item" action="renewEntitlementsWithSurvey"
                             id="${newSub.id}"
@@ -173,7 +175,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                                        tab           : 'allIEs']}">
                         ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info2')}
                     </g:link> ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info3')}
-                </div>
+                </div>--}%
 
                 <div class="field">
                     <div class="ui fluid action input">

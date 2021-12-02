@@ -42,7 +42,14 @@
                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+
+                <g:if test="${participantPerpetualAccessToTitle}">
+                    ${RDStore.YN_YES.getI10n('value')}
+                </g:if>
+                <g:else>
+                    ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                </g:else>
             </div>
         </div>
     </g:if>
