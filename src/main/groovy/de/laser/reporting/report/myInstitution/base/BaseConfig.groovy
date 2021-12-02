@@ -3,10 +3,12 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
+import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -57,6 +59,9 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_ENDDATE_LIMIT     = 'endDateLimit'
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
+
+    static String CUSTOM_IMPL_KEY_PKG_PLATFORM          = 'platform'
+    static String CUSTOM_IMPL_KEY_PKG_PROVIDER          = 'provider'
 
     static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
     static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
@@ -252,10 +257,31 @@ class BaseConfig {
                     from: []
             ]
         }
+        else if (key == CUSTOM_IMPL_KEY_PKG_PLATFORM) {
+            return [
+                    label: messageSource.getMessage('platform.label', null, locale),
+                    from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[
+                        id: it.id,
+                        value_de: it.name,
+                        value_en: it.name,
+                ]}
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PKG_PROVIDER) {
+            return [
+                    label: messageSource.getMessage('default.provider.label', null, locale),
+                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList) order by org.sortname, org.name',
+                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
+                        id: it.id,
+                        value_de: it.name,
+                        value_en: it.name,
+                ]}
+            ]
+        }
         else if (key == CUSTOM_IMPL_KEY_PLT_ORG) { // TODO
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Org.findAll().collect{[
+                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org order by org.sortname, org.name').collect{[
                         id: it.id,
                         value_de: it.name,
                         value_en: it.name,

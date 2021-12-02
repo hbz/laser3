@@ -9,6 +9,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -65,18 +66,6 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-//            if (params.query in ['package-x-identifier']) { // not used ??
-//
-//                handleGenericIdentifierXQuery(
-//                        params.query,
-//                        'select ns.id, ns.ns, count(*) from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-//                        'select pkg.id from Package pkg join pkg.ids ident join ident.ns ns where pkg.id in (:idList)',
-//                        'select pkg.id from Package pkg where pkg.id in (:idList)', // inversed idList
-//                        idList,
-//                        result
-//                )
-//            }
-
             if (params.query in ['package-x-id']) {
 
                 Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
@@ -97,14 +86,11 @@ class PackageQuery extends BaseQuery {
                         noDataList.add(Long.parseLong(it.key))
                     }
                 }
-
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> id = helper.get(it.key)
                     IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
                     String label = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace )
                     List d = [ ns ? ns.id : (idx * -1), label, it.value.size()]
-
-                    // TODO * != ()
 
                     result.data.add( d )
                     result.dataDetails.add([
@@ -114,6 +100,7 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
+                ElasticSearchHelper.sortResultDataList( result.data )
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
@@ -233,6 +220,7 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
+                ElasticSearchHelper.sortResultDataList( result.data )
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
@@ -257,7 +245,6 @@ class PackageQuery extends BaseQuery {
                         noDataList.add(Long.parseLong(it.key))
                     }
                 }
-
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> ddc = helper.get(it.key)
                     List d = [idx * -1,  GenericHelper.flagUnmatched( ddc.value_de ), it.value.size()]
@@ -273,6 +260,7 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
+                ElasticSearchHelper.sortResultDataList( result.data )
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
@@ -312,6 +300,7 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
+                ElasticSearchHelper.sortResultDataList( result.data )
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
@@ -351,6 +340,7 @@ class PackageQuery extends BaseQuery {
                             idList: it.value
                     ])
                 }
+                ElasticSearchHelper.sortResultDataList( result.data )
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
@@ -402,6 +392,7 @@ class PackageQuery extends BaseQuery {
                     idList: it.value
             ])
         }
+        ElasticSearchHelper.sortResultDataList( result.data )
 
         _handleGenericNoCounterpartData_TMP(query, orphanedIdList, result)
     }

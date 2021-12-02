@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -62,6 +62,10 @@
             <p>
                 <strong>we:kb</strong> <br />
                 ${message(code:'reporting.macro.infoWekb')}
+            </p>
+            <p>
+                <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
+                ${message(code:'reporting.macro.infoUnmatched')}
             </p>
         </div>
 
@@ -200,7 +204,7 @@
                                 $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                                $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                $('#chart-wrapper').css('height', 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
                                 $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
