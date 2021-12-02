@@ -248,7 +248,7 @@
 
     %{-- package --}%
 
-    <div class="help-section" data-help-section="package-x-identifier">
+    <div class="help-section" data-help-section="package-x-id">
         <p class="ui header">
             Identifikatoren von Paketen
         </p>
@@ -257,12 +257,16 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
+            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
+        </p>
+        <p>
             Im Detail sind folgende Informationen verfügbar: <br/>
             <i class="icon circle blue"></i> Pakete mit Identifikatoren aus dem jeweiligen Namensraum, <br />
             <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
         </p>
         <p>
-            Pakete ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst.
+            Pakete ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
@@ -314,11 +318,11 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
+            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
         </p>
         <p>
             Pakete ohne ausgewiesene Kuratorengruppen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
@@ -331,11 +335,11 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
+            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
         </p>
         <p>
             Pakete ohne ausgewiesene Länder werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
@@ -348,16 +352,30 @@
             Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
         </p>
         <p>
-            Hierzu werden Paketinformationen aus <strong>LAS:eR</strong> herangezogen und versucht auf Objekte in der <strong>we:kb</strong> abzubilden.
+            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
         </p>
         <p>
             Pakete ohne ausgewiesene Regionen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Pakete ohne we:kb-Pendant werden nicht beachtet und sind in der Gruppe <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
-
-    %{-- package-x-identifier --}%
-    %{-- package-x-ddc --}%
+        
+    <div class="help-section" data-help-section="package-x-ddc">
+        <p class="ui header">
+            Dewey-Dezimalklassifikation von Paketen
+        </p>
+        <p>
+            Gelistet werden alle relevanten Dewey-Dezimalklassifikationen - also Klassifikationen, die Paketen konkret zugeordnet werden können.
+            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
+        </p>
+        <p>
+            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
+        </p>
+        <p>
+            Pakete ohne ausgewiesene Dewey-Dezimalklassifikation werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+        </p>
+    </div>
 
     %{-- platform --}%
 
