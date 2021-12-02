@@ -8,6 +8,8 @@
 
 4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
 
+--      02.12.2021  rc-2.2  2.2.6       Andreas Bug         Fallback für Kostenposten ohne Summe eingesetzt
+
 --      02.12.2021  rc-2.2  2.2.6       Andreas Feature     Nutzungsdaten werden jetzt zu allen Paketkontexten hinzugefügt
 
 --      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet
