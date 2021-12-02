@@ -296,47 +296,49 @@ class StatsSyncService {
                                                             //Map row = titles.find { rowMap -> rowMap.identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                                                             //GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                                                             if(rows) {
-                                                                GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates!
-                                                                Long title = row.get('tipp_id') as Long
+                                                                //GroovyRowResult row = rows[0] //this was necessary because the same title may be available in different packages and we do not want duplicates! - ERROR! Unfortunately, I lose package context by filtering that out and Preselect let us pay that expensively ...
                                                                 t++
-                                                                reportItem.'ns2:ItemPerformance'.each { performance ->
-                                                                    performance.'ns2:Instance'.each { instance ->
-                                                                        //findAll seems to be less performant than loop processing
-                                                                        //if (instance.'ns2:MetricType'.text() == "ft_total") {
-                                                                        log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
-                                                                        String category = performance.'ns2:Category'.text()
-                                                                        String metricType = instance.'ns2:MetricType'.text()
-                                                                        String publisher = reportItem.'ns2:ItemPublisher'.text()
-                                                                        Integer count = Integer.parseInt(instance.'ns2:Count'.text())
-                                                                        Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
-                                                                        configMap.title = title
-                                                                        configMap.reportInstitution = keyPair.customerId
-                                                                        configMap.platform = c4asPlatform.id
-                                                                        /*
-                                                                        SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
-                                                                        configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                                                        configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                                                        */
-                                                                        configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
-                                                                        configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
-                                                                        configMap.category = category
-                                                                        configMap.metricType = metricType
-                                                                        configMap.publisher = publisher
-                                                                        configMap.reportCount = count
-                                                                        //c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                                                        stmt.addBatch(configMap)
-                                                                        /*
-                                                                        try {
-                                                                            Counter4Report c4report = Counter4Report.construct(configMap)
-                                                                            if (c4report)
-                                                                            log.debug("${Thread.currentThread().getName()} report ${c4report} successfully saved")
+                                                                rows.eachWithIndex { GroovyRowResult row, int ctx ->
+                                                                    Long title = row.get('tipp_id') as Long
+                                                                    reportItem.'ns2:ItemPerformance'.each { performance ->
+                                                                        performance.'ns2:Instance'.each { instance ->
+                                                                            //findAll seems to be less performant than loop processing
+                                                                            //if (instance.'ns2:MetricType'.text() == "ft_total") {
+                                                                            log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                                                            String category = performance.'ns2:Category'.text()
+                                                                            String metricType = instance.'ns2:MetricType'.text()
+                                                                            String publisher = reportItem.'ns2:ItemPublisher'.text()
+                                                                            Integer count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                                            Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
+                                                                            configMap.title = title
+                                                                            configMap.reportInstitution = keyPair.customerId
+                                                                            configMap.platform = c4asPlatform.id
+                                                                            /*
+                                                                            SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
+                                                                            configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
+                                                                            configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
+                                                                            */
+                                                                            configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
+                                                                            configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
+                                                                            configMap.category = category
+                                                                            configMap.metricType = metricType
+                                                                            configMap.publisher = publisher
+                                                                            configMap.reportCount = count
+                                                                            //c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                                                            stmt.addBatch(configMap)
+                                                                            /*
+                                                                            try {
+                                                                                Counter4Report c4report = Counter4Report.construct(configMap)
+                                                                                if (c4report)
+                                                                                log.debug("${Thread.currentThread().getName()} report ${c4report} successfully saved")
+                                                                            }
+                                                                            catch (CreationException e) {
+                                                                                log.error(e.message)
+                                                                            }
+                                                                            */
+                                                                            ctr++
+                                                                            //}
                                                                         }
-                                                                        catch (CreationException e) {
-                                                                            log.error(e.message)
-                                                                        }
-                                                                        */
-                                                                        ctr++
-                                                                        //}
                                                                     }
                                                                 }
                                                             }
@@ -531,39 +533,41 @@ class StatsSyncService {
                                                                     List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :deleted", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
                                                                     List<Map> performances = reportItem.Performance as List<Map>
                                                                     if(rows) {
-                                                                        GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates!
-                                                                        Long title = row.get('tipp_id') as Long
+                                                                        //GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates! ERROR! See COUNTER 4 - the package context is too important; I must save the usage data for each context
                                                                         t++
-                                                                        performances.each { Map performance ->
-                                                                            performance.Instance.each { Map instance ->
-                                                                                log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
-                                                                                Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
-                                                                                configMap.title = title
-                                                                                configMap.reportInstitution = keyPair.customerId
-                                                                                configMap.platform = c5asPlatform.id
-                                                                                configMap.publisher = reportItem.Publisher
-                                                                                configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
-                                                                                configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
-                                                                                configMap.accessType = report.header.Report_Filters.find{
-                                                                                    filterData -> filterData["Name"] == "Access_Type" }
-                                                                                        ?.Value
-                                                                                configMap.accessMethod = report.header.Report_Filters.find{
-                                                                                    filterData -> filterData["Name"] == "Access_Method" }
-                                                                                        ?.Value
-                                                                                configMap.metricType = instance.Metric_Type
-                                                                                configMap.reportCount = instance.Count as int
-                                                                                stmt.addBatch(configMap)
-                                                                                /*
-                                                                                try {
-                                                                                    Counter5Report c5report = Counter5Report.construct(configMap)
-                                                                                    if(c5report)
-                                                                                        log.debug("${Thread.currentThread().getName()} report ${c5report} successfully saved")
+                                                                        rows.eachWithIndex { GroovyRowResult row, int ctx ->
+                                                                            Long title = row.get('tipp_id') as Long
+                                                                            performances.each { Map performance ->
+                                                                                performance.Instance.each { Map instance ->
+                                                                                    log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                                                                    Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
+                                                                                    configMap.title = title
+                                                                                    configMap.reportInstitution = keyPair.customerId
+                                                                                    configMap.platform = c5asPlatform.id
+                                                                                    configMap.publisher = reportItem.Publisher
+                                                                                    configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
+                                                                                    configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
+                                                                                    configMap.accessType = report.header.Report_Filters.find{
+                                                                                        filterData -> filterData["Name"] == "Access_Type" }
+                                                                                            ?.Value
+                                                                                    configMap.accessMethod = report.header.Report_Filters.find{
+                                                                                        filterData -> filterData["Name"] == "Access_Method" }
+                                                                                            ?.Value
+                                                                                    configMap.metricType = instance.Metric_Type
+                                                                                    configMap.reportCount = instance.Count as int
+                                                                                    stmt.addBatch(configMap)
+                                                                                    /*
+                                                                                    try {
+                                                                                        Counter5Report c5report = Counter5Report.construct(configMap)
+                                                                                        if(c5report)
+                                                                                            log.debug("${Thread.currentThread().getName()} report ${c5report} successfully saved")
+                                                                                    }
+                                                                                    catch(CreationException e) {
+                                                                                        log.error(e.message)
+                                                                                    }
+                                                                                    */
+                                                                                    ctr++
                                                                                 }
-                                                                                catch(CreationException e) {
-                                                                                    log.error(e.message)
-                                                                                }
-                                                                                */
-                                                                                ctr++
                                                                             }
                                                                         }
                                                                     }
