@@ -6,24 +6,6 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PlatformXCfg extends BaseConfig {
 
-    static Map<String, Map> ES_DATA = [
-
-            'platform-altname'      : [                 export: true,   label: 'package.show.altname'],
-
-            'platform-ipAuthentication'             : [filter: true,    export: true,   label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION],
-            'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
-            'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],
-            'platform-proxySupported'               : [filter: true,    export: true,   label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N],
-            'platform-counterCertified'             : [                 export: true,   label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
-            'platform-counterR3Supported'           : [                 export: true,   label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N],
-            'platform-counterR4Supported'           : [                 export: true,   label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N],
-            'platform-counterR5Supported'           : [                 export: true,   label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N],
-            'platform-counterR4SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N],
-            'platform-counterR5SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N],
-            'platform-statisticsFormat'             : [                 export: true,   label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT],
-            'platform-statisticsUpdate'             : [                 export: true,   label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY]
-    ]
-
     static Map<String, Object> CONFIG = [
 
             base : [
@@ -87,5 +69,48 @@ class PlatformXCfg extends BaseConfig {
                             ]
                     ]
             ]
+    ]
+
+    static Map<String, Map> ES_DATA = [
+
+            'platform-altname'      : [                 export: true,   label: 'package.show.altname'],
+
+            'platform-ipAuthentication'             : [filter: true,    export: true,   label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION],
+            'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
+            'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],
+            'platform-proxySupported'               : [filter: true,    export: true,   label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N],
+            'platform-counterCertified'             : [                 export: true,   label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
+            'platform-counterR3Supported'           : [                 export: true,   label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N],
+            'platform-counterR4Supported'           : [                 export: true,   label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N],
+            'platform-counterR5Supported'           : [                 export: true,   label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N],
+            'platform-counterR4SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N],
+            'platform-counterR5SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N],
+            'platform-statisticsFormat'             : [                 export: true,   label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT],
+            'platform-statisticsUpdate'             : [                 export: true,   label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY]
+    ]
+
+    static Map<String, Map> DETAILS_TABLE_CONFIG = [
+
+            'name' : true,
+            'org' : true,     // TODO - move to query2 !?
+            'primaryUrl' : true,
+            'serviceProvider' : false,
+            'softwareProvider' : false,
+            'status' : false,
+            'platform-ipAuthentication' : false, // ES
+            'platform-shibbolethAuthentication' : false, // ES
+            'platform-passwordAuthentication' : false, // ES
+            'platform-proxySupported' : false, // ES
+            'platform-statisticsFormat' : false, // ES
+            'platform-statisticsUpdate' : false, // ES
+            'platform-counterCertified' : false, // ES
+            'platform-counterR3Supported' : false, // ES
+            'platform-counterR4Supported' : false, // ES
+            'platform-counterR5Supported' : false, // ES
+            'platform-counterR4SushiApiSupported' : false, // ES
+            'platform-counterR5SushiApiSupported' : false, // ES
+            // 'platform-x-property' : false,
+            '___lastUpdated' : true, // virtual
+            '___wekb' : true // virtual
     ]
 }
