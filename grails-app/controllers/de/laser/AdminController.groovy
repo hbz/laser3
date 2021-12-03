@@ -1562,7 +1562,8 @@ SELECT * FROM (
      *     <li>delete a property definition</li>
      *     <li>replace a property definition by another</li>
      * </ul>
-     * @return
+     * @return a list of property definitions with commands
+     * @see de.laser.ajax.AjaxController#addCustomPropertyType()
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
