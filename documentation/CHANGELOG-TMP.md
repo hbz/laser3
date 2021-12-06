@@ -8,6 +8,12 @@
 
 4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
 
+4027    06.12.2021  rc-2.2  2.2.6       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber
+
+4028    06.12.2021  rc-2.2  2.2.6       Moe     Bug         Titelumfrage: Export Gesamttitellist mit Statistik + Bestandsflag
+
+3914    06.12.2021  rc-2.2  2.2.6       Moe     Bug         500er bei manuellem Übertrag eines Teilnehmers
+
 4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
 
 --      02.12.2021  rc-2.2  2.2.6       Andreas Bug         Fallback für Kostenposten ohne Summe eingesetzt

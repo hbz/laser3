@@ -259,7 +259,7 @@ class CopyElementsService {
                         type: subMember.type,
                         kind: subMember.kind,
                         status: targetObject.status,
-                        name: subMember.name,
+                        name: targetObject.name,
                         startDate: subMember.isMultiYear ? subMember.startDate : targetObject.startDate,
                         endDate: subMember.isMultiYear ? subMember.endDate : targetObject.endDate,
                         manualRenewalDate: subMember.manualRenewalDate,
@@ -279,10 +279,13 @@ class CopyElementsService {
                 if (subMember) {
                     try {
                         Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
-                        Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
-                        precedingLicenses.each { Links link ->
-                            Map<String, Object> successorLink = [source: link.sourceLicense, destination: newSubscription, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()]
-                            Links.construct(successorLink)
+
+                        if(Links.findAllByDestinationSubscriptionAndLinkType(targetObject, RDStore.LINKTYPE_LICENSE).size() > 0) {
+                            Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
+                            precedingLicenses.each { Links link ->
+                                Map<String, Object> successorLink = [source: link.sourceLicense, destination: newSubscription, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()]
+                                Links.construct(successorLink)
+                            }
                         }
                     }
                     catch (CreationException e) {
@@ -365,6 +368,7 @@ class CopyElementsService {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                             newIssueEntitlement.coverages = null
+                            newIssueEntitlement.priceItems = null
                             newIssueEntitlement.ieGroups = null
                             newIssueEntitlement.subscription = newSubscription
 
@@ -376,6 +380,14 @@ class CopyElementsService {
                                     InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                     newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                     newIssueEntitlementCoverage.save()
+                                }
+
+                                ie.properties.priceItems.each { priceItem ->
+                                    def priceItemProperties = priceItem.properties
+                                    PriceItem newPriceItem = new PriceItem()
+                                    InvokerHelper.setProperties(newPriceItem, priceItemProperties)
+                                    newPriceItem.issueEntitlement = newIssueEntitlement
+                                    newPriceItem.save()
                                 }
                             }
                         }
@@ -1327,6 +1339,7 @@ class CopyElementsService {
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null
+                    newIssueEntitlement.priceItems = null
                     newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetObject
 
@@ -1338,6 +1351,14 @@ class CopyElementsService {
                             InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                             newIssueEntitlementCoverage.save()
+                        }
+
+                        ieToTake.properties.priceItems.each { priceItem ->
+                            def priceItemProperties = priceItem.properties
+                            PriceItem newPriceItem = new PriceItem()
+                            InvokerHelper.setProperties(newPriceItem, priceItemProperties)
+                            newPriceItem.issueEntitlement = newIssueEntitlement
+                            newPriceItem.save()
                         }
                     }
                 }
