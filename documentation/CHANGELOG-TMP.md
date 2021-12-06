@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
+
 4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
 
 --      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet

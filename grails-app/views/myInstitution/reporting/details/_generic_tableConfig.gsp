@@ -1,7 +1,12 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.reporting.report.GenericHelper; de.laser.reporting.report.myInstitution.config.PackageXCfg; de.laser.reporting.export.myInstitution.PackageExport; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <div class="ui segment hidden" id="reporting-dtc-wrapper">
-    <div class="ui form">
+
+    <span class="ui top attached label" style="border-radius: 0; text-align: center">
+        <i class="ui icon th"></i> ${message(code:'reporting.details.dtc.label')}
+    </span>
+
+    <div class="ui form" style="margin-top: 3em !important;">
         <div class="fields three">
             <%
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
