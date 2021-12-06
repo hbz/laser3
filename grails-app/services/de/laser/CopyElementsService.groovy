@@ -365,6 +365,7 @@ class CopyElementsService {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                             newIssueEntitlement.coverages = null
+                            newIssueEntitlement.priceItems = null
                             newIssueEntitlement.ieGroups = null
                             newIssueEntitlement.subscription = newSubscription
 
@@ -376,6 +377,14 @@ class CopyElementsService {
                                     InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                     newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                     newIssueEntitlementCoverage.save()
+                                }
+
+                                ie.properties.priceItems.each { priceItem ->
+                                    def priceItemProperties = priceItem.properties
+                                    PriceItem newPriceItem = new PriceItem()
+                                    InvokerHelper.setProperties(newPriceItem, priceItemProperties)
+                                    newPriceItem.issueEntitlement = newIssueEntitlement
+                                    newPriceItem.save()
                                 }
                             }
                         }
@@ -1327,6 +1336,7 @@ class CopyElementsService {
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null
+                    newIssueEntitlement.priceItems = null
                     newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetObject
 
@@ -1338,6 +1348,14 @@ class CopyElementsService {
                             InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                             newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                             newIssueEntitlementCoverage.save()
+                        }
+
+                        ieToTake.properties.priceItems.each { priceItem ->
+                            def priceItemProperties = priceItem.properties
+                            PriceItem newPriceItem = new PriceItem()
+                            InvokerHelper.setProperties(newPriceItem, priceItemProperties)
+                            newPriceItem.issueEntitlement = newIssueEntitlement
+                            newPriceItem.save()
                         }
                     }
                 }
