@@ -18,7 +18,7 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <div style="margin: 0 0.5em">
+        <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
                     data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
@@ -36,43 +36,46 @@
 
         <div id="info-content" class="hidden">
 
-            <div class="ui small header aligned center">
-                <i class="icon la-light-grey question large"></i>${message(code:'reporting.filter.help')}
+            <div class="ui segment">
+                <span class="ui top attached label" style="border-radius: 0; text-align: center">
+                    <i class="icon question large"></i>${message(code:'reporting.filter.help')}
+                </span>
+
+                <div style="margin: 3.5em 2em 1em !important">
+                    <p>
+                        <strong>${message(code:'reporting.macro.step1')}</strong> <br />
+                        ${message(code:'reporting.macro.info1')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.macro.step2')}</strong> <br />
+                        ${message(code:'reporting.macro.info2')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.macro.step3')}</strong> <br />
+                        ${message(code:'reporting.macro.info3')}
+                    </p>
+                    <p>
+                        <i class="icon history blue"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
+                        ${message(code:'reporting.macro.infoHistory')}
+                    </p>
+                    <p>
+                        <i class="icon bookmark teal"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
+                        ${message(code:'reporting.macro.infoBookmarks')}
+                    </p>
+                    <p>
+                        <i class="icon question blue"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
+                        ${message(code:'reporting.macro.infoHelp')}
+                    </p>
+                    <p>
+                        <strong>we:kb</strong> <br />
+                        ${message(code:'reporting.macro.infoWekb')}
+                    </p>
+                    <p>
+                        <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
+                        ${message(code:'reporting.macro.infoUnmatched')}
+                    </p>
+                </div>
             </div>
-            <div class="ui message info">
-            <p>
-                <strong>${message(code:'reporting.macro.step1')}</strong> <br />
-                ${message(code:'reporting.macro.info1')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step2')}</strong> <br />
-                ${message(code:'reporting.macro.info2')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step3')}</strong> <br />
-                ${message(code:'reporting.macro.info3')}
-            </p>
-            <p>
-                <i class="icon history"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
-                ${message(code:'reporting.macro.infoHistory')}
-            </p>
-            <p>
-                <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
-                ${message(code:'reporting.macro.infoBookmarks')}
-            </p>
-            <p>
-                <i class="icon question"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
-                ${message(code:'reporting.macro.infoHelp')}
-            </p>
-            <p>
-                <strong>we:kb</strong> <br />
-                ${message(code:'reporting.macro.infoWekb')}
-            </p>
-            <p>
-                <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
-                ${message(code:'reporting.macro.infoUnmatched')}
-            </p>
-        </div>
         </div>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
@@ -145,8 +148,12 @@
 
                 $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
                 $( '#' + current + '-content').toggleClass('hidden');
-                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue');
-                $( '#' + current + '-toggle').toggleClass('blue');
+                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
+                if (current == 'bookmark') {
+                    $( '#' + current + '-toggle').addClass('teal');
+                } else {
+                    $( '#' + current + '-toggle').addClass('blue');
+                }
             }
 
             $('#info-toggle').on( 'click', function() {
