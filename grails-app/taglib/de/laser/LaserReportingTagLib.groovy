@@ -221,6 +221,52 @@ class LaserReportingTagLib {
         out << props.join(' ,<br/>')
     }
 
+    def reportDetailsTableTD = { attrs, body ->
+
+        Map<String, Boolean> config = attrs.config as Map
+
+        if ( config.containsKey( attrs.field )) {
+            String markup = '<td data-column="dtc:' + attrs.field + '"'
+
+            if (config.get( attrs.field ) != true) {
+                markup = markup + ' class="hidden"'
+            }
+            out << markup + '>'
+            out << body()
+            out << '</td>'
+        }
+        else {
+            out << '### ' + attrs.field + ' ###'
+        }
+    }
+
+    def reportDetailsTableEsValue = { attrs, body ->
+
+        // TMP
+        // TMP
+
+        String key = attrs.key
+        Long id = attrs.id as Long
+        String field = attrs.field
+
+        Map<String, Object> esRecords = attrs.records as Map
+        Map<String, Object> esConfig  = BaseConfig.getCurrentEsData(key).get( key + '-' + field )
+
+        Map<String, Object> record = esRecords.getAt(id as String) as Map
+        if (record) {
+            String value = record.get( record.mapping ?: field )
+            if (value) {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esConfig.rdc as String)
+                if (rdv) {
+                    out << rdv.getI10n('value')
+                }
+                else {
+                    out << GenericHelper.flagUnmatched( value )
+                }
+            }
+        }
+    }
+
     static String getUniqueId(String id) {
         return id + '-' + RandomStringUtils.randomAlphanumeric(8).toLowerCase()
     }

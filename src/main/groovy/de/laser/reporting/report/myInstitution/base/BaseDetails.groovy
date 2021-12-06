@@ -9,6 +9,10 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.export.GlobalExportHelper
+import de.laser.reporting.report.GenericHelper
+import grails.util.Holders
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 
 class BaseDetails {
@@ -59,5 +63,60 @@ class BaseDetails {
             )
         }
         properties
+    }
+
+    static List<Map<String, Object>> reorderFieldsInColumnsForUI(Map<String, Object> fields, int columns) {
+
+        List<Map<String, Object>> result = []
+        int cols = Math.round(fields.size() / columns) as int
+
+        for (int i=0; i<columns; i++) {
+            result.add( fields.take(cols) )
+            fields = fields.drop(cols)
+        }
+        // println result
+
+        result
+    }
+
+    static String getFieldLabelforColumns(String key, String field) {
+
+        // TMP
+        // TMP
+        // TMP
+
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+        Map<String, Object> esDataConfig = BaseConfig.getCurrentEsData(key)
+
+        //println ' ... ' + key + ' ------ ' + field
+        // println esDataConfig
+        String label = field
+
+        if (field.startsWith( key + '-' )) {
+            label = g.message(code: esDataConfig.get(field).get('label')) ?: ( field + ' *' )
+        }
+        else {
+            label = GenericHelper.getFieldLabel( BaseConfig.getCurrentConfig( key ).base as Map, field)
+            if (label == '?') {
+                String code = key + '.' + field + '.label'
+                label = g.message(code: code)
+
+                if (label == code) {
+                    if (field == '___lastUpdated') {
+                        label = g.message(code: 'default.lastUpdated.label')
+                    }
+                    else if (field == '___wekb') {
+                        label = g.message(code: 'wekb')
+                    }
+                    else if (field == '___currentTitles') {
+                        label = g.message(code: 'package.show.nav.current')
+                    }
+                    else {
+                        println '[ ' + key + ' --- ' + field + ' ]'
+                    }
+                }
+            }
+        }
+        label
     }
 }

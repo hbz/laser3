@@ -34,7 +34,12 @@
 
         <div id="hab-wrapper"></div>
 
-        <div id="info-content" class="ui message info hidden">
+        <div id="info-content" class="hidden">
+
+            <div class="ui small header aligned center">
+                <i class="icon la-light-grey question large"></i>${message(code:'reporting.filter.help')}
+            </div>
+            <div class="ui message info">
             <p>
                 <strong>${message(code:'reporting.macro.step1')}</strong> <br />
                 ${message(code:'reporting.macro.info1')}
@@ -67,6 +72,7 @@
                 <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
                 ${message(code:'reporting.macro.infoUnmatched')}
             </p>
+        </div>
         </div>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
@@ -127,7 +133,7 @@
             #history-content table .description ,
             #bookmark-content table .description { margin: 0.3em 0; }
             #last-added-bookmark { margin-left: 1em; }
-            #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
+            #chart-wrapper { height: 400px; width: 98%; margin: 3em auto 2em; }
             h3.ui.header { margin-top: 3em !important; }
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
