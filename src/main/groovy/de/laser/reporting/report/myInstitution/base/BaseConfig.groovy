@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.lang.reflect.Field
 import java.time.Year
 
 class BaseConfig {
@@ -75,8 +76,68 @@ class BaseConfig {
             CHART_BAR, CHART_PIE
     ]
 
-    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+    static Class getCurrentConfigClass(String key) {
 
+        if (key == KEY_COSTITEM) { CostItemXCfg
+        }
+        else if (key == KEY_LICENSE) {
+            if (BaseDetailsExport.ctxConsortium()) { LicenseConsCfg
+            }
+            else if (BaseDetailsExport.ctxInst()) { LicenseInstCfg
+            }
+        }
+        else if (key == KEY_ORGANISATION) {
+            if (BaseDetailsExport.ctxConsortium()) { OrganisationConsCfg
+            }
+            else if (BaseDetailsExport.ctxInst()) { OrganisationInstCfg
+            }
+        }
+        else if (key == KEY_PACKAGE) { PackageXCfg
+        }
+        else if (key == KEY_PLATFORM) { PlatformXCfg
+        }
+        else if (key == KEY_SUBSCRIPTION) {
+            if (BaseDetailsExport.ctxConsortium()) { SubscriptionConsCfg
+            }
+            else if (BaseDetailsExport.ctxInst()) { SubscriptionInstCfg
+            }
+        }
+    }
+
+    static Map<String, Object> getCurrentConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('CONFIG')) {
+            config.CONFIG
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Map> getCurrentEsData(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('ES_DATA')) {
+            config.ES_DATA
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
+            config.DETAILS_TABLE_CONFIG
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
         Map<String, Object> cfg = [:]
 
         if (prefix in [ KEY_COSTITEM ]) {
@@ -98,55 +159,6 @@ class BaseConfig {
             cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
         }
         cfg
-    }
-
-    static Map<String, Object> getCurrentConfig(String key) {
-
-        if (key == KEY_COSTITEM) {
-            CostItemXCfg.CONFIG
-        }
-        else if (key == KEY_LICENSE) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                LicenseConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                LicenseInstCfg.CONFIG
-            }
-        }
-        else if (key == KEY_ORGANISATION) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                OrganisationConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                OrganisationInstCfg.CONFIG
-            }
-        }
-        else if (key == KEY_PACKAGE) {
-            return PackageXCfg.CONFIG
-        }
-        else if (key == KEY_PLATFORM) {
-            return PlatformXCfg.CONFIG
-        }
-        else if (key == KEY_SUBSCRIPTION) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                SubscriptionConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                SubscriptionInstCfg.CONFIG
-            }
-        }
-    }
-
-    static Map<String, Map> getCurrentEsData(String key) {
-        if (key == KEY_PACKAGE) {
-            PackageXCfg.ES_DATA
-        }
-        else if (key == KEY_PLATFORM) {
-            PlatformXCfg.ES_DATA
-        }
-        else {
-            [:]
-        }
     }
 
     static Map<String, Object> getCustomImplRefdata(String key) {

@@ -931,7 +931,15 @@ class ExportClickMeService {
 
         EXPORT_SURVEY_EVALUATION.keySet().each {
             EXPORT_SURVEY_EVALUATION.get(it).fields.each {
-                exportFields.put(it.key, it.value)
+
+                if(!(surveyConfig.pickAndChoose || !surveyConfig.subscription) && it.key.startsWith('costItem')){
+                    //do nothing
+                }
+                else if(!surveyConfig.subscription && it.key.startsWith('subscription')){
+                    //do nothing
+                }else {
+                    exportFields.put(it.key, it.value)
+                }
             }
         }
 
@@ -947,67 +955,6 @@ class ExportClickMeService {
 
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
-        }
-
-        if(!surveyConfig.subscription){
-            exportFields.remove('subscription')
-        }else {
-            if(!exportFields.containsKey('subscription')){
-                exportFields.put('subscription', [
-                        label: 'Subscription',
-                        message: 'subscription.label',
-                        fields: [
-                                'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
-                                'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
-                                'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                                'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
-                                'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
-                                'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
-                                'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
-                                'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                                'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                                'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                        ]
-                ])
-            }
-        }
-
-        if(surveyConfig.pickAndChoose || !surveyConfig.subscription){
-            exportFields.remove('participantSurveyCostItems')
-        }else {
-            if(!exportFields.containsKey('participantSurveyCostItems')){
-                exportFields.put('participantSurveyCostItems',[
-                        label: 'Cost Items',
-                        message: 'surveyCostItems.label',
-                        fields: [
-                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement'],
-                                'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                                'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                                'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
-                                'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                                'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                                'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                                'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'financials.billingCurrency'],
-                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                                'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                                'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                                'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                                'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                                'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
-
-                                'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                                'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                                'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                                'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                                'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-
-                                'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'financials.newCosts.description'],
-                                'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                                'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
-                        ]
-                ])
-            }
         }
 
 

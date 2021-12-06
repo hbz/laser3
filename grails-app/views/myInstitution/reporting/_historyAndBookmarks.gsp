@@ -2,11 +2,11 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
-    <div id="history-content"<g:if test="${tab != 'history'}"> class="hidden"</g:if>>
-        <div class="ui small header aligned center">
-            <i class="icon la-light-grey history large"></i>${message(code:'reporting.filter.history')}
-        </div>
-        <div class="ui segment">
+    <div id="history-content"<g:if test="${tab != 'history'}"> class="ui segment hidden"</g:if>>
+        <span class="ui top attached label" style="border-radius: 0; text-align: center">
+            <i class="icon history large"></i>${message(code:'reporting.filter.history')}
+        </span>
+        <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">
                 <g:each in="${filterHistory}" var="fh">
                     <g:set var="fhRCache" value="${new ReportingCache(ReportingCache.CTX_GLOBAL, fh.split('/').last() as String)}" />
@@ -65,18 +65,18 @@
                 </g:each>
             </table>
         </div>
-        <div>
+        <div style="margin-top: 1em">
             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteHistory']}"
                     elementId="history-delete" class="ui button">${message(code:'reporting.filter.history.delete')}</g:link>
         </div>
     </div>
 </g:if>
 <g:if test="${bookmarks}">
-    <div id="bookmark-content"<g:if test="${tab != 'bookmark'}"> class="hidden"</g:if>>
-        <div class="ui small header aligned center">
+    <div id="bookmark-content"<g:if test="${tab != 'bookmark'}"> class="ui segment hidden"</g:if>>
+        <span class="ui top attached label" style="border-radius: 0; text-align: center">
             <i class="icon teal bookmark large"></i>${message(code:'reporting.filter.bookmarks')}
-        </div>
-        <div class="ui segment">
+        </span>
+        <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
