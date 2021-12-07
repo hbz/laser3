@@ -32,7 +32,6 @@ class ESWrapperService {
 
     static transactional = false
 
-    RestHighLevelClient esclient
     GrailsApplication grailsApplication
 
     String es_cluster_name
@@ -58,7 +57,7 @@ class ESWrapperService {
     }
 
     RestHighLevelClient getClient() {
-        esclient = new RestHighLevelClient(
+        RestHighLevelClient esclient = new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(es_host, 9200, "http"),
                         new HttpHost(es_host, 9201, "http")));
@@ -66,9 +65,9 @@ class ESWrapperService {
         esclient
     }
 
-    void closeClient() {
+    /*void closeClient() {
         esclient.close()
-    }
+    }*/
 
 /*    Map<String, String> getESSettings(){
         Map<String, String> result = [:]
@@ -113,6 +112,8 @@ class ESWrapperService {
 
     boolean testConnection() {
 
+        RestHighLevelClient esclient = getClient()
+
         try {
             boolean response = esclient.ping(RequestOptions.DEFAULT)
 
@@ -120,6 +121,7 @@ class ESWrapperService {
                 log.error("Problem with ElasticSearch: Ping Fail")
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Ping Fail": "Ping Fail"])
             }
+            esclient.close()
             return response
         } catch (ConnectTimeoutException e) {
             log.error("Problem with ElasticSearch: Connect Timeout")
@@ -130,6 +132,7 @@ class ESWrapperService {
         catch (ConnectException e) {
             log.error("Problem with ElasticSearch: Connection Fail")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connection Fail": "Connection Fail"])
+            esclient.close()
             return false
         }
 
