@@ -53,8 +53,9 @@ class SubscriptionReport {
                             default: [
                                     'timeline' : [
                                             'timeline-entitlement' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                                    detailsTemplate : 'timeline/entitlement',
+                                                    chartTemplate   : 'timeline/1axis3values',
+                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                             ]
                                     ]
                             ]
@@ -101,20 +102,24 @@ class SubscriptionReport {
                             default: [
                                     'timeline' : [
                                             'timeline-member' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'member.1', 'member.2', 'member.3' ]
+                                                    detailsTemplate : 'timeline/organisation',
+                                                    chartTemplate   : 'timeline/1axis3values',
+                                                    chartLabels     : [ 'member.1', 'member.2', 'member.3' ]
                                             ],
                                             'timeline-cost' : [
-                                                    chart : 'cost',
-                                                    chartLabels : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
+                                                    detailsTemplate : 'timeline/cost',
+                                                    chartTemplate   : 'timeline/cost',
+                                                    chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
                                             ],
                                             'timeline-entitlement' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                                    detailsTemplate : 'timeline/entitlement',
+                                                    chartTemplate   : 'timeline/1axis3values',
+                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                             ],
                                             'timeline-annualMember-subscription' : [
-                                                    chart       : 'annualMember',
-                                                    chartLabels : [ 'annualMember-subscription' ]
+                                                    detailsTemplate : 'timeline/subscription',
+                                                    chartTemplate   : 'timeline/annualMember',
+                                                    chartLabels     : [ 'annualMember-subscription' ]
                                             ],
                                     ]
                             ],
