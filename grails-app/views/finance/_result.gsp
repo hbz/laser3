@@ -44,7 +44,7 @@
                                         $('#bulkCostItems').toggleClass('hidden')
                                         if ($('#bulkCostItems').hasClass('hidden')) {
                                             $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
-                                        } else {name="ciec"
+                                        } else {
                                             $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
                                         }
                                     })
