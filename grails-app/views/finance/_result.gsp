@@ -55,7 +55,7 @@
                                 <div id="bulkCostItems" class="hidden">
                                     <g:render template="costItemInput" />
                                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
-                                    <div class="fields">
+                                    <div class="fields la-forms-grid">
                                         <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
                                             <div class="field center aligned">
 
