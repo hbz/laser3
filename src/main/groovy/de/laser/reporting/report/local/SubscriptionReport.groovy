@@ -27,117 +27,16 @@ class SubscriptionReport {
     static String NO_STARTDATE = 'Ohne Laufzeit-Beginn'
     static String NO_ENDDATE = 'Ohne Laufzeit-Ende'
 
-    static Map<String, Object> CONFIG = [
-
-            base : [
-                    meta : [
-                            cfgKey: 'SubscriptionReport'
-                    ],
-                    query: [
-                            default: [
-                                    'tipp' : [
-                                            'tipp-publisherName',
-                                            'tipp-seriesName',
-                                            'tipp-subjectReference',
-                                            'tipp-titleType',
-                                            'tipp-medium',
-                                            'tipp-ddcs',
-                                            'tipp-languages'
-                                            //  'tipp-package',
-                                            //  'tipp-platform'
-                                    ]
-                            ]
-                    ],
-
-                    query2: [
-                            default: [
-                                    'timeline' : [
-                                            'timeline-entitlement' : [
-                                                    detailsTemplate : 'timeline/entitlement',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ]
-                                    ]
-                            ]
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> CONFIG_CONS_AT_CONS = [
-
-            base : [
-                    meta : [
-                            cfgKey: 'SubscriptionReport'
-                    ],
-                    query: [
-                            default: [
-                                    'member' : [
-                                            'member-customerType',
-                                            'member-orgType',
-                                            //'member-legalInfo',
-                                            'member-libraryNetwork',
-                                            'member-libraryType',
-                                            'member-subjectGroup',
-                                            'member-country',
-                                            'member-region',
-                                            'member-eInvoicePortal',
-                                            'member-funderHskType',
-                                            'member-funderType'
-                                    ],
-                                    'tipp' : [
-                                            'tipp-publisherName',
-                                            'tipp-seriesName',
-                                            'tipp-subjectReference',
-                                            'tipp-titleType',
-                                            'tipp-medium',
-                                            'tipp-ddcs',
-                                            'tipp-languages'
-                                            //  'tipp-package',
-                                            //  'tipp-platform'
-                                    ]
-                            ]
-                    ],
-
-                    query2: [
-                            default: [
-                                    'timeline' : [
-                                            'timeline-member' : [
-                                                    detailsTemplate : 'timeline/organisation',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'member.1', 'member.2', 'member.3' ]
-                                            ],
-                                            'timeline-cost' : [
-                                                    detailsTemplate : 'timeline/cost',
-                                                    chartTemplate   : 'timeline/cost',
-                                                    chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
-                                            ],
-                                            'timeline-entitlement' : [
-                                                    detailsTemplate : 'timeline/entitlement',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ],
-                                            'timeline-annualMember-subscription' : [
-                                                    detailsTemplate : 'timeline/subscription',
-                                                    chartTemplate   : 'timeline/annualMember',
-                                                    chartLabels     : [ 'annualMember-subscription' ]
-                                            ],
-                                    ]
-                            ],
-
-                    ]
-            ]
-    ]
-
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
         // println '>> ' + calcType
 
         if (calcType in [Subscription.TYPE_CONSORTIAL]) {
-            return SubscriptionReport.CONFIG_CONS_AT_CONS
+            return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else {
-            return SubscriptionReport.CONFIG
+            return SubscriptionXCfg.CONFIG
         }
     }
 
@@ -538,7 +437,7 @@ class SubscriptionReport {
                     processSimpleMemberRefdataQuery(params.query, 'libraryNetwork', idList, result)
                 }
                 else if (params.query == 'member-libraryType') {
-                    processSimpleMemberRefdataQuery(params.query, 'country', idList, result)
+                    processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
                 }
                 else if (params.query == 'member-orgType') {
 
