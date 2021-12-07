@@ -27,9 +27,9 @@
 
         <g:render template="/subscription/reporting/query/query" />
 
-        <g:if test="${['cc05e631c0e52dfaaab4c6d5ffc5ed11'].contains( contextService.getUser().username.encodeAsMD5() )}">
+        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
             <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
-        </g:if>
+        </sec:ifAnyGranted> --}%
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
