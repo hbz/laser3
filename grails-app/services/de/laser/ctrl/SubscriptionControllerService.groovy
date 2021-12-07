@@ -2368,34 +2368,36 @@ class SubscriptionControllerService {
                 Integer countIEsToAdd = 0
                 result.checked.each {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
-                    TitleInstancePackagePlatform tipp = ie.tipp
+                    if(ie) {
+                        TitleInstancePackagePlatform tipp = ie.tipp
 
-                    boolean tippExistsInParentSub = false
+                        boolean tippExistsInParentSub = false
 
-                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                        tippExistsInParentSub = true
-                    }else {
-                        List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                        titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                            if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                tippExistsInParentSub = true
-                                tipp = titleInstancePackagePlatform
+                        if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                            tippExistsInParentSub = true
+                        } else {
+                            List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                            titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                                if (IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                                    tippExistsInParentSub = true
+                                    tipp = titleInstancePackagePlatform
+                                }
                             }
                         }
-                    }
 
-                    if(tippExistsInParentSub) {
-                        try {
-                            if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                ++countIEsToAdd
-                                removeFromCache << it.key
+                        if (tippExistsInParentSub) {
+                            try {
+                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                    log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                    ++countIEsToAdd
+                                    removeFromCache << it.key
+                                }
                             }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                            [result: result, status: STATUS_ERROR]
+                            catch (EntitlementCreationException e) {
+                                log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                                [result: result, status: STATUS_ERROR]
+                            }
                         }
                     }
                 }
