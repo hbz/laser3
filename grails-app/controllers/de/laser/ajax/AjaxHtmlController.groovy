@@ -637,7 +637,7 @@ class AjaxHtmlController {
             token:  params.token,
             query:  params.query
         ]
-        result.id = params.id ? params.id as Long : ''
+        result.id = params.id ? params.id != 'null' ? params.id as Long : '' : ''
 
         if (params.context == BaseConfig.KEY_MYINST) {
             reportingGlobalService.doChartDetails( result, params ) // manipulates result
