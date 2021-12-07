@@ -22,7 +22,7 @@
             </div>
     --}%
 
-        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList?.size() ?: 0}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}

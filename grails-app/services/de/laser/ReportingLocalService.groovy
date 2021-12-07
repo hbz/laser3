@@ -40,7 +40,7 @@ class ReportingLocalService {
             }
             else {
                 result.putAll( SubscriptionReport.query(clone) )
-                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone).get(1)
+                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReport.getCurrentConfig(sub), clone).get(1)
                 result.tmpl = TMPL_PATH + 'chart/default'
             }
 
@@ -120,12 +120,25 @@ class ReportingLocalService {
                 result.tmpl = TMPL_PATH + 'details/timeline/subscription'
             }
             else {
-                GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty('label', label) // todo
+                Subscription sub = Subscription.get( params.token.split('#')[1] ) // TODO
+                Map<String, Object> subConf = SubscriptionReport.getCurrentConfig( sub )
 
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReport.CONFIG, clone)
-                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
-                result.tmpl   = TMPL_PATH + 'details/entitlement'
+                if (params.query.startsWith('tipp-')) {
+                    GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                    clone.setProperty('label', label) // todo
+
+                    result.labels = BaseQuery.getQueryLabels( subConf, clone ) // TODO
+                    result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
+                    result.tmpl   = TMPL_PATH + 'details/entitlement'
+                }
+                else if (params.query.startsWith('member-')) {
+                    GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                    clone.setProperty('label', label) // todo
+
+                    result.labels = BaseQuery.getQueryLabels( subConf, clone ) // TODO
+                    result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                    result.tmpl   = TMPL_PATH + 'details/member'
+                }
             }
 
             Map<String, Object> currentLabels = rCache.readQueryCache().labels as Map<String, Object>

@@ -119,9 +119,9 @@
 
         <g:if test="${filterResult}">
 
-            <sec:ifAnyGranted roles="ROLE_YODA">
+            <g:if test="${['cc05e631c0e52dfaaab4c6d5ffc5ed11'].contains( contextService.getUser().username.encodeAsMD5() )}">
                 <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
-            </sec:ifAnyGranted>
+            </g:if>
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
