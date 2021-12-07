@@ -2791,7 +2791,7 @@ class SubscriptionControllerService {
         Subscription sub = Subscription.get(params.id)
 
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
-        result.cfgQueryList  = SubscriptionReport.CONFIG.base.query.default
+        result.cfgQueryList  = SubscriptionReport.getCurrentQueryConfig( sub )
         result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

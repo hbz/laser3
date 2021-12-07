@@ -4,6 +4,7 @@ import de.laser.I10nTranslation
 import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
@@ -135,6 +136,23 @@ class BaseQuery {
 
         result.data.each { d ->
             d[1] = RefdataValue.get(d[0]).getI10n('value')
+
+            result.dataDetails.add( [
+                    query:  query,
+                    id:     d[0],
+                    label:  d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[0]] )
+            ])
+        }
+        handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
+    }
+
+    static void handleGenericRoleQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[1] = Role.get(d[0]).getI10n('authority')
 
             result.dataDetails.add( [
                     query:  query,

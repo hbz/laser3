@@ -1,11 +1,13 @@
 <%@ page import="de.laser.reporting.export.LocalExportHelper;" %>
 <br />
 
-<div style="text-align: right">
-    <button id="details-export-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
-        <i class="ui icon download"></i>
-    </button>
-</div>
+<g:if test="${!query.startsWith('member-')}"> %{-- TODO --}%
+    <div style="text-align: right">
+        <button id="details-export-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
+            <i class="ui icon download"></i>
+        </button>
+    </div>
+</g:if>
 
 <div class="ui tiny steps">
     <g:each in="${labels}" var="lbl" status="i">
