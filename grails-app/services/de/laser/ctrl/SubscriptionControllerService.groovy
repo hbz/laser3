@@ -334,7 +334,6 @@ class SubscriptionControllerService {
         if(!result)
             [result: null, status: STATUS_ERROR]
         else {
-            long start = System.currentTimeMillis()
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
             if(!subscribedPlatforms) {
@@ -351,7 +350,6 @@ class SubscriptionControllerService {
                     result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
                 }
             }
-            log.debug("1. ${System.currentTimeMillis()-start} msecs")
             Subscription refSub = (!params.statsForSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -378,9 +376,7 @@ class SubscriptionControllerService {
                     sort = "title.name asc, r.reportType asc, r.metricType asc, r.reportFrom desc"
                 }
                 result.subscribedPlatforms = subscribedPlatforms
-                log.debug("2. ${System.currentTimeMillis()-start} msecs")
                 ArrayList<Object> filterData = prepareFilter(params, result)
-                log.debug("3. ${System.currentTimeMillis()-start} msecs")
                 String filter = filterData[0], dateRange = filterData[1], sqlDateRange = filterData[4]
                 Map<String, Object> queryParams = filterData[2] as Map<String, Object>
                 queryParams.refSub = refSub
@@ -396,9 +392,7 @@ class SubscriptionControllerService {
                     c5CheckParams.startDate = queryParams.startDate
                     c5CheckParams.endDate = queryParams.endDate
                 }
-                log.debug("4. ${System.currentTimeMillis()-start} msecs")
-                Session sess = sessionFactory.currentSession
-                //disabling the sequence scans by workarounds accelerate the query but should not be solution. I need query optimising ...
+                Session sess = sessionFactory.getCurrentSession()
                 SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :refSub and ie_accept_status_rv_fk = :acceptStatus) or c5r_title_fk is null)'+sqlDateRange)
                 query.setParameter('customer', c5CheckParams.customer.id)
                 query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
@@ -411,10 +405,8 @@ class SubscriptionControllerService {
                 query.addEntity(Counter5Report)
                 count5check.addAll(query.list())
                 //count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams, [max: 1]))
-                log.debug("5. ${System.currentTimeMillis()-start} msecs")
                 if(count5check.size() == 0) {
                     Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
-                    log.debug("${System.currentTimeMillis()-start} msecs")
                     result.reportTypes = availableReportTypes
                     if(!params.reportType) {
                         if(availableReportTypes)
@@ -425,7 +417,6 @@ class SubscriptionControllerService {
                     filter += " and r.reportType in (:reportType) "
                     queryParams.reportType = result.reportType
                     Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
-                    log.debug("${System.currentTimeMillis()-start} msecs")
                     result.metricTypes = availableMetricTypes
                     if(!params.metricType) {
                         if(availableMetricTypes)
@@ -436,9 +427,7 @@ class SubscriptionControllerService {
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
                     c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
-                    log.debug("${System.currentTimeMillis()-start} msecs")
                     c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                    log.debug("${System.currentTimeMillis()-start} msecs")
                     count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange, queryParams))
                     result.total = count4check.get(0)
                     result.sums = c4sums
