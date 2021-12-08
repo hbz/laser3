@@ -350,7 +350,8 @@ class SubscriptionControllerService {
                     result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
                 }
             }
-            Subscription refSub = (!params.statsForSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+
+            Subscription refSub = (params.statsForSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
@@ -486,7 +487,7 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
-            Subscription refSub = (!params.statsforSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+            Subscription refSub = (params.statsforSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List c4sums = [], c5sums = [], monthsInRing = []
@@ -2386,34 +2387,36 @@ class SubscriptionControllerService {
                 Integer countIEsToAdd = 0
                 result.checked.each {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
-                    TitleInstancePackagePlatform tipp = ie.tipp
+                    if(ie) {
+                        TitleInstancePackagePlatform tipp = ie.tipp
 
-                    boolean tippExistsInParentSub = false
+                        boolean tippExistsInParentSub = false
 
-                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                        tippExistsInParentSub = true
-                    }else {
-                        List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                        titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                            if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                tippExistsInParentSub = true
-                                tipp = titleInstancePackagePlatform
+                        if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                            tippExistsInParentSub = true
+                        } else {
+                            List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
+                            titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                                if (IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                                    tippExistsInParentSub = true
+                                    tipp = titleInstancePackagePlatform
+                                }
                             }
                         }
-                    }
 
-                    if(tippExistsInParentSub) {
-                        try {
-                            if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                ++countIEsToAdd
-                                removeFromCache << it.key
+                        if (tippExistsInParentSub) {
+                            try {
+                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                    log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                    ++countIEsToAdd
+                                    removeFromCache << it.key
+                                }
                             }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                            [result: result, status: STATUS_ERROR]
+                            catch (EntitlementCreationException e) {
+                                log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                                [result: result, status: STATUS_ERROR]
+                            }
                         }
                     }
                 }
