@@ -141,8 +141,11 @@ class BootStrapService {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
+        /*
+        only for local usage
         log.debug("vacuumAndAnalyzeTables ..")
         vacuumAndAnalyseTables()
+         */
 
         log.debug(" .__                            .________ ")
         log.debug(" |  | _____    ______ ___________\\_____  \\ ~ grails3")
