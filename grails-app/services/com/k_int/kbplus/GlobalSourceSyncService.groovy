@@ -69,6 +69,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             orgTypes = [:],
             currency = [:],
             accessType = [:],
+            openAccess = [:],
             ddc = [:],
             contactTypes = [:]
     Long maxTimestamp
@@ -240,6 +241,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     max = 5000
                     break
+                case "openAccess": triggeredTypes = ['TitleInstancePackagePlatform']
+                    buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
+                    max = 5000
+                    break
                 case "language":
                 case "editionStatement":
                     triggeredTypes = ['TitleInstancePackagePlatform']
@@ -355,6 +360,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         break
                                                     case "editionStatement":
                                                         tipp.editionStatement = result.records.find { record -> record.uuid == tipp.gokbId }.editionStatement
+                                                        tipp.save()
+                                                        break
+                                                    case "accessType":
+                                                        String newAccessType = result.records.find { record -> record.uuid == tipp.gokbId }.accessType
+                                                        tipp.accessType = accessType.get(newAccessType)
+                                                        tipp.save()
+                                                        break
+                                                    case "openAccess":
+                                                        String newOpenAccess = result.records.find { record -> record.uuid == tipp.gokbId }.openAccess
+                                                        tipp.openAccess = openAccess.get(newOpenAccess)
                                                         tipp.save()
                                                         break
                                                 }
@@ -550,7 +565,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     uuid: tipp.uuid,
                     accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
                     accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
-                    medium: tipp.medium
+                    medium: tipp.medium,
+                    accessType: tipp.accessType,
+                    openAccess: tipp.openAccess
                 ]
                 if(tipp.titleType == 'Journal') {
                     tipp.coverage.each { cov ->
@@ -1222,6 +1239,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.subjectReference = tippB.subjectReference
             tippA.volume = tippB.volume
             tippA.medium = titleMedium.get(tippB.medium)
+            tippA.accessType = accessType.get(tippB.accessType)
+            tippA.openAccess = openAccess.get(tippB.openAccess)
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.errors}")
             if(tippB.titlePublishers) {
@@ -1376,6 +1395,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 hostPlatformURL: tippData.hostPlatformURL,
                 accessStartDate: (Date) tippData.accessStartDate,
                 accessEndDate: (Date) tippData.accessEndDate,
+                accessType: accessType.get(tippData.accessType),
+                openAccess: openAccess.get(tippData.openAccess),
                 pkg: pkg
         )
         //ex updatedTitleAfterPackageReconcile
@@ -1862,8 +1883,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataCategory.getAllRefdataValues(RDConstants.TIPP_ACCESS_TYPE).each { RefdataValue rdv ->
             accessType.put(rdv.value, rdv)
         }
+        buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
         initialPackagesCounter = [:]
         pkgPropDiffsContainer = [:]
         packagesToNotify = [:]
+    }
+
+    void buildWekbLaserRefdataMap(String rdCat) {
+        switch(rdCat) {
+            case RDConstants.LICENSE_OA_TYPE:
+                openAccess.put('Blue OA', RefdataValue.getByValueAndCategory('Blue Open Access', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Empty', RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Gold OA', RefdataValue.getByValueAndCategory('Gold Open Access', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Green OA', RefdataValue.getByValueAndCategory('Green Open Access', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Hybrid', RefdataValue.getByValueAndCategory('Hybrid', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('White OA', RefdataValue.getByValueAndCategory('White Open Access', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Yellow OA', RefdataValue.getByValueAndCategory('Yellow Open Access', RDConstants.LICENSE_OA_TYPE))
+                break
+        }
     }
 }
