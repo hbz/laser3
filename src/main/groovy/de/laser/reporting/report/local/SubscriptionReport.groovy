@@ -100,7 +100,7 @@ class SubscriptionReport {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getTimeline(sub)
 
-            if (params.query.startsWith('timeline')) {
+            if (prefix == 'timeline') {
 
                 if (params.query == 'timeline-member') {
                     List<List<Long>> subIdLists = []
