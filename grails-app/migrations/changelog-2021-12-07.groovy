@@ -13,6 +13,8 @@ databaseChangeLog = {
     }
 
     changeSet(author: "galffy (hand-coded)", id: "1638884367017-3") {
+        dropIndex(indexName: "pending_change_oid_idx", tableName: "pending_change")
+
         grailsChange {
             change {
                 sql.execute("CREATE INDEX pending_change_oid_idx ON pending_change USING GIN (regexp_split_to_array(pc_oid, ':'));")
