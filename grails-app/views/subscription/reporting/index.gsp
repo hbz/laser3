@@ -35,7 +35,7 @@
         <div id="chart-details"></div>
 
         <style>
-            #chart-wrapper { height: 330px; width: 98%; margin: 3em auto 2em; }
+            #chart-wrapper { height: 380px; width: 98%; margin: 3em auto 2em; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -75,8 +75,8 @@
                         }
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
-                            if (dsl > 7) {
-                                $('#chart-wrapper').css('height', 250 + (11 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
+                                $('#chart-wrapper').css('height', 220 + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
                             }
