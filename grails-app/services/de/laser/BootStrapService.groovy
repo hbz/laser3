@@ -12,7 +12,13 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
+import org.hibernate.Session
+import org.hibernate.jdbc.Work
 import org.hibernate.type.TextType
+
+import java.sql.Connection
+import java.sql.SQLException
+import java.sql.Statement
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
@@ -134,6 +140,12 @@ class BootStrapService {
 
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
+
+        /*
+        only for local usage
+        log.debug("vacuumAndAnalyzeTables ..")
+        vacuumAndAnalyseTables()
+         */
 
         log.debug(" .__                            .________ ")
         log.debug(" |  | _____    ______ ___________\\_____  \\ ~ grails3")
@@ -786,5 +798,24 @@ No Host Platform URL Content
                 IdentifierNamespace.construct(namespaceProperties)
             }
         }
+    }
+
+    /**
+     * Analyses huge tables for better query execution planning
+     */
+    void vacuumAndAnalyseTables() {
+        Session sess = sessionFactory.currentSession
+        sess.doWork(new Work() {
+            void execute(Connection connection) throws SQLException {
+                Statement stmt = connection.createStatement()
+                stmt.execute('analyze pending_change')
+                stmt.execute('analyze issue_entitlement')
+                stmt.execute('analyze issue_entitlement_coverage')
+                stmt.execute('analyze title_instance_package_platform')
+                stmt.execute('analyze tippcoverage')
+                stmt.execute('analyze counter4report')
+                stmt.execute('analyze counter5report')
+            }
+        })
     }
 }

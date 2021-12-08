@@ -101,7 +101,7 @@ class PendingChange {
         payload column: 'pc_payload', type: 'text'
         msgToken column: 'pc_msg_token'
         msgParams column: 'pc_msg_doc', type: 'text'
-        ts column: 'pc_ts'
+        ts column: 'pc_ts', index: 'pending_change_ts_idx'
         owner column: 'pc_owner', index: 'pending_change_owner_idx'
         desc column: 'pc_desc', type: 'text'
         status column: 'pc_status_rdv_fk'

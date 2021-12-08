@@ -107,7 +107,7 @@ class Counter5Report extends AbstractReport {
         version             column: 'c5r_version'
         title               column: 'c5r_title_fk', index: 'c5r_title_idx'
         publisher           column: 'c5r_publisher', type: 'text'
-        platform            column: 'c5r_platform_fk'
+        platform            column: 'c5r_platform_fk', index: 'c5r_plat_idx'
         reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx'
         reportType          column: 'c5r_report_type', index: 'c5r_rt_idx'
         accessType          column: 'c5r_access_type'

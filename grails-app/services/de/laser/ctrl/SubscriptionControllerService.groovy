@@ -27,11 +27,14 @@ import org.apache.commons.lang3.RandomStringUtils
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.SQLQuery
+import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
+import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -66,6 +69,7 @@ class SubscriptionControllerService {
     MessageSource messageSource
     WorkflowService workflowService
     ManagementService managementService
+    def sessionFactory
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -346,7 +350,6 @@ class SubscriptionControllerService {
                     result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
                 }
             }
-
             Subscription refSub = (!params.statsForSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
@@ -374,7 +377,7 @@ class SubscriptionControllerService {
                 }
                 result.subscribedPlatforms = subscribedPlatforms
                 ArrayList<Object> filterData = prepareFilter(params, result)
-                String filter = filterData[0], dateRange = filterData[1]
+                String filter = filterData[0], dateRange = filterData[1], sqlDateRange = filterData[4]
                 Map<String, Object> queryParams = filterData[2] as Map<String, Object>
                 queryParams.refSub = refSub
                 queryParams.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
@@ -389,8 +392,20 @@ class SubscriptionControllerService {
                     c5CheckParams.startDate = queryParams.startDate
                     c5CheckParams.endDate = queryParams.endDate
                 }
-                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams))
-                if(count5check.get(0) == 0) {
+                Session sess = sessionFactory.getCurrentSession()
+                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :refSub and ie_accept_status_rv_fk = :acceptStatus) or c5r_title_fk is null)'+sqlDateRange)
+                query.setParameter('customer', c5CheckParams.customer.id)
+                query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
+                query.setParameter('refSub', refSub.id)
+                query.setParameter('acceptStatus', RDStore.IE_ACCEPT_STATUS_FIXED.id)
+                if(c5CheckParams.startDate)
+                    query.setParameter('startDate', new Timestamp(c5CheckParams.startDate.getTime()))
+                if(c5CheckParams.endDate)
+                    query.setParameter('endDate', new Timestamp(c5CheckParams.endDate.getTime()))
+                query.addEntity(Counter5Report)
+                count5check.addAll(query.list())
+                //count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams, [max: 1]))
+                if(count5check.size() == 0) {
                     Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
                     result.reportTypes = availableReportTypes
                     if(!params.reportType) {
@@ -411,7 +426,6 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
-
                     c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
                     c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange, queryParams))
@@ -532,12 +546,13 @@ class SubscriptionControllerService {
     }
 
     ArrayList<Object> prepareFilter(GrailsParameterMap params, Map<String, Object> result) {
-        String dateRange, filter = ""
+        String dateRange, sqlDateRange, filter = ""
         List monthsInRing = []
         Map<String, Object> queryParams = [customer: result.subscription.getSubscriber(), platforms: result.subscribedPlatforms]
         Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
         if(result.subscription.startDate && result.subscription.endDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
                 queryParams.endDate = result.subscription.endDate
@@ -556,6 +571,7 @@ class SubscriptionControllerService {
         }
         else if(result.subscription.startDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
                 queryParams.endDate = new Date()
@@ -574,9 +590,11 @@ class SubscriptionControllerService {
         else {
             if(params.tab == 'total') {
                 dateRange = ''
+                sqlDateRange = ''
             }
             else {
                 dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
                 Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                 filterTime.setTime(filterDate)
@@ -659,7 +677,7 @@ class SubscriptionControllerService {
             }
 
         }
-        [filter, dateRange, queryParams, monthsInRing]
+        [filter, dateRange, queryParams, monthsInRing, sqlDateRange]
     }
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
