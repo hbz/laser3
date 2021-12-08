@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4022    08.12.2021  rc-2.2  2.2.8       Andreas Feature     Nachreichung der Titelfelder openAccess und accessType
+
+--      08.12.2021  rc-2.2  2.2.8       Andreas Bug         Darstellungen in der Lizenzstatistik korrigiert
+
 4034    07.12.2021  rc-2.2  2.2.8       Andreas Bug         costItemStatus wurde verworfen, was zu einem Validierungsfehler geführt hat
 
 4027    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber
