@@ -347,7 +347,7 @@ class SubscriptionControllerService {
                 }
             }
 
-            Subscription refSub = (!params.statsForSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+            Subscription refSub = (params.statsForSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
@@ -472,7 +472,7 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
-            Subscription refSub = (!params.statsforSurvey && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+            Subscription refSub = (params.statsforSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List c4sums = [], c5sums = [], monthsInRing = []
