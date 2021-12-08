@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
+
 4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
 
 4027    06.12.2021  rc-2.2  2.2.6       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber

@@ -24,6 +24,12 @@ class CostItemExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
+                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
+
                                     'costTitle'         : FIELD_TYPE_PROPERTY,
                                     'costDescription'   : FIELD_TYPE_PROPERTY,
                                     'reference'         : FIELD_TYPE_PROPERTY,
@@ -39,13 +45,7 @@ class CostItemExport extends BaseDetailsExport {
                                     'startDate'                     : FIELD_TYPE_PROPERTY,
                                     'endDate'                       : FIELD_TYPE_PROPERTY,
                                     'datePaid'                      : FIELD_TYPE_PROPERTY,
-                                    'financialYear'                 : FIELD_TYPE_PROPERTY,
-
-                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'financialYear'                 : FIELD_TYPE_PROPERTY
                             ]
                     ],
             ]

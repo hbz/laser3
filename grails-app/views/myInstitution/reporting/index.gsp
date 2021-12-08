@@ -36,8 +36,8 @@
 
         <div id="info-content" class="hidden">
 
-            <div class="ui segment">
-                <span class="ui top attached label" style="border-radius: 0; text-align: center">
+            <div class="ui segment message info" style="border:none;">
+                <span class="ui top attached label" style="border-top:1px solid #a9d5de; border-left:1px solid #a9d5de; border-right:1px solid #a9d5de; border-radius:0; text-align:center;">
                     <i class="icon question large"></i>${message(code:'reporting.filter.help')}
                 </span>
 
@@ -119,9 +119,9 @@
 
         <g:if test="${filterResult}">
 
-            <sec:ifAnyGranted roles="ROLE_YODA">
+            %{-- <sec:ifAnyGranted roles="ROLE_YODA">
                 <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
-            </sec:ifAnyGranted>
+            </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
