@@ -36,8 +36,8 @@
 
         <div id="info-content" class="hidden">
 
-            <div class="ui segment">
-                <span class="ui top attached label" style="border-radius: 0; text-align: center">
+            <div class="ui segment message info" style="border:none;">
+                <span class="ui top attached label" style="border-top:1px solid #a9d5de; border-left:1px solid #a9d5de; border-right:1px solid #a9d5de; border-radius:0; text-align:center;">
                     <i class="icon question large"></i>${message(code:'reporting.filter.help')}
                 </span>
 
