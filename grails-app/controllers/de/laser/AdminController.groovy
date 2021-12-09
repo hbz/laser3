@@ -481,11 +481,15 @@ class AdminController  {
     def systemEvents() {
         Map<String, Object> result = [:]
 
-        params.sort =   params.sort ?: 'created'
-        params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 200
+        params.filter_limit = params.filter_limit ?: 100
 
-        result.events = SystemEvent.list(params)
+        if (params.filter_category) { result.put('filter_category', params.filter_category) }
+        if (params.filter_relevance){ result.put('filter_relevance', params.filter_relevance) }
+        if (params.filter_source)   { result.put('filter_source', params.filter_source) }
+        if (params.filter_exclude)  { result.put('filter_exclude', params.filter_exclude) }
+        if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
+
+        result.events = SystemEvent.list([max: params.filter_limit])
         result
     }
 
