@@ -71,7 +71,7 @@ class Counter4Report extends AbstractReport {
         version             column: 'c4r_version'
         title               column: 'c4r_title_fk', index: 'c4r_title_idx'
         publisher           column: 'c4r_publisher', type: 'text'
-        platform            column: 'c4r_platform_fk'
+        platform            column: 'c4r_platform_fk', index: 'c4r_plat_idx'
         reportInstitution   column: 'c4r_report_institution_fk', index: 'c4r_ri_idx'
         reportType          column: 'c4r_report_type', index: 'c4r_rt_idx'
         category            column: 'c4r_category'

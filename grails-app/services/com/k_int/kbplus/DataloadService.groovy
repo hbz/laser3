@@ -1204,6 +1204,14 @@ class DataloadService {
                     }
                 }
 
+                try {
+
+                    client.close()
+                }
+                catch (Exception e) {
+                    log.error("Problem by Close ES Client", e);
+                }
+
                 log.debug("Do updateFTIndexes");
                 updateFTIndexes()
                 //log.debug("Clear down and init ES completed...")
