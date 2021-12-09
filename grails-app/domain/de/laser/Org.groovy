@@ -27,8 +27,8 @@ import grails.web.servlet.mvc.GrailsParameterMap
  * An organisation record.
  * Organisations may represent in LAS:eR:
  * <ol>
- *     <li>institutions</li>
- *     <li>(other) organisations: editors or publishing houses</li>
+ *     <li>academic institutions</li>
+ *     <li>commercial organisations: editors or publishing houses</li>
  * </ol>
  * Institutions may be: university or public libraries, research organisations, or other academic institutions.
  * Above that, organisations may be editors, providers, publishers, agencies. They are called by the super term "organisations".
