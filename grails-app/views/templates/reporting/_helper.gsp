@@ -21,17 +21,53 @@ if (! JSPC.app.reporting) {
                 toolbox: {
                     showTitle: true,
                     orient: 'vertical',
+                    itemGap: 15,
                     right: 0,
                     feature: {
                         saveAsImage: {
-                            title: '${message(code:'reporting.chart.toolbox.saveAsImage')}'
+                            title: '${message(code:'reporting.chart.toolbox.saveAsImage')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
                         },
                         myLegendToggle: {
                             title: '${message(code:'reporting.chart.toolbox.toggleLegend')}',
-                            icon: 'path://M28,0C12.561,0,0,12.561,0,28s12.561,28,28,28s28-12.561,28-28S43.439,0,28,0z M40,41H16c-1.104,0-2-0.896-2-2s0.896-2,2-2 h24c1.104,0,2,0.896,2,2S41.104,41,40,41z M40,30H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,30,40,30z M40,19H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,19,40,19z',
-                            /* icon: 'path://M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z', */
+                            icon: 'image://${resource(dir:'images', file:'reporting/menu.svg', absolute:true)}',
                             onclick: function (){
-                                JSPC.app.reporting.current.chart.echart.setOption({ legend: {show: ! JSPC.app.reporting.current.chart.echart.getOption().legend[0].show} })
+                                var show = ! JSPC.app.reporting.current.chart.echart.getOption().legend[0].show
+                                JSPC.app.reporting.current.chart.echart.setOption({ legend: {show: show} })
+                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
+                                    if (show) {
+                                        s.option.center = ['50%', '40%']
+                                    } else {
+                                        s.option.center = ['50%', '50%']
+                                    }
+                                })
+                                JSPC.app.reporting.current.chart.echart.resize()
+                            }
+                        },
+                        myZoomIn: {
+                            title: '${message(code:'reporting.chart.toolbox.zoomIn')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-in.svg', absolute:true)}',
+                            onclick: function (){
+                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
+                                    var r = parseInt( s.option.radius.replace('%','') )
+                                    if (r < 90) {
+                                        s.option.radius = (r + 5) + '%'
+                                        JSPC.app.reporting.current.chart.echart.resize()
+                                    }
+                                })
+                            }
+                        },
+                        myZoomOut: {
+                            title: '${message(code:'reporting.chart.toolbox.zoomOut')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-out.svg', absolute:true)}',
+                            onclick: function (){
+                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
+                                    var r = parseInt( s.option.radius.replace('%','') )
+                                    if (r > 10) {
+                                        s.option.radius = (r - 5) + '%'
+                                        JSPC.app.reporting.current.chart.echart.resize()
+                                    }
+                                })
                             }
                         }
                     }
@@ -99,7 +135,8 @@ if (! JSPC.app.reporting) {
                 right: 0,
                 feature: {
                     saveAsImage: {
-                        title: 'Exportieren'
+                        title: 'Exportieren',
+                        icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
                     }
                 }
             },
