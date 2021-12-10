@@ -434,7 +434,7 @@ class OrganisationController  {
                 return
             }
 
-            if(params.leitID2 ==~ /[a-z0-9]{0,30}/) {
+            if(params.leitID2 ==~ /[a-zA-Z0-9]{0,30}/) {
                 leitID2 = params.leitID2
             }else{
                 flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID2.info')])
