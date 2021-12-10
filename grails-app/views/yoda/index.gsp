@@ -87,7 +87,9 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="column">
             <h3 class="ui header">Profiler</h3>
             <div>
                 <div class="ui divided relaxed list">

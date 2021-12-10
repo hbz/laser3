@@ -135,7 +135,7 @@ if (! JSPC.app.reporting) {
                 right: 0,
                 feature: {
                     saveAsImage: {
-                        title: 'Exportieren',
+                        title: '${message(code:'reporting.chart.toolbox.saveAsImage')}',
                         icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
                     }
                 }
