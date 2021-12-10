@@ -12,6 +12,9 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
+/**
+ * This controller manages calls to platforms.
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController  {
 
@@ -22,11 +25,19 @@ class PlatformController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Landing point; redirects to the list of platforms
+     */
     @Secured(['ROLE_USER'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    /**
+     * Call to list all platforms in the we:kb ElasticSearch index.
+     * Beware that a we:kb API connection has to be established for the list to work!
+     * @return a list of all platforms currently recorded in the we:kb ElasticSearch index
+     */
     @Secured(['ROLE_USER'])
     def list() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -87,6 +98,11 @@ class PlatformController  {
       result
     }
 
+    /**
+     * Shows the details page for the given platform. Note that there are fields not mirrored in the app
+     * but fetched on-the-fly from we:kb; a we:kb ElasticSearch API is thus necessary
+     * @return the details view of the platform
+     */
     @Secured(['ROLE_USER'])
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
@@ -150,8 +166,7 @@ class PlatformController  {
         result
     }
 
-    //@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def delete() {
@@ -175,6 +190,10 @@ class PlatformController  {
         }
     }
 
+    /**
+     * Currently inaccessible
+     * Lists all access methods linked to the given platform
+     */
     @Secured(['ROLE_USER'])
     def accessMethods() {
         // TODO: editable is undefined
@@ -192,6 +211,12 @@ class PlatformController  {
         [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
     }
 
+    /**
+     * Call for linking the platform to an access point.
+     * Is a non-modal duplicate of {@link #dynamicApLink()} -
+     * @deprecated use {@link #dynamicApLink} instead
+     */
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
@@ -225,6 +250,10 @@ class PlatformController  {
         result
     }
 
+    /**
+     * Call to link a platform to another access point
+     * @return renders the available options in a modal
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
@@ -260,6 +289,10 @@ class PlatformController  {
         render(view: "_apLinkContent", model: result)
     }
 
+    /**
+     * Call to add a new derivation to the given platform
+     * @return redirect to the referer
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -272,6 +305,10 @@ class PlatformController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to remove a new derivation to the given platform
+     * @return redirect to the referer
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -284,6 +321,7 @@ class PlatformController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -308,6 +346,7 @@ class PlatformController  {
         }
     }
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")

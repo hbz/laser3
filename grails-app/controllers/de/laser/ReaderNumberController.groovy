@@ -8,9 +8,16 @@ import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller manages library reader number related calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ReaderNumberController  {
 
+	/**
+	 * Creates a new reader number for the given institution
+	 * @return redirect to the updated reader number table
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
@@ -32,6 +39,10 @@ class ReaderNumberController  {
 		redirect controller: 'organisation', action: 'readerNumber', params: [id: params.orgid, tableA: params.tableA, tableB: params.tableB, sort: params.sort, order: params.order]
     }
 
+	/**
+	 * Takes the submitted parameters and updates the given reader number with the given parameter map
+	 * @return the updated reader number table
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
@@ -55,6 +66,10 @@ class ReaderNumberController  {
 		redirect controller: 'organisation', action: 'readerNumber', params: [id: params.orgid, tableA: params.tableA, tableB: params.tableB, sort: params.sort, order: params.order]
     }
 
+	/**
+	 * Deletes the given reader numbers, specified by their grouping unit
+	 * @return the updated reader number table
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {

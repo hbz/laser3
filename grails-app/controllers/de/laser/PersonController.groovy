@@ -11,6 +11,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
+/**
+ * This controller manages person-contact related calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PersonController  {
 
@@ -21,11 +24,22 @@ class PersonController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Redirects to the addressbook of the context institution
+     * @return the list view of the context institution's contacts
+     * @see MyInstitutionController#addressbook()
+     */
     @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'myInstitution', action: 'addressbook'
     }
 
+    /**
+     * Takes submitted parameters and creates a new person contact instance based on the
+     * given parameter map
+     * @return redirect back to the referer -> an updated list of person contacts
+     * @see Person
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
@@ -182,6 +196,9 @@ class PersonController  {
         }
     }
 
+    /**
+     * Shows the contact details of the given person instance
+     */
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
@@ -225,6 +242,10 @@ class PersonController  {
         result
     }
 
+    /**
+     * Takes the submitted parameters and updates the person contact based on the given parameter map
+     * @return redirect to the referer -> the updated view of the person contact
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
@@ -391,6 +412,10 @@ class PersonController  {
         }
     }
 
+    /**
+     * Deletes the given person contact
+     * @return redirects to one of the list views from which the person contact to be deleted has been called
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -441,6 +466,10 @@ class PersonController  {
         }
     }
 
+    /**
+     * Lists all possible tenants of the given person contact
+     * @return a JSON map containing all organisations / institutions linked to the given person contact
+     */
     @Secured(['ROLE_USER'])
     def getPossibleTenantsAsJson() {
         def result = []
@@ -546,6 +575,10 @@ class PersonController  {
         }
     }
 
+    /**
+     * Assigns a new function / position / responsibility to the given person contact
+     * @return if a redirect has been specified, the redirect is being executed; the person details page otherwise
+     */
     @Transactional
     def addPersonRole() {
         PersonRole result
@@ -590,6 +623,10 @@ class PersonController  {
         }
     }
 
+    /**
+     * Removes an assignal from the given person contact
+     * @return the person details view
+     */
     @Transactional
     def deletePersonRole() {
         Person prs = Person.get(params.id)
