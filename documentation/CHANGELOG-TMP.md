@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
+
 4043    10.12.2021  rc-2.2  2.2.8       Moe     Bug         Eintrag Leitweg-ID: Großbuchstaben erlauben
 
 4022    08.12.2021  rc-2.2  2.2.8       Andreas Feature     Nachreichung der Titelfelder openAccess und accessType

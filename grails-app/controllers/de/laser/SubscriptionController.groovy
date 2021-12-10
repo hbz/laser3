@@ -1015,6 +1015,11 @@ class SubscriptionController {
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
 
+            if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.previousSubscription)
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
+            }
+
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
