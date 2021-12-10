@@ -1541,9 +1541,9 @@ class ExportService {
 					//status
 					row.add(tipp.status.value ?: '')
 					//access_type
-					row.add(tipp.accessType.value ?: '')
+					row.add(tipp.accessType ? tipp.accessType.value : '')
 					//oa_type
-					row.add(tipp.openAccess.value ?: '')
+					row.add(tipp.openAccess ? tipp.openAccess.value : '')
 
 					//zdb_ppn
 					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
@@ -1836,9 +1836,9 @@ class ExportService {
 					//status
 					row.add(tipp.status.value ?: '')
 					//access_type
-					row.add(tipp.accessType.value ?: '')
+					row.add(tipp.accessType ? tipp.accessType.value : '')
 					//oa_type
-					row.add(tipp.openAccess.value ?: '')
+					row.add(tipp.openAccess ? tipp.openAccess.value : '')
 
 					//zdb_ppn
 					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
