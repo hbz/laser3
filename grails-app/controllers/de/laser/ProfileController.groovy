@@ -16,6 +16,10 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This controller manages calls to user profiles
+ * @see User
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
@@ -30,6 +34,9 @@ class ProfileController {
     RefdataService refdataService
     PropertyService propertyService
 
+    /**
+     * Call to the current session user's profile
+     */
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]
@@ -66,6 +73,9 @@ class ProfileController {
         result
     }
 
+    /**
+     * Call to the help page with a collection of basic guidelines to the app
+     */
     @Secured(['ROLE_USER'])
     def help() {
         Map<String, Object> result = [:]
@@ -73,6 +83,9 @@ class ProfileController {
         result
     }
 
+    /**
+     * Call for a listing of public properties and reference data values, i.e. an overview of the controlled lists
+     */
     @Secured(['ROLE_USER'])
     def properties() {
         Map<String, Object> propDefs = [:]
@@ -104,6 +117,9 @@ class ProfileController {
         ]
     }
 
+    /**
+     * Call to open the GDPR statement page
+     */
     @Secured(['ROLE_USER'])
     def dsgvo() {
         Map<String, Object> result = [:]
@@ -111,6 +127,10 @@ class ProfileController {
         result
     }
 
+    /**
+     * Call to add the given user to the given institution
+     * @return the profile page
+     */
     @Secured(['ROLE_USER'])
     def addAffiliation() {
         log.debug("addAffiliation() org: ${params.org} role: ${params.formalRole}")
@@ -124,6 +144,10 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Removes the given user from the given institution
+     * @return the profile page
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def deleteAffiliation() {
@@ -137,6 +161,10 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Calls the user deletion page or, if confirmed, deletes the given user and executes the substitutions
+     * @return either the logout redirect or the deletion view, if an error occurred
+     */
     @Secured(['ROLE_USER'])
     def delete() {
         Map<String, Object> result = [:]
@@ -167,6 +195,10 @@ class ProfileController {
         render view: 'delete', model: result
     }
 
+    /**
+     * Takes the submitted parameters and updates the current profile with the given parameter map
+     * @return redirect to the updated profile view
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def updateProfile() {
@@ -225,6 +257,10 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Takes the submitted parameters and updates the user settings with the given parameter map
+     * @return the updated user profile view
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def updateReminderSettings() {
@@ -390,6 +426,10 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Takes the submitted parameters and updates the user notification settings with the given parameter map
+     * @return the updated profile view
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def updateNotificationSettings() {
@@ -454,6 +494,13 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Builds the success / error messages and passes the setting update to the execution method
+     * @param userSetting the updated setting value
+     * @param key the key to be updated
+     * @param fallbackValue a default value in case of failure
+     * @param messageToken the message token to output to the user
+     */
     private void changeValue(UserSetting userSetting, String key, String fallbackValue, String messageToken) {
 
         String messageSuccess
@@ -476,6 +523,15 @@ class ProfileController {
         changeValue( userSetting, key, fallbackValue, messageSuccess, messageError )
     }
 
+    /**
+     * Updates the given user setting with the given key to the given value; sets the fallback value if the
+     * submitted value is invalid
+     * @param userSetting the value to be set to the user setting
+     * @param key the user setting key to be updated
+     * @param fallbackValue the fallback value in case of invalid value
+     * @param messageSuccess the success message to be rendered
+     * @param messageError the error message to be rendered
+     */
     private void changeValue(UserSetting userSetting, String key, String fallbackValue, String messageSuccess, String messageError) {
 
         if (! params.containsKey(key) && ! fallbackValue) {
@@ -526,6 +582,11 @@ class ProfileController {
         }
     }
 
+    /**
+     * Checks if the user has submitted an email address before updating the reminder setting,
+     * updates the setting in case of success
+     * @return the updated profile view
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def updateIsRemindByEmail() {
@@ -545,6 +606,11 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    /**
+     * Checks if the submitted password is valid; if so, the user password is being updated with the given one
+     * @return the updated profile view
+     * @see PasswordUtils#USER_PASSWORD_REGEX
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def updatePassword() {
