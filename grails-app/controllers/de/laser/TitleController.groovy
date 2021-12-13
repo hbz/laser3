@@ -13,6 +13,9 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller manages calls for title listing and
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
@@ -77,6 +80,7 @@ class TitleController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Map<String, Object> result = [:]
@@ -95,6 +99,7 @@ class TitleController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
   def batchUpdate() {
@@ -150,6 +155,10 @@ class TitleController  {
     redirect(controller:'title', action:'show', id:params.id);
   }
 
+    /**
+     * Shows the history events related to the given title
+     * @return a list of history events
+     */
   @Secured(['ROLE_USER'])
   def history() {
     Map<String, Object> result = [:]
@@ -219,6 +228,7 @@ class TitleController  {
     result
   }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def dmIndex() {
     log.debug("dmIndex ${params}");

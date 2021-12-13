@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
  * Maybe we should collect bulk operations here??
  * @deprecated they are usually done with DBM changesets
  */
+@Deprecated
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MigrationsController {
 
