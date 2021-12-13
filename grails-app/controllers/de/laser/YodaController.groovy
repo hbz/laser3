@@ -50,6 +50,12 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.sql.Timestamp
 
+/**
+ * This controller is a buddy-for-everything controller and handles thus all sorts of global management
+ * calls. Many methods are dangerous because they affect many parts of the system (global cleanup methods
+ * for example which may affect many title holdings) or are under subject of testing before they get
+ * generally released.
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
@@ -74,6 +80,9 @@ class YodaController {
     def exportService
     def ESWrapperService
 
+    /**
+     * Shows the Yoda-dashboard
+     */
     @Secured(['ROLE_YODA'])
     @Transactional
     def index() {
@@ -81,11 +90,17 @@ class YodaController {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def erms2362() {
         redirect controller: 'migrations', action: 'erms2362', params: params
     }
 
+    /**
+     * Shows the configuration settings of the application; this is useful for remote deploys
+     * because configuration may be checked during runtime
+     * @return the list of configurations done on grails.util.Holders.config and the local config files
+     */
     @Secured(['ROLE_YODA'])
     def appConfig() {
         Map result = [:]
@@ -100,6 +115,16 @@ class YodaController {
         result
     }
 
+    /**
+     * Shows the a list of the current cronjob configurations
+     * @return a list of the currently defined cronjobs, including their:
+     * <ul>
+     *     <li>execution schedule</li>
+     *     <li>next scheduled execution</li>
+     *     <li>service configuration setting availability (is the job present in the config?)</li>
+     *     <li>service activity state (is the service active?)</li>
+     * </ul>
+     */
     @Secured(['ROLE_YODA'])
     def quartzInfo() {
         Map result = [:]
@@ -148,6 +173,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps the current cache state, i.e. which caches are currently set and what is stored in them
+     * @return a list of the current cache entries, grouped by user / global / session caches
+     */
     @Secured(['ROLE_YODA'])
     def cacheInfo() {
         Map result = [:]
@@ -190,6 +219,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps the registered counts of users over time
+     * @return a list of graphs showing when how many users were recorded
+     */
     @Secured(['ROLE_YODA'])
     def activityProfiler() {
         Map result = [:]
@@ -261,11 +294,20 @@ class YodaController {
         result
     }
 
+    /**
+     * Call to list the currently available threads
+     * @return the view calling the currently available threads and their running state
+     */
     @Secured(['ROLE_YODA'])
     def appThreads() {
         return [:]
     }
 
+    /**
+     * Dumps the average loading times for the app's routes during certain time points
+     * @return a table showing when which call needed how much time in average
+     * @see SystemActivityProfiler
+     */
     @Secured(['ROLE_YODA'])
     def systemProfiler() {
         Map<String, Object> result = [:]
@@ -321,6 +363,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps the call counts on the app's different routes over time
+     * @return a listing of graphs when which page has been called how many times
+     */
     @Secured(['ROLE_YODA'])
     def timelineProfiler() {
         Map<String, Object> result = [:]
@@ -357,6 +403,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Shows the information and current state of services
+     * @return a dump of service states and further information
+     */
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
@@ -388,6 +438,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps the current method securing for each controller call
+     * @return a list of calls with their security level, grouped by controller
+     */
     @Secured(['ROLE_YODA'])
     def appSecurity() {
         Map<String, Object> result = [:]
@@ -488,6 +542,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps all current global role assignments
+     * @return a list of global roles and to whom they have been granted
+     */
     @Secured(['ROLE_YODA'])
     def userMatrix() {
         Map<String, Object> result = [:]
@@ -504,6 +562,7 @@ class YodaController {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def pendingChanges() {
 
@@ -516,6 +575,11 @@ class YodaController {
         result
     }
 
+    /**
+     * Is one of the dangerous methods: retriggers the change processing on title level and hands eventual differences
+     * to the local holdings; if necessary, pending changes are being generated
+     * @see PendingChange
+     */
     @Secured(['ROLE_YODA'])
     def retriggerPendingChanges() {
         log.debug("match IssueEntitlements to TIPPs ...")
@@ -524,12 +588,14 @@ class YodaController {
         redirect controller: 'home', action: 'index'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
         yodaService.getTIPPsWithoutGOKBId()
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def purgeTIPPsWithoutGOKBId() {
         def toDelete = JSON.parse(params.toDelete)
@@ -546,11 +612,15 @@ class YodaController {
         }
     }
 
+    /**
+     * Call to delete titles without we:kb reference and marked as deleted
+     */
     @Secured(['ROLE_YODA'])
     Map<String, Object> expungeDeletedTIPPs() {
         yodaService.expungeDeletedTIPPs(Boolean.valueOf(params.doIt))
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     @Transactional
     def remapOriginEditUrl() {
@@ -577,12 +647,20 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    /**
+     * Shows platforms which have a cursor recorded, i.e. usage data has been loaded already
+     * @return a list of platforms with cursors
+     */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
         Map<String, Object> result = [platforms: Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>]
         result
     }
 
+    /**
+     * This is an already confirmed call; resets the usage data to a given platform. If specified,
+     * existing usage data will be deleted as well
+     */
     @Secured(['ROLE_YODA'])
     def resetStatsData() {
         boolean fullReset = Boolean.valueOf(params.fullReset)
@@ -595,18 +673,23 @@ class YodaController {
         redirect(action: 'manageStatsSources')
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def editStatsSource() {
         statsSyncService.updateStatsSource(params)
         redirect(action: 'manageStatsSources')
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def deleteStatsSource() {
         statsSyncService.deleteStatsSource(params)
         redirect(action: 'manageStatsSources')
     }
 
+    /**
+     * Triggers the loading of usage data from the Nationaler Statistikserver
+     */
     @Secured(['ROLE_YODA'])
     def statsSync() {
         log.debug("statsSync()")
@@ -614,6 +697,10 @@ class YodaController {
         redirect(controller:'home')
     }
 
+    /**
+     * Triggers the loading of usage data from the provider's SUSHI sources
+     * directly, using the SUSHI sources entered in the respective we:kb platform page
+     */
     @Secured(['ROLE_YODA'])
     def fetchStats() {
         if(formService.validateToken(params) && !StatsSyncService.running) {
@@ -626,6 +713,9 @@ class YodaController {
         redirect(controller: 'yoda', action: 'appThreads')
     }
 
+    /**
+     * Triggers the app's ElasticSearch index update
+     */
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
@@ -635,6 +725,9 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    /**
+     * Clears the ElasticSearch index and reloads all data
+     */
     @Secured(['ROLE_YODA'])
     def fullReset() {
 
@@ -646,6 +739,9 @@ class YodaController {
         redirect controller:'home'
     }
 
+    /**
+     * Stops the current ElasticSearch index update process
+     */
     @Secured(['ROLE_YODA'])
     def killDataloadService() {
 
@@ -657,6 +753,10 @@ class YodaController {
         redirect controller:'home'
     }
 
+    /**
+     * Compares the counts of database entries against ElasticSearch index entries
+     * @return a table of each instance count for each domain class
+     */
     @Secured(['ROLE_YODA'])
     def checkESElementswithDBElements() {
         log.debug("checkESElementswithDBElements")
@@ -666,6 +766,11 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    /**
+     * Very dangerous method. This calls the global records update, i.e. triggers data update
+     * from all registered we:kb sources and updates the app's mirrored data
+     * @see GlobalRecordSource
+     */
     @Secured(['ROLE_YODA'])
     def globalSync() {
         log.debug("start global sync ...")
@@ -675,6 +780,12 @@ class YodaController {
         redirect controller: 'package'
     }
 
+    /**
+     * Triggers the bulk update of title data. This method has to be used when a new we:kb field has been
+     * implemented in the app or because of a bug, data has not been transmitted. Beware that issue entitlements
+     * (unless in case medium) are NOT affected by this reload and only global title fields should be fed by
+     * this method!
+     */
     @Secured(['ROLE_YODA'])
     def updateData() {
         if(!globalSourceSyncService.running) {
@@ -690,6 +801,11 @@ class YodaController {
         redirect controller: 'package'
     }
 
+    /**
+     * Call to reload all title instance data from the specified we:kb instance.
+     * Beware that no local holdigs will be triggered, only the global level is going to be updated!
+     * @see GlobalRecordSource
+     */
     @Secured(['ROLE_YODA'])
     def reloadPackages() {
         if(!globalSourceSyncService.running) {
@@ -702,6 +818,11 @@ class YodaController {
         redirect controller: 'package'
     }
 
+    /**
+     * Call to reload all provider data from the speicified we:kb instance.
+     * Note that the organisations whose data should be updated need a we:kb ID for match;
+     * if no match is being found for the given we:kb ID, a new record will be created!
+     */
     @Secured(['ROLE_YODA'])
     def reloadWekbOrg() {
         if(!globalSourceSyncService.running) {
@@ -714,6 +835,10 @@ class YodaController {
         redirect controller: 'organisation', action: 'listProvider'
     }
 
+    /**
+     * Call to list all global record sources in the system
+     * @see GlobalRecordSource
+     */
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
         Map<String, Object> result = [:]
@@ -723,6 +848,10 @@ class YodaController {
         result
     }
 
+    /**
+     * Call to list all ElasticSearch sources. Those indices are storing data of this app's database;
+     * not to confound with APISources which establish connection to we:kb indices!
+     */
     @Secured(['ROLE_YODA'])
     def manageESSources() {
         Map<String, Object> result = [:]
@@ -733,6 +862,11 @@ class YodaController {
         result
     }
 
+    /**
+     * Dumps the current situation of the ElasticSearch domain indices
+     * @return a list of the domain indices, including last record timestamp, entry counts (in index and in database), active flag,
+     * and index reset buttons
+     */
     @Secured(['ROLE_YODA'])
     def manageFTControl() {
         Map<String, Object> result = [:]
@@ -778,6 +912,11 @@ class YodaController {
         result
     }
 
+    /**
+     * Sets up the ElasticSearch indices for the domain classes
+     * @return a redirect to the index status list
+     * @see ESWrapperService#es_indices
+     */
     @Secured(['ROLE_YODA'])
     def createESIndices() {
         def esIndices = ESWrapperService.es_indices?.values()
@@ -789,6 +928,9 @@ class YodaController {
         redirect action: 'manageFTControl'
     }
 
+    /**
+     * Deletes and rebuilds the given index and refills that with updated data
+     */
     @Secured(['ROLE_YODA'])
     def deleteAndRefillIndex() {
         String indexName = params.name
@@ -801,6 +943,7 @@ class YodaController {
         redirect(action: 'manageFTControl')
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def newESSource() {
         Map<String, Object> result = [:]
@@ -816,6 +959,7 @@ class YodaController {
         redirect action:'manageGlobalSources'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def deleteGlobalSource() {
         GlobalRecordSource.removeSource(params.long('id'))
@@ -823,6 +967,7 @@ class YodaController {
         redirect(action:'manageGlobalSources')
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     @Transactional
     def newGlobalSource() {
@@ -845,6 +990,9 @@ class YodaController {
         redirect action:'manageGlobalSources'
     }
 
+    /**
+     * Moves the Nationaler Statistikserver credentials from the OrgProperty into the OrgSettings structure
+     */
     @Secured(['ROLE_YODA'])
     @Transactional
     def migrateNatStatSettings() {
@@ -890,6 +1038,10 @@ class YodaController {
         redirect action:'dashboard'
     }
 
+    /**
+     * Lists all system settings and their state
+     * @see SystemSetting
+     */
     @Secured(['ROLE_YODA'])
     def settings() {
         Map<String, Object> result = [:]
@@ -955,6 +1107,7 @@ class YodaController {
     }
     */
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def migratePackageIdentifiers() {
         IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
@@ -968,12 +1121,16 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def assignNoteOwners() {
         statusUpdateService.assignNoteOwners()
         redirect controller: 'home'
     }
 
+    /**
+     * Enables/disables a boolean setting flag
+     */
     @Secured(['ROLE_YODA'])
     @Transactional
     def toggleBoolSetting() {
@@ -991,6 +1148,9 @@ class YodaController {
         redirect action:'settings'
     }
 
+    /**
+     * Enables/disables mail sending from the current server instance
+     */
     @Secured(['ROLE_YODA'])
     @Transactional
     def toggleMailSent() {
@@ -1006,6 +1166,7 @@ class YodaController {
         redirect action:'settings'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def costItemsApi(String owner) {
         def result = []
@@ -1077,6 +1238,9 @@ class YodaController {
         render result as JSON
     }
 
+    /**
+     * Triggers the database update of due reminders without email notification
+     */
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
         flash.message = "DB wird upgedatet...<br/>"
@@ -1084,6 +1248,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Triggers the email notification of currently due reminders
+     */
     @Secured(['ROLE_YODA'])
     def dueDates_sendAllEmails() {
         flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
@@ -1091,6 +1258,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Manually triggers the status update of subscriptions and licenses if their due date is reached
+     */
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
         flash.message = "Lizenzen und Verträge werden upgedatet"
@@ -1099,6 +1269,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Manually triggers the status update of surveys if their due date is reached
+     */
     @Secured(['ROLE_YODA'])
     def surveyCheck(){
         flash.message = "Umfragen werden upgedatet"
@@ -1106,6 +1279,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Manually triggers the subscription holding freezing
+     */
     @Secured(['ROLE_YODA'])
     def freezeSubscriptionHoldings(){
         if(subscriptionService.freezeSubscriptionHoldings())
@@ -1115,6 +1291,7 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def updateTaxRates(){
         flash.message = "Kosten werden in das neue Steuermodell überführt ..."
@@ -1122,6 +1299,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Retrieves the underlying packages to all issue entitlements where they exist without a subscription-package link
+     */
     @Secured(['ROLE_YODA'])
     Map checkIssueEntitlementPackages() {
         Map<String,List<IssueEntitlement>> result = [:]
@@ -1129,6 +1309,9 @@ class YodaController {
         result
     }
 
+    /**
+     * Creates subscription-package linkings everywhere where holdings exist without a direct connection between subscriptions and the underlying packages
+     */
     @Secured(['ROLE_YODA'])
     @Transactional
     def createSubscriptionPackagesFromIssueEntitlements() {
@@ -1154,6 +1337,7 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def updateCustomerType(){
         RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
@@ -1181,6 +1365,7 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     @Transactional
     def insertEditUris() {
@@ -1199,6 +1384,7 @@ class YodaController {
         redirect controller: 'home', action: 'index'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def generateBatchUID() {
         flash.message = "Setze UID für Domänen ..."
@@ -1206,6 +1392,7 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
@@ -1614,6 +1801,9 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Executes deletion of objects marked as deleted
+     */
     @Secured(['ROLE_YODA'])
     def dropDeletedObjects() {
         Map<String, Object> result = [:]
@@ -1666,6 +1856,8 @@ class YodaController {
 
         result
     }
+
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def replaceUserSettingDashboardReminderPeriod() {
         Map<String, Object> result = [:]
@@ -1697,12 +1889,18 @@ class YodaController {
         result
     }
 
+    /**
+     * Currently unused; call to backwards-correct costs in local currency
+     */
     @Secured(['ROLE_YODA'])
     def correctCostsInLocalCurrency() {
         Map<String, Object> result = ["costItems":financeService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
         result
     }
 
+    /**
+     * Purges the database from empty private properties
+     */
     @Secured(['ROLE_YODA'])
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
@@ -1775,6 +1973,7 @@ class YodaController {
         render view: 'databaseMigration', model: result
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def cleanUpSurveys() {
         Map<String, Object> result = [:]

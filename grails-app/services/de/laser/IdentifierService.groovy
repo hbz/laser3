@@ -16,6 +16,7 @@ class IdentifierService {
     ContextService contextService
     LicenseControllerService licenseControllerService
 
+    @Deprecated
     void checkNullUIDs() {
         List<Person> persons = Person.findAllByGlobalUIDIsNull()
         persons.each { Person person ->
