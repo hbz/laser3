@@ -40,10 +40,6 @@
                     <div class="label">MB max</div>
                 </div>
                 <div class="statistic">
-                    <div class="value">${rt.availableProcessors()}</div>
-                    <div class="label">Procs</div>
-                </div>
-                <div class="statistic">
                     <div class="value">${((ManagementFactory.getRuntimeMXBean().getUptime() / (1000 * 60 * 60)) as float).round(2)}</div>
                     <div class="label">Hours uptime</div>
                 </div>

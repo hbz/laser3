@@ -33,12 +33,54 @@ JSPC.app.reporting.current.chart.option = {
                 title: '${message(code:'reporting.chart.toolbox.saveAsImage')}',
                 icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
             },
-%{--            myReorderLabels: {--}%
-%{--                title: '${message(code:'reporting.chart.toolbox.reorderLabels')}',--}%
-%{--                icon: 'image://${resource(dir:'images', file:'reporting/slash-square.svg', absolute:true)}',--}%
-%{--                onclick: function (){--}%
-%{--                }--}%
-%{--            }--}%
+            myReorderLabels: {
+                title: '${message(code:'reporting.chart.toolbox.reorderLabels')}',
+                icon: 'image://${resource(dir:'images', file:'reporting/hash.svg', absolute:true)}',
+                onclick: function (){
+                    JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s, idx) {
+                        if (! s.option.label.rotate) {
+                            s.option.label.rotate = 90
+                            s.option.label.align = 'left'
+                            s.option.label.verticalAlign = 'middle'
+                            s.option.label.position = 'insideRight'
+                            s.option.label.distance = 15
+
+                            s.option.label.color = '#383838'
+
+                            s.option.label.backgroundColor = '#ffffff'
+                            s.option.label.borderColor = 'inherit'
+                            s.option.label.borderWidth = 1
+                            s.option.label.padding = [5, 8]
+                        }
+                        else if (s.option.label.position == 'insideRight') {
+                            s.option.label.position = 'top'
+                            s.option.label.distance = 10
+
+                            s.option.label.color = null
+                            s.option.label.textBorderWidth = 2
+                            s.option.label.textBorderColor = '#ffffff'
+
+                            s.option.label.backgroundColor = 'transparent'
+                            s.option.label.borderWidth = 0
+                            s.option.label.padding = 0
+                        }
+                        else {
+                            if (s.option.label.rotate == 90) {
+                                s.option.label.rotate = 60
+                            }
+                            else if (s.option.label.rotate == 60) {
+                                s.option.label.rotate = 0
+                                s.option.label.align = null
+                                s.option.label.verticalAlign = null
+                                s.option.label.position = 'top'
+                                s.option.label.distance = 5
+                            }
+                        }
+
+                        JSPC.app.reporting.current.chart.echart.resize()
+                    })
+                }
+            }
         }
     },
     tooltip: {
@@ -68,8 +110,7 @@ JSPC.app.reporting.current.chart.option = {
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralCons')
                     return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
-                },
-                padding: [3, 5, 0, 5]
+                }
             },
             itemStyle: {
                 color: function(params) {
@@ -91,8 +132,7 @@ JSPC.app.reporting.current.chart.option = {
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueNeutralConsTax')
                     return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
-                },
-                padding: [3, 5, 0, 5]
+                }
             },
             itemStyle: {
                 color: function(params) {
@@ -114,8 +154,7 @@ JSPC.app.reporting.current.chart.option = {
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueCons')
                     return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
-                },
-                padding: [3, 5, 0, 5]
+                }
             },
             itemStyle: {
                 color: function(params) {
@@ -137,8 +176,7 @@ JSPC.app.reporting.current.chart.option = {
                 formatter (params) {
                     var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueConsTax')
                     return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
-                },
-                padding: [3, 5, 0, 5]
+                }
             },
             itemStyle: {
                 color: function(params) {
