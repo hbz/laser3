@@ -3,19 +3,19 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : App Info</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.admin.appInfo')}</title>
 </head>
 
 <body>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-        <semui:crumb text="Application Info" class="active"/>
+        <semui:crumb message="menu.admin.appInfo" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />Application Info</h1>
+    <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.appInfo')}</h1>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">App</h2></th></tr>
         </thead>
@@ -31,7 +31,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Build</h2></th></tr>
         </thead>
@@ -43,7 +43,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Database</h2></th></tr>
         </thead>
@@ -54,7 +54,7 @@
         <tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">ES Index Update</h2></th></tr>
         </thead>
@@ -67,7 +67,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Global Data Sync</h2></th></tr>
         </thead>
@@ -76,7 +76,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">STATS Sync Service</h2></th></tr>
         </thead>
@@ -110,7 +110,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">HttpServletRequest.getAttributeNames()</h2></th></tr>
         </thead>
@@ -122,43 +122,6 @@
                         <div class="item">${an} = ${request.getAttribute(an)}</div>
                     </g:each>
                 </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <table class="ui celled la-table table">
-        <thead>
-            <tr><th colspan="2"><h2 class="ui header">HttpServletRequest</h2></th></tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-
-    <div class="ui relaxed divided list">
-        <%--<li> authenticationMethodObject = ${request.getAttribute('Shib-Authentication-Method')}</li>
-        <li> identityProviderObject = ${request.getAttribute('Shib-Identity-Provider')}</li>
-        <li> principalUsernameObject = (${grailsApplication.config.grails.plugins.springsecurity.shibboleth.principalUsername.attribute})
-        ${request.getAttribute(grailsApplication.config.grails.plugins.springsecurity.shibboleth.principalUsername.attribute)}</li>
-        <li> authenticationInstantObject = ${request.getAttribute('Shib-Authentication-Instant')}</li>--%>
-        <div class="item"> usernameObject = (EPPN) ${request.getAttribute('EPPN')}</div>
-        <div class="item"> eduPersonPrincipalName = ${request.getAttribute('eduPersonPrincipalName')}</div>
-        <div class="item"> eduPersonScopedAffiliation = ${request.getAttribute('eduPersonScopedAffiliation')}</div>
-        <div class="item"> eduPersonPrincipalName = ${request.getAttribute('eduPersonPrincipalName')}</div>
-        <div class="item"> eduPersonEntitlement = ${request.getAttribute('eduPersonEntitlement')}</div>
-        <div class="item"> uid = ${request.getAttribute('uid')}</div>
-        <div class="item"> mail = ${request.getAttribute('mail')}</div>
-        <div class="item"> affiliation = ${request.getAttribute('affiliation')}</div>
-        <div class="item"> entitlement = ${request.getAttribute('entitlement')}</div>
-        <div class="item"> persistent-id = ${request.getAttribute('persistent-id')}</div>
-        <div class="item"> authInstitutionName = ${request.getAttribute('authInstitutionName')}</div>
-        <div class="item"> eduPersonTargetedID = ${request.getAttribute('eduPersonTargetedID')}</div>
-        <div class="item"> authInstitutionAddress = ${request.getAttribute('authInstitutionAddress')}</div>
-        <div class="item"> targeted-id = ${request.getAttribute('targeted-id')}</div>
-        <div class="item"> uid = ${request.getAttribute('uid')}</div>
-        <div class="item"> REMOTE_USER = ${request.getAttribute('REMOTE_USER')}</div>
-        <div class="item"> REMOTE_USER (fm) = ${request.getRemoteUser()}</div>
-    </div>
             </td>
         </tr>
         </tbody>
