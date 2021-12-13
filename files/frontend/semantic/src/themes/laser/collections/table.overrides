@@ -302,3 +302,35 @@
 .ui.table tr:first-child th {
   border-top: none;
 }
+
+/*--------------
+  Responsive Table
+---------------*/
+
+@media only screen and (max-width : @largestTabletScreen) {
+
+
+  .ui.table [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-responsive-table {
+    thead{
+      position: absolute;
+      top: -1111px;
+      left: -1111px;
+    }
+    td:before,
+    span.la-endDate:before{
+      padding: 0 10px 0 0;
+      content: attr(data-label) ":";
+      font-weight: bold;
+    }
+    td:nth-child(1) {
+      font-weight: bold;
+    }
+    .x {
+      text-align: left;
+    }
+  }
+}

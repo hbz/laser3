@@ -122,7 +122,7 @@
 
 //@pageBackground      : #f3f4f7;
 @pageBackground      : #f4f8f9;
-@pageOverflowX       : hidden;
+@pageOverflowX       : auto;
 
 @lineHeight          : 1.4285em;
 @textColor           : @black;  /* laser-black -matching the blue */

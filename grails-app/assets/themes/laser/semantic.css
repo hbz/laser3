@@ -562,7 +562,7 @@ html {
 body {
   margin: 0px;
   padding: 0px;
-  overflow-x: hidden;
+  overflow-x: auto;
   min-width: 320px;
   background: #f4f8f9;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -28996,6 +28996,37 @@ Floated Menu / Item
 .ui.table tr:first-child th {
   border-top: none;
 }
+
+/*--------------
+  Responsive Table
+---------------*/
+
+@media only screen and (max-width: 991px) {
+  .ui.table [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-responsive-table thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui.la-responsive-table td:before,
+  .ui.la-responsive-table span.la-endDate:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label) ":";
+    font-weight: bold;
+  }
+
+  .ui.la-responsive-table td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui.la-responsive-table .x {
+    text-align: left;
+  }
+}
 /*!
  * # Semantic UI 2.4.2 - Ad
  * http://github.com/semantic-org/semantic-ui/
@@ -39501,6 +39532,16 @@ body.pushable > .pusher {
 .ui.visible.scale.down.sidebar ~ .pusher {
   -webkit-transform: scale(0.75);
   transform: scale(0.75);
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+.pushable {
+  height: 100%;
+  overflow-x: auto;
+  padding: 0em !important;
 }
 /*!
  * # Semantic UI 2.4.2 - Sticky
