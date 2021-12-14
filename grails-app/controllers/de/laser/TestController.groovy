@@ -5,16 +5,19 @@ import de.laser.auth.PermGrant
 import de.laser.auth.Role
 import grails.plugin.springsecurity.annotation.Secured
 
-/*
-	For tests and debugging ..
- */
 
+/**
+ *	Used for tests and debugging
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TestController {
 
     def contextService
 	def accessService
 
+	/**
+	 * Currently not used anywhere
+	 */
     @Secured(['ROLE_YODA'])
     def index() {
 

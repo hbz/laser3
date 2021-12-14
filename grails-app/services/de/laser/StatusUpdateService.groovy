@@ -383,6 +383,7 @@ class StatusUpdateService extends AbstractLockableService {
      * Loops through all {@link Doc}ument objects without owner but with a {@link DocContext} for a {@link Subscription} or {@link License} and assigns the ownership
      * to the respective subscriber/licensee.
      */
+    @Deprecated
     void assignNoteOwners() {
         Set<DocContext> docsWithoutOwner = DocContext.executeQuery('select dc from DocContext dc where dc.owner.owner = null and (dc.subscription != null or dc.license != null)')
         docsWithoutOwner.each { DocContext dc ->

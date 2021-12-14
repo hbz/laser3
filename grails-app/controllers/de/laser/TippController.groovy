@@ -1,20 +1,22 @@
 package de.laser
 
-import de.laser.auth.User
-import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.helper.SwissKnife
 import de.laser.titles.TitleHistoryEvent
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
-import java.text.SimpleDateFormat
-
+/**
+ * This controller manages calls to title instances in platform-package contexts. Not to
+ * confound with {@link TitleController}
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TippController  {
 
   ContextService contextService
 
+  /**
+   * Shows the given title. The title may be called by database ID, we:kb UUID or globalUID
+   * @return the details view of the title
+   */
   @Secured(['ROLE_USER'])
   def show() { 
     Map<String, Object> result = [:]

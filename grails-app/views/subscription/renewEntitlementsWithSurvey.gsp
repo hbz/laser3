@@ -42,6 +42,17 @@
                 </g:link>
             </semui:exportDropdownItem>
         </g:if>
+        <g:if test="${countCurrentIEs > 0}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID : surveyConfig.id,
+                                   exportXLS     : true,
+                                   tab           : 'currentIEs']}">
+                    ${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentTitles')}"
+                </g:link>
+            </semui:exportDropdownItem>
+        </g:if>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"

@@ -6,6 +6,11 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
+/**
+ * This controller handles calls fot Nationaler Statistikserver data management.
+ * Not to confound with the LAS:eR statistics component whose global management
+ * methods are defined in {@link YodaController}
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UsageController  {
 
@@ -13,6 +18,9 @@ class UsageController  {
     def statsSyncService
     def usageControllerService
 
+    /**
+     * Landing page of the statistics overview
+     */
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
         Map<String, Object> result = usageControllerService.initResult(this, params)
@@ -80,6 +88,9 @@ class UsageController  {
         result
     }
 
+    /**
+     * Aborts an eventually running loading procedure
+     */
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def abort()
     {
@@ -94,6 +105,10 @@ class UsageController  {
         redirect(view: "index", model: result)
     }
 
+    /**
+     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver
+     * SUSHI server
+     */
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def fetchSelection()
     {
@@ -114,6 +129,9 @@ class UsageController  {
         redirect(view: "index", model: result)
     }
 
+    /**
+     * Clears the database from current usage data
+     */
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     @Transactional
     def deleteAll()
@@ -131,6 +149,9 @@ class UsageController  {
         redirect(view: "index", model: result)
     }
 
+    /**
+     * Clears the usage data for the given institution and provider
+     */
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     @Transactional
     def deleteSelection()
