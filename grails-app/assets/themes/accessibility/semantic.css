@@ -29151,12 +29151,43 @@ Floated Menu / Item
   border-top: none;
 }
 
-/*--------------
-  Responsive Table
----------------*/
+/*-----------------------------------------------
+  Responsive Table for views with wide tables
+-------------------------------------------------*/
 
-@media only screen and (max-width: 991px) {
-  .ui.table [class*="center aligned"] {
+@media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].la-responsive-table [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody td:before,
+  .ui[class*="monitor stackable"].la-responsive-table tbody span.la-secondHeaderRow:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label) ":";
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody .x {
+    text-align: left;
+  }
+}
+
+/*---------------------------------------------------------------------------
+  Responsive Table for views with normal tables overrides special tables
+----------------------------------------------------------------------------*/
+
+@media only screen and (max-width: 767px) {
+  .ui.la-responsive-table [class*="center aligned"] {
     text-align: left!important;
   }
 
@@ -29166,18 +29197,18 @@ Floated Menu / Item
     left: -1111px;
   }
 
-  .ui.la-responsive-table td:before,
-  .ui.la-responsive-table span.la-endDate:before {
+  .ui.la-responsive-table tbody td:before,
+  .ui.la-responsive-table tbody span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
     content: attr(data-label) ":";
     font-weight: bold;
   }
 
-  .ui.la-responsive-table td:nth-child(1) {
+  .ui.la-responsive-table tbody td:nth-child(1) {
     font-weight: bold;
   }
 
-  .ui.la-responsive-table .x {
+  .ui.la-responsive-table tbody .x {
     text-align: left;
   }
 }

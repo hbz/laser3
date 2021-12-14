@@ -197,7 +197,7 @@
                         --%>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
-                            <span class="la-endDate" data-label="${message(code: 'default.endDate.label')}"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
