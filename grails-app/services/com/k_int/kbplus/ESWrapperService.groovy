@@ -24,6 +24,12 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.rest.RestStatus
 
+/**
+ * This service wraps the ElasticSearch connection and configuration methods and
+ * handles the core ElasticSearch functionality (apart from search)
+ * @see ESSearchService
+ * @see DataloadService
+ */
 @Transactional
 class ESWrapperService {
 
