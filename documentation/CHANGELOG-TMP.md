@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3994    14.12.2021  dev     2.3         David   Feature     Reporting: Org-Export (Sortiername + Name)
+
 4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
 
 4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht

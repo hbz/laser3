@@ -42,8 +42,6 @@ class OrgExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-//                                    'sortname'          : FIELD_TYPE_PROPERTY,
-//                                    'name'              : FIELD_TYPE_PROPERTY,
                                     '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
@@ -63,8 +61,6 @@ class OrgExport extends BaseDetailsExport {
                             ],
                             provider: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-//                                    'sortname'          : FIELD_TYPE_PROPERTY,
-//                                    'name'              : FIELD_TYPE_PROPERTY,
                                     '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
@@ -74,8 +70,6 @@ class OrgExport extends BaseDetailsExport {
                             ],
                             agency: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-//                                    'sortname'          : FIELD_TYPE_PROPERTY,
-//                                    'name'              : FIELD_TYPE_PROPERTY,
                                     '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,

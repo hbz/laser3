@@ -38,7 +38,6 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     '@-entitlement-tippDeweyDecimalClassification' : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippLanguage'          : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippSubjectReference'  : FIELD_TYPE_CUSTOM_IMPL,
-//                                    '@-entitlement-tippProvider'          : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippProvider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     '@-entitlement-tippPackage'           : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippPlatform'          : FIELD_TYPE_CUSTOM_IMPL,
@@ -159,12 +158,12 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 else if (key == '@-entitlement-tippPlatform') {
                     content.add( ie.tipp.platform?.name ?: '' )
                 }
-                else if (key == '@-entitlement-tippProvider') {
-                    List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
-                        p.name
-                    }
-                    content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
-                }
+//                else if (key == '@-entitlement-tippProvider') {
+//                    List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
+//                        p.name
+//                    }
+//                    content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
+//                }
                 else if (key == '@-entitlement-tippPublisherName') {
                     content.add( ie.tipp.publisherName ?: '' )
                 }

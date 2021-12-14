@@ -28,7 +28,6 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'altname'               : FIELD_TYPE_ELASTICSEARCH,
-//                                    'org'                   : FIELD_TYPE_CUSTOM_IMPL,
                                     'org+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'primaryUrl'            : FIELD_TYPE_PROPERTY,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
@@ -114,15 +113,16 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'org') {
-                    if (plt.org) {
-                        content.add( plt.org.name )
-                    }
-                    else {
-                        content.add('')
-                    }
-                }
-                else if (key == 'serviceProvider') {
+//                if (key == 'org') {
+//                    if (plt.org) {
+//                        content.add( plt.org.name )
+//                    }
+//                    else {
+//                        content.add('')
+//                    }
+//                }
+//                else
+                if (key == 'serviceProvider') {
                     content.add( getRefdataContent(plt, key) )
                 }
                 else if (key == 'softwareProvider') {

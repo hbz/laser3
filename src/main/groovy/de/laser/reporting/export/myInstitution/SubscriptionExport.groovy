@@ -34,7 +34,6 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
                                     '@-subscription-memberCount' : FIELD_TYPE_CUSTOM_IMPL,
-//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -63,7 +62,6 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -132,12 +130,12 @@ class SubscriptionExport extends BaseDetailsExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == 'x-provider') {
-                    List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
-                            [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
-                    )
-                    content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
-                }
+//                else if (key == 'x-provider') {
+//                    List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+//                            [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+//                    )
+//                    content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
+//                }
                 else if (key == '@-subscription-memberCount') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
