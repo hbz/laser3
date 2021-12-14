@@ -38,7 +38,8 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     '@-entitlement-tippDeweyDecimalClassification' : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippLanguage'          : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippSubjectReference'  : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-entitlement-tippProvider'          : FIELD_TYPE_CUSTOM_IMPL,
+//                                    '@-entitlement-tippProvider'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-entitlement-tippProvider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     '@-entitlement-tippPackage'           : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippPlatform'          : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-entitlement-tippHostPlatformURL'   : FIELD_TYPE_CUSTOM_IMPL,
@@ -176,6 +177,14 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 else if (key == '@-entitlement-tippTitleType') {
                     content.add( ie.tipp.titleType ?: '' )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['@-entitlement-tippProvider+sortname', '@-entitlement-tippProvider+name']) {
+                String prop = key.split('\\+')[1]
+                List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
+                    p.getProperty(prop) as String
+                }
+                content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
             }
             else {
                 content.add( '- not implemented -' )

@@ -25,8 +25,9 @@ class OrgExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
+//                                    'sortname'          : FIELD_TYPE_PROPERTY,
+//                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'libraryType'       : FIELD_TYPE_REFDATA,
@@ -44,8 +45,9 @@ class OrgExport extends BaseDetailsExport {
                             ],
                             provider: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
+//                                    'sortname'          : FIELD_TYPE_PROPERTY,
+//                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
@@ -53,8 +55,9 @@ class OrgExport extends BaseDetailsExport {
                             ],
                             agency: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
+//                                    'sortname'          : FIELD_TYPE_PROPERTY,
+//                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
@@ -280,6 +283,10 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( oapList.join( CSV_VALUE_SEPARATOR ) )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['sortname', 'name']) {
+                content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
             }
             else {
                 content.add( '- not implemented -' )

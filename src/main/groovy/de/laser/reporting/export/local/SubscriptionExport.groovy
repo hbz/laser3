@@ -34,9 +34,11 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,
+//                                    '@-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-subscription-member+sortname+name' : FIELD_TYPE_COMBINATION,
                                     '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -64,7 +66,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
                                     '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -76,15 +79,17 @@ class SubscriptionExport extends BaseDetailsExport {
     ]
 
     SubscriptionExport(String token, Map<String, Object> fields) {
+        init(token, fields)
+
         this.token = token
 
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+//        // keeping order ..
+//        getAllFields().keySet().each { k ->
+//            if (k in fields.keySet() ) {
+//                selectedExportFields.put(k, fields.get(k))
+//            }
+//        }
+//        normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -145,14 +150,14 @@ class SubscriptionExport extends BaseDetailsExport {
                     List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
                             [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
                     )
-                    content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( plts.collect{ (it.shortname ? it.shortname + ' : ' : '') + it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-subscription-member') {
                     List<Org> members = Subscription.executeQuery(
                             'select distinct oo.org from Subscription sub join sub.orgRelations oo where sub = :sub and oo.roleType in :subscriberRoleTypes',
                             [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )
-                    content.add( members.collect{ it.name }.join( CSV_VALUE_SEPARATOR ) )
+                    content.add( members.collect{ (it.shortname ? it.shortname + ' : ' : '') + it.name }.join( CSV_VALUE_SEPARATOR ) )
                 }
                 else if (key == '@-subscription-prevNext') {
 
@@ -173,6 +178,23 @@ class SubscriptionExport extends BaseDetailsExport {
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['@-subscription-member+sortname', '@-subscription-member+name']) {
+                List<Org> members = Subscription.executeQuery(
+                        'select distinct oo.org from Subscription sub join sub.orgRelations oo where sub = :sub and oo.roleType in :subscriberRoleTypes',
+                        [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( members.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ) )
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+                List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+                        [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
             }
             else {
                 content.add( '- not implemented -' )

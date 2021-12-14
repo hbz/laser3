@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 <th></th>
-                <th>${message(code:'org.shortname.label')}</th>
+                <th>${message(code:'org.sortname.label')}</th>
                 <th>${message(code:'org.name.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.orgType.label')}</th>

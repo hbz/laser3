@@ -34,7 +34,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
                                     '@-subscription-memberCount' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -62,7 +63,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+//                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -164,6 +166,14 @@ class SubscriptionExport extends BaseDetailsExport {
                 else {
                     content.add( '- not implemented -' )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+                List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+                        [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
             }
             else {
                 content.add( '- not implemented -' )
