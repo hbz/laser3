@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3994    14.12.2021  dev     2.3         David   Feature     Reporting: Org-Export (Sortiername + Name)
+
 4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
 
 4043    10.12.2021  rc-2.2  2.2.8       Moe     Bug         Eintrag Leitweg-ID: Großbuchstaben erlauben

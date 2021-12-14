@@ -29,23 +29,19 @@
             <div class="ui horizontal statistics">
                 <div class="statistic">
                     <div class="value">${((rt.freeMemory() / mb) as float).round(2)}</div>
-                    <div class="label">MB free</div>
+                    <div class="label">MB &middot; free</div>
                 </div>
                 <div class="statistic">
                     <div class="value">${(((rt.totalMemory() - rt.freeMemory()) / mb) as float).round(2)}</div>
-                    <div class="label">MB used</div>
+                    <div class="label">MB &middot; used</div>
                 </div>
                 <div class="statistic">
                     <div class="value">${((rt.maxMemory() / mb) as float).round(2)}</div>
-                    <div class="label">MB max</div>
-                </div>
-                <div class="statistic">
-                    <div class="value">${rt.availableProcessors()}</div>
-                    <div class="label">Procs</div>
+                    <div class="label">MB &middot; max</div>
                 </div>
                 <div class="statistic">
                     <div class="value">${((ManagementFactory.getRuntimeMXBean().getUptime() / (1000 * 60 * 60)) as float).round(2)}</div>
-                    <div class="label">Hours uptime</div>
+                    <div class="label">Hours &middot; uptime</div>
                 </div>
                 <div class="statistic">
                     <div class="value">${Thread.getAllStackTraces().size()}</div>
@@ -55,11 +51,11 @@
         </div>
 
         <div class="column">
-            <h3 class="ui header">System</h3>
+            <h3 class="ui header">${message(code:'menu.yoda.system')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link>
+                        <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="appConfig" target="_blank">${message(code:'menu.yoda.appConfig')}</g:link>
@@ -76,19 +72,24 @@
                 </div>
             </div>
 
-            <h3 class="ui header">Einstellungen</h3>
+            <h3 class="ui header">${message(code:'menu.yoda.others')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="yoda" action="settings" target="_blank">${message(code:'menu.yoda.systemSettings')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
+                        <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
+                        <g:link controller="admin" action="systemAnnouncements" target="_blank">${message(code: 'menu.admin.announcements')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <h3 class="ui header">Profiler</h3>
+        <div class="column">
+            <h3 class="ui header">${message(code:'menu.yoda.profiler')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
@@ -103,26 +104,26 @@
                 </div>
             </div>
 
-            <h3 class="ui header">Datenbank</h3>
+            <h3 class="ui header">${message(code:'menu.yoda.database')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link>
+                        <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link>
+                        <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link>
+                        <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>
 
-            <h3 class="ui header">Sicherheit</h3>
+            <h3 class="ui header">${message(code:'menu.yoda.security')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="yoda" action="appSecurity" target="_blank">${message(code:'menu.yoda.security')}</g:link>
+                        <g:link controller="yoda" action="appSecurity" target="_blank">${message(code:'menu.yoda.appSecurity')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="userMatrix" target="_blank">${message(code:'menu.yoda.userMatrix')}</g:link>

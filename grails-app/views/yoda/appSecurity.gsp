@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.security')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appSecurity')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.security" class="active"/>
+    <semui:crumb message="menu.yoda.appSecurity" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.security')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.appSecurity')}</h1>
 
 <h2 class="ui header">Hierarchical Global Roles</h2>
 

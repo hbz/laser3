@@ -24,7 +24,7 @@ class CostItemExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-member+sortname+name' : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
                                     '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
@@ -115,10 +115,10 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@-cost-member') {
-                    Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
-                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
-                }
+//                else if (key == '@-cost-member') {
+//                    Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
+//                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
+//                }
                 else if (key == '@-cost-package') {
                     de.laser.Package pkg = ci.subPkg?.pkg
                     if (pkg) {
@@ -143,6 +143,12 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['@-cost-member+sortname', '@-cost-member+name']) {
+                String prop = key.split('\\+')[1]
+                Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
+                content.add( subscrOr.collect{  it.org.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ) )
             }
             else {
                 content.add( '- not implemented -' )
