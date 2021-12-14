@@ -2,8 +2,6 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.ApiSource
 import de.laser.ContextService
-import de.laser.Identifier
-import de.laser.IdentifierNamespace
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.reporting.export.GlobalExportHelper
@@ -30,7 +28,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                : FIELD_TYPE_PROPERTY,
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'altname'               : FIELD_TYPE_ELASTICSEARCH,
-                                    'org'                   : FIELD_TYPE_CUSTOM_IMPL,
+                                    'org+sortname+name'     : FIELD_TYPE_COMBINATION,
                                     'primaryUrl'            : FIELD_TYPE_PROPERTY,
                                     'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
                                     'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
@@ -115,15 +113,16 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'org') {
-                    if (plt.org) {
-                        content.add( plt.org.name )
-                    }
-                    else {
-                        content.add('')
-                    }
-                }
-                else if (key == 'serviceProvider') {
+//                if (key == 'org') {
+//                    if (plt.org) {
+//                        content.add( plt.org.name )
+//                    }
+//                    else {
+//                        content.add('')
+//                    }
+//                }
+//                else
+                if (key == 'serviceProvider') {
                     content.add( getRefdataContent(plt, key) )
                 }
                 else if (key == 'softwareProvider') {
@@ -182,6 +181,11 @@ class PlatformExport extends BaseDetailsExport {
                 else {
                     content.add( '- not implemented -' )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['org+sortname', 'org+name']) {
+                String prop = key.split('\\+')[1]
+                content.add( plt.org?.getProperty(prop) ?: '' )
             }
             else {
                 content.add( '- not implemented -' )
