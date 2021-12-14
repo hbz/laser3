@@ -6,7 +6,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.auth.UserRole
-import de.laser.base.AbstractCounterApiSource
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
@@ -15,9 +14,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
 import de.laser.system.SystemActivityProfiler
@@ -29,16 +26,11 @@ import grails.gorm.transactions.Transactional
 import grails.web.Action
 import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.action.support.master.AcknowledgedResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.core.CountResponse
-import org.elasticsearch.client.indices.CreateIndexRequest
-import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.common.xcontent.XContentType
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
@@ -296,7 +288,7 @@ class YodaController {
 
     /**
      * Call to list the currently available threads
-     * @return the view calling the currently available threads and their running state
+     * @return the view calling the currently available threads, their running state (or daemon), CPU time, thread group, priority
      */
     @Secured(['ROLE_YODA'])
     def appThreads() {

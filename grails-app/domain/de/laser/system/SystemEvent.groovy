@@ -178,6 +178,7 @@ class SystemEvent {
 
     /**
      * Gets a list of distinct sources of all system events
+     * @param list a list of system events whose source should be retrieved
      * @return a {@link List} of sources
      */
     static List<String> getAllSources(List<SystemEvent> list) {
@@ -187,6 +188,10 @@ class SystemEvent {
         result.unique().sort()
     }
 
+    /**
+     * Cleans up recorded system events which are older than three years
+     * @return the count of deleted events
+     */
     static int cleanUpOldEvents() {
         executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: java.sql.Date.valueOf(LocalDate.now().minusYears(3))])
     }
