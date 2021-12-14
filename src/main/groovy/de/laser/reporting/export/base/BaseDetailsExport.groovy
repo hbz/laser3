@@ -32,12 +32,13 @@ import java.time.Year
 
 abstract class BaseDetailsExport {
 
-    static String FIELD_TYPE_PROPERTY           = BaseConfig.FIELD_TYPE_PROPERTY
-    static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
-    static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
-    static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
-    static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
-    static String FIELD_TYPE_ELASTICSEARCH      = BaseConfig.FIELD_TYPE_ELASTICSEARCH
+    static String FIELD_TYPE_PROPERTY               = BaseConfig.FIELD_TYPE_PROPERTY
+    static String FIELD_TYPE_REFDATA                = BaseConfig.FIELD_TYPE_REFDATA
+    static String FIELD_TYPE_REFDATA_JOINTABLE      = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+    static String FIELD_TYPE_CUSTOM_IMPL            = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+    static String FIELD_TYPE_CUSTOM_IMPL_QDP        = 'customImplementationQDP' // query depending
+    static String FIELD_TYPE_COMBINATION            = 'combination' // TODO
+    static String FIELD_TYPE_ELASTICSEARCH          = BaseConfig.FIELD_TYPE_ELASTICSEARCH
 
     static String CSV_VALUE_SEPARATOR   = ';'
     static String CSV_FIELD_SEPARATOR   = ','
@@ -55,7 +56,13 @@ abstract class BaseDetailsExport {
         // keeping order ..
         getAllFields().keySet().each { k ->
             if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
+                if (k.contains('+')) {
+                    String[] parts = k.split('\\+')
+                    parts.eachWithIndex { p,i -> if (i>0) { selectedExportFields.put((parts[0] ? parts[0] + '+' : '') + p, 'on') } }
+                }
+                else {
+                    selectedExportFields.put(k, fields.get(k))
+                }
             }
         }
         normalizeSelectedMultipleFields( this )

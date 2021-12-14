@@ -2,9 +2,10 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.ApiSource
 import de.laser.ContextService
-import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.Org
 import de.laser.Package
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDConstants
@@ -35,6 +36,8 @@ class PackageExport extends BaseDetailsExport {
                                     'name'                  : FIELD_TYPE_PROPERTY,
                                     'altname'               : FIELD_TYPE_ELASTICSEARCH,
                                     'x-id'                  : FIELD_TYPE_ELASTICSEARCH,
+                                    'x-provider+sortname+name'      : FIELD_TYPE_COMBINATION,
+                                    'x-platform+name+primaryUrl'    : FIELD_TYPE_COMBINATION,
                                     'contentType'           : FIELD_TYPE_REFDATA,
                                     'file'                  : FIELD_TYPE_REFDATA,
                                     'packageStatus'         : FIELD_TYPE_REFDATA,
@@ -210,6 +213,25 @@ class PackageExport extends BaseDetailsExport {
                 else {
                     content.add( '- not implemented -' )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+                List<Org> prvds = Org.executeQuery(
+                        'select o from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id = :id order by o.sortname, o.name',
+                        [id: pkg.id, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( prvds.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-platform+name', 'x-platform+primaryUrl']) {
+                List<Platform> plts = Platform.executeQuery(
+                        'select p from Package pkg join pkg.nominalPlatform p where pkg.id = :id order by p.name',
+                        [id: pkg.id]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
+
             }
             else {
                 content.add( '- not implemented -' )

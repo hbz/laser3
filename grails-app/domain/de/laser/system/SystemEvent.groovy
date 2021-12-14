@@ -5,6 +5,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import java.time.LocalDate
 
 /**
  * This class reflects cronjob-related event records and serves to mark events. Depending on the relevance of the event, this event appears in a mail reminder sent to all developers (every morning at 7 o'clock AM;
@@ -177,16 +178,22 @@ class SystemEvent {
 
     /**
      * Gets a list of distinct sources of all system events
+     * @param list a list of system events whose source should be retrieved
      * @return a {@link List} of sources
      */
-    static List<String> getAllSources() {
+    static List<String> getAllSources(List<SystemEvent> list) {
         List<String> result = []
 
-        SystemEvent.findAll().each { it ->
-            result.add( it.getSource() )
-        }
-
+        list.each { it -> result.add( it.getSource() ) }
         result.unique().sort()
+    }
+
+    /**
+     * Cleans up recorded system events which are older than three years
+     * @return the count of deleted events
+     */
+    static int cleanUpOldEvents() {
+        executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: java.sql.Date.valueOf(LocalDate.now().minusYears(3))])
     }
 
     // GETTER

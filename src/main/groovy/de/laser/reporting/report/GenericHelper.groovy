@@ -88,7 +88,61 @@ class GenericHelper {
             }
             label = rdv.get('label')
         }
+        else if (type in [BaseDetailsExport.FIELD_TYPE_COMBINATION, null] ) { // TODO: null
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
+            if (fieldName == '+sortname+name') {
+                label = messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale)
+            }
+            else if (fieldName == 'sortname') {
+                label = messageSource.getMessage('default.sortname.label', null, locale)
+            }
+            else if (fieldName == 'name') {
+                label = messageSource.getMessage('default.name.label', null, locale)
+            }
+            // plt
+            else if (fieldName.startsWith('org+')) {
+                label = messageSource.getMessage('platform.provider', null, locale)
+
+                if (fieldName == 'org+sortname+name') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'org+sortname') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ')'
+                }
+                else if (fieldName == 'org+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+            }
+            //
+            else if (fieldName.startsWith('x-provider+')) {
+                label = messageSource.getMessage('default.provider.label', null, locale)
+
+                if (fieldName == 'x-provider+sortname+name') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-provider+sortname') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-provider+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+            }
+            //
+            else if (fieldName.startsWith('x-platform+')) {
+                label = messageSource.getMessage('platform.label', null, locale)
+
+                if (fieldName == 'x-platform+name+primaryUrl') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ', ' + messageSource.getMessage('platform.primaryUrl.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-platform+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-platform+primaryUrl') {
+                    label = label + ' (' + messageSource.getMessage('platform.primaryUrl.label', null, locale) + ')'
+                }
+            }
+        }
         label
     }
 

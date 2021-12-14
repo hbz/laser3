@@ -513,24 +513,27 @@ class AdminController  {
     }
 
     /**
-     * Shows the last 200 recorded system events
+     * Shows recorded system events; default count is 100 last entries.
+     * The record listing may be filtered
      * @see SystemEvent
      */
     @Secured(['ROLE_ADMIN'])
     def systemEvents() {
         Map<String, Object> result = [:]
 
-        params.sort =   params.sort ?: 'created'
-        params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 200
+        params.filter_limit = params.filter_limit ?: 100
 
-        result.events = SystemEvent.list(params)
+        if (params.filter_category) { result.put('filter_category', params.filter_category) }
+        if (params.filter_relevance){ result.put('filter_relevance', params.filter_relevance) }
+        if (params.filter_source)   { result.put('filter_source', params.filter_source) }
+        if (params.filter_exclude)  { result.put('filter_exclude', params.filter_exclude) }
+        if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
+
+        result.events = SystemEvent.list([max: params.filter_limit])
         result
     }
 
-    /**
-     * Cleanup method for titles, packages, platforms; currently out of order
-     */
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def dataCleanse() {
         // Sets nominal platform
