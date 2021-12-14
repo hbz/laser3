@@ -513,7 +513,8 @@ class AdminController  {
     }
 
     /**
-     * Shows the last 200 recorded system events
+     * Shows recorded system events; default count is 100 last entries.
+     * The record listing may be filtered
      * @see SystemEvent
      */
     @Secured(['ROLE_ADMIN'])
@@ -532,9 +533,7 @@ class AdminController  {
         result
     }
 
-    /**
-     * Cleanup method for titles, packages, platforms; currently out of order
-     */
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def dataCleanse() {
         // Sets nominal platform

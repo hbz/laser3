@@ -23,6 +23,9 @@ import groovyx.net.http.Method
 import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This service handles bulk and cleanup operations, testing areas and debug information
+ */
 //@CompileStatic
 //@Transactional
 class YodaService {
@@ -35,15 +38,26 @@ class YodaService {
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
     GlobalService globalService
 
+    /**
+     * Checks whether debug information should be displayed
+     * @return true if setting is enabled by config or the viewer has admin rights, false otherwise
+     */
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
         return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
     }
 
+    /**
+     * Copies missing medium values into the issue entitlements; values are being taken from the title the holding records have been derived
+     */
     void fillIEMedium() {
         IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.medium = (select tipp.medium from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.medium != null) where ie.medium = null")
     }
 
+    /**
+     * Locates duplicate packages in the system
+     * @return a map of packages duplicates, grouped by such with and such without titles
+     */
     Map<String,Object> listDuplicatePackages() {
         List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
         pkgDuplicates.addAll(Package.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value))
@@ -62,6 +76,10 @@ class YodaService {
         result
     }
 
+    /**
+     * Removes the given list of packages
+     * @param toDelete the list of package database identifiers which should be deleted
+     */
     void executePackageCleanup(List<Long> toDelete) {
         toDelete.each { pkgId ->
             Package pkg = Package.get(pkgId)
@@ -106,6 +124,7 @@ class YodaService {
         result
     }
 
+    @Deprecated
     Map<String,Object> checkTitleData(duplicateRows) {
         GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
         globalSourceSyncService.setSource(grs)
@@ -613,6 +632,16 @@ class YodaService {
         reportRows
     }
 
+    /**
+     * Retrieves titles without we:kb ID
+     * @return a map containing faulty titles in the following structure:
+     * <ul>
+     *     <li>titles with a remapping target</li>
+     *     <li>titles with issue entitlements</li>
+     *     <li>deletable entries</li>
+     *     <li>titles which should receive a UUID</li>
+     * </ul>
+     */
     Map<String,Object> getTIPPsWithoutGOKBId() {
         List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value)
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
@@ -640,6 +669,11 @@ class YodaService {
         [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
+    /**
+     * Deletes the given titles and merges duplicates with the given instance
+     * @param toDelete titles to be deleted
+     * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
+     */
     void purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy) {
         toDelete.each { oldTippId, newTippId ->
             TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
@@ -651,6 +685,11 @@ class YodaService {
         }
     }
 
+    /**
+     * Call to load titles marked as deleted; if the confirm is checked, the deletion of titles and issue entitlements marked as deleted as well is executed
+     * @param doIt execute the cleanup?
+     * @return a result map of titles whose we:kb entry has been marked as deleted
+     */
     Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
         GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
         Map<String, Object> result = [:]
