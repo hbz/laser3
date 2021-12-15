@@ -48,6 +48,9 @@ import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
 
+/**
+ * This service handles pending change processing and display
+ */
 @Transactional
 class PendingChangeService extends AbstractLockableService {
 
@@ -353,6 +356,11 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Applies a change on an inherited public property
+     * @param pendingChange the change to be applied
+     * @param payload a map containing the change parameters
+     */
     private void processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
@@ -441,6 +449,11 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Applies a change on an inherited identifier
+     * @param pendingChange the change to process
+     * @param payload a map containing the change details
+     */
     private void processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
@@ -516,6 +529,12 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Gets the recent and pending changes on titles for the given institution. This method has been translated into SQL
+     * queries because the GORM loading slows the query very much down
+     * @param configMap a map containing the configuration parameters such as context institution, user's time setting
+     * @return a map containing title changes and notification
+     */
     Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Map<String, Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
@@ -637,6 +656,16 @@ class PendingChangeService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Helper method to collect the events in rows containing also the subscription data
+     * @param entries the changes to display
+     * @param locale the locale to use for the message constants
+     * @param status the possible subscription status
+     * @param roleTypes the possible subscriber role types
+     * @param sql the SQL connection
+     * @param subPkgConfigs the map of subscription package pending change configurations
+     * @return a list of maps containing the subscription data, the event string and the change token
+     */
     List<Map<String, Object>> getEventRows(List<GroovyRowResult> entries, Locale locale, Map status, Map roleTypes, Sql sql, Set subPkgConfigs) {
         List result = []
         entries.each { GroovyRowResult row ->
@@ -650,6 +679,13 @@ class PendingChangeService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Helper to display the subscription name according to the dropdown naming convention
+     * @param entry the subscription data
+     * @param status the possible subscription status
+     * @param locale the locale to use for message constants
+     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
+     */
     String subscriptionName(GroovyRowResult entry, Map<Long, String> status, Locale locale) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         //log.debug(subRows.toListString())
@@ -664,6 +700,10 @@ class PendingChangeService extends AbstractLockableService {
         "${entry.get('sub_name')} - ${status.get(entry.get('sub_status_rv_fk'))} (${startDate} - ${endDate})${additionalInfo}"
     }
 
+    /**
+     * Kept for reasons of reference
+     */
+    @Deprecated
     Map<String,Object> getChanges_old(LinkedHashMap<String, Object> configMap) {
         SessionCacheWrapper scw = new SessionCacheWrapper()
         String ctx = 'dashboard/changes'
@@ -823,7 +863,7 @@ class PendingChangeService extends AbstractLockableService {
          pending: changesCache.pending.drop(configMap.pendingOffset).take(configMap.max), pendingCount: changesCache.pendingCount, acceptedOffset: configMap.acceptedOffset, pendingOffset: configMap.pendingOffset]
     }
 
-    //called from: dashboard.gsp
+    @Deprecated
     Map<String,Object> printRow(PendingChange change) {
         Locale locale = LocaleContextHolder.getLocale()
         String eventIcon, instanceIcon, eventString
@@ -861,7 +901,8 @@ class PendingChangeService extends AbstractLockableService {
 
     /**
      * Converts the given value according to the field type
-     * @param key - the string value
+     * @param change the change whose property should be output
+     * @param key the string value
      * @return the value as {@link Date} or {@link String}
      */
     def output(PendingChange change,String key) {
@@ -880,6 +921,11 @@ class PendingChangeService extends AbstractLockableService {
         ret
     }
 
+    /**
+     * Determines the concerned entity type and references based on the given change token
+     * @param token the change token
+     * @return a map containing the entity references
+     */
     Map<String, String> getEntityFromToken(String token) {
         switch(token) {
             case PendingChangeConfiguration.NEW_TITLE:
@@ -895,6 +941,13 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Accepts the given change and applies the parameters
+     * @param pc the change to accept
+     * @param subId the subscription on which the change should be applied
+     * @return true if the change could be applied successfully, false otherwise
+     * @throws ChangeAcceptException
+     */
     boolean accept(PendingChange pc, subId = null) throws ChangeAcceptException {
         println("accept: ${pc.msgToken} for ${pc.pkg} or ${pc.tipp} or ${pc.tippCoverage}")
         boolean done = false
@@ -1166,6 +1219,12 @@ class PendingChangeService extends AbstractLockableService {
         done
     }
 
+    /**
+     * Rejects the given change and sets the flag to prevent accidents
+     * @param pc the change to reject
+     * @param subId the subscription which would have been affected
+     * @return true if the rejection was successful, false otherwise
+     */
     boolean reject(PendingChange pc, subId = null) {
         if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
             pc.status = RDStore.PENDING_CHANGE_REJECTED
@@ -1200,6 +1259,12 @@ class PendingChangeService extends AbstractLockableService {
         true
     }
 
+    /**
+     * Auto-applies the given change to the given subscription
+     * @param newChange the change to apply
+     * @param subPkg the subscription package on which the change should be applied
+     * @param contextOrg the subscriber
+     */
     void applyPendingChange(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         println("applyPendingChange")
         def target
@@ -1223,6 +1288,12 @@ class PendingChangeService extends AbstractLockableService {
         else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
+    /**
+     * Auto-applies the given change to derived subscriptions (i.e. inherits the change applied on a consortial subscription)
+     * @param newChange the change to apply
+     * @param subPkg the (consortial) subscription package on which the change should be applied
+     * @param contextOrg the subscription consortium
+     */
     void applyPendingChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         println("applyPendingChangeForHolding")
         def target

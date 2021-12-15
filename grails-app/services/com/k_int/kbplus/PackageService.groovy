@@ -9,12 +9,24 @@ import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service manages calls related to package management
+ */
 @Transactional
 class PackageService {
 
     MessageSource messageSource
     LinkGenerator grailsLinkGenerator
 
+    /**
+     * Lists conflicts which prevent an unlinking of the package from the given subscription
+     * @param pkg the package to be unlinked
+     * @param subscription the subscription from which package should be unlinked
+     * @param numOfPCs the count of pending changes
+     * @param numOfIEs the count of issue entitlements
+     * @param numOfCIs the count of cost items linked either to the subscription package or to titles in them
+     * @return a list of conflicts, each of them a map naming the conflict details when unlinking
+     */
     List listConflicts(de.laser.Package pkg,subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> conflict_item_pkg = [name: messageSource.getMessage("subscription.details.unlink.linkedPackage",null,locale),
@@ -60,6 +72,11 @@ class PackageService {
         conflicts_list
     }
 
+    /**
+     * Gets the database IDs of the titles in the given package
+     * @param pkg the package whose titles should be retrieved
+     * @return a set of database IDs
+     */
     Set<Long> getCurrentTippIDs(de.laser.Package pkg) {
         TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
     }
