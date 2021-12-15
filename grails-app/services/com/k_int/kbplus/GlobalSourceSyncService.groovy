@@ -1254,6 +1254,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Updates the given record with the data of the updated one. That data which does not differ in
+     * title and holding level (price items do count here as well!) is automatically applied; the other differences
+     * are being recorded and looped separately. The diff records are being then processed to create pending changes
+     * for that the issue entitlement holders may decide whether they (auto-)apply them on their holdings or not
+     * @param tippA the existing title record (in the app)
+     * @param tippB the updated title record (ex we:kb)
+     * @return a map of structure
+     * [
+     *     event: {"add", "update", "delete"},
+     *     target: title,
+     *     diffs: result of {@link #getTippDiff(java.lang.Object, java.lang.Object)}
+     * ]
+     * reflecting those differences in each title record which are not applied automatically on the derived issue entitlements
+     */
     Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
         RefdataValue status = tippStatus.get(tippB.status)
@@ -1526,7 +1541,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Compares two package entries against each other, retrieving the differences between both.
+     * Compares two title entries against each other, retrieving the differences between both.
      * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
      * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
      * @return a {@link Set} of {@link Map}s with the differences
@@ -1968,6 +1983,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         packagesToNotify = [:]
     }
 
+    /**
+     * Builds an equivalency map between the controlled list of the app and that of the connected we:kb instance
+     * @param rdCat the reference data category constant to build
+     * @see RDConstants
+     */
     void buildWekbLaserRefdataMap(String rdCat) {
         switch(rdCat) {
             case RDConstants.LICENSE_OA_TYPE:
