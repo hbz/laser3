@@ -24,14 +24,23 @@ JSPC.app.reporting.current.chart.option = {
     },
     yAxis: {},
     toolbox: {
-        showTitle: true,
+        showTitle: false,
         orient: 'vertical',
         itemGap: 15,
         right: 0,
+        tooltip: JSPC.app.reporting.helper._toolbox.tooltip,
         feature: {
             saveAsImage: {
                 title: '${message(code:'reporting.chart.toolbox.saveAsImage')}',
                 icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
+            },
+            myLegendToggle: {
+                title: '${message(code:'reporting.chart.toolbox.toggleLegend')}',
+                icon: 'image://${resource(dir:'images', file:'reporting/menu.svg', absolute:true)}',
+                onclick: function (){
+                    var show = ! JSPC.app.reporting.current.chart.echart.getOption().legend[0].show
+                    JSPC.app.reporting.current.chart.echart.setOption({ legend: {show: show} })
+                }
             },
             myReorderLabels: {
                 title: '${message(code:'reporting.chart.toolbox.reorderLabels')}',

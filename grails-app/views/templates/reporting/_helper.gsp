@@ -19,7 +19,7 @@ if (! JSPC.app.reporting) {
                     z: 1
                 },
                 toolbox: {
-                    showTitle: true,
+                    showTitle: false,
                     orient: 'vertical',
                     itemGap: 15,
                     right: 0,
@@ -73,6 +73,25 @@ if (! JSPC.app.reporting) {
                     }
                 },
             },
+            _toolbox: {
+                tooltip: {
+                    show: true,
+                    position: 'left',
+                    padding: [2, 10, 5, 10],
+                    textStyle: { fontSize: 13 },
+                    color: '#383838',
+                    backgroundColor: '#ffffff',
+                    borderColor: 'rgba(0,0,0,0.2)',
+                    borderWidth: 1,
+                    shadowBlur: 10,
+                    shadowOffsetX: 3,
+                    shadowOffsetY: 2,
+                    shadowColor: 'rgba(0,0,0,0.1)',
+                    formatter: function (param) {
+                        return '<div>' + param.title + '</div>'
+                    }
+                }
+            },
             series: {
                 _color: {
                     palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc' ],
@@ -96,11 +115,15 @@ if (! JSPC.app.reporting) {
                 _pie: {
                     emphasis: {
                         label: {
-                            padding: [10, 10, 7, 10],
-                            backgroundColor: '#f4f8f9',
-                            borderColor: 'rgba(0,0,0,0.3)',
+                            padding: [10, 12],
+                            backgroundColor: '#ffffff',
+                            borderColor: 'rgba(0,0,0,0.2)',
                             borderWidth: 1,
                             borderRadius: 3,
+                            shadowBlur: 10,
+                            shadowOffsetX: 3,
+                            shadowOffsetY: 2,
+                            shadowColor: 'rgba(0,0,0,0.1)',
                             z: 100
                         },
                         itemStyle: {
@@ -130,7 +153,7 @@ if (! JSPC.app.reporting) {
                 }
             },
             toolbox: {
-                showTitle: true,
+                showTitle: false,
                 orient: 'vertical',
                 right: 0,
                 feature: {
@@ -165,5 +188,8 @@ if (! JSPC.app.reporting) {
         }
     }
 }
+
+JSPC.app.reporting.helper._pie.toolbox.tooltip = JSPC.app.reporting.helper._toolbox.tooltip
+JSPC.app.reporting.helper.toolbox.tooltip = JSPC.app.reporting.helper._toolbox.tooltip
 
 </laser:script>
