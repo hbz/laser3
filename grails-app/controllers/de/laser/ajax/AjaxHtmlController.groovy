@@ -661,7 +661,9 @@ class AjaxHtmlController {
 
                 Map<String, Boolean> options = [
                         hideEmptyResults: params.containsKey('hideEmptyResults-pdf'),
-                        useHyperlinks: params.containsKey('useHyperlinks-pdf')
+                        useHyperlinks: params.containsKey('useHyperlinks-pdf'),
+                        useLineNumbers: params.containsKey('useLineNumbers-pdf'),
+                        pageFormat: params.get('pageFormat-pdf') != 'auto'
                 ]
 
                 List<List<String>> content = DetailsExportManager.exportAsList(
@@ -671,13 +673,20 @@ class AjaxHtmlController {
                         options
                 )
 
-                Map<String, Object> struct = [:]
                 String view = ''
                 Map<String, Object> model = [:]
+                Map<String, Object> struct = [:]
+
+                List<String> pf = BaseExportHelper.PDF_OPTIONS.get(params.get('pageFormat-pdf'))
+                if ( pf[0] != 'auto' ) {
+                    struct.pageSize = pf[0]
+                    struct.orientation = pf[1]
+                }
+                else {
+                    struct = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                }
 
                 if (params.context == BaseConfig.KEY_MYINST) {
-
-                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/myInstitution/reporting/export/pdf/generic_details'
                     model   = [
                             filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
@@ -686,13 +695,11 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            // struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
                             options     : options
                     ]
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-
-                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/subscription/reporting/export/pdf/generic_details'
                     model   = [
                             //filterLabels: LocalExportHelper.getCachedFilterLabels(params.token),
@@ -701,7 +708,7 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            // struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
                             options     : options
                     ]
                 }

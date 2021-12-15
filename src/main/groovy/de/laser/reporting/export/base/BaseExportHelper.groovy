@@ -15,6 +15,15 @@ import java.time.Year
 
 class BaseExportHelper {
 
+    static final Map<String, List> PDF_OPTIONS = [
+            'auto' : [ 'auto' ],
+            'A4-P' : [ 'A4', 'Portrait' ], 'A4-L' : [ 'A4', 'Landscape' ],
+            'A3-P' : [ 'A3', 'Portrait' ], 'A3-L' : [ 'A3', 'Landscape' ],
+            'A2-P' : [ 'A2', 'Portrait' ], 'A2-L' : [ 'A2', 'Landscape' ],
+            'A1-P' : [ 'A1', 'Portrait' ], 'A1-L' : [ 'A1', 'Landscape' ],
+            'A0-P' : [ 'A0', 'Portrait' ], 'A0-L' : [ 'A0', 'Landscape' ]
+    ]
+
     static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines, boolean useHyperlinks) {
 
         int lineCount = 1
