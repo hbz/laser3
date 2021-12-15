@@ -71,7 +71,7 @@
                         <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
                     </tr>
                     <tr>
-                        <g:sortableColumn scope="col" class="la-smaller-table-head test" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label')}"/>
+                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label')}"/>
                     </tr>
                 </thead>
                 <tbody>
