@@ -65,11 +65,11 @@
         }
     }
 %>
-<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table table-tworow la-table la-responsive-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">
-                <th>
+                <th data-label="${message(code:'responsive.table.selectElement')}">
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
                     </g:if>
@@ -272,12 +272,16 @@
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
                         <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                        <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}">
+                            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                        </span>
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}">
+                            <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                        </span>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}

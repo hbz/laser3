@@ -302,3 +302,69 @@
 .ui.table tr:first-child th {
   border-top: none;
 }
+
+/*-----------------------------------------------
+  Responsive Table for views with wide tables
+-------------------------------------------------*/
+
+@media only screen and (max-width : @largestSmallMonitor) {
+
+  .ui[class*="monitor stackable"].la-responsive-table {
+    [class*="center aligned"] {
+      text-align: left!important;
+    }
+    thead{
+      position: absolute;
+      top: -1111px;
+      left: -1111px;
+    }
+    tbody {
+      td:before,
+      span.la-secondHeaderRow:before {
+        padding: 0 10px 0 0;
+        content: attr(data-label) ":";
+        font-weight: bold;
+      }
+
+      td:nth-child(1) {
+        font-weight: bold;
+      }
+
+      .x {
+        text-align: left;
+      }
+    }
+  }
+}
+/*---------------------------------------------------------------------------
+  Responsive Table for views with normal tables overrides special tables
+----------------------------------------------------------------------------*/
+
+@media only screen and (max-width : @largestMobileScreen) {
+
+
+  .ui.la-responsive-table {
+    [class*="center aligned"] {
+      text-align: left!important;
+    }
+    thead{
+      position: absolute;
+      top: -1111px;
+      left: -1111px;
+    }
+    tbody {
+      td:before,
+      span.la-secondHeaderRow:before{
+        padding: 0 10px 0 0;
+        content: attr(data-label) ":";
+        font-weight: bold;
+      }
+      td:nth-child(1) {
+        font-weight: bold;
+      }
+      .x {
+        text-align: left;
+      }
+    }
+  }
+}

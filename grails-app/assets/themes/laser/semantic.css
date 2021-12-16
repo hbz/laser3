@@ -562,7 +562,7 @@ html {
 body {
   margin: 0px;
   padding: 0px;
-  overflow-x: hidden;
+  overflow-x: auto;
   min-width: 320px;
   background: #f4f8f9;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -28996,6 +28996,68 @@ Floated Menu / Item
 .ui.table tr:first-child th {
   border-top: none;
 }
+
+/*-----------------------------------------------
+  Responsive Table for views with wide tables
+-------------------------------------------------*/
+
+@media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].la-responsive-table [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody td:before,
+  .ui[class*="monitor stackable"].la-responsive-table tbody span.la-secondHeaderRow:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label) ":";
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-responsive-table tbody .x {
+    text-align: left;
+  }
+}
+
+/*---------------------------------------------------------------------------
+  Responsive Table for views with normal tables overrides special tables
+----------------------------------------------------------------------------*/
+
+@media only screen and (max-width: 767px) {
+  .ui.la-responsive-table [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-responsive-table thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui.la-responsive-table tbody td:before,
+  .ui.la-responsive-table tbody span.la-secondHeaderRow:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label) ":";
+    font-weight: bold;
+  }
+
+  .ui.la-responsive-table tbody td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui.la-responsive-table tbody .x {
+    text-align: left;
+  }
+}
 /*!
  * # Semantic UI 2.4.2 - Ad
  * http://github.com/semantic-org/semantic-ui/
@@ -39501,6 +39563,14 @@ body.pushable > .pusher {
 .ui.visible.scale.down.sidebar ~ .pusher {
   -webkit-transform: scale(0.75);
   transform: scale(0.75);
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+.pushable {
+  overflow-x: auto;
 }
 /*!
  * # Semantic UI 2.4.2 - Sticky
