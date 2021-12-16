@@ -801,7 +801,8 @@ No Host Platform URL Content
     }
 
     /**
-     * Analyses huge tables for better query execution planning
+     * Analyses huge tables for better query execution planning.
+     * Unused, may be activated for local testing
      */
     void vacuumAndAnalyseTables() {
         Session sess = sessionFactory.currentSession
