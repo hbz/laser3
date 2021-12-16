@@ -68,7 +68,7 @@ class PackageFilter extends BaseFilter {
 
                 // --> properties generic
                 if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
-                    if (Org.getDeclaredField(p).getType() == Date) {
+                    if (Package.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
@@ -77,15 +77,12 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
-                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                    else if (Package.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'pkg.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'pkg.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'pkg.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'pkg.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {

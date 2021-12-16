@@ -4,7 +4,7 @@
 <g:render template="/myInstitution/reporting/details/top" />
 
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
-<g:set var="esRecords" value="${filterCache.data.packageESRecords}"/>
+<g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)}}"/>
 <g:set var="wekb" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 

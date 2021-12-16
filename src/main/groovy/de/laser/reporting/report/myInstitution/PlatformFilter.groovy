@@ -65,7 +65,7 @@ class PlatformFilter extends BaseFilter {
 
                 // --> properties generic
                 if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
-                    if (Org.getDeclaredField(p).getType() == Date) {
+                    if (Platform.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
@@ -74,15 +74,12 @@ class PlatformFilter extends BaseFilter {
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
-                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                    else if (Platform.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'plt.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'plt.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'plt.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'plt.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
