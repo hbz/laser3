@@ -186,6 +186,53 @@ class PackageFilter extends BaseFilter {
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'OrphanedIdList', orphanedIdList)
 
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
+            if (pk != 'base') {
+                if (pk == 'provider') {
+                    _handleInternalOrgFilter(params, pk, filterResult)
+                }
+                else if (pk == 'platform') {
+                    _handleInternalPlatformFilter(params, pk, filterResult)
+                }
+            }
+        }
+
         filterResult
+    }
+
+    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (! filterResult.data.get('packageIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
+    }
+
+    static void _handleInternalPlatformFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (! filterResult.data.get('packageIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
     }
 }

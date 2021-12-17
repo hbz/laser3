@@ -4,6 +4,7 @@
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="costItem-filter-tab-1">${message(code:'subscription.costItems.label')}</a>
         </div><!-- .menu -->
+
         <div class="ui bottom attached active tab segment" data-tab="costItem-filter-tab-1">
             <div class="field">
                 <label for="filter:costItem_source">${message(code:'reporting.filter.selection')}</label>

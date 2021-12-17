@@ -134,9 +134,10 @@ class PackageQuery extends BaseQuery {
             else if (params.query in ['package-x-provider']) {
 
                 result.data = idList ? Org.executeQuery(
-                        'select o.id, o.name, count(*) from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) group by o.id order by o.name',
-                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
+
                 result.data.each { d ->
                     result.dataDetails.add([
                             query : params.query,
@@ -167,9 +168,10 @@ class PackageQuery extends BaseQuery {
             else if (params.query in ['package-x-platform']) {
 
                 result.data = idList ? Platform.executeQuery(
-                        'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) group by p.id order by p.name',
-                        [idList: idList]
+                        'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform p where p.id in (:platformIdList) and pkg.id in (:idList) group by p.id order by p.name',
+                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
                 ) : []
+
                 result.data.eachWithIndex { d, i ->
                     List<Long> pkgIdList = Package.executeQuery(
                             'select pkg.id from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) and p.id = :d order by pkg.name',
