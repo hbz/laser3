@@ -11,6 +11,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service is a mirror of the {@link OrganisationController}, containing those controller methods
+ * which manipulate data
+ */
 @Transactional
 class OrganisationControllerService {
 
@@ -27,6 +31,11 @@ class OrganisationControllerService {
 
     //---------------------------------------- linking section -------------------------------------------------
 
+    /**
+     * Links two organisations by combo
+     * @param params the parameter map, containing the link parameters
+     * @return true if the link saving was successful, false otherwise
+     */
     boolean linkOrgs(GrailsParameterMap params) {
         log.debug(params.toMapString())
         Combo c
@@ -46,6 +55,11 @@ class OrganisationControllerService {
         c.save()
     }
 
+    /**
+     * Disjoins the given link between two organisatons
+     * @param params the parameter map containing the combo to unlink
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean unlinkOrg(GrailsParameterMap params) {
         int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
         return del > 0
@@ -53,6 +67,12 @@ class OrganisationControllerService {
 
     //--------------------------------------------- member section -------------------------------------------------
 
+    /**
+     * Creates a new institution as member for the current consortium with the submitted parameters
+     * @param controller the controller instance
+     * @param params the input map containing the new institution's parameters
+     * @return OK and the new institution details if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> createMember(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
         Org orgInstance
@@ -82,6 +102,12 @@ class OrganisationControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    /**
+     * Switches the consortial membership state between a consortium and a given institution
+     * @param controller the controller instance
+     * @param params the parameter map containing the combo link data
+     * @return OK if the switch was successful, ERROR otherwise
+     */
     Map<String, Object> toggleCombo(OrganisationController controller, GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
@@ -122,6 +148,12 @@ class OrganisationControllerService {
 
     //--------------------------------------------- identifier section -------------------------------------------------
 
+    /**
+     * Deletes the given customer identifier
+     * @param controller the controller instance
+     * @param params the parameter map containing the identifier data
+     * @return OK if the deletion was successful, ERROR otherwise
+     */
     Map<String,Object> deleteCustomerIdentifier(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
         Locale locale = LocaleContextHolder.getLocale()
@@ -144,6 +176,13 @@ class OrganisationControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets parameters which are used in many controller pages such as current user, context institution and perspectives
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return a result map containing the current user, institution, flags whether the view is that of the context
+     * institution and which settings are available for the given call
+     */
     Map<String, Object> getResultGenericsAndCheckAccess(OrganisationController controller, GrailsParameterMap params) {
 
         User user = contextService.getUser()

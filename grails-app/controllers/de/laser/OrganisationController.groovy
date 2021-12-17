@@ -699,7 +699,7 @@ class OrganisationController  {
     }
 
     /**
-     * Creates a new institution as member for the current consortium with the submitted parameters
+     * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
