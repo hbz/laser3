@@ -1,5 +1,7 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.Org
+import de.laser.Platform
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -31,9 +33,9 @@ class PackageXCfg extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'contentType', 'file', 'packageStatus' ],
-                                    [ 'provider', 'platform' ],
                                     [ 'scope', 'paymentType', 'breakable' ],
-                                    [ 'openAccess', 'consistent' ]
+                                    [ 'openAccess', 'consistent' ],
+                                    [ 'provider', 'platform' ],
                             ]
                     ],
                     query : [
@@ -97,6 +99,51 @@ class PackageXCfg extends BaseConfig {
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
+                                    ]
+                            ]
+                    ]
+            ],
+
+            provider : [
+                    meta : [
+                            class:  Org,
+                            cfgKey: KEY_PACKAGE
+                    ],
+                    source : [
+                            'depending-provider'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    'provider' : [
+                                            'provider-orgType',
+                                            'provider-*'
+                                    ]
+                            ]
+                    ]
+            ],
+
+            platform : [
+                    meta : [
+                            class:  Platform,
+                            cfgKey: KEY_PACKAGE
+                    ],
+                    source : [
+                            'depending-platform'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    'platform' : [
+                                            'platform-serviceProvider',
+                                            'platform-softwareProvider',
+                                            'platform-*'
                                     ]
                             ]
                     ]

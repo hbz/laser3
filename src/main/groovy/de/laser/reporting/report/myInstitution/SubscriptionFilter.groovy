@@ -90,12 +90,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'sub.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'sub.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'sub.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'sub.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -126,13 +123,13 @@ class SubscriptionFilter extends BaseFilter {
                             }
                             else {
                                 tmpList.add('( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )')
-                                queryParams.put('p' + pCount, pk as Integer)
+                                queryParams.put('p' + pCount, pk as Integer) // integer - hql
                             }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
@@ -233,12 +230,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'mbr.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'mbr.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'mbr.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'mbr.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -275,7 +269,7 @@ class SubscriptionFilter extends BaseFilter {
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
@@ -380,12 +374,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'org.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'org.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'org.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'org.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {

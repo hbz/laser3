@@ -17,7 +17,14 @@
 </g:elseif>
 
 <g:elseif test="${filter == BaseConfig.KEY_PACKAGE}">
-    ${message(code: 'reporting.filterResult.package', args: [filterResult.data.packageIdList.size(), filterResult.data.packageESRecords.size()])}
+    ${message(code: 'reporting.filterResult.package.part', args: [filterResult.data.packageIdList.size(), filterResult.data.packageESRecords.size()])}
+    <g:if test="${filterResult.data.providerIdList}">
+        ${message(code: 'reporting.filterResult.and.provider', args: [filterResult.data.providerIdList.size()])}
+    </g:if>
+    <g:if test="${filterResult.data.platformIdList}">
+        ${message(code: 'reporting.filterResult.and.platform', args: [filterResult.data.platformIdList.size()])}
+    </g:if>
+    ${message(code: 'reporting.filterResult.end')}
 </g:elseif>
 
 <g:elseif test="${filter == BaseConfig.KEY_PLATFORM}">

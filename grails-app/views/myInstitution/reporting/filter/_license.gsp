@@ -6,6 +6,7 @@
             %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
         </div><!-- .menu -->
+
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
             <div class="field">
                 <label for="filter:license_source">${message(code:'reporting.filter.selection')}</label>

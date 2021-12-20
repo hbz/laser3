@@ -91,7 +91,10 @@ class ReportingGlobalService {
 
         result.filterResult = PackageFilter.filter(params)
 
-        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query.default )
+        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PACKAGE).get(pk).query.default)
+        }
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2 ) // Verteilung
     }
 

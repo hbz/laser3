@@ -21,7 +21,6 @@
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
                 <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
             </g:if>
-
         </div><!-- .menu -->
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base}" />
