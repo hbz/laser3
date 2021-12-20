@@ -24,9 +24,9 @@ responsiveTables = {
     });
   },
   setDataLabel: function() {
-    $('.ui.la-responsive-table tbody>tr').each(function () {
+    $('.ui.la-js-responsive-table tbody>tr').each(function () {
       $('td', this).each(function () {
-        let th = $('.ui.la-responsive-table th').eq($(this).index());
+        let th = $('.ui.la-js-responsive-table th').eq($(this).index());
 
         // table header is icon
         if( th.html().includes("icon")) {

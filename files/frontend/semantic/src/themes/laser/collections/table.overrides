@@ -309,7 +309,7 @@
 
 @media only screen and (max-width : @largestSmallMonitor) {
 
-  .ui[class*="monitor stackable"].la-responsive-table {
+  .ui[class*="monitor stackable"].la-js-responsive-table {
     [class*="center aligned"] {
       text-align: left!important;
     }
@@ -343,7 +343,7 @@
 @media only screen and (max-width : @largestMobileScreen) {
 
 
-  .ui.la-responsive-table {
+  .ui.la-js-responsive-table {
     [class*="center aligned"] {
       text-align: left!important;
     }
