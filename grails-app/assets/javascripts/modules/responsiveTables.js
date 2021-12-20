@@ -31,16 +31,16 @@ responsiveTables = {
         // table header is icon
         if( th.html().includes("icon")) {
           let dataContent = th.find('.la-popup-tooltip').attr("data-content");
-          $(this).attr('data-label', dataContent);
+          $(this).attr('data-label', dataContent + ':');
         }
 
         else if ( th.html().includes("checkbox")) {
           let dataLabel = th.attr("data-label");
-          $(this).attr('data-label', dataLabel);
+          $(this).attr('data-label', dataLabel + ':');
         }
 
         else
-          $(this).attr('data-label',th.text());
+          $(this).attr('data-label',th.text() + ':');
       });
     });
   }

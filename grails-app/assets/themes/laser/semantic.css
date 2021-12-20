@@ -29015,7 +29015,6 @@ Floated Menu / Item
   .ui[class*="monitor stackable"].la-js-responsive-table tbody td:before,
   .ui[class*="monitor stackable"].la-js-responsive-table tbody span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
-    content: attr(data-label) ":";
     font-weight: bold;
   }
 
@@ -29052,7 +29051,6 @@ Floated Menu / Item
   .ui.la-js-responsive-table tbody td:before,
   .ui.la-js-responsive-table tbody span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
-    content: attr(data-label) ":";
     font-weight: bold;
   }
 
