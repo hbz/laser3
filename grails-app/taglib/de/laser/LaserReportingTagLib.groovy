@@ -148,7 +148,7 @@ class LaserReportingTagLib {
             customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata)
         }
 
-        println '--------------------->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
+        //println '||->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
