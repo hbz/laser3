@@ -14,7 +14,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
 
 /**
- * This controller manages calls for title listing and
+ * This controller manages calls for title listing
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
@@ -22,11 +22,19 @@ class TitleController  {
     def contextService
     def ESSearchService
 
+    /**
+     * Call to the list of all title instances recorded in the system
+     * @return the result of {@link #list()}
+     */
     @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'title', action: 'list', params: params
     }
 
+    /**
+     * Lists all recorded title in the app; the result may be filtered
+     * @return a list of {@link TitleInstancePackagePlatform}s
+     */
     @Secured(['ROLE_USER'])
     def list() {
         log.debug("titleSearch : ${params}")

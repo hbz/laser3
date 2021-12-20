@@ -9,6 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller handles generic task-related calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
@@ -17,11 +20,13 @@ class TaskController  {
 
     static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
+	@Deprecated
     @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
+	@Deprecated
 	@Secured(['ROLE_ADMIN'])
     def list() {
 		if (! params.max) {
@@ -31,6 +36,10 @@ class TaskController  {
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }
 
+	/**
+	 * Processes the submitted input parameters and creates a new task for the given owner object
+	 * @return a redirect to the referer
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
@@ -82,6 +91,10 @@ class TaskController  {
 		}
     }
 
+	/**
+	 * Call to create a new task
+	 * @return the task creation modal
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
@@ -94,6 +107,7 @@ class TaskController  {
 		render template: "/templates/tasks/modal_create", model: result
     }
 
+	@Deprecated
     @Secured(['ROLE_ADMIN'])
     def show() {
 		Task taskInstance = Task.get(params.id)
@@ -106,6 +120,10 @@ class TaskController  {
         [taskInstance: taskInstance]
     }
 
+	/**
+	 * Processes the submitted input and updates the given task instance with the given parameters
+	 * @return a redirect to the referer
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def edit() {
@@ -172,6 +190,10 @@ class TaskController  {
 		}
     }
 
+	/**
+	 * Call to edit the given task instance
+	 * @return the task editing modal
+	 */
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		Org contextOrg = contextService.getOrg()
@@ -182,6 +204,10 @@ class TaskController  {
 		render template: "/templates/tasks/modal_edit", model: result
 	}
 
+	/**
+	 * Call to delete the given task instance
+	 * @return a redirect to the referer
+	 */
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
