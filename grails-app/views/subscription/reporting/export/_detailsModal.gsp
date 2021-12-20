@@ -130,10 +130,6 @@
                     </div>
                     <div class="wide eight field fileformat-details-pdf">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
-                        <g:select name="pageFormat-pdf" id="pageFormat-pdf" class="ui selection dropdown la-not-clearable"
-                                  optionKey="key" optionValue="value"
-                                  from="${BaseExportHelper.PDF_OPTIONS}"
-                        />
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>

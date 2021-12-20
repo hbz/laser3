@@ -12,7 +12,7 @@
                     </g:if>
                     <g:else>
                         &middot; ${label.value.label}:
-                        <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
+                        <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
                             <g:if test="${label.value.value instanceof String}">
                                 ${label.value.value}
                             </g:if>
@@ -45,7 +45,7 @@
                             </g:if>
                             <g:else>
                                 <br/> - ${label.value.label}:
-                                <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
+                                <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
                                     <g:if test="${label.value.value instanceof String}">
                                         ${label.value.value}
                                     </g:if>
@@ -80,7 +80,7 @@
                                 </g:if>
                                 <g:else>
                                     - ${label.value.label}:
-                                    <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
+                                    <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
                                         <g:if test="${label.value.value instanceof String}">
                                             ${label.value.value} <br />
                                         </g:if>

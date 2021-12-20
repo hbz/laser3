@@ -119,13 +119,13 @@ class LicenseFilter extends BaseFilter {
                             }
                             else {
                                 tmpList.add('( (YEAR(lic.startDate) <= :p' + (++pCount) + ' or lic.startDate is null) and (YEAR(lic.endDate) >= :p' + pCount + ' or lic.endDate is null) )')
-                                queryParams.put('p' + pCount, pk as Integer)
+                                queryParams.put('p' + pCount, pk as Integer) // integer - hql
                             }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {

@@ -105,20 +105,24 @@ class PackageFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PLATFORM) {
-                        queryParts.add('Platform plt')
-                        whereParts.add('pkg.nominalPlatform = plt and plt.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
-                        filterLabelValue = Platform.get(params.long(key)).name
+                        queryParts.add('Platform plt')
+                        whereParts.add('pkg.nominalPlatform = plt and plt.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
+
+                        filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PROVIDER) {
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+
                         queryParts.add('OrgRole ro')
-                        whereParts.add('ro.pkg = pkg and ro.org.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
+                        whereParts.add('ro.pkg = pkg and ro.org.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
                         whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
                         queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
 
-                        filterLabelValue = Org.get(params.long(key)).name
+                        filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else {
                         println ' --- ' + pType +' not implemented --- '

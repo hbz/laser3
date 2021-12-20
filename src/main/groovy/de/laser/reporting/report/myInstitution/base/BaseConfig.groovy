@@ -222,21 +222,21 @@ class BaseConfig {
             ]]
         }
         else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.annual.label', null, locale),
-                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
+                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
