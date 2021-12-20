@@ -11,10 +11,11 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
+    // TODO
     static boolean isFieldMultiple(String object, String fieldName) {
         boolean bool = false
 
-        if (object in [ 'package' ] && fieldName in [ 'provider', 'platform' ]) {
+        if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
             bool = true
         }
         else if (fieldName in [ 'annual' ]) {
