@@ -42,7 +42,7 @@ a, a:hover, a:active, a:visited {
 .queryInfo {
     margin-bottom: 0.5em;
     padding: 0.5em 1em;
-    border-left: 5px solid #a9cce3;
+    border-left: 5px solid #C7D9F0;
 }
 .queryInfo {
     font-weight: bold;

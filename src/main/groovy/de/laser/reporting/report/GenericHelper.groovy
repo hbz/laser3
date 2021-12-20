@@ -11,18 +11,28 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
-    static boolean isFieldMultiple(String fieldName) {
-        if (fieldName in [ 'annual' ]) {
-            return true
+    // TODO
+    static boolean isFieldMultiple(String object, String fieldName) {
+        boolean bool = false
+
+        if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
+            bool = true
         }
-        return false
+        else if (fieldName in [ 'annual' ]) {
+            bool = true
+        }
+        // if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
+        bool
     }
 
-    static boolean isFieldVirtual(String fieldName) {
+    static boolean isFieldVirtual(String object, String fieldName) {
+        boolean bool = false
+
         if (fieldName in [ 'region' ]) {
-            return true
+            bool = true
         }
-        return false
+        // if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
+        bool
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {

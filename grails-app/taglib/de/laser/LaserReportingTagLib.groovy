@@ -125,7 +125,7 @@ class LaserReportingTagLib {
 
         out << laser.select([
                 class      : "ui fluid search dropdown",
-                name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
+                name       : GenericHelper.isFieldVirtual(attrs.config.meta.cfgKey, attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -134,7 +134,7 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
 
-        if ( GenericHelper.isFieldVirtual(attrs.refdata) ) {
+        if ( GenericHelper.isFieldVirtual(attrs.config.meta.cfgKey, attrs.refdata) ) {
             out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
         }
         out << '</div>'
@@ -147,6 +147,8 @@ class LaserReportingTagLib {
         if (!customRdv) {
             customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata)
         }
+
+        //println '||->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
@@ -165,9 +167,9 @@ class LaserReportingTagLib {
             optionValue: 'value',
             noSelection: ['': message(code: 'default.select.choose.label')]
         ]
-        if ( GenericHelper.isFieldMultiple(attrs.refdata) ) {  // TODO - other tags
+        if ( GenericHelper.isFieldMultiple(attrs.config.meta.cfgKey, attrs.refdata) ) {  // TODO - other tags
             map.put('multiple', true)
-            map.put('value', params.list(filterName).collect { Integer.parseInt(it) })
+            map.put('value', params.list(filterName).collect { Long.parseLong(it) })
         }
         else {
             map.put('value', params.int(filterName))

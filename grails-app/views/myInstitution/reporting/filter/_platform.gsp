@@ -5,6 +5,7 @@
         <a class="active item" data-tab="platform-filter-tab-1">${message(code:'platform.plural')}</a>
         <a class="item" data-tab="platform-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
     </div><!-- .menu -->
+
     <div class="ui bottom attached active tab segment" data-tab="platform-filter-tab-1">
         <div class="field">
             <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>

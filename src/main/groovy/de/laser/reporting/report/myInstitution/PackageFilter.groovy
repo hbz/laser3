@@ -68,7 +68,7 @@ class PackageFilter extends BaseFilter {
 
                 // --> properties generic
                 if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
-                    if (Org.getDeclaredField(p).getType() == Date) {
+                    if (Package.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
 
@@ -77,15 +77,12 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
-                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                    else if (Package.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'pkg.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'pkg.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'pkg.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'pkg.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -108,20 +105,24 @@ class PackageFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PLATFORM) {
-                        queryParts.add('Platform plt')
-                        whereParts.add('pkg.nominalPlatform = plt and plt.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
-                        filterLabelValue = Platform.get(params.long(key)).name
+                        queryParts.add('Platform plt')
+                        whereParts.add('pkg.nominalPlatform = plt and plt.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
+
+                        filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_PROVIDER) {
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+
                         queryParts.add('OrgRole ro')
-                        whereParts.add('ro.pkg = pkg and ro.org.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
+                        whereParts.add('ro.pkg = pkg and ro.org.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
                         whereParts.add('ro.roleType in (:p'  + (++pCount) + ')')
                         queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
 
-                        filterLabelValue = Org.get(params.long(key)).name
+                        filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else {
                         println ' --- ' + pType +' not implemented --- '
@@ -189,6 +190,53 @@ class PackageFilter extends BaseFilter {
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'OrphanedIdList', orphanedIdList)
 
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
+            if (pk != 'base') {
+                if (pk == 'provider') {
+                    _handleInternalOrgFilter(params, pk, filterResult)
+                }
+                else if (pk == 'platform') {
+                    _handleInternalPlatformFilter(params, pk, filterResult)
+                }
+            }
+        }
+
         filterResult
+    }
+
+    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (! filterResult.data.get('packageIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
+    }
+
+    static void _handleInternalPlatformFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (! filterResult.data.get('packageIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
+
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
     }
 }
