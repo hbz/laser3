@@ -21,7 +21,7 @@ class GenericHelper {
         else if (fieldName in [ 'annual' ]) {
             bool = true
         }
-        if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
+        // if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
         bool
     }
 
@@ -31,7 +31,7 @@ class GenericHelper {
         if (fieldName in [ 'region' ]) {
             bool = true
         }
-        if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
+        // if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
         bool
     }
 

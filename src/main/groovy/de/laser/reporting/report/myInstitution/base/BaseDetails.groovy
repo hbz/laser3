@@ -112,7 +112,7 @@ class BaseDetails {
                         label = g.message(code: 'package.show.nav.current')
                     }
                     else {
-                        println '[ ' + key + ' --- ' + field + ' ]'
+                        println 'label != code - [ ' + key + ' --- ' + field + ' ]'
                     }
                 }
             }
