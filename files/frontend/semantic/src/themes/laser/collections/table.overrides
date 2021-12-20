@@ -325,6 +325,9 @@
         content: attr(data-label) ":";
         font-weight: bold;
       }
+      td .la-flexbox {
+        display: inline-flex;
+      }
 
       td:nth-child(1) {
         font-weight: bold;
@@ -358,6 +361,9 @@
         padding: 0 10px 0 0;
         content: attr(data-label) ":";
         font-weight: bold;
+      }
+      td .la-flexbox {
+        display: inline-flex;
       }
       td:nth-child(1) {
         font-weight: bold;

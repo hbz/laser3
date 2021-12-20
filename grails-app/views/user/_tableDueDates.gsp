@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
-<table class="ui celled table la-table">
+<table class="ui celled table la-js-responsive-table la-table">
     <thead>
     <tr>
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
@@ -95,7 +95,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td style="text-align: center">
+                <td class="x" >
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -144,7 +144,7 @@
                         </laser:remoteLink>
                     </g:else>
                 </td>
-                <td style="text-align: center">
+                <td class="x" >
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <laser:remoteLink class="ui green button la-modern-button"
                                       controller="ajax"
