@@ -1058,7 +1058,7 @@ class SemanticUiTagLib {
 
     def tabs = { attrs, body ->
         def newClass = attrs.class ?: ''
-        out << '<div class="ui top attached tabular  ' + newClass + ' menu">'
+        out << '<div class="ui top attached tabular  ' + newClass + ' stackable menu">'
         out << body()
         out << '</div>'
     }
