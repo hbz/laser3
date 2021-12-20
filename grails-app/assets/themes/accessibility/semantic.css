@@ -29173,6 +29173,12 @@ Floated Menu / Item
     font-weight: bold;
   }
 
+  .ui[class*="monitor stackable"].la-js-responsive-table tbody td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
   .ui[class*="monitor stackable"].la-js-responsive-table tbody td:nth-child(1) {
     font-weight: bold;
   }
@@ -29202,6 +29208,12 @@ Floated Menu / Item
     padding: 0 10px 0 0;
     content: attr(data-label) ":";
     font-weight: bold;
+  }
+
+  .ui.la-js-responsive-table tbody td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
   }
 
   .ui.la-js-responsive-table tbody td:nth-child(1) {
