@@ -11,11 +11,17 @@
             <%
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
-                BaseDetails.reorderFieldsInColumnsForUI( BaseConfig.getCurrentDetailsTableConfig( key ), 3 ).each { col ->
+                Map<String, Object> dtCfg = BaseConfig.getCurrentDetailsTableConfig( key )
+                Map<String, Object> esData = BaseConfig.getCurrentEsData( key )
+
+                BaseDetails.reorderFieldsInColumnsForUI( dtCfg, 3 ).each { col ->
                     println '<div class="field grouped fields">'
                     col.each { k, b ->
 
                         String label = BaseDetails.getFieldLabelforColumns( key, k )
+                        if (esData.containsKey(k)) {
+                            label = label + ' (we:kb)'
+                        }
 
                         println '<div class="field"><div class="ui checkbox">'
                         println '<input type="checkbox" name="dtc:' + k + '" id="dtc:' + k + '"' + ( b ? ' checked="checked" ': ' ' ) + '/>'

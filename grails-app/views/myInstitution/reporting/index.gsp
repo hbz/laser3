@@ -36,12 +36,11 @@
 
         <div id="info-content" class="hidden">
 
-            <div class="ui segment message info" style="border:none;">
-                <span class="ui top attached label" style="border-top:1px solid #a9d5de; border-left:1px solid #a9d5de; border-right:1px solid #a9d5de; border-radius:0; text-align:center;">
+            <div class="ui segment">
+                <span class="ui top attached label" style="text-align:center;">
                     <i class="icon question large"></i>${message(code:'reporting.filter.help')}
                 </span>
-
-                <div style="margin: 3.5em 2em 1em !important">
+                <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
                         <strong>${message(code:'reporting.macro.step1')}</strong> <br />
                         ${message(code:'reporting.macro.info1')}
@@ -147,12 +146,12 @@
                 var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
 
                 $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
-                $( '#' + current + '-content').toggleClass('hidden');
                 $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
+                $( '#' + current + '-content').toggleClass('hidden');
                 if (current == 'bookmark') {
-                    $( '#' + current + '-toggle').addClass('teal');
+                    $( '#' + current + '-toggle').toggleClass('teal');
                 } else {
-                    $( '#' + current + '-toggle').addClass('blue');
+                    $( '#' + current + '-toggle').toggleClass('blue');
                 }
             }
 
