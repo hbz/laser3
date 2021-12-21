@@ -13,6 +13,11 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This service handles the export configuration: via a modal, the user checks the settings which should be exported and
+ * after submit, the export will contain only the selected fields. This procedure is called ClickMe-Export. For every place
+ * where ClickMe-exports are being offered a static configuration map is being defined where the settings are being defined
+ */
 @Transactional
 class ExportClickMeService {
 
@@ -23,7 +28,7 @@ class ExportClickMeService {
 
     static Map<String, Object> EXPORT_RENEWAL_CONFIG = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist, 
-            // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaltion
+            // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaluation
                     survey      : [
                             label: 'Survey',
                             message: 'survey.label',
@@ -534,6 +539,11 @@ class ExportClickMeService {
 
     ]
 
+    /**
+     * Gets the fields for the subscription renewal for the given survey for processing
+     * @param surveyConfig the survey to which the renewal fields should be generated
+     * @return the configuration map for the survey
+     */
     Map<String, Object> getExportRenewalFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
@@ -582,6 +592,12 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Called from _individuallyExportRenewModal.gsp
+     * Gets the fields for the subscription renewal for the given survey and prepares them for the UI
+     * @param surveyConfig the survey to which the renewal fields should be generated
+     * @return the configuration map for the survey for the modal
+     */
     Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
@@ -624,6 +640,12 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the subscription member export fields for the given subscription and institution for processing
+     * @param subscription the subscription whose members should be exported
+     * @param institution the context institution
+     * @return the configuration map for the subscription member export
+     */
     Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription, Org institution) {
 
         Map<String, Object> exportFields = [:]
@@ -663,6 +685,13 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Generic call from views
+     * Gets the subscription member export fields for the given subscription and institution and prepares them for the UI
+     * @param subscription the subscription whose members should be exported
+     * @param institution the context institution
+     * @return the configuration map for the subscription member export for the UI
+     */
     Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription, Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
@@ -700,6 +729,11 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the subscription fields for the given institution
+     * @param institution the context institution whose perspective should be taken for the export
+     * @return the configuration map for the subscription export
+     */
     Map<String, Object> getExportSubscriptionFields(Org institution) {
 
         Map<String, Object> exportFields = [:]
@@ -742,6 +776,12 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Generic call from views
+     * Gets the subscription fields for the given institution for the UI
+     * @param institution the context institution whose perspective should be taken for the export
+     * @return the configuration map for the subscription export for the UI
+     */
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
@@ -777,6 +817,10 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the cost item fields for the given institution
+     * @return the configuration map for the cost item export
+     */
     Map<String, Object> getExportCostItemFields() {
 
         Map<String, Object> exportFields = [:]
@@ -803,6 +847,10 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Gets the cost item fields for the given institution
+     * @return the configuration map for the cost item export for UI
+     */
     Map<String, Object> getExportCostItemFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
@@ -823,6 +871,11 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the organisation fields for the given perspective configuration
+     * @param config the organisation type to be exported
+     * @return the configuration map for the organisation export
+     */
     Map<String, Object> getExportOrgFields(String config) {
 
         Map<String, Object> exportFields = [:]
@@ -874,6 +927,12 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Generic call from views
+     * Gets the organisation fields for the given perspective configuration for the UI
+     * @param orgType the organisation type to be exported
+     * @return the configuration map for the organisation export for UI
+     */
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
         Map<String, Object> fields
@@ -915,6 +974,11 @@ class ExportClickMeService {
         fields
     }
 
+    /**
+     * Gets the survey evaluation fields for export
+     * @param surveyConfig the survey whose evaluation should be exported
+     * @return the configuration map for the survey evaluation export
+     */
     Map<String, Object> getExportSurveyEvaluationFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
@@ -961,6 +1025,12 @@ class ExportClickMeService {
         exportFields
     }
 
+    /**
+     * Generic call from views
+     * Gets the survey evaluation fields for export for the UI
+     * @param surveyConfig the survey whose evaluation should be exported
+     * @return the configuration map for the survey evaluation export for UI
+     */
     Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
@@ -1052,7 +1122,12 @@ class ExportClickMeService {
         fields
     }
 
-
+    /**
+     * Exports the selected fields of the given renewal result
+     * @param renewalResult the result to export
+     * @param selectedFields the fields which should appear
+     * @return an Excel worksheet containing the export
+     */
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1163,6 +1238,14 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the selected fields about the members of the given subscription for the given institution
+     * @param result the subscription members to export
+     * @param selectedFields the fields which should appear
+     * @param subscription the subscription as reference for the fields
+     * @param institution the institution as reference for the fields
+     * @return an Excel worksheet containing the export
+     */
     def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution) {
        Locale locale = LocaleContextHolder.getLocale()
 
@@ -1229,6 +1312,13 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the given fields from the given subscriptions
+     * @param result the subscription set to export
+     * @param selectedFields the fields which should appear
+     * @param institution the institution as reference
+     * @return an Excel worksheet containing the export
+     */
     def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1288,6 +1378,12 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the given fields from the given cost items
+     * @param result the cost item set to export
+     * @param selectedFields the fields which should appear
+     * @return an Excel worksheet containing the export
+     */
     def exportCostItems(Map result, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1329,6 +1425,13 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the given fields from the given cost items
+     * @param result the organisation set to export
+     * @param selectedFields the fields which should appear in the export
+     * @param config the organisation type to be exported
+     * @return an Excel worksheet containing the output
+     */
     def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1366,6 +1469,12 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the given fields of the given survey evaluation
+     * @param result the survey evaluation which should be exported
+     * @param selectedFields the fields which should appear
+     * @return an Excel worksheet containing the export
+     */
     def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1452,6 +1561,15 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Fills a row for the renewal export
+     * @param participantResult the participant's result for the row
+     * @param selectedFields the fields which should appear
+     * @param renewalData the output list containing the rows
+     * @param onlySubscription should only subscription-related parameters appear?
+     * @param multiYearTermTwoSurvey should two years running times appear?
+     * @param multiYearTermThreeSurvey should three years running times appear?
+     */
     private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1538,6 +1656,15 @@ class ExportClickMeService {
 
     }
 
+    /**
+     * Fills a row for the subscription export
+     * @param result the subscription to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param localizedName the localised name of the property name
+     * @param selectedCostItemElements the cost item elements to export
+     * @param selectedCostItemFields the fields which should appear in the cost item export
+     */
     private void setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1607,6 +1734,12 @@ class ExportClickMeService {
 
     }
 
+    /**
+     * Fills a row for cost item export
+     * @param costItem the cost item to be exported
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the rows to export
+     */
     private void setCostItemRow(CostItem costItem, Map<String, Object> selectedFields, List exportData){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1646,6 +1779,12 @@ class ExportClickMeService {
 
     }
 
+    /**
+     * Fills a row for the organisation export
+     * @param result the organisation to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     */
     private void setOrgRow(Org result, Map<String, Object> selectedFields, List exportData){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1693,9 +1832,15 @@ class ExportClickMeService {
             }
         }
         exportData.add(row)
-
     }
 
+    /**
+     * Fills a row for the survey evaluation
+     * @param participantResult the evaluation of the participant to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the rows
+     * @param selectedCostItemFields the cost item fields which should appear in export
+     */
     private void setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, Map selectedCostItemFields){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1744,7 +1889,13 @@ class ExportClickMeService {
 
     }
 
-
+    /**
+     * Returns the value for the given object
+     * @param map the map whose field should be returned
+     * @param field the field key to be displayed
+     * @param sdf the {@link SimpleDateFormat} instance to format date fields
+     * @return the string representation of the queried field
+     */
     private def getFieldValue(def map, String field, SimpleDateFormat sdf){
         def fieldValue
         field.split('\\.').eachWithIndex { Object entry, int i ->
@@ -1774,6 +1925,15 @@ class ExportClickMeService {
         return fieldValue
     }
 
+    /**
+     * Exports access points of the given institutions
+     * @param orgList the list of institutions whose access points should be exported
+     * @param sheetData the worksheet containing the export
+     * @param selectedExportFields the fields which should appear
+     * @param locale the locale to use for message constants
+     * @param sheetNameAddition an addition submitted to the sheet name
+     * @return the updated export worksheet
+     */
     private Map exportAccessPoints(List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale, String sheetNameAddition) {
 
         Map export = [:]
@@ -2083,6 +2243,12 @@ class ExportClickMeService {
         titles
     }
 
+    /**
+     * Formats the given organisations address
+     * @param address the address to format
+     * @param org the organisation to which the address is belonging
+     * @return the formatted address string
+     */
     private String getAddress(Address address, Org org){
         String addr= ""
 
