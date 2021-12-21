@@ -2821,7 +2821,7 @@ class SurveyController {
 
     /**
      * Call to delete the given documents from the survey
-     * @return
+     * @return a redirect to the referer
      */
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {

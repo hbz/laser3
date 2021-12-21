@@ -41,6 +41,9 @@ class DashboardDueDatesService {
     boolean update_running = false
     private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
 
+    /**
+     * Initialises the service with configuration parameters
+     */
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
