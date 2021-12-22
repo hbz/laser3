@@ -13,6 +13,9 @@ import org.springframework.context.i18n.LocaleContextHolder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+/**
+ * This service handles generic query creating with inclusive filter processing
+ */
 @Transactional
 class FilterService {
 
@@ -23,6 +26,11 @@ class FilterService {
     def messageSource
     PropertyService propertyService
 
+    /**
+     * Processes organisation filters and generates a query to fetch organisations
+     * @param params the filter parameter map
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String, Object> getOrgQuery(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["o.status != :orgStatus"]
@@ -137,6 +145,13 @@ class FilterService {
         result
     }
 
+    /**
+     * Processes institution filters and generates a query to fetch institution; in addition, institutions
+     * linked by combo to the given institution are fetched
+     * @param params the filter parameter map
+     * @param org the consortium to which the institutions are linked
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String, Object> getOrgComboQuery(GrailsParameterMap params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
@@ -269,6 +284,12 @@ class FilterService {
         result
     }
 
+    /**
+     * Processes the task filter parameters and gets the task query with the prepared filter values
+     * @param params the filter query parameter map
+     * @param sdFormat the date format to use to parse dates
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String, Object> getTaskQuery(Map params, DateFormat sdFormat) {
         Map<String, Object> result = [:]
         def query = []
@@ -311,6 +332,14 @@ class FilterService {
         result
     }
 
+    /**
+     * Kept as reference.
+     * Processes the given filter parameters and generates a query to retrieve documents
+     * @deprecated should be moved to the external document service
+     * @param params the filter parameter map
+     * @return the map containing the query and the prepared query parameters
+     */
+    @Deprecated
     Map<String,Object> getDocumentQuery(Map params) {
         Map result = [:]
         List query = []
@@ -373,6 +402,7 @@ class FilterService {
         result
     }
 
+    @Deprecated
     Map<String,Object> getSurveyQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
         List query = []
@@ -418,6 +448,13 @@ class FilterService {
         result
     }
 
+    /**
+     * Processes the given filter parameters and generates a survey query
+     * @param params the filter parameter map
+     * @param sdFormat the format to use for date parsing
+     * @param contextOrg the context institution whose perspective should be taken
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> getSurveyConfigQueryConsortia(GrailsParameterMap params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
         Map<String,Object> queryParams = [:]
@@ -575,6 +612,10 @@ class FilterService {
         result
     }
 
+    /**
+     * @deprecated replaced by {@link #getParticipantSurveyQuery_New(grails.web.servlet.mvc.GrailsParameterMap, java.text.DateFormat, de.laser.Org)}
+     */
+    @Deprecated
     Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
@@ -667,6 +708,13 @@ class FilterService {
         result
     }
 
+    /**
+     * Processes the given filter parameters and generates a query to retrieve surveys from the participant's point of view
+     * @param params the filter parameter map
+     * @param sdFormat the format to use to parse dates
+     * @param org the context institution
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> getParticipantSurveyQuery_New(GrailsParameterMap params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
@@ -825,6 +873,12 @@ class FilterService {
         result
     }
 
+    /**
+     * Processes the given filter parameters and generates a query to retrieve the given survey's participants
+     * @param params the filter parameter map
+     * @param surveyConfig the survey whose participants should be retrieved
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> getSurveyOrgQuery(GrailsParameterMap params, SurveyConfig surveyConfig) {
         Map result = [:]
         String base_qry = "from SurveyOrg as surveyOrg where surveyOrg.surveyConfig = :surveyConfig "
@@ -1005,6 +1059,15 @@ class FilterService {
 
     }
 
+    /**
+     * Processes the given filter parameters and generates a base for the package title query
+     * @param params the filter parameter map
+     * @param qry_params the query filter map
+     * @param showDeletedTipps should deleted titles be shown or not?
+     * @param asAt the date when the package holding should be considered (because of access start and end dates)
+     * @param forBase which instance is the base from which titles should be retrieved?
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
         Locale locale = LocaleContextHolder.getLocale()
         String base_qry
@@ -1074,6 +1137,12 @@ class FilterService {
         return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]
     }
 
+    /**
+     * Processes the given filter parameters and generates a query to retrieve issue entitlements
+     * @param params the filter parameter map
+     * @param subscription the subscription whose dates should be considered
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
@@ -1268,6 +1337,12 @@ class FilterService {
 
     }
 
+    /**
+     * Processes the given filter parameters and generates a query to retrieve titles of the given packages
+     * @param params the filter parameter map
+     * @param pkgs the packages whose titles should be queried
+     * @return the map containing the query and the prepared query parameters
+     */
     Map<String,Object> getTippQuery(GrailsParameterMap params, List<Package> pkgs) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
