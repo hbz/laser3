@@ -8,9 +8,17 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 
+/**
+ * This central service should contain string escaping methods
+ */
 @Transactional
 class EscapeService {
 
+    /**
+     * Replaces special characters from the given input
+     * @param input the string to purge
+     * @return the sanitised output string
+     */
     String escapeString(String input) {
         String output = input.replaceAll(' ','_')
         String[] escapingChars = ['ä','ö','ü','ß','Ä','Ö','Ü']
@@ -19,6 +27,11 @@ class EscapeService {
         output
     }
 
+    /**
+     * Replaces only the German Umlauts (but no other special characters) by their cross-word writing (the so-called Kreuzworträtselschreibweise)
+     * @param input the string to purge
+     * @return the sanitised output string
+     */
     String replaceUmlaute(String input) {
 
         String result = input.replaceAll("ä", "ae")
@@ -33,12 +46,23 @@ class EscapeService {
         result
     }
 
+    /**
+     * Parses the given input sum and converts them into a BigDecimal representation
+     * @param input the input sum to parse
+     * @return the sum parsed as BigDecimal
+     */
     BigDecimal parseFinancialValue(String input) {
         String uniformedThousandSeparator = input.replaceAll("[',.](/d{3})",'$1')
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
         output
     }
 
+    /**
+     * Called from cost table and cost input views
+     * Returns the input sum in the localised format
+     * @param input the sum value to format
+     * @return the formatted output of the cost
+     */
     String outputFinancialValue(input) {
         //workaround for the correct currency output but without currency symbol, according to https://stackoverflow.com/questions/8658205/format-currency-without-currency-symbol
         NumberFormat nf = NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale())
