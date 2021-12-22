@@ -8,6 +8,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This service contains methods for workflow handling
+ */
 @Transactional
 class WorkflowService {
 
@@ -19,6 +22,9 @@ class WorkflowService {
 
     //static Log static_logger = LogFactory.getLog(WorkflowService)
 
+    /**
+     * Subclass to parse parameters
+     */
     class ParamsHelper {
 
         ParamsHelper(String cmpKey, GrailsParameterMap params) {
@@ -55,10 +61,22 @@ class WorkflowService {
         }
     }
 
+    /**
+     * Gets a parameter helper instance
+     * @param cmpKey the key for the parameter
+     * @param params the request parameter map
+     * @return a new helper instance for the given key
+     */
     ParamsHelper getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
         new ParamsHelper(cmpKey, params)
     }
 
+    /**
+     * Menu switch to handle calls.
+     * Supported are create, edit, delete and instantiate
+     * @param params the request parameter map
+     * @return the call result map, depending on the call
+     */
     Map<String, Object> cmd(GrailsParameterMap params) {
         log.debug('cmd() ' + params)
         Map<String, Object> result = [:]
@@ -141,6 +159,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Call to delete the given workflow
+     * @param params the request parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> deleteWorkflow(GrailsParameterMap params) {
         log.debug('deleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -168,6 +191,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Call to delete the given task
+     * @param params the request parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> deleteTask(GrailsParameterMap params) {
         log.debug('deleteTask() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -199,6 +227,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Call to delete the given workflow condition
+     * @param params the request parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> deleteCondition(GrailsParameterMap params) {
         log.debug('deleteCondition() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -230,6 +263,12 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Edits the given workflow (or prototype) with the specified params
+     * @param wf the workflow or its prototype to edit
+     * @param params the input parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> internalEditWorkflow(WfWorkflowBase wf, GrailsParameterMap params) {
 
         log.debug( wf.toString() )
@@ -264,6 +303,12 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Edits the given task (or prototype) with the specified params
+     * @param task the task or its prototype to edit
+     * @param params the input parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> internalEditTask(WfTaskBase task, GrailsParameterMap params) {
 
         log.debug( task.toString() )
@@ -303,7 +348,13 @@ class WorkflowService {
         result
     }
 
-    // TODO
+    /**
+     * TODO - method under construction!
+     * Edits the given condition (or prototype) with the specified params
+     * @param condition the condition or its prototype to edit
+     * @param params the input parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> internalEditCondition(WfConditionBase condition, GrailsParameterMap params) {
 
         log.debug( condition.toString() )
@@ -387,6 +438,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Instantiates the given workflow to the given subscription
+     * @param params the request parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params) {
         log.debug('instantiateCompleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -428,6 +484,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Removes the workflow instance from its target
+     * @param params the request parameter map
+     * @return a result map with the execution status
+     */
     Map<String, Object> removeCompleteWorkflow(GrailsParameterMap params) {
         log.debug('removeCompleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -469,6 +530,11 @@ class WorkflowService {
         result
     }
 
+    /**
+     * Generic method from the dashboard to proceed with the workflow
+     * @param params the request parameter map
+     * @return a result containing the execution result
+     */
     Map<String, Object> usage(GrailsParameterMap params) {
         log.debug('usage() ' + params)
         String[] cmd = (params.cmd as String).split(':')

@@ -6,6 +6,10 @@ import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This service handles due date status updates for licenses and subscriptions
+ * @see SurveyUpdateService
+ */
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
 

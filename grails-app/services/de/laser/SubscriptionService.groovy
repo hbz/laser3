@@ -41,7 +41,14 @@ class SubscriptionService {
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
 
-    //ex SubscriptionController.currentSubscriptions()
+    /**
+     * ex MyInstitutionController.currentSubscriptions()
+     * Gets the current subscriptions for the given institution
+     * @param params the request parameter map
+     * @param contextUser the user whose settings should be considered
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @return a result map containing a list of subscriptions and other site parameters
+     */
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
         EhcacheWrapper cache = contextService.getCache("/subscriptions/filter/",ContextService.USER_SCOPE)
@@ -141,6 +148,14 @@ class SubscriptionService {
         result
     }
 
+    /**
+     * ex MyInstitutionController.manageConsortiaSubscriptions()
+     * Gets the current subscriptions with their cost items for the given consortium
+     * @param params the request parameter map
+     * @param contextUser the user whose settings should be considered
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @return a result map containing a list of subscriptions and other site parameters
+     */
     Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
         Map<String,Object> result = [:]
 
@@ -385,10 +400,16 @@ class SubscriptionService {
         result
     }
 
+    @Deprecated
     Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
         Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
     }
 
+    /**
+     * Gets a (filtered) list of subscriptions to which the context institution has reading rights
+     * @param params the filter parameter map
+     * @return a list of subscriptions matching the given filter
+     */
     List getMySubscriptions_readRights(Map params){
         List result = []
         List tmpQ
@@ -418,6 +439,11 @@ class SubscriptionService {
         result
     }
 
+    /**
+     * Gets a (filtered) list of subscriptions to which the context institution has writing rights
+     * @param params the filter parameter map
+     * @return a list of subscriptions matching the given filter
+     */
     List getMySubscriptions_writeRights(Map params){
         List result = []
         List tmpQ
@@ -447,6 +473,11 @@ class SubscriptionService {
         result.sort {it.dropdownNamingConvention()}
     }
 
+    /**
+     * Gets a (filtered) list of local and consortial subscriptions to which the context institution has reading rights
+     * @param params the filter parameter map
+     * @return a list of subscriptions matching the given filter
+     */
     List getMySubscriptionsWithMyElements_readRights(Map params){
         List result = []
         List tmpQ
@@ -463,6 +494,11 @@ class SubscriptionService {
         result
     }
 
+    /**
+     * Gets a (filtered) list of local and consortial subscriptions to which the context institution has writing rights
+     * @param params the filter parameter map
+     * @return a list of licenses matching the given filter
+     */
     List getMySubscriptionsWithMyElements_writeRights(Map params){
         List result = []
         List tmpQ
@@ -479,7 +515,11 @@ class SubscriptionService {
         result
     }
 
-    //Konsortiallizenzen
+    /**
+     * Retrieves consortial parent subscriptions matching the given filter
+     * @param params the filter parameter map
+     * @return a list of consortial parent subscriptions matching the given filter
+     */
     private List getSubscriptionsConsortiaQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
@@ -492,7 +532,11 @@ class SubscriptionService {
         result
     }
 
-    //Teilnehmerlizenzen
+    /**
+     * Retrieves consortial member subscriptions matching the given filter
+     * @param params the filter parameter map
+     * @return a list of consortial parent subscriptions matching the given filter
+     */
     private List getSubscriptionsConsortialLicenseQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
@@ -504,7 +548,11 @@ class SubscriptionService {
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
-    //Lokallizenzen
+    /**
+     * Retrieves local licenses matching the given filter
+     * @param params the filter parameter map
+     * @return a list of licenses matching the given filter
+     */
     private List getSubscriptionsLocalLicenseQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
@@ -516,11 +564,21 @@ class SubscriptionService {
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
+    /**
+     * Gets the member subscriptions for the given consortial subscription
+     * @param subscription the subscription whose members should be queried
+     * @return a list of member subscriptions
+     */
     List getValidSubChilds(Subscription subscription) {
         List<Subscription> validSubChildren = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :sub and oo.roleType in (:subRoleTypes) order by oo.org.sortname asc, oo.org.name asc',[sub:subscription,subRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
         validSubChildren
     }
 
+    /**
+     * Gets the member subscriptions for the given consortial subscription with status current
+     * @param subscription the subscription whose members should be queried
+     * @return a sorted list of member subscriptions which are marked as current
+     */
     List getCurrentValidSubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
                 subscription,
@@ -536,6 +594,17 @@ class SubscriptionService {
         validSubChilds
     }
 
+    /**
+     * Gets the member subscriptions for the given consortial subscription matching to one of the following status:
+     * <ul>
+     *     <li>Current</li>
+     *     <li>Under process of selection</li>
+     *     <li>Intended</li>
+     *     <li>Ordered</li>
+     * </ul>
+     * @param subscription the subscription whose members should be queried
+     * @return a filtered list of member subscriptions
+     */
     List getValidSurveySubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
@@ -554,6 +623,16 @@ class SubscriptionService {
         validSubChilds
     }
 
+    /**
+     * Gets the member subscribers for the given consortial subscription matching to one of the following status:
+     * <ul>
+     *     <li>Current</li>
+     *     <li>Under process of selection</li>
+     * </ul>
+     * This method is to be used for afterward adding of members to the survey; irrelevant insitutions should be filtered out
+     * @param subscription the subscription whose members should be queried
+     * @return a filtered list subscribers
+     */
     List getValidSurveySubChildOrgs(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
@@ -573,6 +652,11 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Gets the issue entitlements (= the titles) of the given subscription
+     * @param subscription the subscription whose holding should be returned
+     * @return a sorted list of issue entitlements
+     */
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
@@ -581,6 +665,7 @@ class SubscriptionService {
         ies.sort {it.sortname}
         ies
     }
+
     @Deprecated
     List getIssueEntitlementsWithFilter(Subscription subscription, params) {
 
@@ -699,8 +784,11 @@ class SubscriptionService {
         }
     }
 
-
-    // Entscheidung steht aus
+    /**
+     * Gets issue entitlements for the given subscription which are under consideration
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of issue entitlements which are currently under consideration
+     */
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -709,7 +797,12 @@ class SubscriptionService {
         ies.sort {it.sortname}
         ies
     }
-    //In Verhandlung
+
+    /**
+     * Gets issue entitlements for the given subscription which are under negotiation
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of issue entitlements which are currently under negotiation
+     */
     List getIssueEntitlementsUnderNegotiation(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -719,6 +812,11 @@ class SubscriptionService {
         ies
     }
 
+    /**
+     * Gets issue entitlements for the given subscription which are not fixed yet
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of issue entitlements which are not fixed
+     */
     List getIssueEntitlementsNotFixed(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
@@ -728,6 +826,11 @@ class SubscriptionService {
         ies
     }
 
+    /**
+     * Counts the issue entitlements for the given subscription which are not fixed
+     * @param subscription the subscription whose titles should be counted
+     * @return a sorted list of issue entitlements which are not fixed
+     */
     Integer countIssueEntitlementsNotFixed(Subscription subscription) {
         Integer iesCount = subscription?
                 IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
@@ -736,6 +839,11 @@ class SubscriptionService {
         iesCount
     }
 
+    /**
+     * Retrieves issue entitlement IDs for the given subscription which are not fixed yet
+     * @param subscription the subscription whose titles should be returned
+     * @return a list of issue entitlements IDs which are not fixed
+     */
     List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
@@ -744,6 +852,11 @@ class SubscriptionService {
         ies
     }
 
+    /**
+     * Gets issue entitlements for the given subscription which are fixed
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of issue entitlements which are fixed
+     */
     List getIssueEntitlementsFixed(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -753,6 +866,11 @@ class SubscriptionService {
         ies
     }
 
+    /**
+     * Counts the issue entitlements for the given subscription which are fixed
+     * @param subscription the subscription whose titles should be counted
+     * @return a sorted list of issue entitlements which are fixed
+     */
     Integer countIssueEntitlementsFixed(Subscription subscription) {
         Integer countIes = subscription?
                 IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -761,6 +879,11 @@ class SubscriptionService {
         countIes
     }
 
+    /**
+     * Gets issue entitlement IDs for the given subscription which are fixed
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of issue entitlement IDs which are fixed
+     */
     List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
         List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -769,6 +892,7 @@ class SubscriptionService {
         ies
     }
 
+    @Deprecated
     List<Long> getTippIDsFixed(Subscription subscription) {
         List<Long> tipps = subscription?
                 IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
@@ -777,6 +901,11 @@ class SubscriptionService {
         tipps
     }
 
+    /**
+     * Gets the current issue entitlements for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return a sorted list of current issue entitlements
+     */
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
@@ -786,6 +915,11 @@ class SubscriptionService {
         ies
     }
 
+    /**
+     * Gets the IDs of current issue entitlements for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return a list of issue entitlement IDs
+     */
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
         List<Long> ieIDs = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.status = :fixed",
@@ -794,6 +928,7 @@ class SubscriptionService {
         ieIDs
     }
 
+    @Deprecated
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { OrgRole or ->
@@ -804,6 +939,11 @@ class SubscriptionService {
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
+    /**
+     * Retrieves all visible organisational relationships for the given subscription, i.e. providers, agencies, etc.
+     * @param subscription the subscription to retrieve the relations from
+     * @return a sorted list of visible relations
+     */
     List getVisibleOrgRelations(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { OrgRole or ->
@@ -814,7 +954,12 @@ class SubscriptionService {
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
-
+    /**
+     * Adds the given package to the given subscription. It may be specified if titles should be created as well or not.
+     * @param subscription the subscription whose holding should be enriched
+     * @param pkg the package to link
+     * @param createEntitlements should entitlements be created as well?
+     */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
         // Add this package to the specified subscription
         // Step 1 - Make sure this package is not already attached to the sub
@@ -872,9 +1017,14 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Copy from: {@link #addToSubscription(de.laser.Subscription, de.laser.Package, boolean)}
+     * Adds the consortial title holding to the given member subscription and links the given package to the member
+     * @param target the member subscription whose holding should be enriched
+     * @param consortia the consortial subscription whose holding should be taken
+     * @param pkg the package to be linked
+     */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
-
-        // copy from: addToSubscription(subscription, createEntitlements) { .. }
 
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
@@ -935,6 +1085,12 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Sets the submitted pending change behavior to the given subscription package
+     * @param subscription the subscription to which the settings count
+     * @param pkg the package whose title changes should be controlled
+     * @param params the configuration map to be stored
+     */
     void addPendingChangeConfiguration(Subscription subscription, Package pkg, Map<String, Object> params) {
 
         SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg)
@@ -986,6 +1142,12 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Builds the comparison map for the properties; inverting the relation subscription-properties to property-subscriptions
+     * @param subsToCompare the subscriptions whose property sets should be compared
+     * @param org the institution whose property definition groups should be considered
+     * @return the inverse property map
+     */
     Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         subsToCompare.each{ sub ->
@@ -1050,10 +1212,28 @@ class SubscriptionService {
         result
     }
 
+    /**
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * @param sub the subscription to which the title should be added
+     * @param gokbId the we:kb ID of the title
+     * @param issueEntitlementOverwrite eventually cached imported local data
+     * @param withPriceData should price data be added as well?
+     * @param acceptStatus the accept status of the issue entitlement
+     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus){
         addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, false)
     }
 
+    /**
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * @param sub the subscription to which the title should be added
+     * @param gokbId the we:kb ID of the title
+     * @param issueEntitlementOverwrite eventually cached imported local data
+     * @param withPriceData should price data be added as well?
+     * @param acceptStatus the accept status of the issue entitlement
+     * @return true if the adding was successful, false otherwise
+     */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
@@ -1195,6 +1375,12 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Deletes the given title from the given subscription
+     * @param sub the subscription from which the title should be removed
+     * @param gokbId the we:kb of the title to be removed
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteEntitlement(sub, gokbId) {
         IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
         if(ie == null) {
@@ -1211,6 +1397,12 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Deletes the given title from the given subscription
+     * @param sub the subscription from which the title should be removed
+     * @param id the database ID of the title to be removed
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteEntitlementbyID(sub, id) {
         IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
         if(ie == null) {
@@ -1227,6 +1419,12 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Remaps the issue entitlements of the given title to the given substitute
+     * @param tipp the title whose data should be remapped
+     * @param replacement the title which serves as substitute
+     * @return true if the rebase was successful, false otherwise
+     */
     boolean rebaseSubscriptions(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         try {
             Map<String,TitleInstancePackagePlatform> rebasingParams = [old:tipp,replacement:replacement]
@@ -1242,11 +1440,25 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Checks whether consortial functions should be displayed
+     * @param contextOrg the institution whose permissions should be checked
+     * @param subscription the subscription which should be accessed
+     * @return true if the given institution is a consortium and if the subscription is a consortial parent subscription of the given institution,
+     * false otherwise
+     */
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
+    /**
+     * (Un-)links the given subscription to the given license
+     * @param sub the subscription to be linked
+     * @param newLicense the license to link
+     * @param unlink should the link being created or dissolved?
+     * @return true if the (un-)linking was successful, false otherwise
+     */
     boolean setOrgLicRole(Subscription sub, License newLicense, boolean unlink) {
         boolean success = false
         Links curLink = Links.findBySourceLicenseAndDestinationSubscriptionAndLinkType(newLicense,sub,RDStore.LINKTYPE_LICENSE)
@@ -1305,6 +1517,11 @@ class SubscriptionService {
         success
     }
 
+    /**
+     * Processes the given TSV file and generates subscription candidates based on the data read off
+     * @param tsvFile the import file containing the subscription data
+     * @return a map containing the candidates, the parent subscription type and the errors
+     */
     Map subscriptionImport(MultipartFile tsvFile) {
         Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.getOrg()
@@ -1691,6 +1908,12 @@ class SubscriptionService {
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
     }
 
+    /**
+     * Processes after having checked the given import and creates the subscription instances with their depending objects
+     * @param candidates the candidates to process
+     * @param params the import parameter map, containing the flags which subscriptions should be taken and which not
+     * @return a list of errors which have occurred, an empty list in case of success
+     */
     List addSubscriptions(candidates,GrailsParameterMap params) {
         List errors = []
         Locale locale = LocaleContextHolder.getLocale()
@@ -1796,6 +2019,15 @@ class SubscriptionService {
         errors
     }
 
+    /**
+     * Updates the subscription holding with the given import data
+     * @param stream the input stream containing the data to import
+     * @param entIds the IDs of the issue entitlements to update
+     * @param subscription the subscription whose holding should be updated
+     * @param uploadCoverageDates should coverage dates be updated as well?
+     * @param uploadPriceInfo should price dates be updated as well?
+     * @return a map containing the processing results
+     */
     Map issueEntitlementEnrichment(InputStream stream, Set<Long> entIds, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
@@ -1990,6 +2222,12 @@ class SubscriptionService {
     }
 
 
+    /**
+     * Selects the given issue entitlements based on the given input stream
+     * @param stream the file stream which contains the data to be selected
+     * @param subscription the subscription whose holding should be accessed
+     * @return a map containing the process result
+     */
     Map issueEntitlementSelect(InputStream stream, Subscription subscription) {
 
         Integer count = 0
@@ -2071,6 +2309,7 @@ class SubscriptionService {
         return [processCount: count, selectedIEs: selectedIEs, countSelectIEs: countSelectIEs]
     }
 
+    @Deprecated
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
 
         sourceSub.getProviders().each { provider ->
@@ -2140,6 +2379,15 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Creates a property of the given type for the given subscription with the given value and note.
+     * Is a helper class for the subscription import
+     * @param propDef the type of property (= property definition) to add
+     * @param sub the subscription for which the property should be created
+     * @param contextOrg the institution processing the creation
+     * @param value the value of the property
+     * @param note the note attached to the property
+     */
     void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
         //check if private or custom property
         AbstractPropertyWithCalculatedLastUpdated prop
@@ -2182,6 +2430,12 @@ class SubscriptionService {
         prop.save()
     }
 
+    /**
+     * Updates the properties inheriting from given property with the selected value
+     * @param controller the controller calling the procedure
+     * @param prop the property whose dependents should be updated
+     * @param value the value to be taken
+     */
     void updateProperty(def controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
 
         String field = prop.type.getImplClassValueProperty()
@@ -2265,6 +2519,13 @@ class SubscriptionService {
     }
 
     //-------------------------------------- cronjob section ----------------------------------------
+
+    /**
+     * Cronjob-triggered.
+     * Processes subscriptions which have been marked with holdings to be freezed after their end time and sets all pending change
+     * configurations to reject
+     * @return true if the execution was successful, false otherwise
+     */
     boolean freezeSubscriptionHoldings() {
         boolean done, doneChild
         Date now = new Date()
