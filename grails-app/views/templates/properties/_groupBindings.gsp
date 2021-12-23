@@ -4,7 +4,7 @@
 
     <div id="propDefGroupBindingConfig">
 
-        <table class="ui compact la-table-inCard table">
+        <table class="ui compact la-js-responsive-table la-table-inCard table">
             <thead>
                 <tr>
                     <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>

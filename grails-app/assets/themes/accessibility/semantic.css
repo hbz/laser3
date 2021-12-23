@@ -29156,6 +29156,14 @@ Floated Menu / Item
 -------------------------------------------------*/
 
 @media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-1,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-2,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-3,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-4,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
+  }
+
   .ui[class*="monitor stackable"].la-js-responsive-table [class*="center aligned"] {
     text-align: left!important;
   }
@@ -29193,6 +29201,14 @@ Floated Menu / Item
 ----------------------------------------------------------------------------*/
 
 @media only screen and (max-width: 767px) {
+  .ui.la-js-responsive-table .la-prop-col-1,
+  .ui.la-js-responsive-table .la-prop-col-2,
+  .ui.la-js-responsive-table .la-prop-col-3,
+  .ui.la-js-responsive-table .la-prop-col-4,
+  .ui.la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
+  }
+
   .ui.la-js-responsive-table [class*="center aligned"] {
     text-align: left!important;
   }
@@ -29223,6 +29239,26 @@ Floated Menu / Item
   .ui.la-js-responsive-table tbody .x {
     text-align: left;
   }
+}
+
+.la-prop-col-1 {
+  width: 129px;
+}
+
+.la-prop-col-2 {
+  width: 96px;
+}
+
+.la-prop-col-3 {
+  width: 359px;
+}
+
+.la-prop-col-4 {
+  width: 148px;
+}
+
+.la-prop-col-5 {
+  width: 76px;
 }
 /*!
  * # Semantic UI 2.4.2 - Ad

@@ -302,6 +302,21 @@
 .ui.table tr:first-child th {
   border-top: none;
 }
+.la-prop-col-1 {
+  width: 129px;
+}
+.la-prop-col-2 {
+  width: 96px;
+}
+.la-prop-col-3 {
+  width: 359px;
+}
+.la-prop-col-4 {
+  width:  148px;
+}
+.la-prop-col-5 {
+  width: 76px;
+}
 
 /*-----------------------------------------------
   Responsive Table for views with wide tables
@@ -310,6 +325,13 @@
 @media only screen and (max-width : @largestSmallMonitor) {
 
   .ui[class*="monitor stackable"].la-js-responsive-table {
+    .la-prop-col-1,
+    .la-prop-col-2,
+    .la-prop-col-3,
+    .la-prop-col-4,
+    .la-prop-col-5 {
+      width: 100%;
+    }
     [class*="center aligned"] {
       text-align: left!important;
     }
@@ -347,6 +369,13 @@
 
 
   .ui.la-js-responsive-table {
+    .la-prop-col-1,
+    .la-prop-col-2,
+    .la-prop-col-3,
+    .la-prop-col-4,
+    .la-prop-col-5 {
+      width: 100%;
+    }
     [class*="center aligned"] {
       text-align: left!important;
     }
