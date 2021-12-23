@@ -34,6 +34,10 @@ import java.time.format.DateTimeFormatter
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service manages the synchronisation of usage statistics, both for the Nationaler Statistikserver and for the
+ * internal statistic component
+ */
 @Transactional
 class StatsSyncService {
 
@@ -62,6 +66,9 @@ class StatsSyncService {
     static boolean running = false
     static transactional = false
 
+    /**
+     * Initialises synchronisation process
+     */
     def initSync() {
         log.debug("StatsSyncService::doSync ${this.hashCode()}")
         if (running) {
@@ -82,6 +89,10 @@ class StatsSyncService {
         availableReportCache = [:]
     }
 
+    /**
+     * Generates a query for the title instances
+     * @return the title instance query
+     */
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
         //TODO change from string comparison to ID comparison
@@ -105,6 +116,10 @@ class StatsSyncService {
         return hql
     }
 
+    /**
+     * Adds the platform and reporting institution IDs to the query parameter map
+     * @param params the request parameter map
+     */
     void addFilters(params) {
         queryParams = [:]
         if (params.supplier != 'null'){
@@ -115,11 +130,19 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Starts the Nationaler Statistikserver synchronisation process and puts the process on a new thread
+     */
     void doSync() {
         initSync()
         executorService.execute({ internalDoSync() })
     }
 
+    /**
+     * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
+     * and puts the process on a new thread
+     * @param incremental should only new data being loaded or a full data reload done?
+     */
     void doFetch(boolean incremental) {
         log.debug("fetching data from providers started")
         if (running) {
@@ -130,6 +153,10 @@ class StatsSyncService {
         executorService.execute({ internalDoFetch(incremental) })
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Initialises the multithreading process performing the data load
+     */
     void internalDoSync() {
         try {
             log.debug("create thread pool")
@@ -164,6 +191,12 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Internal
+     * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
+     * Both COUNTER 4 and COUNTER 5 are being processed here
+     * @param incremental should only newest data being fetched or a full data reload done?
+     */
     void internalDoFetch(boolean incremental) {
         //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
@@ -630,6 +663,7 @@ class StatsSyncService {
             log.debug("fetch stats finished")
     }
 
+    @Deprecated
     boolean createSushiSource(Map<String, Object> configMap) {
         AbstractCounterApiSource source = AbstractCounterApiSource.construct(configMap)
         if(source) {
@@ -639,6 +673,7 @@ class StatsSyncService {
         else false
     }
 
+    @Deprecated
     boolean updateStatsSource(GrailsParameterMap params) {
         AbstractCounterApiSource source
         if(params.c4source) {
@@ -660,6 +695,7 @@ class StatsSyncService {
         false
     }
 
+    @Deprecated
     boolean deleteStatsSource(GrailsParameterMap params) {
         if(params.counter4) {
             Counter4ApiSource source = Counter4ApiSource.get(params.counter4)
@@ -674,6 +710,13 @@ class StatsSyncService {
         false
     }
 
+    /**
+     * Internal
+     * Fetches the given COUNTER 5 report from the given URL and returns the JSON response
+     * @param url the URL to fetch data from
+     * @param requestList is the list of available reports fetched?
+     * @return the JSON response map
+     */
     Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
         Map<String, Object> result = [:]
         try {
@@ -709,6 +752,13 @@ class StatsSyncService {
         result
     }
 
+    /**
+     * Internal
+     * Fetches the given COUNTER 4 report from the given URL and returns the XML node
+     * @param url the URL to fetch data from
+     * @param requestBody is the list of available reports fetched?
+     * @return the response body
+     */
     GPathResult fetchXMLData(String url, requestBody) {
         GPathResult result = null
         try  {
@@ -739,6 +789,12 @@ class StatsSyncService {
         result
     }
 
+    /**
+     * Internal
+     * Initialises the calendar map for the next bunch of requests
+     * @param onlyNewest should only the most recent data be fetched?
+     * @return the parameter map containing the time span and the breakpoints for the request loop
+     */
     Map<String, Object> initCalendarConfig(boolean onlyNewest) {
         Calendar now = GregorianCalendar.getInstance()
         Date startDate, endNextRun, endTime
@@ -758,6 +814,11 @@ class StatsSyncService {
         [startDate: startDate, endTime: endTime, endNextRun: endNextRun, now: now]
     }
 
+    /**
+     * Nationaler Statistikserver
+     * @param s generates an MD5 hash of the given string
+     * @return a MD5 integer sum
+     */
     String generateMD5(String s) {
         MessageDigest digest = MessageDigest.getInstance("MD5")
         digest.update(s.bytes)
@@ -765,6 +826,7 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Query NatStat v5 reports endpoint to get the available reports for a supplier
      * @param queryParams
      * @return List Available reports for supplier
@@ -811,6 +873,12 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Resolves the objects in the given list item
+     * @param listItem the list with the object keys
+     * @return the list with the resolved objects
+     */
     ArrayList getObjectsForItem(listItem) {
        [
             TitleInstancePackagePlatform.get(listItem[0]),
@@ -820,6 +888,12 @@ class StatsSyncService {
         ]
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the available report list for the given platform
+     * @param queryParams the basic query parameter map
+     * @return a list of relevant report types
+     */
     List<RefdataValue> getRelevantReportList(Map<String,String> queryParams) {
         List<RefdataValue> reports = RefdataCategory.getAllRefdataValues(RDConstants.FACT_TYPE)
         List availableReports = getAvailableReportsForPlatform(queryParams)
@@ -833,6 +907,13 @@ class StatsSyncService {
         return reports
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Initialises the loading options for the given list item
+     * @param listItem the list item to process
+     * @param mostRecentClosedPeriod the most recent period for the sync run
+     * @return the sync options for the given list
+     */
     StatsSyncServiceOptions initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod) {
         StatsSyncServiceOptions options = new StatsSyncServiceOptions()
         List itemObjects = getObjectsForItem(listItem)
@@ -842,6 +923,12 @@ class StatsSyncService {
         return options
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the cursor for the given configuration row
+     * @param options the row containing the report institution, the platform, the identifier and the title
+     * @return the {@link StatsTripleCursor} for the given row
+     */
     StatsTripleCursor getCursor(StatsSyncServiceOptions options) {
         // There could be more than one (if we have gaps in usage), get the newest one
         StatsTripleCursor csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
@@ -862,6 +949,12 @@ class StatsSyncService {
         return csr
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Processes the given list item
+     * @param listItem the list item to fetch data for
+     * @param mostRecentClosedPeriod the most recent period for the sync run
+     */
     void processListItem(Object listItem, String mostRecentClosedPeriod) {
         SushiClient sushiClient = new SushiClient()
         Long start_time = System.currentTimeMillis()
@@ -911,6 +1004,13 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Reads the usage records from the given XML body and updates the row and the cursor
+     * @param xml the XML body
+     * @param options the query options used
+     * @param csr the stats triple cursor to update
+     */
     void writeUsageRecords(xml, options, csr) {
         checkStatsTitleCount(xml)
         List itemPerformances = xml.depthFirst().findAll {
@@ -1000,6 +1100,15 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Writes a new stats triple cursor with the given arguments
+     * @param factCount the count of facts to be recorded
+     * @param begin the report month start
+     * @param end the report month end
+     * @param options the options containing the title, platform, identifier and report type to record
+     * @return the new stats triple cursor
+     */
     private StatsTripleCursor writeNewCsr(factCount, begin, end, options){
         StatsTripleCursor csr = new StatsTripleCursor()
         csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(begin)
@@ -1014,6 +1123,13 @@ class StatsSyncService {
         return csr
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Reads the item performances for the given range
+     * @param itemPerformances the list of performances to check
+     * @param range the start and end date to query
+     * @return all performances in the given range
+     */
     List getItemPerformancesForRange(itemPerformances, range) {
         itemPerformances.findAll {
             it.Period.Begin.text().substring(0,7) >= range["begin"] &&
@@ -1021,6 +1137,14 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Determines the range before the first item performance
+     * @param itemPerformances the available performances
+     * @param options unused
+     * @param notProcessedMonths missing months
+     * @return the range map containing the month before the first available usage period
+     */
     Map<String,String> getRangeBeforeFirstItemPerformanceElement(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
         Map<String,String> rangeMap = [:]
         String firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
@@ -1044,6 +1168,14 @@ class StatsSyncService {
         return rangeMap
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Lists the usage ranges in the given list of performances
+     * @param itemPerformances the available performances
+     * @param options the request parameters
+     * @param notProcessedMonths missing months
+     * @return a list of usage range starts and ends
+     */
     List<Map> getUsageRanges(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
         log.debug('Get Usage ranges for API call from/to Period')
         List ranges = []
@@ -1115,6 +1247,14 @@ class StatsSyncService {
         return ranges + followingRanges
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Fills the range map with gaps
+     * @param options the request options
+     * @param notProcessedMonths the missing months
+     * @param begin the start of the range map
+     * @return the filled list of month ranges
+     */
     private List<Map> actualRangePlusFollowingNoUsageRanges(StatsSyncServiceOptions options, List<String> notProcessedMonths, String begin)
     {
         List<Map> ranges = []
@@ -1173,12 +1313,26 @@ class StatsSyncService {
         return ranges
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Adds the given count of months to the given base
+     * @param baseMonth the starting month
+     * @param count the count of months to add
+     * @return the calculated time point
+     */
     private String plusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
         return localDate.plusMonths(count).toString()
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Subtracts the given count of months to the given base
+     * @param baseMonth the starting month
+     * @param count the count of months to subtract
+     * @return the calculated time point
+     */
     private String minusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
@@ -1186,9 +1340,10 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Not processed months when getting a 3031 Exception
-     * @param xml
-     * @return
+     * @param xml the XML body
+     * @return a list of months not being processed
      */
     List getNotProcessedMonths(xml) {
         if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3031') {
@@ -1203,7 +1358,11 @@ class StatsSyncService {
         return []
     }
 
-
+    /**
+     * Nationaler Statistikserver
+     * Gets the count of the titles in the given XML body
+     * @param xml the XML repsonse body with the usage data
+     */
     void checkStatsTitleCount(xml) {
         List statsTitles = xml.depthFirst().findAll {
             it.name() == 'ItemName'
@@ -1215,6 +1374,12 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the next period from the given cursor
+     * @param csr the cursor from which the next month should be calculated
+     * @return the next period start
+     */
     String getNextFromPeriod(StatsTripleCursor csr) {
         String acceptedFormat = "yyyy-MM-dd"
         Date fromPeriodForAPICall
@@ -1234,14 +1399,25 @@ class StatsSyncService {
         return fromPeriodForAPICall.format(acceptedFormat)
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Calculates the month start two months backwards from now
+     * @return the start of the month two months behind now
+     */
     private String getMostRecentClosedPeriod() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(new Date())
         cal.add(Calendar.MONTH, -2)
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
         return cal.format('yyyy-MM-dd')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given metric key is among the supported ones
+     * @param metric the metric to check
+     * @return true if the metric is among the supported ones, false otherwise
+     */
     private Boolean isAllowedMetric(metric) {
         if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
             return true
@@ -1249,7 +1425,12 @@ class StatsSyncService {
         return false
     }
 
-    // period=>[metric1=>value,metric2=>value...]
+    /**
+     * Nationaler Statistikserver
+     * Gets the period usage map of the given list of item performances
+     * @param itemPerformances the performances to output as map
+     * @return a map of structure period=>[metric1=>value,metric2=>value...]
+     */
     private Map<String,Map> getPeriodUsageMap(ArrayList itemPerformances) {
         Map map = [:]
         // every ItemPerformance can have several Instances (DB/PR Reports up to 2, JR1 up to 3...)
@@ -1278,6 +1459,12 @@ class StatsSyncService {
         return map
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the last day of the given month
+     * @param yearMonthString the month to get the last day of
+     * @return the full string of the last month of the day
+     */
     private String getDateForLastDayOfMonth(yearMonthString) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
         GregorianCalendar cal = new GregorianCalendar()
@@ -1286,6 +1473,12 @@ class StatsSyncService {
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the SUSHI error message from the given XML response body
+     * @param xml
+     * @return
+     */
     private getSushiErrorMessage(xml) {
         if (xml.Exception.isEmpty() == false) {
             def errorNumber = xml.Exception.Number
@@ -1297,26 +1490,56 @@ class StatsSyncService {
         return false
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains the SUSHI 3030 error
+     * @param xml the XML response body
+     * @return true if the Exception element is filled with the code 3030, false otherwise
+     */
     private Boolean isNoUsageAvailableException(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number == '3030')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response is empty
+     * @param xml the XML response body
+     * @return true if the Exception element is empty, false otherwise
+     */
     private Boolean isEmptyReport(xml)
     {
         return (xml.Report.Report.isEmpty() == true || xml.Report.isEmpty() == true)
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains a different SUSHI error than code 3031
+     * @param xml the XML response body
+     * @return true if the Exception element is filled with the code other than 3031, false otherwise
+     */
     private Boolean isOtherExceptionWithoutUsageData(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains no customer
+     * @param xml the XML response body
+     * @return true if there is no customer, false otherwise
+     */
     private Boolean isEmptyReportWithoutCustomer(xml)
     {
         return (xml.Report.Report.Customer.isEmpty() == true)
     }
 
+    /**
+     * Checks if the given XML body contains usage data for the given title
+     * @param xml the XML response
+     * @param titleId the title to check
+     * @return true if there is a usage for the given title, false otherwise
+     */
     private Boolean responseHasUsageData(xml, titleId) {
         // 3030 Exception-> Zero usage
         if (isNoUsageAvailableException(xml)){
@@ -1341,6 +1564,9 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Increments the activity histogram by a completed process
+     */
     static synchronized void incrementActivityHistogram() {
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
         def col_identifier = sdf.format(new Date())

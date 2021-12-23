@@ -9,12 +9,27 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This service generates compley subscription queries
+ */
 @Transactional
 class SubscriptionsQueryService {
     def genericOIDService
     def propertyService
     def accessService
 
+    /**
+     *
+     * @param params
+     * @param contextOrg
+     * @param joinQuery an eventual join if further tables need to be accessed by an optional filter
+     * @return the base query data in structure:
+     * <ol start="0">
+     *     <li>base_qry the query string</li>
+     *     <li>qry_params the query parameters</li>
+     *     <li>filterSet the flag for the export whether a filter has been applied</li>
+     * </ol>
+     */
     List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
 
         def date_restriction

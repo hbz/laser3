@@ -6,18 +6,30 @@ import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service handles the automatic update of surveys
+ */
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {
 
     EscapeService escapeService
     SurveyService surveyService
 
-
+    /**
+     * Constructor method
+     */
     @javax.annotation.PostConstruct
     void init() {
         log.debug("Initialised SurveyUpdateService...")
     }
 
+    /**
+     * Cronjob-triggered.
+     * Runs through all surveys having status "Ready" and "Started" and checks their dates:
+     * - if state = ready, then check if start date is reached, if so: update to started, else do nothing
+     * - else if state = started, then check if end date is reached, if so: update to completed, else do nothing
+     * @return true if the execution was successful, false otherwise
+     */
     boolean surveyCheck() {
         if(!running) {
             running = true
