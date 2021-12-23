@@ -17,15 +17,24 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * This service handles the automatic renewal of subscriptions
+ */
 @Transactional
 class RenewSubscriptionService extends AbstractLockableService {
 
     def contextService
 
+    /**
+     * Triggered by cronjob
+     * Checks whether there are local subscriptions due to renewal, if there is a successor and if it has been flagged for automatic renewal.
+     * If so, a successor for the next year ring will be automatically generated
+     * @return true if no instance was running and the method could run through, false otherwise
+     */
     boolean subscriptionRenewCheck() {
         if (!running) {
             running = true
-            println "processing all current local subscriptions with annually peroide to renew ..."
+            println "processing all current local subscriptions with annually periode to renew ..."
             Date currentDate = new Date()
 
             List renewSuccessSubIds = []

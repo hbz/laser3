@@ -28,6 +28,9 @@ import java.nio.file.Path
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+/**
+ * This service manages survey handling
+ */
 @Transactional
 class SurveyService {
 
@@ -46,13 +49,21 @@ class SurveyService {
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
 
+    /**
+     * Constructor method
+     */
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     }
 
-
+    /**
+     * Checks if the given survey information is editable by the given institution
+     * @param org the institution to check
+     * @param surveyInfo the survey information which should be accessed
+     * @return true if the survey data can be manipulated, false otherwise
+     */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
         if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
@@ -106,6 +117,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Builds the navigation between the given surveys
+     * @param surveyInfo the survey within which navigation should be possible
+     * @param surveyConfig the surveys to be linked
+     * @return the map containing the previous and the next objects
+     */
     Map<String, Object> getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         int currentOrder = surveyConfig.configOrder
@@ -125,6 +142,7 @@ class SurveyService {
 
     }
 
+    @Deprecated
     boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
         def participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
@@ -133,6 +151,7 @@ class SurveyService {
         return result
     }
 
+    @Deprecated
     private boolean save(obj, flash) {
         if (obj.save()) {
             log.debug("Save ${obj} ok")
@@ -145,6 +164,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Exports the given surveys
+     * @param surveyConfigs the surveys to export
+     * @param contextOrg the institution whose perspective should be taken
+     * @return an Excel worksheet containing the survey data
+     */
     def exportSurveys(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -442,6 +467,12 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the cost items of the given surveys
+     * @param surveyConfigs the surveys whose cost items should be exported
+     * @param contextOrg the institution whose perspective should be taken
+     * @return an Excel worksheet containing the cost item data
+     */
     def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -605,6 +636,11 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Sends an email to the survey owner that the given participant finished the survey
+     * @param surveyInfo the survey which has been finished
+     * @param participationFinish the participant who finished the survey
+     */
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -674,7 +710,11 @@ class SurveyService {
 
     }
 
-
+    /**
+     * Sends an email to the survey participant as confirmation that the given participant finished the survey
+     * @param surveyInfo the survey which has been finished
+     * @param participationFinish the participant who finished the survey
+     */
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -765,6 +805,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Exports the surveys of the given participant
+     * @param surveyConfigs the surveys in which the given institution takes part
+     * @param participant the participant institution
+     * @return an Excel worksheet containing the export
+     */
     def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -909,6 +955,10 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Sends an email to the given survey participants
+     * @param surveyInfoIds the IDs of the survey participations
+     */
     def emailsToSurveyUsers(List surveyInfoIds){
 
         def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
@@ -940,6 +990,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Sends mails to the users of the given institution
+     * @param surveyInfo the survey information to be sent
+     * @param org the institution whose users should be notified
+     * @param reminderMail is it a reminder about the survey completion?
+     */
     def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
@@ -955,6 +1011,13 @@ class SurveyService {
         }
     }
 
+    /**
+     * Sends a mail about the survey to the given user of the given institution about the given surveys
+     * @param user the user to be notified
+     * @param org the institution of the user
+     * @param surveyEntries the survey information to process
+     * @param reminderMail is it a reminder?
+     */
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -1026,6 +1089,14 @@ class SurveyService {
         }
     }
 
+    /**
+     * Limits the given institution query to the set of institution IDs
+     * @param orgIDs the institution IDs to fetch
+     * @param query the query string
+     * @param queryParams the query parameters
+     * @param params the request parameter map
+     * @return a list of institutions matching the filter
+     */
     List getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
 
         if (!(orgIDs?.size() > 0)) {
@@ -1042,6 +1113,11 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
+    /**
+     * Retrieves the counts of surveys in the different stages
+     * @param parameterMap the filter parameter map
+     * @return the counts for each survey stage
+     */
     Map<String,Object> getSurveyConfigCounts(GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
@@ -1062,6 +1138,14 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Sets the count of surveys for the given tab
+     * @param result the result map
+     * @param tab the tab for which the count should be set
+     * @param parameterMap the request parameter map
+     * @param owner the context consortium
+     * @return the map enriched with information
+     */
     private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map<String,Object> fsq = [:]
@@ -1078,6 +1162,11 @@ class SurveyService {
 
     }
 
+    /**
+     * Gets the survey properties for the given institution
+     * @param contextOrg the institution whose survey properties should be retrieved
+     * @return a sorted list of property definitions
+     */
     List getSurveyProperties(Org contextOrg) {
         List props = []
 
@@ -1098,6 +1187,12 @@ class SurveyService {
         return props
     }
 
+    /**
+     * Adds the given survey property (= question) to the survey
+     * @param surveyConfig the survey to which the property should be added
+     * @param surveyProperty the survey property (= question) to add
+     * @return true if the adding was successful, false otherwise
+     */
     boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
@@ -1112,6 +1207,10 @@ class SurveyService {
         }
     }
 
+    /**
+     * Adds the members of the underlying subscription to the given survey
+     * @param surveyConfig the survey config to which members should be added
+     */
     void addSubMembers(SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -1174,6 +1273,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Copies the documents, notes, tasks, participations and properties related to the given survey into the given new survey
+     * @param oldSurveyConfig the survey from which data should be taken
+     * @param newSurveyConfig the survey into which data should be copied
+     * @param params the request parameter map
+     */
     void copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
         oldSurveyConfig.documents.each { dctx ->
             //Copy Docs
@@ -1255,6 +1360,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Gets the count map of survey participations for the given participant
+     * @param participant the institution whose participations should be counted
+     * @param parameterMap the request parameter map
+     * @return the counts for each tab
+     */
     private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
         Map<String, Object> result = [:]
 
@@ -1289,6 +1400,15 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Sets the count of survey participations for the given tab
+     * @param result the result map
+     * @param tab the tab for which the count should be set
+     * @param parameterMap the request parameter map
+     * @param participant the participant whose participations should be counted
+     * @param owner the context consortium
+     * @return the map enriched with information
+     */
     private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map fsq = [:]
@@ -1309,6 +1429,7 @@ class SurveyService {
 
     }
 
+    @Deprecated
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
@@ -1329,6 +1450,15 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Get the usage statistics for the given participant
+     * @param result the result map with the base data
+     * @param params the request parameter map
+     * @param subscription the subscription to which usage details should be retrieved
+     * @param participant the participant whose data should be retrieved
+     * @param titles the title IDs upon which usage data may be restricted
+     * @return the enriched result map with the usage data
+     */
     Map<String, Object> getStatsForParticipant(Map<String, Object> result, GrailsParameterMap params, Subscription subscription, Org participant, List<Long> titles){
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
 
@@ -1546,6 +1676,13 @@ class SurveyService {
         result
     }
 
+    /**
+     * Called from views
+     * Checks if the participant has perpetual access to the given title
+     * @param subscriptions the subscriptions of the participant
+     * @param tipp the title whose access should be checked
+     * @return true if there is a title with perpetual access, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp){
 
             Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.hostPlatformURL = :hostPlatformURL ' +
@@ -1562,6 +1699,13 @@ class SurveyService {
             }
     }
 
+    /**
+     * Called from views
+     * Checks if the given title is contained by the given subscription
+     * @param subscription the subscription whose holding should be checked
+     * @param tipp the title whose presence should be checked
+     * @return true if the given subscription contains the title, false otherwise
+     */
     IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
         IssueEntitlement ie
         if(subscription.packages && tipp.pkg in subscription.packages.pkg) {
@@ -1575,6 +1719,12 @@ class SurveyService {
         return ie
     }
 
+    /**
+     * Checks if there is a customer number recorded to the subscribed platform of the participant
+     * @param subscription the subscription whose nominal platform should be retrieved
+     * @param org the participant whose customer number should be checked
+     * @return true if there is a customer number recorded, false otherwise
+     */
     boolean showStatisticByParticipant(Subscription subscription, Org org) {
         Map<String, Object> result = [:]
 

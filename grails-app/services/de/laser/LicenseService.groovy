@@ -4,12 +4,21 @@ package de.laser
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service handles license specific matters
+ * @see License
+ */
 @Transactional
 class LicenseService {
 
     AccessService accessService
     ContextService contextService
 
+    /**
+     * Gets a (filtered) list of licenses to which the context institution has reading rights
+     * @param params the filter parameter map
+     * @return a list of licenses matching the given filter
+     */
     List<License> getMyLicenses_readRights(Map params){
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
@@ -31,6 +40,11 @@ class LicenseService {
         result
     }
 
+    /**
+     * Gets a (filtered) list of licenses to which the context institution has writing rights
+     * @param params the filter parameter map
+     * @return a list of licenses matching the given filter
+     */
     List<License> getMyLicenses_writeRights(Map params){
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
@@ -52,8 +66,11 @@ class LicenseService {
         result.sort {it.dropdownNamingConvention()}
     }
 
-
-    //Konsortialverträge
+    /**
+     * Retrieves consortial parent licenses matching the given filter
+     * @param params the filter parameter map
+     * @return a list of consortial parent licenses matching the given filter
+     */
     private List getLicensesConsortiaQuery(Map params) {
         Map qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
@@ -80,7 +97,11 @@ class LicenseService {
         return [base_qry, qry_params]
     }
 
-    //Teilnehmerverträge
+    /**
+     * Retrieves consortial member licenses matching the given filter
+     * @param params the filter parameter map
+     * @return a list of consortial parent licenses matching the given filter
+     */
     private List getLicensesConsortialLicenseQuery(Map params) {
         Map qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
@@ -100,7 +121,11 @@ class LicenseService {
         return [ base_qry, qry_params ]
     }
 
-    //Lokalverträge
+    /**
+     * Retrieves local licenses matching the given filter
+     * @param params the filter parameter map
+     * @return a list of licenses matching the given filter
+     */
     private List getLicensesLocalLicenseQuery(Map params) {
         Map qry_params = [roleType: RDStore.OR_LICENSEE, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
@@ -120,6 +145,11 @@ class LicenseService {
         return [ base_qry, qry_params ]
     }
 
+    /**
+     * Retrieves all visible organisational relationships for the given license, i.e. licensors, providers, agencies, etc.
+     * @param license the license to retrieve the relations from
+     * @return a sorted list of visible relations
+     */
     List getVisibleOrgRelations(License license) {
         List visibleOrgRelations = []
         license?.orgRelations?.each { or ->

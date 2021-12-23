@@ -39,6 +39,9 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service is a container for those methods of the {@link SubscriptionController} which contain complex data manipulation operations
+ */
 @Transactional
 class SubscriptionControllerService {
 
@@ -73,6 +76,12 @@ class SubscriptionControllerService {
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
+    /**
+     * Loads the given subscription details and returns them to the details view. If mandatory properties are missing,
+     * they will be created; that is why this method needs to be transactional
+     * @param params the request parameter map
+     * @return the given subscription's details
+     */
     Map<String,Object> show(GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('1')
@@ -283,6 +292,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Loads the tasks attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the tasks for the given subscription
+     */
     Map<String,Object> tasks(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -294,6 +309,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Reveals the inheritance history for the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of audit log events for the given subscription
+     */
     Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -310,6 +331,7 @@ class SubscriptionControllerService {
         }
     }
 
+    @Deprecated
     Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -328,6 +350,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- statistics section -----------------------------------------------------------
 
+    /**
+     * Reveals the usage data for the given subscription. The usage data may be filtered; one report type and one metric type
+     * is default. COUNTER 4 data is being retrieved as fallback if no COUNTER 5 data exists
+     * @param params the request parameter map
+     * @return the usage data, grouped by month
+     */
     Map<String, Object> stats(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         SwissKnife.setPaginationParams(result, params, result.user)
@@ -481,6 +509,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the usage data for the given subscription and prepares the available report types in Excel sheets
+     * @param params the request parameter map
+     * @return a map containing the usage data
+     */
     Map<String, Object> statsForExport(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -546,6 +579,19 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the given request parameters and assembles the query filter for the usage query
+     * @param params the request parameter map containing filter input
+     * @param result the generics result map, containing implicite relevant data
+     * @return a list of filter data, of structure:
+     * <ol start="0">
+     *     <li>HQL filter string</li>
+     *     <li>HQL date range</li>
+     *     <li>query parameter map</li>
+     *     <li>months contained in the observed time span</li>
+     *     <li>SQL date range</li>
+     * </ol>
+     */
     ArrayList<Object> prepareFilter(GrailsParameterMap params, Map<String, Object> result) {
         String dateRange, sqlDateRange, filter = ""
         List monthsInRing = []
@@ -683,6 +729,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
+    /**
+     * Prepares the new subscription form
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a map containing defaults or ERROR if permission is not granted
+     */
     Map<String,Object> emptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
@@ -708,6 +760,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and creates a new subscription instance based on the given input
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processEmptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         log.debug( params.toMapString() )
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
@@ -801,6 +859,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- document section ----------------------------------------------
 
+    /**
+     * Gets the notes attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the list of notes for the given subscription, ERROR in case of missing grants
+     */
     Map<String,Object> notes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -811,6 +875,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the documents attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the list of documents for the given subscription, ERROR in case of missing grants
+     */
     Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -823,6 +893,12 @@ class SubscriptionControllerService {
 
     //--------------------------------- consortia members section ----------------------------------------------
 
+    /**
+     * Retrieves the members of the given consortial subscription
+     * @param controller unused
+     * @param params the request parameter map, containing also the filter input
+     * @return the (filtered) result set, either with a basic set of information (for HTML display) or with further data (for Excel export)
+     */
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         ProfilerUtils pu = new ProfilerUtils()
@@ -878,6 +954,12 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Lists institutions and sets default parameters for the member adding form
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map in case of success, ERROR otherwise
+     */
     Map<String,Object> addMembers(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
@@ -899,6 +981,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and creates member subscription instances based on the given input
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processAddMembers(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -1039,6 +1127,14 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Inserts afterwards a succession link between two member subscription; this procedure is used
+     * if two subscription year rings have been inserted without taking the renewal procedure (upon initial
+     * data insertion for example)
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> linkNextPrevMemberSub(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -1069,6 +1165,13 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Manages the call for the given member management view, setting generic parameters
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @param input_file a document file to be uploaded to several instances
+     * @return OK if the permission grant check was successful, ERROR otherwise
+     */
     Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params, input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1085,6 +1188,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------- survey section -------------------------------------------
 
+    /**
+     * Lists the surveys related the given member subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of surveys linked to the given member subscription
+     */
     Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1100,6 +1209,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Lists the surveys related to the given consortial subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of surveys linked to the given consortial subscription
+     */
     Map<String,Object> surveysConsortia(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1112,6 +1227,14 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Initialises the title renewal process by loading the title selection view for the given member. The list of
+     * selectable titles can be exported along with usage data also as an Excel worksheet which then may be reuploaded
+     * again
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map containing defaults in case of success, ERROR otherwise
+     */
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
@@ -1270,6 +1393,15 @@ class SubscriptionControllerService {
 
     //-------------------------------------- packages section ------------------------------------------
 
+    /**
+     * Queries the we:kb ElasticSearch index and returns a (filtered) list of packages which may be linked to the
+     * given subscription
+     * @param controller unused
+     * @param params the request parameter map, containing also filter parameters to limit the package results
+     * @return a filtered list of packages
+     * @see ApiSource
+     * @see Package
+     */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
@@ -1391,6 +1523,16 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and links the given package to the given subscription. Consortia may link
+     * the package on parent level only or also on member level; along with the linking, changes handling (the
+     * pending change configuration) is also set up. If the package did not exist in the app on the moment of linking,
+     * the data will be fetched from we:kb. The overall procedure may take time; it is thus deployed onto a parallel
+     * process
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the linking was successful, ERROR otherwise
+     */
     Map<String,Object> processLinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
@@ -1468,6 +1610,14 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Unlinks the given package from the given subscription, eliminating eventual dependent objects. The unlinking
+     * is taking place if the call has been confirmed
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result of call in case of success (this may be the list of conflicts when the confirm has not been sent yet)
+     * or ERROR in case of an error
+     */
     Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
@@ -1510,6 +1660,13 @@ class SubscriptionControllerService {
 
     //-------------------------------- issue entitlements holding --------------------------------------
 
+    /**
+     * Retrieves the current subscription holding; the list may be filtered with the given params. Titles may
+     * also be enriched by individual parameters submitted by KBART file; this file is being processed here as well
+     * @param controller unused
+     * @param params the request parameters including filter data and / or an eventual enrichment file
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> index(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -1583,6 +1740,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the changes applied to or applicable to the given subscription
+     * @param params the request parameter map
+     * @return a tab view of the changes, grouped by event type
+     */
     Map<String,Object> entitlementChanges(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         SwissKnife.setPaginationParams(result,params,(User) result.user)
@@ -1680,6 +1842,20 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Lists the titles in the package which have not yet been added to the subscription. If the call has been
+     * called with an upload, the data provided with the given KBART file will be processed, so that
+     * <ul>
+     *     <li>either titles will be preselected based on the given identifiers</li>
+     *     <li>or local price statements will be added to the title candidates</li>
+     *     <li>or local coverage statements will be added to the title candidates</li>
+     * </ul>
+     * The data submitted will be stored in cache and may be corrected before actually add them to the issue
+     * entitlements which in turn will be persisted and added to the subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the title list; with or without the enriched information from a KBART upload
+     */
     Map<String,Object> addEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -2033,6 +2209,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Marks the given issue entitlement as deleted and thus removes it from the holding
+     * @param params the request parameter map
+     * @return OK if the status update was successful, ERROR otherwise
+     */
     Map<String,Object> removeEntitlement(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         ie.status = RDStore.TIPP_STATUS_DELETED
@@ -2041,6 +2222,11 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    /**
+     * Removes the given issue entitlement and deletes also the corresponding issue entitlement group item
+     * @param params the request parameter map
+     * @return OK if the deletion and status update were successful, false otherwise
+     */
     Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         RefdataValue oldStatus = ie.status
@@ -2063,6 +2249,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Adds the cached title candidates to the holding and persists also eventually recorded enrichments of the titles
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the persisting was successful, ERROR otherwise
+     */
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -2131,6 +2323,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Performs the given bulk operation on the subscription title holding
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the execution was successful, false otherwise
+     */
     Map<String,Object> subscriptionBatchUpdate(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -2187,6 +2385,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Adds an empty price item for the given issue entitlement
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> addEmptyPriceItem(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
@@ -2213,6 +2416,11 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Removes the given price item from the issue entitlement
+     * @param params the request parameter map
+     * @return OK if the removal was successful, ERROR otherwise
+     */
     Map<String,Object> removePriceItem(GrailsParameterMap params) {
         PriceItem priceItem = PriceItem.get(params.priceItem)
         if(priceItem) {
@@ -2225,6 +2433,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Adds an empty coverage statement for the given issue entitlement
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> addCoverage(GrailsParameterMap params) {
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {
@@ -2244,6 +2457,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Removes the given coverage statement from the issue entitlement
+     * @param params the request parameter map
+     * @return OK if the removal was successful, false otherwise
+     */
     Map<String,Object> removeCoverage(GrailsParameterMap params) {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         if(ieCoverage) {
@@ -2258,6 +2476,13 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Opens the title group view to edit it, setting parameters for the view.
+     * If the processing command has been submitted, the form data submitted will be taken and the group updated with the given data
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the editing / the call was successful, ERROR otherwise
+     */
     Map<String,Object> editEntitlementGroupItem(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.ie = IssueEntitlement.get(params.ie)
@@ -2290,6 +2515,13 @@ class SubscriptionControllerService {
         else [result:result,status:STATUS_ERROR]
     }
 
+    /**
+     * Takes the submitted parameters and creates a new issue entitlement group if a such does not exist for the
+     * given subscription. Checked is the name of the group
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         Locale locale = LocaleContextHolder.getLocale()
@@ -2310,6 +2542,11 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_ERROR]
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     Map<String,Object> removeEntitlementGroup(GrailsParameterMap params) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
         if(issueEntitlementGroup) {
@@ -2321,6 +2558,7 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    @Deprecated
     Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result)
@@ -2358,6 +2596,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted input and adds the selected titles to the (preliminary) subscription holding from cache
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the selection (adding and/or removing of issue entitlements) was successful, ERROR otherwise
+     */
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -2463,6 +2707,13 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- renewal section ---------------------------------------------
 
+    /**
+     * Takes the submitted base parameters and creates a successor subscription instance with the given input.
+     * The new instance will be linked automatically to the predecessor instance
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the copying and basic setup were successful, ERROR otherwise
+     */
     Map<String,Object> processRenewSubscription(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result) {
@@ -2545,6 +2796,11 @@ class SubscriptionControllerService {
 
     //------------------------------------------------ copy section ---------------------------------------------
 
+    /**
+     * Initialises the copying of the given subscription, taking the base parameters and creating a copy of the instance
+     * @param params the request parameter map
+     * @return OK in case of success, ERROR otherwise
+     */
     Map<String,Object> copySubscription(GrailsParameterMap params) {
         Map<String,Object> result = setCopyResultGenerics(params)
         if(!result)
@@ -2589,6 +2845,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the copy parameters for the given copy section
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, containing also the data for the given step, false otherwise
+     */
     Map<String,Object> copyElementsIntoSubscription(GrailsParameterMap params) {
         Map<String,Object> result = setCopyResultGenerics(params)
         if (!result) {
@@ -2621,6 +2882,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
+    @Deprecated
     Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -2647,6 +2909,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Filters the member subscribers by the given parameter map
+     * @param params the filter parameter map
+     * @param parentSub the subscription whose members should be queried
+     * @return a map of structure [sub: subscription, orgs: subscriber] containing the query results
+     */
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         params.remove("max")
@@ -2685,6 +2953,11 @@ class SubscriptionControllerService {
         filteredSubChilds
     }
 
+    /**
+     * Sets generic parameters for the element copy calls, ensuring also permission grants
+     * @param params the request parameter map
+     * @return a result map with common parameters when permissions are granted, null otherwise, resulting in ERROR results
+     */
     Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -2715,6 +2988,13 @@ class SubscriptionControllerService {
         else result
     }
 
+    /**
+     * Sets parameters used for many controller calls and checks permissions to the given subscription instance.
+     * If no result map is being returned, the controller calls will return ERROR
+     * @param params the request parameter map
+     * @param checkOption the permissions to be checked
+     * @return a result map with the basic parameters upon success, null on failure which results in returning ERROR status
+     */
     Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params, String checkOption) {
 
         Map<String, Object> result = [:]
@@ -2806,7 +3086,11 @@ class SubscriptionControllerService {
         result
     }
 
-
+    /**
+     * Initialises the reporting index for the given subscription
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
@@ -2818,6 +3102,11 @@ class SubscriptionControllerService {
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
 
+    /**
+     * Gets the workflows linked to the given subscription
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> workflows(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 

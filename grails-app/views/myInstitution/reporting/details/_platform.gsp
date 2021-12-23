@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.helper.PDStore; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
@@ -7,6 +7,8 @@
 <g:set var="esRecords" value="${filterCache.data.platformESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)} ?: []}"/>
 <g:set var="wekb" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+
+<g:set var="useLocalFields" value="${false}"/>%{-- DEBUG --}%
 
 <div class="ui segment" id="reporting-detailsTable">
     <table class="ui table la-table compact">
@@ -69,62 +71,122 @@
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-ipAuthentication">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" /> (we:kb)
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-shibbolethAuthentication">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="shibbolethAuthentication" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_SHIBBOLETH.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="shibbolethAuthentication" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-passwordAuthentication">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" /> (we:kb)
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-proxySupported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_PROXY.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-statisticsFormat">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" /> (we:kb)
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-statisticsUpdate">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" /> (we:kb)
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterCertified">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" /> (we:kb)
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_COUNTER_R3_REPORTS.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR4Supported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4Supported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_COUNTER_R4_REPORTS.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4Supported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR5Supported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5Supported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_COUNTER_R5_REPORTS.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5Supported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR4SushiApiSupported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4SushiApiSupported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_COUNTER_R4_SUSHI_API.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4SushiApiSupported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR5SushiApiSupported">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />
+                        <g:if test="${useLocalFields}">
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStore.PLA_COUNTER_R5_SUSHI_API.id}" />
+                        </g:if>
+                        <g:else>
+                            <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />
+                        </g:else>
                     </laser:reportDetailsTableTD>
 
                     <laser:reportDetailsTableTD config="${dtConfig}" field="___lastUpdated">

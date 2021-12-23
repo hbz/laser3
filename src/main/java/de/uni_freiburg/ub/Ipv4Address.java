@@ -8,6 +8,9 @@ public class Ipv4Address extends IpAddress {
 	protected long bits;
 	protected short max_cidr_suffix;
 
+	/**
+	 * Default constructor
+	 */
 	public Ipv4Address() {
 	}
 

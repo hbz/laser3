@@ -12,6 +12,9 @@ import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.RandomStringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service handles specific organisation-related matters
+ */
 @Transactional
 class OrganisationService {
 

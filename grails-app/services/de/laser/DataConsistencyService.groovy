@@ -11,12 +11,19 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
+/**
+ * This service ensures data consistency
+ */
 @Transactional
 class DataConsistencyService {
 
     def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
+    /**
+     * Checks the duplicates of organisation, package and platform names
+     * @return a map containing for each of the object types the counts per name
+     */
     Map<String, Object> checkTitles() {
         Map result = [
                 Org: [:],
@@ -65,6 +72,13 @@ class DataConsistencyService {
         result
     }
 
+    /**
+     * Checks per AJAX whether an identical object exists to the given property:value
+     * @param key1 the object type
+     * @param key2 the property key
+     * @param value the property value
+     * @return a list of potential object candidates
+     */
     List<Object> ajaxQuery(String key1, String key2, String value) {
 
         List<Object> result = []
@@ -131,6 +145,7 @@ class DataConsistencyService {
         result
     }
 
+    @Deprecated
     def checkBooleanFields() {
 
         List<String> candidates = []
