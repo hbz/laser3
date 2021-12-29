@@ -25,6 +25,9 @@
   background-color: @laSecondaryBackground;
   border: 1px solid #d3dae3;
   vertical-align: super;
+  .ui.tiny.label {
+    font-size: .45rem;
+  }
   .icon {
     font-size: 1em;
     width: auto;

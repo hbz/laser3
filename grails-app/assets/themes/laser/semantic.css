@@ -16125,6 +16125,10 @@ a.ui.basic.label:hover {
   vertical-align: super;
 }
 
+.ui.label.la-annual-rings .ui.tiny.label {
+  font-size: 0.45rem;
+}
+
 .ui.label.la-annual-rings .icon {
   font-size: 1em;
   width: auto;
@@ -28997,6 +29001,26 @@ Floated Menu / Item
   border-top: none;
 }
 
+.la-prop-col-1 {
+  width: 129px;
+}
+
+.la-prop-col-2 {
+  width: 96px;
+}
+
+.la-prop-col-3 {
+  width: 359px;
+}
+
+.la-prop-col-4 {
+  width: 148px;
+}
+
+.la-prop-col-5 {
+  width: 76px;
+}
+
 /*-----------------------------------------------
   Responsive Table for views with wide tables
 -------------------------------------------------*/
@@ -29085,26 +29109,6 @@ Floated Menu / Item
   .ui.la-js-responsive-table tbody .x {
     text-align: left;
   }
-}
-
-.la-prop-col-1 {
-  width: 129px;
-}
-
-.la-prop-col-2 {
-  width: 96px;
-}
-
-.la-prop-col-3 {
-  width: 359px;
-}
-
-.la-prop-col-4 {
-  width: 148px;
-}
-
-.la-prop-col-5 {
-  width: 76px;
 }
 /*!
  * # Semantic UI 2.4.2 - Ad
