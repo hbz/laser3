@@ -1006,7 +1006,6 @@ class SemanticUiTagLib {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
 
-        out << '<i aria-hidden="true" class="icon"></i>'
         out << "<span class='la-annual-rings-text'>"
         out << startDate
         out << dash
@@ -1016,7 +1015,6 @@ class SemanticUiTagLib {
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
-        out << '<i aria-hidden="true" class="icon"></i>'
 
         if (next) {
             out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: next.surveyInfo.id, params: [surveyConfigID: next.id])
