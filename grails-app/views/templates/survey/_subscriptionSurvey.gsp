@@ -879,7 +879,7 @@
         <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -887,8 +887,11 @@
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
-
-                <th></th>
+                <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                        SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                        && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                    <th>${message(code:'default.actions.label')}</th>
+                </g:if>
             </tr>
             </thead>
 
@@ -946,11 +949,10 @@
                             </div>
                         </g:form>
                     </td>
-
-                    <td>
-                        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                    <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                            SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                            && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                        <td>
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"
@@ -960,8 +962,8 @@
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
                             </g:link>
-                        </g:if>
-                    </td>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
             </tbody>

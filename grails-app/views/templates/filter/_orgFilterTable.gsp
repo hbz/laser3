@@ -18,12 +18,12 @@
     <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 </g:if>
 
-<table id="${tableID ?: ''}" class="ui sortable celled la-table table">
+<table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
-            <th>
+            <th data-label="${message(code:'responsive.table.selectElement')}">
                 <g:if test="${orgList}">
                     <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                 </g:if>

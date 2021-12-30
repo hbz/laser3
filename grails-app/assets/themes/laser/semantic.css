@@ -29026,6 +29026,10 @@ Floated Menu / Item
 -------------------------------------------------*/
 
 @media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].la-js-responsive-table .ui.form {
+    display: inline-block;
+  }
+
   .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-1,
   .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-2,
   .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-3,
@@ -29071,6 +29075,10 @@ Floated Menu / Item
 ----------------------------------------------------------------------------*/
 
 @media only screen and (max-width: 767px) {
+  .ui.la-js-responsive-table .ui.form {
+    display: inline-block;
+  }
+
   .ui.la-js-responsive-table .la-prop-col-1,
   .ui.la-js-responsive-table .la-prop-col-2,
   .ui.la-js-responsive-table .la-prop-col-3,
