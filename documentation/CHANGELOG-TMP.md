@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
+
 4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
 
 4043    10.12.2021  rc-2.2  2.2.8       Moe     Bug         Eintrag Leitweg-ID: Großbuchstaben erlauben
