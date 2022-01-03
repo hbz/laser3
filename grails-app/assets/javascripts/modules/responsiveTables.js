@@ -41,7 +41,11 @@ responsiveTables = {
           }
 
           else
-            $(this).attr('data-label',th.text() + ':');
+            if (th.text() === "") {
+            }
+            else {
+              $(this).attr('data-label',th.text() + ':');
+            }
         });
       });
     });
