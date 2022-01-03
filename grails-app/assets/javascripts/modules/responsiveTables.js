@@ -26,8 +26,8 @@ responsiveTables = {
   setDataLabel: function() {
     $('.ui.la-js-responsive-table').each(function () {
       let currentTable = $(this);
-      $('tbody tr', this).each(function () {
-        $('td', this).each(function () {
+      $('>tbody>tr', this).each(function () {
+        $('>td', this).each(function () {
           let th = $(currentTable.find('th')).eq($(this).index());
           // table header is icon
           if( th.html().includes("icon")) {

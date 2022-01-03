@@ -29026,46 +29026,47 @@ Floated Menu / Item
 -------------------------------------------------*/
 
 @media only screen and (max-width: 1199px) {
-  .ui[class*="monitor stackable"].la-js-responsive-table .ui.form {
-    display: inline-block;
-  }
-
-  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-1,
-  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-2,
-  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-3,
-  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-4,
-  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-5 {
-    width: 100%;
-  }
-
-  .ui[class*="monitor stackable"].la-js-responsive-table [class*="center aligned"] {
-    text-align: left!important;
-  }
-
-  .ui[class*="monitor stackable"].la-js-responsive-table thead {
+  .ui[class*="monitor stackable"].la-js-responsive-table > thead {
     position: absolute;
     top: -1111px;
     left: -1111px;
   }
 
-  .ui[class*="monitor stackable"].la-js-responsive-table tbody td:before,
-  .ui[class*="monitor stackable"].la-js-responsive-table tbody span.la-secondHeaderRow:before {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .ui.form,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .la-prop-col-1,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .la-prop-col-2,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .la-prop-col-3,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .la-prop-col-4,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .la-prop-col-5 {
+    width: 100%;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:before,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
     content: attr(data-label);
     font-weight: bold;
   }
 
-  .ui[class*="monitor stackable"].la-js-responsive-table tbody td .la-flexbox {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td .la-flexbox {
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
   }
 
-  .ui[class*="monitor stackable"].la-js-responsive-table tbody td:nth-child(1) {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:nth-child(1) {
     font-weight: bold;
   }
 
-  .ui[class*="monitor stackable"].la-js-responsive-table tbody .x {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x {
     text-align: left;
   }
 }
@@ -29075,46 +29076,47 @@ Floated Menu / Item
 ----------------------------------------------------------------------------*/
 
 @media only screen and (max-width: 767px) {
-  .ui.la-js-responsive-table .ui.form {
-    display: inline-block;
-  }
-
-  .ui.la-js-responsive-table .la-prop-col-1,
-  .ui.la-js-responsive-table .la-prop-col-2,
-  .ui.la-js-responsive-table .la-prop-col-3,
-  .ui.la-js-responsive-table .la-prop-col-4,
-  .ui.la-js-responsive-table .la-prop-col-5 {
-    width: 100%;
-  }
-
-  .ui.la-js-responsive-table [class*="center aligned"] {
-    text-align: left!important;
-  }
-
-  .ui.la-js-responsive-table thead {
+  .ui.la-js-responsive-table > thead {
     position: absolute;
     top: -1111px;
     left: -1111px;
   }
 
-  .ui.la-js-responsive-table tbody td:before,
-  .ui.la-js-responsive-table tbody span.la-secondHeaderRow:before {
+  .ui.la-js-responsive-table > tbody > tr .ui.form,
+  .ui.la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr .la-prop-col-1,
+  .ui.la-js-responsive-table > tbody > tr .la-prop-col-2,
+  .ui.la-js-responsive-table > tbody > tr .la-prop-col-3,
+  .ui.la-js-responsive-table > tbody > tr .la-prop-col-4,
+  .ui.la-js-responsive-table > tbody > tr .la-prop-col-5 {
+    width: 100%;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td:before,
+  .ui.la-js-responsive-table > tbody > tr > span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
     content: attr(data-label);
     font-weight: bold;
   }
 
-  .ui.la-js-responsive-table tbody td .la-flexbox {
+  .ui.la-js-responsive-table > tbody > tr > td .la-flexbox {
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
     display: inline-flex;
   }
 
-  .ui.la-js-responsive-table tbody td:nth-child(1) {
+  .ui.la-js-responsive-table > tbody > tr > td:nth-child(1) {
     font-weight: bold;
   }
 
-  .ui.la-js-responsive-table tbody .x {
+  .ui.la-js-responsive-table > tbody > tr > .x {
     text-align: left;
   }
 }
