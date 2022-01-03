@@ -399,7 +399,7 @@
           text-align: left!important;
         }
         > td:before,
-        > span.la-secondHeaderRow:before{
+         span.la-secondHeaderRow:before{
           padding: 0 10px 0 0;
           content: attr(data-label);
           font-weight: bold;
