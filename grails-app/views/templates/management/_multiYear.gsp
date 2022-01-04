@@ -95,11 +95,11 @@
                         total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
             </g:else>
         </h3>
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th data-label="${message(code:'responsive.table.selectElement')}">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>

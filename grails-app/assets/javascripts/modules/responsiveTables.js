@@ -24,23 +24,29 @@ responsiveTables = {
     });
   },
   setDataLabel: function() {
-    $('.ui.la-responsive-table tbody>tr').each(function () {
-      $('td', this).each(function () {
-        let th = $('.ui.la-responsive-table th').eq($(this).index());
+    $('.ui.la-js-responsive-table').each(function () {
+      let currentTable = $(this);
+      $('>tbody>tr', this).each(function () {
+        $('>td', this).each(function () {
+          let th = $(currentTable.find('th')).eq($(this).index());
+          // table header is icon
+          if( th.html().includes("icon")) {
+            let dataContent = th.find('.la-popup-tooltip').attr("data-content");
+            $(this).attr('data-label', dataContent + ':');
+          }
 
-        // table header is icon
-        if( th.html().includes("icon")) {
-          let dataContent = th.find('.la-popup-tooltip').attr("data-content");
-          $(this).attr('data-label', dataContent);
-        }
+          else if ( th.html().includes("checkbox")) {
+            let dataLabel = th.attr("data-label");
+            $(this).attr('data-label', dataLabel + ':');
+          }
 
-        else if ( th.html().includes("checkbox")) {
-          let dataLabel = th.attr("data-label");
-          $(this).attr('data-label', dataLabel);
-        }
-
-        else
-          $(this).attr('data-label',th.text());
+          else
+            if (th.text() === "") {
+            }
+            else {
+              $(this).attr('data-label',th.text() + ':');
+            }
+        });
       });
     });
   }

@@ -8,7 +8,7 @@
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
             <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
@@ -21,7 +21,7 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <th></th>
+                    <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -185,11 +185,11 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled monitor stackable la-table la-compact table">
+            <table class="ui celled monitor stackable la-js-responsive-table la-table la-compact table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th data-label="${message(code:'responsive.table.selectElement')}">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -219,7 +219,7 @@
                             <i class="map orange icon"></i>
                         </span>
                     </th>
-                    <th></th>
+                    <th>${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>

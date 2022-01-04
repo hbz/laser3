@@ -141,7 +141,7 @@
 
   <div class="license-results la-clear-before">
       <g:if test="${licenses}">
-          <table class="ui sortable celled la-table table">
+          <table class="ui sortable celled la-js-responsive-table la-table table">
               <thead>
                   <tr>
                       <g:if test="${compare}">
@@ -215,7 +215,11 @@
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
                           </g:if>
-                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br /><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
+                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br />
+                              <span class="la-secondHeaderRow" data-label="${message(code:'license.end_date')}:">
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/>
+                              </span>
+                          </td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
