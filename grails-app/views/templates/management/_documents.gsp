@@ -86,7 +86,7 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
-                <th></th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>

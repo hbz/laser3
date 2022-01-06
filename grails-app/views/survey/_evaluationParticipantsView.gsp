@@ -59,10 +59,10 @@
                 <div class="content">
                     <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
                     <div>
-                        <table class="ui la-table table">
+                        <table class="ui la-js-responsive-table la-table table">
                             <thead>
                             <tr>
-                                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'propertyDefinition.label')}</th>
                                 <th>${message(code:'renewalEvaluation.propertiesChanged')}</th>
                                 <th>${message(code: 'default.actions.label')}</th>
@@ -138,11 +138,11 @@
         <br />
         <br />
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <g:if test="${showCheckbox}">
-                    <th>
+                    <th data-label="${message(code:'responsive.table.selectElement')}">
                         <g:if test="${surveyParticipantsHasAccess}">
                             <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </g:if>
