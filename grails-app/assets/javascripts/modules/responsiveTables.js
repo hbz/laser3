@@ -29,19 +29,25 @@ responsiveTables = {
       $('>tbody>tr', this).each(function () {
         $('>td', this).each(function () {
           let th = $(currentTable.find('th')).eq($(this).index());
+
           // table header is icon
-          if( th.html().includes("icon")) {
+          if( th.html().includes("la-popup-tooltip")) {
             let dataContent = th.find('.la-popup-tooltip').attr("data-content");
             $(this).attr('data-label', dataContent + ':');
           }
-
+          // table header is checkbox
           else if ( th.html().includes("checkbox")) {
             let dataLabel = th.attr("data-label");
             $(this).attr('data-label', dataLabel + ':');
           }
 
           else
-            if (th.text() === "") {
+            // table header is empty
+            if (th.text() == 0) {
+            }
+            // table header is dropdown menu
+            else if( th.html().includes("menu"))  {
+              $(this).attr('data-label',th.find('.text').text() + ':');
             }
             else {
               $(this).attr('data-label',th.text() + ':');

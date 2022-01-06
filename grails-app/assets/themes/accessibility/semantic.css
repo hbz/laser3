@@ -29223,6 +29223,10 @@ Floated Menu / Item
   .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x {
     text-align: left;
   }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
+  }
 }
 
 /*---------------------------------------------------------------------------
@@ -29272,6 +29276,10 @@ Floated Menu / Item
 
   .ui.la-js-responsive-table > tbody > tr > .x {
     text-align: left;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
   }
 }
 /*!

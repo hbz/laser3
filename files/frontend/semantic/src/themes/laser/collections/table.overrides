@@ -363,6 +363,9 @@
 
         > .x {
           text-align: left;
+          .ui.icon.right.floated  {
+            float: none!important;
+          }
         }
       }
     }
@@ -412,6 +415,9 @@
         }
         > .x {
           text-align: left;
+          .ui.icon.right.floated  {
+            float: none!important;
+          }
         }
       }
     }
