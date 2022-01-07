@@ -30,7 +30,7 @@
     </g:if>
 %{--th ACTION--}%
     <th class="center aligned">
-        <input type="checkbox" class="select-all" onclick="JSPC.app.selectAllTake(this);" checked="${true}"/>
+        haha<input type="checkbox" class="select-all" onclick="JSPC.app.selectAllTake(this);" checked="${true}"/>
     </th>
     <g:if test="${!copyObject}">
         <th class="six wide center aligned">
@@ -51,7 +51,7 @@
             </div>
         </th>
     %{--th DELETE:--}%
-        <th>
+        <th data-label="${message(code:'responsive.table.selectElement')}">
             <g:if test="${targetObject}">
                 <input class="setDeletionConfirm" type="checkbox" data-action="delete" class="select-all" onclick="JSPC.app.selectAllDelete(this);"/>
             </g:if>

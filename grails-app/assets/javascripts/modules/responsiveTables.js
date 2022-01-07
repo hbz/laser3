@@ -31,25 +31,34 @@ responsiveTables = {
           let th = $(currentTable.find('th')).eq($(this).index());
 
           // table header is icon
-          if( th.html().includes("la-popup-tooltip")) {
+          if( th.html().includes("la-popup-tooltip"))  {
+            console.log("1");
+            console.log(th.html());
             let dataContent = th.find('.la-popup-tooltip').attr("data-content");
             $(this).attr('data-label', dataContent + ':');
           }
           // table header is checkbox
-          else if ( th.html().includes("checkbox")) {
-            let dataLabel = th.attr("data-label");
-            $(this).attr('data-label', dataLabel + ':');
+          else if (  th.html().includes("input") ) {
+            console.log("2");
+            console.log(th.html());
+            $(this).attr('data-label', JSPC.dict.get('responsive.table.selectElement', JSPC.currLanguage)+ ':');
           }
 
           else
             // table header is empty
             if (th.text() == 0) {
+              console.log("3.1");
+              console.log(th.html());
             }
             // table header is dropdown menu
             else if( th.html().includes("menu"))  {
+              console.log("3.2");
+              console.log(th.html());
               $(this).attr('data-label',th.find('.text').text() + ':');
             }
             else {
+              console.log("3.3");
+              console.log(th.html());
               $(this).attr('data-label',th.text() + ':');
             }
         });

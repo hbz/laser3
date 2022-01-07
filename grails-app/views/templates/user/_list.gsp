@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.GenericOIDService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
-<table class="ui sortable celled la-table compact table">
+<table class="ui sortable celled la-js-responsive-table la-table compact table">
     <thead>
     <tr>
         <th>${message(code:'user.username.label')}</th>
