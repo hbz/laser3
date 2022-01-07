@@ -21,7 +21,7 @@
     <div>
         <g:if test="${records}">
             <div>
-                <table class="ui celled la-selectable la-table table">
+                <table class="ui celled la-selectable la-js-responsive-table la-table table">
                     <thead>
                     <tr>
                         <th>${message(code:'package.show.pkg_name')} in we:kb</th>

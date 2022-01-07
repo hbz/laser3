@@ -31,7 +31,7 @@
             </g:form>
         </semui:filter>
 
-        <table class="ui sortable celled la-table table">
+        <table class="ui sortable celled la-js-responsive-table la-table table">
           <thead>
             <tr>
               <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />

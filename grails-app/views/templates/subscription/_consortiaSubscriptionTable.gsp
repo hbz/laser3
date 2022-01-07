@@ -5,7 +5,7 @@
     <g:set var="chosenOrg" value="${Org.findById(params.member)}" />
     <g:if test="${chosenOrg}">
         <g:set var="chosenOrgCPAs" value="${chosenOrg.getGeneralContactPersons(false)}" />
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <tbody>
             <tr>
                 <td>

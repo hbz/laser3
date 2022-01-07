@@ -17,7 +17,7 @@
 </g:else>
 
         <g:if test="${billingSums.size() == 1}">
-            <table class="ui table la-table compact">
+            <table class="ui table la-js-responsive-table la-table compact">
                 <thead>
                 <tr>
                     <th style="width:25%"></th>
@@ -39,7 +39,7 @@
             </table>
         </g:if>
         <g:elseif test="${localSums}">
-            <table class="ui table la-table compact">
+            <table class="ui table la-js-responsive-table la-table compact">
                 <thead>
                 <tr>
                     <th style="width:25%">${message(code:'financials.sum.billing')}</th>
@@ -78,7 +78,7 @@
 
 <g:if test="${neutralCostItems}">
     <g:if test="${!relevantCostItems}"><div class="ui segment"></g:if>
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
             <th rowspan="2"></th>
@@ -171,7 +171,7 @@
 
 <g:if test="${relevantCostItems}">
     <g:if test="${!neutralCostItems}"><div class="ui segment"></g:if>
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <thead>
                 <tr>
                     <th rowspan="2"></th>

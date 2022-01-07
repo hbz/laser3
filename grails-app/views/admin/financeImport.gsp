@@ -10,7 +10,7 @@
 
         <g:if test="${loaderResult==null}">
           <p>This service allows administrators to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>
-          <table class="ui celled la-table table">
+          <table class="ui celled la-js-responsive-table la-table table">
             <thead>
               <tr>
                 <th>tsv column name</th>
@@ -58,7 +58,7 @@
 
 
       <g:if test="${loaderResult}">
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
               <th></th>

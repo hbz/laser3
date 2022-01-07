@@ -30,7 +30,7 @@
     </g:if>
 %{--th ACTION--}%
     <th class="center aligned">
-        haha<input type="checkbox" class="select-all" onclick="JSPC.app.selectAllTake(this);" checked="${true}"/>
+        <input type="checkbox" class="select-all" onclick="JSPC.app.selectAllTake(this);" checked="${true}"/>
     </th>
     <g:if test="${!copyObject}">
         <th class="six wide center aligned">

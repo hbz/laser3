@@ -109,7 +109,7 @@
 
                 <g:set var="counter" value="${offset + 1}"/>
 
-                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
 

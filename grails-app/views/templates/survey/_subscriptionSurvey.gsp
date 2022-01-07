@@ -565,7 +565,7 @@
                     String dataTooltip = ""
                 %>
 
-                <table class="ui celled compact la-table-inCard table">
+                <table class="ui celled compact la-js-responsive-table la-table-inCard table">
                     <thead>
                     <tr>
                         <th colspan="4" class="center aligned">
@@ -1010,7 +1010,7 @@
                 total="${surveyResults.size()}"/>
         </h3>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>

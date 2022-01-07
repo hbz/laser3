@@ -4,7 +4,7 @@
 <g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
             <th></th>

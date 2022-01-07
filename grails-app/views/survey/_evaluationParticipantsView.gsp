@@ -364,7 +364,7 @@
         <br />
         <br />
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <g:if test="${showCheckbox}">

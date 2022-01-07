@@ -195,7 +195,7 @@
         <div>
             <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
-                <table class="ui sortable celled la-table table ">
+                <table class="ui sortable celled la-js-responsive-table la-table table ">
                     <thead>
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>

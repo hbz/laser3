@@ -93,7 +93,7 @@
                             <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                         </div>
 
-                        <table class="ui celled la-table compact table">
+                        <table class="ui celled la-js-responsive-table la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -169,7 +169,7 @@
                             <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                         </div>
 
-                        <table class="ui celled la-table compact table">
+                        <table class="ui celled la-js-responsive-table la-table compact table">
                             <g:set var="defaultRemindPeriod" value="${UserSetting.DEFAULT_REMINDER_PERIOD}" />
                             <thead>
                             <tr>
