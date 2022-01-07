@@ -9,7 +9,7 @@
         <h3 class="ui header">DEPRECATED</h3>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled compact la-table table">
+            <table id="org_role_tab" class="ui celled compact la-js-responsive-table la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>

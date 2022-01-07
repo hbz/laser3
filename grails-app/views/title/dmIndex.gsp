@@ -54,7 +54,7 @@
                 </div>
 
                 <div id="resultsarea">
-                  <table class="ui celled la-table table">
+                  <table class="ui celled la-js-responsive-table la-table table">
                     <thead>
                       <tr>
                       <th style="white-space:nowrap">${message(code:'title.label')}</th>

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
-<table class="ui celled sortable table la-table">
+<table class="ui celled sortable table la-js-responsive-table la-table">
     <thead>
     <tr>
         <th class="center aligned">${message(code: 'sidewide.number')}</th>

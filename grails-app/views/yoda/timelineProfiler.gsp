@@ -20,7 +20,7 @@
         <g:link controller="yoda" action="timelineProfiler" class="item active">Seitenaufrufe</g:link>
     </nav>
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr class="center aligned">
                 <th>Registrierte Seitenaufrufe am Tag</th>

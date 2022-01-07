@@ -11,7 +11,7 @@
 <g:set var="useLocalFields" value="${false}"/>%{-- DEBUG --}%
 
 <div class="ui segment" id="reporting-detailsTable">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
             <tr>
                 <%

@@ -60,7 +60,7 @@
 
           <h3 class="ui header"><g:message code="title.edit.orglink"/></h3>
 
-            <table class="ui celled la-table table ">
+            <table class="ui celled la-js-responsive-table la-table table ">
               <thead>
                 <tr>
                   %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
@@ -89,7 +89,7 @@
 
             <h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
               <thead>
                 <tr>
                   <th>${message(code: 'default.date.label')}</th>
@@ -131,7 +131,7 @@
 
             %{--NEW VIEW FOR TIPPS--}%
 
-  <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+  <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
       <thead>
       <tr>
           <th></th>
