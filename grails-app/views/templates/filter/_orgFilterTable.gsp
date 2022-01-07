@@ -23,7 +23,7 @@
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
-            <th data-label="${message(code:'responsive.table.selectElement')}">
+            <th>
                 <g:if test="${orgList}">
                     <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                 </g:if>

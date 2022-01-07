@@ -69,7 +69,7 @@
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">
-                <th data-label="${message(code:'responsive.table.selectElement')}">
+                <th>
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
                     </g:if>

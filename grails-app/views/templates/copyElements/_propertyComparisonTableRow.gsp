@@ -51,7 +51,7 @@
             </div>
         </th>
     %{--th DELETE:--}%
-        <th data-label="${message(code:'responsive.table.selectElement')}">
+        <th>
             <g:if test="${targetObject}">
                 <input class="setDeletionConfirm" type="checkbox" data-action="delete" class="select-all" onclick="JSPC.app.selectAllDelete(this);"/>
             </g:if>
