@@ -8,6 +8,9 @@ import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * This service manages data retrieval for the object-related reporting
+ */
 @Transactional
 class ReportingLocalService {
 
@@ -24,6 +27,12 @@ class ReportingLocalService {
 
     // ----- 2 - chart
 
+    /**
+     * Prepares the chart with the given input
+     * @param result the result map containing the data for the chart output
+     * @param params the request parameter map
+     * @throws Exception
+     */
     void doChart (Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
@@ -56,6 +65,12 @@ class ReportingLocalService {
 
     // ----- 3 - details
 
+    /**
+     * Prepares the chart details with the given input
+     * @param result the result map containing the data for the chart output
+     * @param params the request parameter map
+     * @throws Exception
+     */
     void doChartDetails (Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         // TODO : SESSION TIMEOUT

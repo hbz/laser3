@@ -65,7 +65,7 @@
 
     <g:if test="${params.tab == 'identifier'}">
     <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
-        <table class="ui table la-table">
+        <table class="ui table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="one wide">${message(code:'default.number')}</th>

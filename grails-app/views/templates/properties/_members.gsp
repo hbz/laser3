@@ -15,7 +15,7 @@
 <g:if test="${subscription}">
     <g:set var="memberSubs" value="${Subscription.executeQuery('select s from Subscription s where s.instanceOf = :sub', [sub: subscription])}"/>
 </g:if>
-<table class="ui compact la-table-inCard table">
+<table class="ui compact la-js-responsive-table la-table-inCard table">
     <tbody>
         <g:each in="${memberProperties}" var="propType">
             <tr>

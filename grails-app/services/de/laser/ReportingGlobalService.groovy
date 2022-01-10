@@ -10,6 +10,9 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
 
+/**
+ * This service manages data retrieval for the global, context-free reporting
+ */
 @Transactional
 class ReportingGlobalService {
 
@@ -20,6 +23,11 @@ class ReportingGlobalService {
 
     // ----- MyInstitutionController.reporting() -----
 
+    /**
+     * Sets the filter for the given base config
+     * @param result the result map containing the filter data
+     * @param params the request parameter map
+     */
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
@@ -50,6 +58,11 @@ class ReportingGlobalService {
 
     // ----- 1 - filter
 
+    /**
+     * Prepares the cost item filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterCostItem (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = CostItemFilter.filter(params)
@@ -57,6 +70,11 @@ class ReportingGlobalService {
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
     }
 
+    /**
+     * Prepares the license filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterLicense (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = LicenseFilter.filter(params)
@@ -68,6 +86,11 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2 ) // Verteilung
     }
 
+    /**
+     * Prepares the organisation filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterOrganisation (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = OrganisationFilter.filter(params)
@@ -87,6 +110,11 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2 ) // Verteilung
     }
 
+    /**
+     * Prepares the package filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterPackage (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = PackageFilter.filter(params)
@@ -98,6 +126,11 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2 ) // Verteilung
     }
 
+    /**
+     * Prepares the platform filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterPlatform (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = PlatformFilter.filter(params)
@@ -106,6 +139,11 @@ class ReportingGlobalService {
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query2 ) // Verteilung
     }
 
+    /**
+     * Prepares the subscription filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterSubscription (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = SubscriptionFilter.filter(params)
@@ -124,6 +162,12 @@ class ReportingGlobalService {
 
     // ----- 2 - chart
 
+    /**
+     * Prepares the chart and writes the result to the given result map
+     * @param result the result map containing the data and the chart parameters
+     * @param params the request parameter map
+     * @throws Exception
+     */
     void doChart(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
@@ -217,6 +261,12 @@ class ReportingGlobalService {
 
     // ----- 3 - details
 
+    /**
+     * Prepares the chart details and adds the result to the given result map
+     * @param result the result map containing the data and the chart parameters
+     * @param params the request parameter map
+     * @throws Exception
+     */
     void doChartDetails(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {

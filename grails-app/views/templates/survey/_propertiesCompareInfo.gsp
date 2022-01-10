@@ -4,7 +4,7 @@
 <g:set var="overwriteEditable" value="${false}"/>
 
 <g:if test="${customProperties?.size() > 0}">
-    <div class="ui card la-dl-no-table">
+    <div class="ui card la-js-responsive-table la-dl-no-table">
         <div class="content">
             <h2 class="ui header">
                 ${message(code: 'survey.subscription.propertiesChange')}

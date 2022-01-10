@@ -4,6 +4,9 @@ import de.laser.helper.ConfigUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+/**
+ * This service checks the system health
+ */
 @Transactional
 class SystemService {
 
@@ -12,6 +15,10 @@ class SystemService {
     def sessionRegistry
     def springSecurityService
 
+    /**
+     * Dumps the state of currently active services
+     * @return a map with the services marked as active by configuration or with sources marked as active and their running state
+     */
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
 
@@ -50,10 +57,19 @@ class SystemService {
         return checks
     }
 
+    /**
+     * Returns the current count of active sessions by last access time
+     * @return the number of active users
+     */
     int getNumberOfActiveUsers() {
         getActiveUsers( (1000 * 60 * 10) ).size() // 10 minutes
     }
 
+    /**
+     * Helper method to determine the count of active users by the last access count
+     * @param ms maximum number of milliseconds elapsed since last action
+     * @return a list of users having done any action in the given span of time
+     */
     List getActiveUsers(long ms) {
         List result = []
 

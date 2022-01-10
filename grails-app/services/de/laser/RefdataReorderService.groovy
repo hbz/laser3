@@ -4,14 +4,16 @@ package de.laser
 import de.laser.helper.RDConstants
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service handles reference data reordering upon system startup. Customised orderings may be defined in the method below
+ */
 @Transactional
 class RefdataReorderService {
 
-    /*
-        This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
-
-        !!! Be careful when using rdv.order.
-        This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
+    /**
+     * This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
+     * !!! Be careful when using rdv.order.
+     * This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
     void reorderRefdata() {
         //semesters: take the order of insertion and make then the ID ascending

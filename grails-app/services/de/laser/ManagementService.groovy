@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletRequest
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service is for the consortial subscription's member management handling
+ */
 @Transactional
 class ManagementService {
 
@@ -46,7 +49,13 @@ class ManagementService {
     SubscriptionControllerService subscriptionControllerService
     MyInstitutionControllerService myInstitutionControllerService
 
-
+    /**
+     * The overall menu of the calls - determines which data should be processed and which tab should be opened as next
+     * @param controller the controller instance
+     * @param parameterMap the request parameter map
+     * @param input_file an uploaded document which should be passed to the members
+     * @return the map containing the (updated) view parameters
+     */
     Map subscriptionsManagement(def controller, GrailsParameterMap parameterMap, def input_file = null) {
         Map<String, Object> result = [:]
 
@@ -115,6 +124,14 @@ class ManagementService {
 
     //--------------------------------------------- subscriptions management section for SubscriptionController-------------------------------------------------
 
+    /**
+     * Lists the customer numbers of the subscription members for the linked platforms. This is necessary for statistics data loading
+     * as those are the key-value pairs which will authenticate the caller for the SUSHI call!
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK with the data if access to this view is granted, ERROR otherwise
+     * @see CustomerIdentifier
+     */
     Map<String, Object> customerIdentifierMembers(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(!result) {
@@ -150,6 +167,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Unsets the given customer number
+     * @param id the customer number ID to unser
+     * @return true if the unsetting was successful, false otherwise
+     */
     boolean deleteCustomerIdentifier(Long id) {
         CustomerIdentifier ci = CustomerIdentifier.get(id)
         ci.value = null
@@ -159,6 +181,12 @@ class ManagementService {
 
     //--------------------------------------------- general subscriptions management section -------------------------------------------------
 
+    /**
+     * Lists the current license links of the members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK with the data if access to this view is granted, ERROR otherwise
+     */
     Map<String,Object> linkLicense(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (!result) {
@@ -204,6 +232,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and performs (un-)linking of the selected members to the given license(s)
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processLinkLicense(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
@@ -247,6 +280,12 @@ class ManagementService {
         }
     }
 
+    /**
+     * Lists the current package links of the members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK with the data if access to this view is granted, ERROR otherwise
+     */
     Map<String,Object> linkPackages(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(!result)
@@ -285,6 +324,12 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and performs (un-)linking of the selected members to the given package(s).
+     * If specified, titles will be generated or deleted as well
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processLinkPackages(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (result.editable && formService.validateToken(params)) {
@@ -394,6 +439,12 @@ class ManagementService {
         }
     }
 
+    /**
+     * Loads the public and private properties defined for each subscription member
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK with the data if access to this view is granted, ERROR otherwise
+     */
     Map<String,Object> properties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (!result) {
@@ -441,6 +492,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and performs property manipulation for the selected members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
@@ -547,6 +603,12 @@ class ManagementService {
         }
     }
 
+    /**
+     * Loads for each member subscription the general attributes
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK with the data if access to this view is granted, ERROR otherwise
+     */
     Map<String,Object> subscriptionProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(!result) {
@@ -575,6 +637,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and performs attribute manipulation for the selected members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processSubscriptionProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
@@ -679,6 +746,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and adds notes to the selected members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processNotes(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
@@ -718,6 +790,11 @@ class ManagementService {
         }
     }
 
+    /**
+     * Processes the given input and adds the given document to the selected members
+     * @param controller the controller instance
+     * @param params the request parameter map
+     */
     void processDocuments(def controller, GrailsParameterMap params, def input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
 
@@ -786,6 +863,10 @@ class ManagementService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Gets the message container for the current call
+     * @return the message container
+     */
     FlashScope getCurrentFlashScope() {
         GrailsWebRequest grailsWebRequest = WebUtils.retrieveGrailsWebRequest()
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()
@@ -793,6 +874,12 @@ class ManagementService {
         grailsWebRequest.attributes.getFlashScope(request)
     }
 
+    /**
+     * Sets generic parameters used in the methods and checks whether the given user may access the view
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return the result map with the base data if successful, an empty map otherwise
+     */
     Map<String,Object> getResultGenericsAndCheckAccess(def controller, GrailsParameterMap params) {
         Map<String, Object> result = [:]
 
