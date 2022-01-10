@@ -241,7 +241,7 @@ class FinanceService {
                         costItem.invoice = configMap.invoice ?: costItem.invoice
                         costItem.costItemElement = configMap.costItemElement ?: costItem.costItemElement
                         costItem.costItemElementConfiguration = configMap.elementSign ?: costItem.costItemElementConfiguration
-                        costItem.costItemStatus = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? RefdataValue.get(params.newCostItemStatus) : null
+                        costItem.costItemStatus = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? RefdataValue.get(params.newCostItemStatus) : costItem.costItemStatus
                         if(configMap.taxKey)
                             costItem.taxKey = configMap.taxKey
                         int taxRate = 0 //fallback
@@ -278,43 +278,47 @@ class FinanceService {
                         costItem.invoiceDate = configMap.invoiceDate ?: costItem.invoiceDate
                         costItem.financialYear = configMap.financialYear ?: costItem.financialYear
                         costItem.reference = configMap.reference ?: costItem.reference
-                        costItem.save()
-                        List<BudgetCode> newBcObjs = []
-                        params.list('newBudgetCodes').each { newbc ->
-                            BudgetCode bc = (BudgetCode) genericOIDService.resolveOID(newbc)
-                            if (bc) {
-                                newBcObjs << bc
-                                if (! CostItemGroup.findByCostItemAndBudgetCode( costItem, bc )) {
-                                    new CostItemGroup(costItem: costItem, budgetCode: bc).save()
+                        if(costItem.save()) {
+                            List<BudgetCode> newBcObjs = []
+                            params.list('newBudgetCodes').each { newbc ->
+                                BudgetCode bc = (BudgetCode) genericOIDService.resolveOID(newbc)
+                                if (bc) {
+                                    newBcObjs << bc
+                                    if (! CostItemGroup.findByCostItemAndBudgetCode( costItem, bc )) {
+                                        new CostItemGroup(costItem: costItem, budgetCode: bc).save()
+                                    }
+                                }
+                            }
+                            List<BudgetCode> toDelete = costItem.budgetcodes.minus(newBcObjs)
+                            toDelete.each{ BudgetCode bc ->
+                                CostItemGroup cig = CostItemGroup.findByCostItemAndBudgetCode( costItem, bc )
+                                if (cig) {
+                                    log.debug('deleting ' + cig)
+                                    cig.delete()
+                                }
+                            }
+                            List<CostItem> copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqual(costItem, RDStore.COST_ITEM_DELETED, result.institution)
+                            //notify cost items copied from this cost item
+                            copiedCostItems.each { CostItem cci ->
+                                List diffs = []
+                                if(costItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                                    diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:costItem.costInBillingCurrencyAfterTax])
+                                }
+                                if(costItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                                    diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:costItem.costInLocalCurrencyAfterTax])
+                                }
+                                diffs.each { diff ->
+                                    try {
+                                        PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                                    }
+                                    catch (CreationException e) {
+                                        log.error( e.toString() )
+                                    }
                                 }
                             }
                         }
-                        List<BudgetCode> toDelete = costItem.budgetcodes.minus(newBcObjs)
-                        toDelete.each{ BudgetCode bc ->
-                            CostItemGroup cig = CostItemGroup.findByCostItemAndBudgetCode( costItem, bc )
-                            if (cig) {
-                                log.debug('deleting ' + cig)
-                                cig.delete()
-                            }
-                        }
-                        List<CostItem> copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqual(costItem, RDStore.COST_ITEM_DELETED, result.institution)
-                        //notify cost items copied from this cost item
-                        copiedCostItems.each { CostItem cci ->
-                            List diffs = []
-                            if(costItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
-                                diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:costItem.costInBillingCurrencyAfterTax])
-                            }
-                            if(costItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
-                                diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:costItem.costInLocalCurrencyAfterTax])
-                            }
-                            diffs.each { diff ->
-                                try {
-                                    PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
-                                }
-                                catch (CreationException e) {
-                                    log.error( e.toString() )
-                                }
-                            }
+                        else {
+                            log.error("error on updating cost item: ${costItem.errors.getAllErrors().toListString()}")
                         }
                     }
                 }
@@ -420,15 +424,15 @@ class FinanceService {
         //block sum
         NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
         //row 1
-        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
+        Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
         //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
-        Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : null //1.00
+        Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.0 //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
-        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : null //0.00
+        Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.0 //0.00
         //value is transient
         Double costLocalCurrencyAfterTax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : costLocalCurrency
         //block footer
@@ -635,7 +639,7 @@ class FinanceService {
                     if(consortialCostRows) {
                         Set<Long> consortialCostItems = consortialCostRows.toSet()
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'oo.org.sortname') {
                             result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
@@ -663,7 +667,7 @@ class FinanceService {
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-                        result.subscr.costItems = CostItem.findAllByIdInList(consortialMemberSubscriptionCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
+                        result.subscr.costItems = CostItem.findAllByIdInList(consortialMemberSubscriptionCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset]).toSet()
                     }
                     break
                 default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")

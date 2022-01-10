@@ -201,13 +201,8 @@ class RDStore {
     public static final TITLE_STATUS_RETIRED        = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
     public static final TITLE_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.TITLE_STATUS)
 
-    public static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_OA                = getRefdataValue('OA', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_OPT_OUT_PROMOTION = getRefdataValue('Opt Out Promotion', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged', RDConstants.TIPP_PAYMENT_TYPE)
-    public static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown', RDConstants.TIPP_PAYMENT_TYPE)
+    public static final TIPP_PAYMENT_PAID           = getRefdataValue('Paid', RDConstants.TIPP_ACCESS_TYPE)
+    public static final TIPP_PAYMENT_FREE           = getRefdataValue('Free', RDConstants.TIPP_ACCESS_TYPE)
 
     public static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', RDConstants.TIPP_STATUS)
     public static final TIPP_STATUS_RETIRED            = getRefdataValue('Retired', RDConstants.TIPP_STATUS)

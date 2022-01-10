@@ -50,9 +50,30 @@
 
                         <g:if test="${entry.subscription}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
+                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.subscription.source, targetObjectId: entry.subscription.target]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
+
+                                <div class="ui grid">
+                                    <div class="right aligned wide column">
+                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="ui icon positive button la-modern-button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
+                                                data-confirm-term-how="ok"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.check.universal')}">
+                                                <i class="checkmark icon"></i>
+                                            <!--${message(code: 'default.button.accept.label')}-->
+                                        </g:link>
+                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
+                                                data-confirm-term-how="ok"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                            <i class="times icon"></i>
+                                            <!--${message(code: 'default.button.reject.label')}-->
+                                        </g:link>
+                                    </div>
+                                </div>
                             </div>
                         </g:if>
                     </div><!-- .column -->
@@ -86,6 +107,13 @@
                     </g:if>
                     <g:elseif test="${entry.costItemSubscription}">
                         <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
+                    </g:elseif>
+                    <g:elseif test="${entry.subscription}">
+                        <div class="right aligned wide column">
+                            <g:link controller="subscription" action="show" id="${entry.subscription.id}">
+                                ${entry.subscription.name}
+                            </g:link>
+                        </div>
                     </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">

@@ -72,6 +72,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     @RefdataAnnotation(cat = '?')
     RefdataValue payment
 
+    @RefdataAnnotation(cat = RDConstants.TIPP_ACCESS_TYPE)
+    RefdataValue accessType
+
+    @RefdataAnnotation(cat = RDConstants.LICENSE_OA_TYPE)
+    RefdataValue openAccess
+
     String hostPlatformURL
 
     Date dateCreated
@@ -135,8 +141,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
-    //coreStatusStart column:'tipp_core_status_start_date'
-    //coreStatusEnd column:'tipp_core_status_end_date'
+      accessType column:'tipp_access_type_rv_fk'
+      openAccess column:'tipp_open_access_rv_fk'
       dateFirstInPrint column:'tipp_date_first_in_print'
       dateFirstOnline column:'tipp_date_first_online'
       summaryOfContent column:'tipp_summary_of_content'
@@ -177,8 +183,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         accessStartDate (nullable:true)
         accessEndDate (nullable:true)
-      //coreStatusStart (nullable:true)
-      //coreStatusEnd (nullable:true)
+        accessType (nullable:true)
+        openAccess (nullable:true)
         dateFirstInPrint(nullable:true)
         dateFirstOnline(nullable:true)
         summaryOfContent(nullable:true, blank:false)

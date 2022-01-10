@@ -524,8 +524,8 @@ class PendingChangeService extends AbstractLockableService {
         Sql sql = new Sql(dataSource)
         List pending = [], notifications = []
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
-        Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] },
-        acceptedStatus = [(RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id): RDStore.PENDING_CHANGE_CONFIG_ACCEPT.getI10n("value"), (RDStore.PENDING_CHANGE_CONFIG_REJECT.id): RDStore.PENDING_CHANGE_CONFIG_REJECT.getI10n("value")]
+        Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] }
+        Map<Long, String> acceptedStatus = [(RDStore.PENDING_CHANGE_ACCEPTED.id): RDStore.PENDING_CHANGE_ACCEPTED.getI10n("value"), (RDStore.PENDING_CHANGE_REJECTED.id): RDStore.PENDING_CHANGE_REJECTED.getI10n("value"), (RDStore.PENDING_CHANGE_PENDING.id): RDStore.PENDING_CHANGE_PENDING.getI10n("value")]
         Object[] retObj = RefdataValue.findAllByOwnerAndValueInList(RefdataCategory.findByDesc(RDConstants.SUBSCRIPTION_STATUS), ['Terminated', 'Expired', 'Rejected', 'Publication discontinued', 'No longer usable', 'Deferred']).collect { RefdataValue rdv -> rdv.id } as Object[]
         //IMPORTANT! In order to avoid session mismatches, NO domain operation may take at this place! DO NOT USE GORM methods here!
         sql.withTransaction {
@@ -597,7 +597,9 @@ class PendingChangeService extends AbstractLockableService {
             sql.rows("select id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk from pending_change where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or pc_ci_fk is not null)", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01']).each { GroovyRowResult pc ->
                 Map<String,Object> eventRow = [event:pc.get("pc_msg_token")]
                 if(pc.get("pc_ci_fk")) {
-                    List subRows = sql.rows("select ci_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from cost_item join subscription on ci_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where ci_id = :ciId and or_roletype_fk = any(:subscriberTypes)", [ciId: pc.get("pc_ci_fk"), subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
+                    Map<String, Long> subscrRoleTypes = roleTypes
+                    subscrRoleTypes.remove('consortia')
+                    List subRows = sql.rows("select ci_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from cost_item join subscription on ci_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where ci_id = :ciId and or_roletype_fk = any(:subscriberTypes)", [ciId: pc.get("pc_ci_fk"), subscriberTypes: sql.connection.createArrayOf('bigint', subscrRoleTypes.values() as Object[])])
                     if(subRows) {
                         GroovyRowResult entry = subRows[0]
                         eventRow.costItem = pc.get("pc_ci_fk")
@@ -1151,7 +1153,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 break
         }
-        if(done) {
+        if(done || pc.msgToken == 'pendingChange.message_SU_NEW_01') {
             pc.status = RDStore.PENDING_CHANGE_ACCEPTED
             pc.actionDate = new Date()
             if(!pc.save()) {

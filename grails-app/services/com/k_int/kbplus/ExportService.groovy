@@ -1540,6 +1540,10 @@ class ExportService {
 					row.add(tipp.subjectReference ?: '')
 					//status
 					row.add(tipp.status.value ?: '')
+					//access_type
+					row.add(tipp.accessType ? tipp.accessType.value : '')
+					//oa_type
+					row.add(tipp.openAccess ? tipp.openAccess.value : '')
 
 					//zdb_ppn
 					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
@@ -1831,6 +1835,10 @@ class ExportService {
 					row.add(tipp.subjectReference ?: '')
 					//status
 					row.add(tipp.status.value ?: '')
+					//access_type
+					row.add(tipp.accessType ? tipp.accessType.value : '')
+					//oa_type
+					row.add(tipp.openAccess ? tipp.openAccess.value : '')
 
 					//zdb_ppn
 					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
@@ -1953,6 +1961,8 @@ class ExportService {
 				messageSource.getMessage('tipp.seriesName',null,locale),
 				messageSource.getMessage('tipp.subjectReference',null,locale),
 				messageSource.getMessage('tipp.status',null,locale),
+				messageSource.getMessage('tipp.accessType',null,locale),
+				messageSource.getMessage('tipp.openAccess',null,locale),
 				messageSource.getMessage('tipp.listprice_eur',null,locale),
 				messageSource.getMessage('tipp.listprice_gbp',null,locale),
 				messageSource.getMessage('tipp.listprice_usd',null,locale),
@@ -2093,6 +2103,8 @@ class ExportService {
 					row.add([field: tipp.seriesName ?: ' ', style:null])
 					row.add([field: tipp.subjectReference ?: ' ', style:null])
 					row.add([field: tipp.status ? tipp.status.getI10n('value') : ' ', style:null])
+					row.add([field: tipp.accessType ? tipp.accessType.getI10n('value') : ' ', style:null])
+					row.add([field: tipp.openAccess ? tipp.openAccess.getI10n('value') : ' ', style:null])
 
 					if(entitlement?.priceItems) {
 						//listprice_eur
@@ -2138,7 +2150,7 @@ class ExportService {
 						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
 					}
 
-					if(entitlement && showStatsInMonthRings){
+					if(entitlement && showStatsInMonthRings && subscriber){
 						showStatsInMonthRings.each {Date date ->
 							def counterReport = entitlement.getCounterReport(date, subscriber)
 							//println(counterReport)
@@ -2209,6 +2221,8 @@ class ExportService {
 		 'monograph_parent_collection_title',
 		 'subject_area',
 		 'status',
+		 'access_type',
+		 'oa_type',
 		 'zdb_ppn',
 		 'listprice_eur',
 		 'listprice_gbp',
@@ -2263,6 +2277,8 @@ class ExportService {
 		 'monograph_parent_collection_title',
 		 'subject_area',
 		 'status',
+		 'access_type',
+		 'oa_type',
 		 'zdb_ppn',
 		 'listprice_eur',
 		 'listprice_gbp',

@@ -256,6 +256,28 @@
         </div>
     </g:if>
 
+    <g:if test="${(tipp.accessType || showEmptyFields)}">
+        <div class="item">
+            <i class="grey lock open icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.accessType')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.accessType') + ':'} ${tipp.accessType?.getI10n("value")}
+            </div>
+        </div>
+    </g:if>
+
+    <g:if test="${(tipp.openAccess || showEmptyFields)}">
+        <div class="item">
+            <i class="ellipsis vertical grey icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.openAccess')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.openAccess') + ':'} ${tipp.openAccess?.getI10n("value")}
+            </div>
+        </div>
+    </g:if>
+
     <g:set var="providers" value="${tipp.getPublishers()}"/>
     <g:if test="${(providers || showEmptyFields)}">
         <div class="item">

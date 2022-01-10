@@ -22,6 +22,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
+import de.laser.exceptions.ChangeAcceptException
+import com.k_int.kbplus.PendingChangeService
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -39,6 +41,7 @@ class AjaxController {
     def dashboardDueDatesService
     IdentifierService identifierService
     FilterService filterService
+    PendingChangeService pendingChangeService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1926,5 +1929,57 @@ class AjaxController {
             redirect(url: request.getHeader('referer'))
             return
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def dashboardChangesSetAccept() {
+        setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
+    }
+
+    @Secured(['ROLE_USER'])
+    def dashboardChangesSetReject() {
+        setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    private setDashboardChangesStatus(RefdataValue refdataValue){
+        log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
+
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+        result.institution = contextService.getOrg()
+        flash.error = ''
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
+            response.sendError(401)
+            return
+        }
+
+        if (params.id) {
+            PendingChange pc = PendingChange.get(params.long('id'))
+            if (pc){
+                pc.status = refdataValue
+                pc.actionDate = new Date()
+                if(!pc.save()) {
+                    throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
+                }
+            } else {
+                flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
+            }
+        } else {
+            flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
+        }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
+        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        changes.max = result.max
+        changes.editable = result.editable
+        render template: '/myInstitution/changesWrapper', model: changes
     }
 }

@@ -6,15 +6,37 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
+
 4011    20.12.2021  dev     2.3         David   Feature     Reporting: Komfortfunktionen für Export
 
 3994    14.12.2021  dev     2.3         David   Feature     Reporting: Org-Export (Sortiername + Name)
 
+4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
+
+4043    10.12.2021  rc-2.2  2.2.8       Moe     Bug         Eintrag Leitweg-ID: Großbuchstaben erlauben
+
+4022    08.12.2021  rc-2.2  2.2.8       Andreas Feature     Nachreichung der Titelfelder openAccess und accessType
+
+--      08.12.2021  rc-2.2  2.2.8       Andreas Bug         Darstellungen in der Lizenzstatistik korrigiert
+
+4034    07.12.2021  rc-2.2  2.2.8       Andreas Bug         costItemStatus wurde verworfen, was zu einem Validierungsfehler geführt hat
+
 4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
+
+4027    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber
+
+4028    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Titelumfrage: Export Gesamttitellist mit Statistik + Bestandsflag
+
+3914    06.12.2021  rc-2.2  2.2.7       Moe     Bug         500er bei manuellem Übertrag eines Teilnehmers
 
 4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
 
 4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
+
+--      02.12.2021  rc-2.2  2.2.6       Andreas Bug         Fallback für Kostenposten ohne Summe eingesetzt
+
+--      02.12.2021  rc-2.2  2.2.6       Andreas Feature     Nutzungsdaten werden jetzt zu allen Paketkontexten hinzugefügt
 
 --      30.11.2021  rc-2.2  2.2.5       Andreas Bug         Dependency-Workaround eingearbeitet
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue"%>
+<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.helper.DateUtils"%>
 <dl>
     <dt><g:message code="platform.stats.format"/></dt>
     <dd>${platformInstanceRecord.statisticsFormat ? RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsFormat, RDConstants.PLATFORM_STATISTICS_FORMAT).getI10n("value") : message(code: 'default.not.available')}</dd>

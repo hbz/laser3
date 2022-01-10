@@ -31,6 +31,28 @@
                                exportXLS     : true,
                                tab           : 'allIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
         </semui:exportDropdownItem>
+        <g:if test="${showStatisticByParticipant}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID : surveyConfig.id,
+                                   exportForImport: true,
+                                   tab            : 'allIEs']}">
+                    ${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}" + "${message(code: 'default.stats.label')}"
+                </g:link>
+            </semui:exportDropdownItem>
+        </g:if>
+        <g:if test="${countCurrentIEs > 0}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID : surveyConfig.id,
+                                   exportXLS     : true,
+                                   tab           : 'currentIEs']}">
+                    ${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentTitles')}"
+                </g:link>
+            </semui:exportDropdownItem>
+        </g:if>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"

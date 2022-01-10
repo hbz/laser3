@@ -983,6 +983,7 @@ class SubscriptionController {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
         Map<String,Object> ctrlResult
+        params.statsForSurvey = true
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
             params.tab = params.tabStat
@@ -1012,6 +1013,11 @@ class SubscriptionController {
             if(params.tab == 'selectedIEs') {
                 exportIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(ctrlResult.result.newSub)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+
+            if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.previousSubscription)
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {
