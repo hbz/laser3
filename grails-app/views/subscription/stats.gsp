@@ -211,7 +211,7 @@
             </semui:tabs>
             <div class="ui bottom attached tab active segment">
                 <g:if test="${params.tab == 'total'}">
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
                                 <th><g:message code="default.usage.date"/></th>
@@ -230,7 +230,7 @@
                     </table>
                 </g:if>
                 <g:else>
-                    <table class="ui sortable celled la-table table">
+                    <table class="ui sortable celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
                                 <g:if test="${usages && usages[0].title}">

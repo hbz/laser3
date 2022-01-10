@@ -22,7 +22,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <table class="ui celled la-table table" id="firstTable">
+                        <table class="ui celled la-js-responsive-table la-table table" id="firstTable">
                             <thead>
                             <tr>
                                 <th colspan="5">
@@ -79,7 +79,7 @@
                         </table>
                     </td>
                     <td>
-                        <table class="ui celled la-table table" id="secondTable">
+                        <table class="ui celled la-js-responsive-table la-table table" id="secondTable">
                             <thead>
                             <tr>
                                 <th colspan="4">

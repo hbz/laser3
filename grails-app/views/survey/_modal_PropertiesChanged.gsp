@@ -1,7 +1,7 @@
 <semui:modal id="modalPropertiesChanged" text="${message(code: 'renewalEvaluation.propertiesChanged')}"
              hideSubmitButton="true">
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>

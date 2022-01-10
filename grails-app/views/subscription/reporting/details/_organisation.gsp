@@ -4,7 +4,7 @@
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
             <tr>
                 <th></th>

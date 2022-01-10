@@ -40,7 +40,7 @@
 
         <g:if test="${numbersWithSemester || numbersWithDueDate}">
             <g:if test="${numbersWithSemester}">
-                <table class="ui table celled sortable la-table">
+                <table class="ui table celled sortable la-js-responsive-table la-table">
                     <thead>
                         <tr>
                             <g:sortableColumn property="semester" title="${message(code: 'readerNumber.semester.label')}" params="${[tableA:true]}"/>
@@ -60,7 +60,7 @@
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th></th>
+                            <th>${message(code:'default.actions.label')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,7 +119,7 @@
             </g:if>
 
             <g:if test="${numbersWithDueDate}">
-                <table class="ui table celled sortable la-table">
+                <table class="ui table celled sortable la-js-responsive-table la-table">
                     <thead>
                         <tr>
                             <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}" params="${[tableB:true]}"/>
@@ -128,7 +128,7 @@
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th></th>
+                            <th>${message(code:'default.actions.label')}</th>
                         </tr>
                     </thead>
                     <tbody>

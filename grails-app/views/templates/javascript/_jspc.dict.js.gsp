@@ -34,7 +34,8 @@
             'statusbar.hideButtons.tooltip',
             'statusbar.showButtons.tooltip',
             'xEditable.button.cancel',
-            'xEditable.button.ok'
+            'xEditable.button.ok',
+            'responsive.table.selectElement'
     ]
 
     println """

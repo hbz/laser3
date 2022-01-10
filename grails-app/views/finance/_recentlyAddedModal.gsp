@@ -7,7 +7,7 @@
 
     <g:if test="${recentlyUpdated}">
 
-        <table class="ui celled la-table compact table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="recentUpdatesTable" data-resultsTo="${to}" data-resultsFrom="${from}">
             <thead>
                 <tr>
                     <th>${message(code:'financials.newCosts.costTitle')}</th>

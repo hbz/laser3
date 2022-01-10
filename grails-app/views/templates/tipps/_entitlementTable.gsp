@@ -13,7 +13,7 @@
     </g:if>
 
 
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
+    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
             <tr>
                 <th>

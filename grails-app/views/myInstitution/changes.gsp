@@ -23,7 +23,7 @@
                 </g:form>
             </g:if>
 
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
                 <tr>
                     <th><g:message code="profile.dashboard.changes.eventtype"/></th>

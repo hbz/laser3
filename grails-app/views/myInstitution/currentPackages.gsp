@@ -70,7 +70,7 @@
     </g:form>
 </semui:filter>
 
-<table class="ui sortable celled la-table table">
+<table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
     <tr>
         <th>${message(code:'sidewide.number')}</th>

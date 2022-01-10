@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<table class="ui table la-table">
+<table class="ui table la-js-responsive-table la-table">
     <colgroup>
         <col style="width:  30px;">
         <col style="width: 170px;">

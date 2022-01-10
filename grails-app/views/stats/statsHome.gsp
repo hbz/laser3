@@ -25,7 +25,7 @@
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>
 
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
                 <tr>
                     <th>Institution</th>

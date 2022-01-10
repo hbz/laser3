@@ -254,7 +254,7 @@
         <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
 
-        <table class="ui celled sortable la-js-responsive-table table la-table">
+        <table class="ui celled sortable la-js-responsive-table table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -385,7 +385,7 @@
                 total="${surveyResults.size()}"/>
         </h3>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>

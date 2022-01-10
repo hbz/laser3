@@ -28,7 +28,7 @@
         Höchstlast lag bei <strong class="ui label circular">${tmxBean.getPeakThreadCount()}</strong>.
     </p>
 
-    <table class="ui celled la-table compact table" id="contextTable">
+    <table class="ui celled la-js-responsive-table la-table compact table" id="contextTable">
         <tbody>
             <g:each in="${threads}" var="thread">
 

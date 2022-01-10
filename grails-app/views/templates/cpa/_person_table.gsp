@@ -3,7 +3,7 @@
 
 <g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
 
-<table class="ui table sortable la-table">
+<table class="ui table sortable la-js-responsive-table la-table">
     <colgroup>
         <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">

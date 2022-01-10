@@ -70,7 +70,7 @@
     </div>
     <div class="ui bottom attached tab active segment">
         <g:set var="counter" value="${offset + 1}"/>
-        <table class="ui celled la-table table sortable">
+        <table class="ui celled la-js-responsive-table la-table table sortable">
             <thead>
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>

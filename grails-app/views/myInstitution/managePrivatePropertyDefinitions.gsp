@@ -44,7 +44,7 @@
                 </div>
                 <div class="${active} content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-table compact table">
+                        <table class="ui celled la-js-responsive-table la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>

@@ -143,7 +143,7 @@ ${surveyInfo.name}
                 <div class="content">
                     <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
                     <div>
-                        <table class="ui la-table table">
+                        <table class="ui la-js-responsive-table la-table table">
                             <thead>
                             <tr>
                                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -251,7 +251,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
                     total="${orgsWithMultiYearTermSub.size()}"/></h4>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -305,7 +305,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
                     total="${orgsWithParticipationInParentSuccessor.size() }"/></h4>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>

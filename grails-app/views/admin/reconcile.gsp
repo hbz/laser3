@@ -32,7 +32,7 @@
         </g:else>
 
         <g:if test="${stats}">
-           <table class="ui celled la-table table">
+           <table class="ui celled la-js-responsive-table la-table table">
             <g:each in="${stats}" var="s">
               <tr><td>${s.key}</td><td>${s.value}</td></tr>
             </g:each>

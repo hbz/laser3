@@ -14,7 +14,7 @@
     <div class="ui segment">
 </g:else>
 
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
                 <th></th>
@@ -45,7 +45,7 @@
 <g:if test="${minusList}">
 
     <div data-tab="minus" class="ui bottom attached tab segment">
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
                 <th></th>

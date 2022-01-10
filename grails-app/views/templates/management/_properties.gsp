@@ -128,7 +128,7 @@
         <div class="ui segment">
             <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
                                              args="${args.superOrgType}"/></h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
@@ -421,7 +421,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">

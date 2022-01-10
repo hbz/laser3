@@ -38,7 +38,7 @@
         </g:else>
     </g:elseif>
 
-    <table class="ui celled table la-table">
+    <table class="ui celled table la-js-responsive-table la-table">
         <thead>
             <tr>
                 <th rowspan="2">${message(code:'default.status.label')}</th>
@@ -125,7 +125,7 @@
 
             <div class="ui header center aligned">Detailansicht</div>
 
-            <table class="ui celled table la-table">
+            <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
                     <tr>
                         <th style="width:10%"></th>

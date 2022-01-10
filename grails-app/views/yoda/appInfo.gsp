@@ -15,7 +15,7 @@
 
     <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.appInfo')}</h1>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">App</h2></th></tr>
         </thead>
@@ -31,7 +31,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Build</h2></th></tr>
         </thead>
@@ -43,7 +43,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Database</h2></th></tr>
         </thead>
@@ -54,7 +54,7 @@
         <tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">ES Index Update</h2></th></tr>
         </thead>
@@ -67,7 +67,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">Global Data Sync</h2></th></tr>
         </thead>
@@ -76,7 +76,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">STATS Sync Service</h2></th></tr>
         </thead>
@@ -110,7 +110,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th colspan="2"><h2 class="ui header">HttpServletRequest.getAttributeNames()</h2></th></tr>
         </thead>

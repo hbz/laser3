@@ -90,10 +90,10 @@
             <br /><br />
 
 
-            <table class="ui celled la-table table license-documents">
+            <table class="ui celled la-js-responsive-table la-table table license-documents">
                 <thead>
                 <tr>
-                    <th></th>
+                    <th>${message(code:'sidewide.number')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.title')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>

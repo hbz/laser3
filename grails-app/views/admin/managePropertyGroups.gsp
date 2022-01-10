@@ -29,7 +29,7 @@
             </div>
         </g:if>
 
-    <table class="ui celled sortable table la-table compact">
+    <table class="ui celled sortable table la-js-responsive-table la-table compact">
         <thead>
             <tr>
                 <th>Name</th>

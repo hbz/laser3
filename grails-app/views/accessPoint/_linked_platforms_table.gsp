@@ -1,6 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
-<table id="platformTable" class="ui celled la-table table compact">
+<table id="platformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
   <tr>
     <th>${message(code: "platform.label")}</th>

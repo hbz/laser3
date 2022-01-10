@@ -12,7 +12,7 @@
         </div>
         <div class="content">
 
-            <table class="ui celled table la-table">
+            <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription.properties')}</th>

@@ -42,7 +42,7 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
 
-                            <table class="ui la-table table">
+                            <table class="ui la-js-responsive-table la-table table">
                                 <thead>
                                 <tr>
                                     <th>Merkmal</th>
