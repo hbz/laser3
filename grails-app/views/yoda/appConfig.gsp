@@ -19,21 +19,31 @@
     <thead>
     <tr>
         <th></th>
-        <th>Property</th>
-        <th>Value</th>
+        <th></th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
-        <g:each in="${currentconf.keySet().sort()}" var="key" status="i">
+        <g:each in="${currentConfig.keySet().sort()}" var="key" status="i">
+            <%
+                String color = ''
+                if (key.startsWith('grails.plugin'))        { color = '#FFDEAD' }
+                else if (key.startsWith('grails'))          { color = '#FFFFE0' }
+                else if (key.startsWith('dataSource'))      { color = '#E0FFFF' }
+                else if (key.startsWith('java'))            { color = '#E8BFE8' }
+                else if (key.startsWith('spring'))          { color = '#B8FBB8' }
+
+                if (color) { color = 'background-color:' + color }
+            %>
             <tr>
-                <td>${i+1}.</td>
+                <td style="${color}">${i+1}.</td>
                 <td>${key}</td>
                 <td>
                     <g:if test="${blacklist.contains(key)}">
                         <span style="color:orange"> == C O N C E A L E D === </span>
                     </g:if>
                     <g:else>
-                        ${currentconf.get(key)}
+                        ${currentConfig.get(key)}
                     </g:else>
                 </td>
             </tr>

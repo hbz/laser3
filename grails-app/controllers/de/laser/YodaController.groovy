@@ -95,7 +95,7 @@ class YodaController {
         ]
         result.editable = true
 
-        result.currentconf = grails.util.Holders.config
+        result.currentConfig = grails.util.Holders.config
 
         result
     }
