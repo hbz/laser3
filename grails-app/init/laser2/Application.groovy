@@ -1,5 +1,6 @@
 package laser2
 
+import de.laser.helper.ConfigUtils
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import org.springframework.context.EnvironmentAware
@@ -14,13 +15,11 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
     @Override
     void setEnvironment(Environment environment) {
-        String infoAppName = (environment.properties.get('systemProperties')?.get('info.app.name')) ?: 'laser2'
-
-        File externalConfig = new File("${System.getProperty('user.home')}/.grails/${infoAppName}-config.groovy")
+        File externalConfig = ConfigUtils.getConfigFile(environment)
 
         if (externalConfig.exists()) {
             log.info("-----> Loading local configuration file: ${externalConfig.absolutePath} <-----")
-            ConfigObject config = new ConfigSlurper().parse(externalConfig.toURL())
+            ConfigObject config = new ConfigSlurper().parse(externalConfig.toURI().toURL())
             environment.propertySources.addFirst(new MapPropertySource("externalGroovyConfig", config))
         }
         else {

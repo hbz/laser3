@@ -1209,7 +1209,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 break
         }
-        if(done) {
+        if(done || pc.msgToken == 'pendingChange.message_SU_NEW_01') {
             pc.status = RDStore.PENDING_CHANGE_ACCEPTED
             pc.actionDate = new Date()
             if(!pc.save()) {
