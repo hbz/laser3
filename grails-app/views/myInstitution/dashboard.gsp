@@ -367,6 +367,7 @@
             }).done(function(response){
                 $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
                 $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
+                r2d2.initDynamicSemuiStuff('#pendingChanges');
             })
         }
 
