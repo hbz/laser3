@@ -8,7 +8,7 @@
         <%--<input type="submit"
                    value="${message(code: 'license.linking.submit')}"
                    class="ui primary button"/>--%>
-            <table class="ui celled sortable table table-tworow la-table la-responsive-table">
+            <table class="ui celled sortable table table-tworow la-table la-js-responsive-table">
                 <thead>
                     <tr>
                         <g:if test="${compare}">
@@ -197,7 +197,7 @@
                         --%>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}":><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>

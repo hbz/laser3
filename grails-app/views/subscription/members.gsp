@@ -122,7 +122,7 @@
     </semui:debugInfo>
 
     <g:if test="${filteredSubChilds}">
-        <table class="ui celled la-table table">
+        <table class="ui celled monitor stackable la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <th>${message(code:'sidewide.number')}</th>

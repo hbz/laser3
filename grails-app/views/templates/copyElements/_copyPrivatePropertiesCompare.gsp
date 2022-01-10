@@ -22,7 +22,7 @@
 
 
         <g:if test="${privateProperties?.size() > 0}">
-            <table class="ui celled table la-table">
+            <table class="ui celled table la-js-responsive-table la-table">
                 <g:render template="/templates/copyElements/propertyComparisonTableRow"
                           model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name, sourceObject: sourceObject]"/>
             </table>

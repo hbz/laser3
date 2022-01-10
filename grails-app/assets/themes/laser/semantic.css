@@ -16125,6 +16125,10 @@ a.ui.basic.label:hover {
   vertical-align: super;
 }
 
+.ui.label.la-annual-rings .ui.tiny.label {
+  font-size: 0.45rem;
+}
+
 .ui.label.la-annual-rings .icon {
   font-size: 1em;
   width: auto;
@@ -28997,34 +29001,77 @@ Floated Menu / Item
   border-top: none;
 }
 
+.la-prop-col-1 {
+  width: 129px;
+}
+
+.la-prop-col-2 {
+  width: 96px;
+}
+
+.la-prop-col-3 {
+  width: 359px;
+}
+
+.la-prop-col-4 {
+  width: 148px;
+}
+
+.la-prop-col-5 {
+  width: 76px;
+}
+
 /*-----------------------------------------------
   Responsive Table for views with wide tables
 -------------------------------------------------*/
 
 @media only screen and (max-width: 1199px) {
-  .ui[class*="monitor stackable"].la-responsive-table [class*="center aligned"] {
-    text-align: left!important;
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-1,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-2,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-3,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-4,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
   }
 
-  .ui[class*="monitor stackable"].la-responsive-table thead {
+  .ui[class*="monitor stackable"].la-js-responsive-table > thead {
     position: absolute;
     top: -1111px;
     left: -1111px;
   }
 
-  .ui[class*="monitor stackable"].la-responsive-table tbody td:before,
-  .ui[class*="monitor stackable"].la-responsive-table tbody span.la-secondHeaderRow:before {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .ui.form,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:before,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
-    content: attr(data-label) ":";
+    content: attr(data-label);
     font-weight: bold;
   }
 
-  .ui[class*="monitor stackable"].la-responsive-table tbody td:nth-child(1) {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:nth-child(1) {
     font-weight: bold;
   }
 
-  .ui[class*="monitor stackable"].la-responsive-table tbody .x {
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x {
     text-align: left;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
   }
 }
 
@@ -29033,29 +29080,52 @@ Floated Menu / Item
 ----------------------------------------------------------------------------*/
 
 @media only screen and (max-width: 767px) {
-  .ui.la-responsive-table [class*="center aligned"] {
-    text-align: left!important;
+  .ui.la-js-responsive-table .la-prop-col-1,
+  .ui.la-js-responsive-table .la-prop-col-2,
+  .ui.la-js-responsive-table .la-prop-col-3,
+  .ui.la-js-responsive-table .la-prop-col-4,
+  .ui.la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
   }
 
-  .ui.la-responsive-table thead {
+  .ui.la-js-responsive-table > thead {
     position: absolute;
     top: -1111px;
     left: -1111px;
   }
 
-  .ui.la-responsive-table tbody td:before,
-  .ui.la-responsive-table tbody span.la-secondHeaderRow:before {
+  .ui.la-js-responsive-table > tbody > tr .ui.form,
+  .ui.la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td:before,
+  .ui.la-js-responsive-table > tbody > tr span.la-secondHeaderRow:before {
     padding: 0 10px 0 0;
-    content: attr(data-label) ":";
+    content: attr(data-label);
     font-weight: bold;
   }
 
-  .ui.la-responsive-table tbody td:nth-child(1) {
+  .ui.la-js-responsive-table > tbody > tr > td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td:nth-child(1) {
     font-weight: bold;
   }
 
-  .ui.la-responsive-table tbody .x {
+  .ui.la-js-responsive-table > tbody > tr > .x {
     text-align: left;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
   }
 }
 /*!

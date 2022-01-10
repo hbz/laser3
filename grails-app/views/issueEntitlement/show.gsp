@@ -212,7 +212,7 @@
 
 
                 <h4 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h4>
-                <table class="ui celled la-table table">
+                <table class="ui celled la-js-responsive-table la-table table">
                     <thead>
                     <tr>
                         <th>${message(code: 'default.usage.reportType')}</th>
@@ -234,7 +234,7 @@
                     </tbody>
                 </table>
                 <h4 class="ui">${message(code: 'default.usage.allUsageGrid.header')}</h4>
-                <table class="ui celled la-table table">
+                <table class="ui celled la-js-responsive-table la-table table">
                     <thead>
                     <tr>
                         <th><g:message code="default.usage.reportType"/></th>
@@ -323,7 +323,7 @@
                 </g:form>
             </semui:filter>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th><g:message code="tipp.startDate"/></th>

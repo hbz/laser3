@@ -22,7 +22,7 @@
 
         <br />
 
-            <table class="ui table la-table compact">
+            <table class="ui table la-js-responsive-table la-table compact">
               <g:each in="${recentAnnouncements}" var="ra">
                 <tr>
                   <td>

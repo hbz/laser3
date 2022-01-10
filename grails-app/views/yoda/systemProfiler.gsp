@@ -41,7 +41,7 @@
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-table compact table" id="heatTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="heatTable">
             <thead>
             <tr>
                 <th>Url</th>
@@ -122,7 +122,7 @@
 
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-table compact table" id="globalTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -207,7 +207,7 @@
                 </div>
             </div>
         </div>
-        <table class="ui celled la-table compact table" id="contextTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>

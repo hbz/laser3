@@ -68,7 +68,7 @@
                         total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
             </g:else>
         </h3>
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
@@ -86,7 +86,7 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
-                <th></th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>

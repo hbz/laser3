@@ -19,7 +19,7 @@
 
 <g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
 
-    <table class="ui celled la-table table license-documents">
+    <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>

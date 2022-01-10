@@ -70,7 +70,7 @@
     </ul>
 </div>
 <h3 class="ui header">${message(code: 'default.usage.adminPage.infoHeader')}</h3>
-<table class="ui celled la-table table compact">
+<table class="ui celled la-js-responsive-table la-table table compact">
     <tr><td>SUSHI API Url</td><td>
         <g:if test="${ConfigUtils.getStatsApiUrl()}">
             ${ConfigUtils.getStatsApiUrl()}
@@ -119,7 +119,7 @@
     </g:form>
 </semui:filter>
 
-<table class="ui sortable celled la-table table compact">
+<table class="ui sortable celled la-js-responsive-table la-table table compact">
   <thead>
   <tr>
     <g:sortableColumn property="customerId" title="Customer" params="${params}"/>
@@ -170,7 +170,7 @@
 <semui:paginate action="index" controller="usage" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_stc_rows}" />
 
 <h3 class="ui header">${message(code: 'default.usage.adminPage.serviceInfoHeader')}</h3>
-<table class="ui celled la-table table compact">
+<table class="ui celled la-js-responsive-table la-table table compact">
     <tr><td>Currently Running</td><td>${statsSyncService.running}</td></tr>
     <tr><td>Completed Count</td><td>${statsSyncService.completedCount}</td></tr>
     <tr><td>New Fact Count</td><td>${statsSyncService.newFactCount}</td></tr>

@@ -192,7 +192,7 @@
 
     <g:if test="${surveys}">
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
 
@@ -231,7 +231,7 @@
                 <th rowspan="2" scope="col">${message(code: 'surveyResult.label')}</th>
 
                 %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
-                <th rowspan="2" scope="col"></th>
+                <th rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
 
             </tr>
             <tr>
@@ -293,8 +293,9 @@
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo.startDate}"/>
                         <br />
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyInfo.endDate}"/>
+                        <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
+                        </span>
                     </td>
 
                     <td class="center aligned">

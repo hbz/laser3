@@ -14,17 +14,17 @@
     <semui:errors bean="${newProp}" />
 </g:if>
 
-<table class="ui compact la-table-inCard table">
+<table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
-            <col style="width: 129px;">
-            <col style="width: 96px;">
+            <col class="la-prop-col-1">
+            <col class="la-prop-col-2">
             <g:if test="${ownobj instanceof License}">
-                <col style="width: 359px;">
+                <col class="la-prop-col-3">
             </g:if>
-            <col style="width: 148px;">
-            <col style="width: 76px;">
+            <col class="la-prop-col-4">
+            <col class="la-prop-col-5">
         </colgroup>
         <thead>
             <tr>

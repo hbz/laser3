@@ -9,7 +9,7 @@
 <g:set var="wekb" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
 <div class="ui segment" id="reporting-detailsTable">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
             <tr>
                 <%

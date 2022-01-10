@@ -20,7 +20,7 @@
                 <strong><i class="dropdown icon"></i> ${role.key} ( ${role.value.size()} Nutzer )</strong>
             </div>
             <div class="content">
-                <table class="ui celled la-table compact table">
+                <table class="ui celled la-js-responsive-table la-table compact table">
                     <tbody>
                         <g:each in="${role.value.toSorted{a,b -> a.username <=> b.username}}" var="user">
                             <tr>

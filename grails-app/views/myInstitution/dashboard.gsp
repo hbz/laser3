@@ -270,7 +270,7 @@
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
                         <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
                     </g:if>
-                    <table class="ui celled table la-table">
+                    <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
                                 <th rowspan="2">${message(code:'workflow.label')}</th>

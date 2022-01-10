@@ -94,7 +94,7 @@
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}"/>
                 </g:else>
             </div>
-            <table class="ui celled la-table table" id="withoutPropTable">
+            <table class="ui celled la-js-responsive-table la-table table" id="withoutPropTable">
                 <thead>
                     <tr>
                         <th colspan="5">
@@ -328,7 +328,7 @@
                 </g:else>
             </div>
 
-            <table class="ui celled la-table table" id="existingObjTable">
+            <table class="ui celled la-js-responsive-table la-table table" id="existingObjTable">
                 <thead>
                     <tr>
                         <th colspan="6">

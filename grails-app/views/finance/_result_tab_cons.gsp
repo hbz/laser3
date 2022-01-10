@@ -65,11 +65,11 @@
         }
     }
 %>
-<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table table-tworow la-table la-responsive-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table table-tworow la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">
-                <th data-label="${message(code:'responsive.table.selectElement')}">
+                <th>
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
                     </g:if>

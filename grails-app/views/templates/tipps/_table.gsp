@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ApiSource; de.laser.Platform; de.laser.titles.BookInstance" %>
 
-<table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+<table class="ui sortable celled la-js-responsive-table la-table table ignore-floatThead la-bulk-header">
     <thead>
     <tr>
         <th></th>
@@ -34,7 +34,7 @@
                 <!-- END TEMPLATE -->
             </td>
 
-            <td class="coverageStatements la-tableCard">
+            <td class="coverageStatements la-js-responsive-table la-tableCard">
 
                 <g:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
 
