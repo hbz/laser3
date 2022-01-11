@@ -36,7 +36,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'license' : [
+                                    license : [
                                             'license-licenseCategory',
                                             //'license-type',
                                             //'license-openEnded',
@@ -46,7 +46,7 @@ class LicenseConsCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            distribution : [
+                            default : [
                                      'license-x-identifier' : [
                                              detailsTemplate     : 'license',
                                              chartTemplate       : '2axis2values_nonMatches',
@@ -84,7 +84,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'licensor' : [
+                                    licensor : [
                                             'licensor-orgType',
                                             'licensor-country',
                                             'licensor-region',

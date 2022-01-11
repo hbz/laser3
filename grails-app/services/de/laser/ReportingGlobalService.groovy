@@ -154,7 +154,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -165,7 +165,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -176,7 +176,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -187,7 +187,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PLATFORM + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -198,7 +198,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.distribution.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -240,7 +240,7 @@ class ReportingGlobalService {
 
                 if (suffix in ['x']) {
 
-                    String tmpl = cfg.base.distribution.get('distribution').get(params.query).detailsTemplate
+                    String tmpl = cfg.base.distribution.get('default').get(params.query).detailsTemplate
                     result.tmpl = TMPL_PATH_DETAILS + tmpl
 
                     if (! idList) {

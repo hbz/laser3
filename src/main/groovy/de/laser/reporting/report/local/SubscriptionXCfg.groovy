@@ -10,7 +10,7 @@ class SubscriptionXCfg {
                     ],
                     query: [
                             default: [
-                                    'tipp' : [
+                                    tipp : [
                                             'tipp-publisherName',
                                             'tipp-seriesName',
                                             'tipp-subjectReference',
@@ -46,7 +46,7 @@ class SubscriptionXCfg {
                     ],
                     query: [
                             default: [
-                                    'member' : [
+                                    member : [
                                             'member-customerType',
                                             'member-orgType',
                                             //'member-legalInfo',
@@ -59,7 +59,7 @@ class SubscriptionXCfg {
                                             'member-funderHskType',
                                             'member-funderType'
                                     ],
-                                    'tipp' : [
+                                    tipp : [
                                             'tipp-publisherName',
                                             'tipp-seriesName',
                                             'tipp-subjectReference',

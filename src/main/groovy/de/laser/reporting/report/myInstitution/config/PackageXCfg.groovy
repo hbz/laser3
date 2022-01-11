@@ -54,7 +54,7 @@ class PackageXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            distribution : [
+                            default : [
                                     /* 'package-x-identifier' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : '2axis2values_nonMatches',

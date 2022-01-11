@@ -73,7 +73,7 @@ class BaseQuery {
             }
             it.value.get('distribution')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
+                    meta = [ BaseConfig.getMessage('distribution'), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
                 }
             }
             it.value.get('timeline')?.each { it2 ->

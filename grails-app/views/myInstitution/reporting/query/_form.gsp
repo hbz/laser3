@@ -24,7 +24,7 @@
         <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
             <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${di}">${BaseConfig.getMessage(field.key)}</label>
+                    <label for="query-chooser-2-${di}">${BaseConfig.getMessage('distribution')}</label>
                          <semui:dropdownWithI18nExplanations name="query-chooser"
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"

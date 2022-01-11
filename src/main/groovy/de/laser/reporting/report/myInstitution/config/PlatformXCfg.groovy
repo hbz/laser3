@@ -60,7 +60,7 @@ class PlatformXCfg extends BaseConfig {
                             ]
                     ],
                     distribution : [
-                            distribution : [
+                            default : [
                                     'platform-x-property' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : '2axis3values',
