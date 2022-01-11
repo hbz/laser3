@@ -24,9 +24,9 @@ class SubscriptionXCfg {
                             ]
                     ],
 
-                    query2: [
+                    timeline: [
                             default: [
-                                    'timeline' : [
+                                    timeline : [
                                             'timeline-entitlement' : [
                                                     detailsTemplate : 'timeline/entitlement',
                                                     chartTemplate   : 'timeline/1axis3values',
@@ -73,9 +73,9 @@ class SubscriptionXCfg {
                             ]
                     ],
 
-                    query2: [
+                    timeline: [
                             default: [
-                                    'timeline' : [
+                                    timeline : [
                                             'timeline-member' : [
                                                     detailsTemplate : 'timeline/organisation',
                                                     chartTemplate   : 'timeline/1axis3values',
@@ -98,7 +98,6 @@ class SubscriptionXCfg {
                                             ],
                                     ]
                             ],
-
                     ]
             ]
     ]

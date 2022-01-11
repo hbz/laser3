@@ -31,8 +31,8 @@ class SubscriptionFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage('subscription.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, 'subscription')
+        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -193,7 +193,7 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {
@@ -315,7 +315,7 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey

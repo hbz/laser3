@@ -26,7 +26,7 @@ class ReportingGlobalService {
         result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(16)
 
         result.cfgQueryList = [:]
-        result.cfgQuery2List = [:]
+        result.cfgDistributionList = [:]
 
         if (params.filter == BaseConfig.KEY_COSTITEM) {
             doFilterCostItem(result, params.clone() as GrailsParameterMap)
@@ -65,7 +65,7 @@ class ReportingGlobalService {
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( pk ).query.default )
         }
 
-        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2 ) // Verteilung
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution )
     }
 
     void doFilterOrganisation (Map<String, Object> result, GrailsParameterMap params) {
@@ -84,7 +84,7 @@ class ReportingGlobalService {
         else {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.default )
         }
-        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2 ) // Verteilung
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution )
     }
 
     void doFilterPackage (Map<String, Object> result, GrailsParameterMap params) {
@@ -95,7 +95,7 @@ class ReportingGlobalService {
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PACKAGE).get(pk).query.default)
         }
-        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2 ) // Verteilung
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution )
     }
 
     void doFilterPlatform (Map<String, Object> result, GrailsParameterMap params) {
@@ -103,7 +103,7 @@ class ReportingGlobalService {
         result.filterResult = PlatformFilter.filter(params)
 
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query.default )
-        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query2 ) // Verteilung
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution )
     }
 
     void doFilterSubscription (Map<String, Object> result, GrailsParameterMap params) {
@@ -119,7 +119,7 @@ class ReportingGlobalService {
         if (! params.get('filter:consortium_source')) {
             result.cfgQueryList.remove('consortium') // ?
         }
-        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2 ) // Verteilung
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.distribution )
     }
 
     // ----- 2 - chart
@@ -141,8 +141,7 @@ class ReportingGlobalService {
                 clone.put('filterCache', cacheMap.filterCache)
             }
 
-            String prefix = params.query.split('-')[0]
-            String suffix = params.query.split('-')[1]
+            def (String prefix, String suffix) = params.query.split('-')
 
             result.tmpl = TMPL_PATH_CHART + 'generic'
 
@@ -155,7 +154,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -166,7 +165,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -177,7 +176,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.query2.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -188,7 +187,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query2.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PLATFORM + '.dist.chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -199,7 +198,7 @@ class ReportingGlobalService {
                 result.labels.tooltip = getTooltipLabels(clone)
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('distribution').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.distribution.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
@@ -221,8 +220,7 @@ class ReportingGlobalService {
 
         if (params.query) {
 
-            String prefix = params.query.split('-')[0]
-            String suffix = params.query.split('-')[1]
+            def (String prefix, String suffix) = params.query.split('-')
             List idList = []
 
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
@@ -242,7 +240,7 @@ class ReportingGlobalService {
 
                 if (suffix in ['x']) {
 
-                    String tmpl = cfg.base.query2.get('distribution').get(params.query).detailsTemplate
+                    String tmpl = cfg.base.distribution.get('distribution').get(params.query).detailsTemplate
                     result.tmpl = TMPL_PATH_DETAILS + tmpl
 
                     if (! idList) {

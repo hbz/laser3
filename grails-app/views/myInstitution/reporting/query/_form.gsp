@@ -3,12 +3,12 @@
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
-        <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
+        <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qci}">${BaseConfig.getMessage(field.key)}</label>
+                    <label for="query-chooser-1-${qi}">${BaseConfig.getMessage(field.key)}</label>
                     <semui:dropdownWithI18nExplanations name="query-chooser"
-                                                        id="query-chooser-1-${qci}"
+                                                        id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it}}"
                                                         optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
@@ -20,13 +20,13 @@
         </g:each>
     </div>
 
-    <div class="fields <laser:numberToString number="${2 + cfgQuery2List.size()}"/>">
-        <g:each in="${cfgQuery2List}" var="cfgQuery" status="qci">
-            <g:each in="${cfgQuery}" var="field">
+    <div class="fields <laser:numberToString number="${2 + cfgDistributionList.size()}"/>">
+        <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
+            <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${qci}">${BaseConfig.getMessage(field.key)}</label>
+                    <label for="query-chooser-2-${di}">${BaseConfig.getMessage(field.key)}</label>
                          <semui:dropdownWithI18nExplanations name="query-chooser"
-                                                             id="query-chooser-2-${qci}"
+                                                             id="query-chooser-2-${di}"
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"
                                                              optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"

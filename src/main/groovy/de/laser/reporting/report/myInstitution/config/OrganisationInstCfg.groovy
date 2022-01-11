@@ -69,8 +69,8 @@ class OrganisationInstCfg extends BaseConfig {
                                     'org' : [ 'org-orgType' ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            distribution : [
                                      'org-x-identifier' : [
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : '2axis2values_nonMatches',

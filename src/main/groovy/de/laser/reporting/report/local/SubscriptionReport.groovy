@@ -44,8 +44,8 @@ class SubscriptionReport {
         getCurrentConfig( sub ).base.query.default
     }
 
-    static Map<String, Object> getCurrentQuery2Config(Subscription sub) {
-        getCurrentConfig( sub ).base.query2.default
+    static Map<String, Object> getCurrentTimelineConfig(Subscription sub) {
+        getCurrentConfig( sub ).base.timeline.default
     }
 
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
@@ -55,7 +55,7 @@ class SubscriptionReport {
         Subscription sub = Subscription.get(params.id)
 
         // TODO
-        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.query2.each { cats ->
+        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.timeline.each { cats ->
             cats.value.each {it ->
                 if (it.value.containsKey(params.query)) {
                     String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
@@ -70,7 +70,7 @@ class SubscriptionReport {
         List<String> meta = []
 
         // TODO
-        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.query2.each { cats ->
+        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.timeline.each { cats ->
             cats.value.each {it ->
                 if (it.value.containsKey(params.query)) {
                     meta = [ getMessage( it.key ), getMessage( 'timeline.' + params.query ), "${params.id}" ]

@@ -40,7 +40,7 @@ class PackageXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'package' : [
+                                    package : [
                                             'package-contentType',
                                             'package-packageStatus',
                                             'package-file',
@@ -53,8 +53,8 @@ class PackageXCfg extends BaseConfig {
                                     ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            distribution : [
                                     /* 'package-x-identifier' : [
                                             detailsTemplate     : 'package',
                                             chartTemplate       : '2axis2values_nonMatches',
@@ -118,7 +118,7 @@ class PackageXCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'provider' : [
+                                    provider : [
                                             'provider-orgType',
                                             'provider-*'
                                     ]
@@ -140,7 +140,7 @@ class PackageXCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'platform' : [
+                                    platform : [
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
                                             'platform-*'

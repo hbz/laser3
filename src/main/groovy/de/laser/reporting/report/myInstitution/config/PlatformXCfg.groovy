@@ -38,7 +38,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'platform' : [
+                                    platform : [
                                             'platform-org',     // TODO - move to query2 !?
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
@@ -59,8 +59,8 @@ class PlatformXCfg extends BaseConfig {
                                     ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            distribution : [
                                     'platform-x-property' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : '2axis3values',
@@ -89,7 +89,7 @@ class PlatformXCfg extends BaseConfig {
             'platform-statisticsUpdate'             : [                 export: true,   label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY]
     ]
 
-    static Map<String, Map> DETAILS_TABLE_CONFIG = [
+    static Map<String, Boolean> DETAILS_TABLE_CONFIG = [
 
             'name' : true,
             'org' : true,     // TODO - move to query2 !?

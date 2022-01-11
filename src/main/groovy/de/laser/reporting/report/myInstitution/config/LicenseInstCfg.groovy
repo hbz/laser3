@@ -47,8 +47,8 @@ class LicenseInstCfg extends BaseConfig {
                                     ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            distribution : [
                                      'license-x-identifier' : [
                                              detailsTemplate    : 'license',
                                              chartTemplate      : '2axis2values_nonMatches',

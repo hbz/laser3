@@ -28,7 +28,7 @@ class OrganisationFilter extends BaseFilter {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         ContextService contextService  = mainContext.getBean('contextService')
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, 'org')
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.source.' + filterSource)])
 
         switch (filterSource) {
