@@ -1,8 +1,20 @@
 package de.laser.helper
 
+import grails.config.Config
 import grails.util.Holders
+import org.springframework.core.env.Environment
 
 class ConfigUtils {
+
+    // -- config file --
+
+    static File getConfigFile(Environment environment) {
+        Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
+        String ian = sysProps.get('info.app.name') ?: 'laser2'
+        String clc = sysProps.get('custom.local.config') ? ('-' + sysProps.get('custom.local.config')) : ''
+
+        new File("${System.getProperty('user.home')}/.grails/${ian}-config${clc}.groovy")
+    }
 
     // -- comfortable --
 
@@ -163,7 +175,7 @@ class ConfigUtils {
         def result
 
         if (key) {
-            ConfigObject cfg = Holders.grailsApplication.config
+            Config cfg = Holders.grailsApplication.config
 
             key.split('\\.').each { lvl ->
                 result = result ? result.get(lvl) : cfg.get(lvl)

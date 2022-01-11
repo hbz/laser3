@@ -9,6 +9,8 @@
     <div class="ui form" style="margin-top: 3em !important;">
         <div class="fields three">
             <%
+
+                // TODO : localDB-Merkmal anzeigen, falls Verteilung -> Merkmal
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
                 Map<String, Object> dtCfg = BaseConfig.getCurrentDetailsTableConfig( key )

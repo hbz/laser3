@@ -85,6 +85,134 @@ class PlatformQuery extends BaseQuery {
                         result
                 )
             }
+            else {
+//                if (params.query in ['platform-x-propertyWekb']) {
+//
+//                    Map<String, Object> combinedResult = [
+//                            'platform-passwordAuthentication'       : [data:[], dataDetails:[]],
+//                            'platform-proxySupported'               : [data:[], dataDetails:[]],
+//                            'platform-shibbolethAuthentication'     : [data:[], dataDetails:[]],
+//                            'platform-statisticsFormat'             : [data:[], dataDetails:[]],
+//                            'platform-statisticsUpdate'             : [data:[], dataDetails:[]],
+//                            'platform-counterCertified'             : [data:[], dataDetails:[]],
+//                            'platform-counterR3Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR4Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR4SushiApiSupported'   : [data:[], dataDetails:[]],
+//                            'platform-counterR5Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR5SushiApiSupported'   : [data:[], dataDetails:[]],
+//                    ]
+//
+//                    Map<String, Object> struct = [:]
+//                    String suffix = query.split('-')[1]
+//
+//                    esRecords.each { it ->
+//                        String key = it.value.get( suffix )
+//                        if (! struct.containsKey(key)) {
+//                            struct.put(key, [])
+//                        }
+//                        struct.get(key).add( Long.parseLong(it.key) )
+//                    }
+//                    struct.eachWithIndex { it, idx ->
+//                        List d = [BaseQuery.NO_DATA_ID, getMessage(BaseQuery.NO_DATA_LABEL), it.value.size()]
+//                        if (it.key) {
+//                            RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
+//                            if (rdv) {
+//                                d = [rdv.id, rdv.getI10n('value'), it.value.size()]
+//                            } else {
+//                                d = [idx * -1, GenericHelper.flagUnmatched( it.key ), it.value.size()]
+//                            }
+//                        }
+//                        result.data.add( d )
+//                        result.dataDetails.add([
+//                                query : query,
+//                                id    : d[0],
+//                                label : d[1],
+//                                idList: it.value
+//                        ])
+//                    }
+//                    ElasticSearchHelper.sortResultDataList( result.data )
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                    Map<String, Object> combinedResult = [
+//                            'platform-passwordAuthentication'       : [data:[], dataDetails:[]],
+//                            'platform-proxySupported'               : [data:[], dataDetails:[]],
+//                            'platform-shibbolethAuthentication'     : [data:[], dataDetails:[]],
+//                            'platform-statisticsFormat'             : [data:[], dataDetails:[]],
+//                            'platform-statisticsUpdate'             : [data:[], dataDetails:[]],
+//                            'platform-counterCertified'             : [data:[], dataDetails:[]],
+//                            'platform-counterR3Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR4Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR4SushiApiSupported'   : [data:[], dataDetails:[]],
+//                            'platform-counterR5Supported'           : [data:[], dataDetails:[]],
+//                            'platform-counterR5SushiApiSupported'   : [data:[], dataDetails:[]],
+//                    ]
+//
+////                    Map<String, Object> combinedResult = [ data:[], dataDetails:[] ]
+//
+//                    _processESRefdataQuery('platform-passwordAuthentication', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-passwordAuthentication') as Map)
+//                    _processESRefdataQuery('platform-proxySupported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-proxySupported') as Map)
+//                    _processESRefdataQuery('platform-shibbolethAuthentication', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-shibbolethAuthentication') as Map)
+//                    _processESRefdataQuery('platform-statisticsFormat', RDConstants.PLATFORM_STATISTICS_FORMAT,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-statisticsFormat') as Map)
+//                    _processESRefdataQuery('platform-statisticsUpdate', RDConstants.PLATFORM_STATISTICS_FREQUENCY,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-statisticsUpdate') as Map)
+//                    _processESRefdataQuery('platform-counterCertified', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-counterCertified') as Map)
+//                    _processESRefdataQuery('platform-counterR3Supported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-counterR3Supported') as Map)
+//                    _processESRefdataQuery('platform-counterR4Supported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList,combinedResult.get('platform-counterR4Supported') as Map)
+//                    _processESRefdataQuery('platform-counterR4SushiApiSupported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-counterR4SushiApiSupported') as Map)
+//                    _processESRefdataQuery('platform-counterR5Supported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-counterR5Supported') as Map)
+//                    _processESRefdataQuery('platform-counterR5SushiApiSupported', RDConstants.Y_N,
+//                            BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, combinedResult.get('platform-counterR5SushiApiSupported') as Map)
+//
+//                    println '---------------'
+//                    println combinedResult
+//
+//                    Map<String, Object> normalizedData = [:]
+//
+//                    combinedResult.each{key, value ->
+//                        value.dataDetails.each{ dd ->
+//                            if (dd.id in [null, 0]) {
+//                                normalizedData.dataDetails.add(dd)
+//                            }
+//                            else if (dd[0] == 0) {
+//                                normalizedData.dataDetails.add(dd)
+//                            }
+//                        }
+//                        result.data.addAll( value.data )
+//                        result.dataDetails.addAll( value.dataDetails )
+//                    }
+//
+//                    println normalizedData
+
+                    //println result
+//                    handleGenericPropertyXQuery(
+//                            params.query,
+//                            'select pd.id, pd.name, count(*) from Platform plt join plt.propertySet prop join prop.type pd where plt.id in (:idList)',
+//                            'select plt.id from Platform plt join plt.propertySet prop join prop.type pd where plt.id in (:idList)',
+//                            idList,
+//                            contextService.getOrg(),
+//                            result
+//                    )
+//                }
+            }
         }
         result
     }

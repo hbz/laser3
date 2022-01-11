@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
-    <div id="history-content"<g:if test="${tab != 'history'}"> class="ui segment hidden"</g:if>>
+    <div id="history-content" class="ui segment <g:if test="${! params.get('cmd').equals('addBookmark')}">hidden</g:if>">
         <span class="ui top attached label" style="border-radius: 0; text-align: center">
             <i class="icon history large"></i>${message(code:'reporting.filter.history')}
         </span>
@@ -72,7 +72,7 @@
     </div>
 </g:if>
 <g:if test="${bookmarks}">
-    <div id="bookmark-content"<g:if test="${tab != 'bookmark'}"> class="ui segment hidden"</g:if>>
+    <div id="bookmark-content" class="ui segment <g:if test="${! params.get('cmd').equals('deleteBookmark')}">hidden</g:if>">
         <span class="ui top attached label" style="border-radius: 0; text-align: center">
             <i class="icon teal bookmark large"></i>${message(code:'reporting.filter.bookmarks')}
         </span>
