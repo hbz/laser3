@@ -1800,7 +1800,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             http = new HTTPBuilder(source.uri + '/scroll')
             String debugString = source.uri+'/scroll?'
             queryParams.each { String k, v ->
-                debugString += + '&' +k + '=' + v
+                debugString += '&' +k + '=' + v
             }
             log.debug(debugString)
         }
