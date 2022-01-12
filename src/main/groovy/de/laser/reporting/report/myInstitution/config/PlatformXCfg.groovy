@@ -61,10 +61,14 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     distribution : [
                             default : [
-                                    'platform-x-property' : [
+                                    'platform-x-propertyLocal' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : '2axis3values',
                                             chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
+                                    ],
+                                    'platform-x-propertyWekb' : [
+                                            detailsTemplate     : 'platform',
+                                            chartTemplate       : 'generic'
                                     ]
                             ]
                     ]
@@ -73,7 +77,8 @@ class PlatformXCfg extends BaseConfig {
 
     static Map<String, Map> ES_DATA = [
 
-            'platform-altname'      : [                 export: true,   label: 'package.show.altname'],
+            'platform-altname'                      : [                 export: true,   label: 'package.show.altname'],
+            'platform-x-propertyWekb'               : [ : ],
 
             'platform-ipAuthentication'             : [filter: true,    export: true,   label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION],
             'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],

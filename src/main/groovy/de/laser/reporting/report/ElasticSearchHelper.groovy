@@ -20,9 +20,8 @@ class ElasticSearchHelper {
             try {
                 Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
                 HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
-                println 'Request: ' + hb.getUri()
 
-                print 'Queue:'
+                print ' Retrieving: ' + hb.getUri()
                 while (pkgList) {
                     print ' ~' + pkgList.size()
                     List terms = pkgList.take(500)
@@ -74,9 +73,8 @@ class ElasticSearchHelper {
             try {
                 Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
                 HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
-                println 'Request: ' + hb.getUri()
 
-                print 'Queue:'
+                print ' Retrieving: ' + hb.getUri()
                 while (pkgList) {
                     print ' ~' + pkgList.size()
                     List terms = pkgList.take(500)

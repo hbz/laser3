@@ -6,8 +6,11 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 class PlatformQuery extends BaseQuery {
 
@@ -16,6 +19,8 @@ class PlatformQuery extends BaseQuery {
     static Map<String, Object> query(GrailsParameterMap params) {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
@@ -73,7 +78,7 @@ class PlatformQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['platform-x-property']) {
+            if (params.query in ['platform-x-propertyLocal']) {
 
                 handleGenericPropertyXQuery(
                         params.query,
@@ -83,6 +88,40 @@ class PlatformQuery extends BaseQuery {
                         contextService.getOrg(),
                         result
                 )
+            }
+            if (params.query in ['platform-x-propertyWekb']) {
+
+                List<List> queried = []
+
+                (PlatformXCfg.ES_DATA.keySet() - 'platform-altname' - 'platform-x-propertyWekb').each { String esQuery ->
+                    Map<String, Object> prop = PlatformXCfg.ES_DATA.getAt(esQuery)
+                    Map<String, Object> tmp = [data: [], dataDetails: []]
+                    _processESRefdataQuery(esQuery, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
+
+                    queried.add([prop, tmp])
+                }
+                //println groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(queried))
+
+                queried.eachWithIndex { List entry, int idx ->
+                    Set<Long> combinedIdSet = []
+                    entry[1].dataDetails.each { dd ->
+                        if (dd.id != null && dd.id != 0) {
+                            combinedIdSet.addAll(dd.idList)
+                        }
+                    }
+                    if (combinedIdSet) {
+                        String label = messageSource.getMessage(entry[0].label, null, locale)
+
+                        result.data.add([idx, label, combinedIdSet.size()])
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : idx,
+                                label : label,
+                                idList: combinedIdSet.toList(),
+                                value1: combinedIdSet.size()
+                        ] )
+                    }
+                }
             }
         }
         result

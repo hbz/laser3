@@ -72,7 +72,6 @@ class ReportingGlobalService {
 
         result.filterResult = OrganisationFilter.filter(params)
 
-        println params.get('filter:org_source')
         if (params.get('filter:org_source').endsWith('-providerAndAgency')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
         }
