@@ -30,7 +30,7 @@
 <semui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
-    <table class="ui celled sortable table la-table">
+    <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
 

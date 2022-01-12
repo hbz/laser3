@@ -263,7 +263,7 @@ ${surveyInfo.name}
             <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
             <g:set var="OldCostItem" value="${0.0}"/>
             <g:set var="OldCostItemAfterTax" value="${0.0}"/>
-            <table class="ui celled sortable table la-table" id="parentSubscription">
+            <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                 <thead>
                 <tr>
                     <th>

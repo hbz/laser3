@@ -139,7 +139,7 @@
                     <td><g:checkBox name="copySurvey.copySurveyProperties" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copySurveyProperties')}</td>
                     <td>
-                        <table class="ui celled sortable table la-table">
+                        <table class="ui celled sortable table la-js-responsive-table la-table">
                             <thead>
                             <tr>
                                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -265,7 +265,7 @@
                     <td><g:checkBox name="copySurvey.copyParticipants" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyParticipants')}</td>
                     <td>
-                        <table class="ui sortable celled la-table table">
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
 
                             <thead>
                             <tr>
@@ -403,7 +403,7 @@
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, workFlow: '2']">
         <div class="subscription-results">
             <g:if test="${subscriptions}">
-                <table class="ui celled sortable table table-tworow la-table">
+                <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
                     <thead>
                     <tr>
                         <th rowspan="2" class="center aligned"></th>

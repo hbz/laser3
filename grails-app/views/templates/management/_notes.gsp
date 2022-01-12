@@ -47,7 +47,7 @@
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th data-label="${message(code:'responsive.table.selectElement')}">
+                    <th>
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -59,8 +59,8 @@
                 <g:if test="${controllerName == "myInstitution"}">
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
-                <th>${message(code: 'default.documents.label')}</th>
-                <th></th>
+                <th>${message(code:'default.notes.label')}</th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>

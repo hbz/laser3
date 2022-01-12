@@ -22,7 +22,7 @@
 
         <g:if test="${sourceObject instanceof SurveyConfig}">
             <g:if test="${customProperties?.size() > 0 }">
-                <table class="ui celled table la-table">
+                <table class="ui celled table la-js-responsive-table la-table">
                     <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'surveyconfig.properties'), sourceObject:sourceObject]" />
                 </table>
                 <div class="ui divider"></div>
@@ -32,7 +32,7 @@
 
                 <div class="content">
                     <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextOrg.name}</h2>
-                    <table class="ui celled table la-table">
+                    <table class="ui celled table la-js-responsive-table la-table">
                         <g:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'surveyconfig.properties') + ': ' + contextService.getOrg().name]"/>
                     </table>
@@ -61,7 +61,7 @@
                             </g:if>
                         </h5>
 
-                        <table class="ui celled table la-table">
+                        <table class="ui celled table la-js-responsive-table la-table">
                             <g:render template="/templates/copyElements/propertyComparisonTableRow"
                                       model="[group: groupedProps.getValue().groupTree, key: groupedProps.getKey().name, propBinding: groupedProps.getValue().binding]"/>
                         </table>
@@ -84,7 +84,7 @@
                         </g:else>
                     </h2>
 
-                    <table class="ui celled table la-table">
+                    <table class="ui celled table la-js-responsive-table la-table">
                         <g:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: orphanedProperties, key: message(code: 'subscription.properties'), sourceObject: sourceObject]"/>
                     </table>
@@ -97,7 +97,7 @@
 
                 <div class="content">
                     <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h2>
-                    <table class="ui celled table la-table">
+                    <table class="ui celled table la-js-responsive-table la-table">
                         <g:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
                     </table>

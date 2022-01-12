@@ -7,14 +7,14 @@
             <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
                                              args="${args.superOrgType}"/></h3>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th></th>
+                    <th>${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -99,7 +99,7 @@
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th data-label="${message(code:'responsive.table.selectElement')}">
+                    <th>
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -115,7 +115,7 @@
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.isMultiYear.label')}</th>
-                <th></th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>

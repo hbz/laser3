@@ -51,7 +51,7 @@
             </div>
             <div class="content">
 
-                <table  class="ui celled la-table table">
+                <table  class="ui celled la-js-responsive-table la-table table">
                     <thead>
                         <tr>
                             <th class="four wide">${message(code: 'accessPoint.name')}</th>

@@ -20,7 +20,7 @@
     <g:render template="nav"  />
 
       <g:if test="${costItems && costItems.size() > 0}">
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
               <th>${message(code:'financials.invoice_number')}</th>

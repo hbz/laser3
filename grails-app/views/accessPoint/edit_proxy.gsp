@@ -67,7 +67,7 @@
         </span>--}%
         </h3>
 
-        <table class="ui celled la-table table very compact">
+        <table class="ui celled la-js-responsive-table la-table table very compact">
             <thead>
             <tr>
                 <th>${message(code: 'accessPoint.ip.format.input')}</th>
@@ -137,7 +137,7 @@
     </span>--}%
     </h3>
 
-    <table class="ui celled la-table table very compact">
+    <table class="ui celled la-js-responsive-table la-table table very compact">
         <thead>
         <tr>
             <th>${message(code: 'accessPoint.ip.format.input')}</th>

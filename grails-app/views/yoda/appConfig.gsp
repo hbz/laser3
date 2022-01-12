@@ -15,7 +15,7 @@
 
 %{--<h2 class="ui header">${message(code:'sys.properties')}</h2>--}%
 
-<table class="ui sortable celled la-table compact table">
+<table class="ui sortable celled la-js-responsive-table la-table compact table">
     <thead>
     <tr>
         <th></th>

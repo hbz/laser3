@@ -1,4 +1,4 @@
- <table class="ui celled la-table table">
+ <table class="ui celled la-js-responsive-table la-table table">
 	<thead>
 	<tr>
 		<th style="border:1px solid #dddddd;">${message(code:'tipp.coverage_start')}</th>

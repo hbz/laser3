@@ -264,7 +264,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                         </g:each>
                     </g:each>
                 </p>
-                <table class="ui sortable celled la-table table">
+                <table class="ui sortable celled la-js-responsive-table la-table table">
                     <thead>
                         <tr>
                             <th class="six wide">Title/Name</th>
