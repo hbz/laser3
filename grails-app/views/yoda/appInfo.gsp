@@ -50,7 +50,7 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${grailsApplication.config.dataSource.url.split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} : ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}</td></tr>
             <tr><td>DataSource.dbCreate</td><td> ${grailsApplication.config.dataSource.dbCreate}</td></tr>
         <tbody>
@@ -77,6 +77,28 @@
             <tr><td>Currently running</td><td>${globalSourceSyncService.running}</td></tr>
         </tbody>
     </table>
+
+    <g:if test="${grailsApplication.config.reporting?.elasticSearch}">
+        <table class="ui celled la-js-responsive-table la-table table compact">
+            <thead>
+            <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>ElasticSearch url</td>
+                <td><a href="${grailsApplication.config.reporting.elasticSearch.url + '/_cat/indices?v'}" target="_blank">${grailsApplication.config.reporting.elasticSearch.url}</a></td>
+            </tr>
+            <tr>
+                <td>ElasticSearch indicies</td>
+                <td>
+                    <g:each in="${grailsApplication.config.reporting.elasticSearch.indicies}" var="k, v">
+                        <a href="${grailsApplication.config.reporting.elasticSearch.url + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
+                    </g:each>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </g:if>
 
     <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
@@ -112,6 +134,7 @@
         </tbody>
     </table>
 
+    %{--
     <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
             <tr><th>HttpServletRequest.getAttributeNames()</th></tr>
@@ -128,6 +151,6 @@
         </tr>
         </tbody>
     </table>
-
+    --}%
 </body>
 </html>

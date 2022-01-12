@@ -24,7 +24,6 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.SQLQuery
@@ -3096,8 +3095,8 @@ class SubscriptionControllerService {
         Subscription sub = Subscription.get(params.id)
 
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
-        result.cfgQueryList  = SubscriptionReport.getCurrentQueryConfig( sub )
-        result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
+        result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
+        result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

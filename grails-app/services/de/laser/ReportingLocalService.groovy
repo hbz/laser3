@@ -42,7 +42,7 @@ class ReportingLocalService {
             Subscription sub = Subscription.get( params.id )
 
             if (prefix in ['timeline']) {
-                Map<String, Object> queryCfg = SubscriptionReport.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
+                Map<String, Object> queryCfg = SubscriptionReport.getCurrentTimelineConfig( sub ).getAt('default').getAt(clone.query) as Map
                 result.putAll( SubscriptionReport.query(clone) )
                 //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
                 result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReport.getMessage('timeline.chartLabel.' + it) } // TODO
@@ -97,7 +97,7 @@ class ReportingLocalService {
 
             String prefix = params.query.split('-')[0]
             if (prefix == 'timeline') {
-                cfg = subConf.base.query2.default.timeline.get( params.query )
+                cfg = subConf.base.timeline.getAt('default').get( params.query )
             }
 
             if (params.query == 'timeline-cost') {
