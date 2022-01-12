@@ -6,6 +6,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4031    10.01.2022  rc-2.2  2.2.9       Moe     Bug         Excel Export Gesamttitelliste: "Verlag" fehlt
+
 4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
 
 4011    20.12.2021  dev     2.3         David   Feature     Reporting: Komfortfunktionen für Export
