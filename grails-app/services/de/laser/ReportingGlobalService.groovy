@@ -72,13 +72,14 @@ class ReportingGlobalService {
 
         result.filterResult = OrganisationFilter.filter(params)
 
-        if (params.get('filter:org_source').contains('providerAndAgency')) {
+        println params.get('filter:org_source')
+        if (params.get('filter:org_source').endsWith('-providerAndAgency')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
         }
-        else if (params.get('filter:org_source').contains('provider')) {
+        else if (params.get('filter:org_source').endsWith('-provider')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.provider )
         }
-        else if (params.get('filter:org_source').contains('agency')) {
+        else if (params.get('filter:org_source').endsWith('-agency')) {
             result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
         }
         else {

@@ -24,7 +24,7 @@ class CostItemFilter extends BaseFilter {
         List<String> whereParts         = [ 'where ci.id in (:costItemIdList)']
         Map<String, Object> queryParams = [ costItemIdList: [] ]
 
-        String filterSource = getCurrentFilterSource(params, 'costItem')
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_COSTITEM)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_COSTITEM + '.source.' + filterSource)])
 
         switch (filterSource) {

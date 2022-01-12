@@ -31,7 +31,7 @@ class SubscriptionFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
-        String filterSource = getCurrentFilterSource(params, 'subscription')
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         switch (filterSource) {

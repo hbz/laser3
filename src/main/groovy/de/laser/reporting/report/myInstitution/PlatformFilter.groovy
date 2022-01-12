@@ -25,7 +25,7 @@ class PlatformFilter extends BaseFilter {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         ContextService contextService  = mainContext.getBean('contextService')
 
-        String filterSource = getCurrentFilterSource(params, 'platform')
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_PLATFORM + '.source.' + filterSource)])
 
         switch (filterSource) {

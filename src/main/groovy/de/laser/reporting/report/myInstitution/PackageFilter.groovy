@@ -30,7 +30,7 @@ class PackageFilter extends BaseFilter {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         ContextService contextService  = mainContext.getBean('contextService')
 
-        String filterSource = getCurrentFilterSource(params, 'package')
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PACKAGE)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
 
         switch (filterSource) {

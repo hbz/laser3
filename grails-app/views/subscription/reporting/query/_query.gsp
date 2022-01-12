@@ -5,7 +5,7 @@
         <g:each in="${cfgTimelineList}" var="cfgTimeline" status="ti">
             <g:each in="${cfgTimeline}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${ti}">${SubscriptionReport.getMessage(field.key)}</label>
+                    <label for="query-chooser-2-${ti}">${SubscriptionReport.getMessage('timeline')}</label>
                     <g:select name="query-chooser-2"
                               id="query-chooser-2-${ti}"
                               from="${field.value}"

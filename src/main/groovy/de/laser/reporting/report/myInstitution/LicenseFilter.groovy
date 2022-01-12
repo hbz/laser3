@@ -29,7 +29,7 @@ class LicenseFilter extends BaseFilter {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         LicenseService licenseService = mainContext.getBean('licenseService')
 
-        String filterSource = getCurrentFilterSource(params, 'license')
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_LICENSE)
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.source.' + filterSource)])
 
         switch (filterSource) {
