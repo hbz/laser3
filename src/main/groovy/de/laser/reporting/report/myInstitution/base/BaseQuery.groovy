@@ -71,14 +71,14 @@ class BaseQuery {
                     }
                 }
             }
-            // TODO - query dist
-            it.value.get('query2')?.each { it2 ->
+            it.value.get('distribution')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    if (cfgKey == 'SubscriptionReport') {
-                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
-                    } else {
-                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
-                    }
+                    meta = [ BaseConfig.getMessage('distribution'), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
+                }
+            }
+            it.value.get('timeline')?.each { it2 ->
+                if (it2.value.containsKey(query)) {
+                    meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
                 }
             }
         }

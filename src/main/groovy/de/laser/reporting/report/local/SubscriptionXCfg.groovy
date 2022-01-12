@@ -10,7 +10,7 @@ class SubscriptionXCfg {
                     ],
                     query: [
                             default: [
-                                    'tipp' : [
+                                    tipp : [
                                             'tipp-publisherName',
                                             'tipp-seriesName',
                                             'tipp-subjectReference',
@@ -24,14 +24,12 @@ class SubscriptionXCfg {
                             ]
                     ],
 
-                    query2: [
+                    timeline: [
                             default: [
-                                    'timeline' : [
-                                            'timeline-entitlement' : [
-                                                    detailsTemplate : 'timeline/entitlement',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ]
+                                    'timeline-entitlement' : [
+                                            detailsTemplate : 'timeline/entitlement',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                     ]
                             ]
                     ]
@@ -46,7 +44,7 @@ class SubscriptionXCfg {
                     ],
                     query: [
                             default: [
-                                    'member' : [
+                                    member : [
                                             'member-customerType',
                                             'member-orgType',
                                             //'member-legalInfo',
@@ -59,7 +57,7 @@ class SubscriptionXCfg {
                                             'member-funderHskType',
                                             'member-funderType'
                                     ],
-                                    'tipp' : [
+                                    tipp : [
                                             'tipp-publisherName',
                                             'tipp-seriesName',
                                             'tipp-subjectReference',
@@ -73,32 +71,29 @@ class SubscriptionXCfg {
                             ]
                     ],
 
-                    query2: [
+                    timeline: [
                             default: [
-                                    'timeline' : [
-                                            'timeline-member' : [
-                                                    detailsTemplate : 'timeline/organisation',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'member.1', 'member.2', 'member.3' ]
-                                            ],
-                                            'timeline-cost' : [
-                                                    detailsTemplate : 'timeline/cost',
-                                                    chartTemplate   : 'timeline/cost',
-                                                    chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
-                                            ],
-                                            'timeline-entitlement' : [
-                                                    detailsTemplate : 'timeline/entitlement',
-                                                    chartTemplate   : 'timeline/1axis3values',
-                                                    chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ],
-                                            'timeline-annualMember-subscription' : [
-                                                    detailsTemplate : 'timeline/subscription',
-                                                    chartTemplate   : 'timeline/annualMember',
-                                                    chartLabels     : [ 'annualMember-subscription' ]
-                                            ],
-                                    ]
+                                    'timeline-member' : [
+                                            detailsTemplate : 'timeline/organisation',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'member.1', 'member.2', 'member.3' ]
+                                    ],
+                                    'timeline-cost' : [
+                                            detailsTemplate : 'timeline/cost',
+                                            chartTemplate   : 'timeline/cost',
+                                            chartLabels     : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
+                                    ],
+                                    'timeline-entitlement' : [
+                                            detailsTemplate : 'timeline/entitlement',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ],
+                                    'timeline-annualMember-subscription' : [
+                                            detailsTemplate : 'timeline/subscription',
+                                            chartTemplate   : 'timeline/annualMember',
+                                            chartLabels     : [ 'annualMember-subscription' ]
+                                    ],
                             ],
-
                     ]
             ]
     ]

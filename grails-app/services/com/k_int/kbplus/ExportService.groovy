@@ -1491,8 +1491,8 @@ class ExportService {
 						default: row.add('other')
 							break
 					}
-					//publisher_name (no value?)
-					row.add(' ')
+					//publisher_name
+					row.add(tipp.publisherName)
 					if(tipp.titleType == 'Book') {
 						//date_monograph_published_print (no value unless BookInstance)
 						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
@@ -1518,7 +1518,7 @@ class ExportService {
 					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
 					row.add(' ')
 					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
+					row.add(tipp.accessType ? tipp.accessType.value : ' ')
 					/*
                     switch(entitlement.tipp.payment) {
                         case RDStore.TIPP_PAYMENT_OA: row.add('F')
@@ -1797,8 +1797,8 @@ class ExportService {
 						default: row.add('other')
 							break
 					}
-					//publisher_name (no value?)
-					row.add(' ')
+					//publisher_name
+					row.add(tipp.publisherName)
 					if(tipp.titleType == 'Book') {
 						//date_monograph_published_print (no value unless BookInstance)
 						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
@@ -1824,7 +1824,7 @@ class ExportService {
 					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
 					row.add(' ')
 					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
+					row.add(tipp.accessType ? tipp.accessType.value : ' ')
 					/*
                     switch(entitlement.tipp.payment) {
                         case RDStore.TIPP_PAYMENT_OA: row.add('F')
@@ -1845,7 +1845,7 @@ class ExportService {
 					//access_end_date
 					row.add(entitlement?.accessEndDate ? formatter.format(entitlement.accessEndDate) : (tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : ' '))
 					//medium
-					row.add(tipp.medium ? tipp.medium.getI10n('value') : ' ')
+					row.add(tipp.medium ? tipp.medium.value : ' ')
 
 
 					//zdb_id
@@ -1987,6 +1987,7 @@ class ExportService {
 				messageSource.getMessage('package.label',null,locale),
 				messageSource.getMessage('platform.label',null,locale),
 				messageSource.getMessage('tipp.titleType',null,locale),
+				messageSource.getMessage('tipp.publisher',null,locale),
 				messageSource.getMessage('tipp.medium',null,locale),
 				messageSource.getMessage('tipp.accessStartDate',null,locale),
 				messageSource.getMessage('tipp.accessEndDate',null,locale),
@@ -2096,6 +2097,7 @@ class ExportService {
 						default: row.add([field:'other', style:null])
 							break
 					}
+					row.add([field: tipp.publisherName ? tipp.publisherName : '', style:null])
 					row.add([field: tipp.medium ? tipp.medium.getI10n('value') : '', style:null])
 					row.add([field: tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : '', style:null])
 					row.add([field: tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : '', style:null])

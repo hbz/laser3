@@ -19,8 +19,7 @@ class PlatformQuery extends BaseQuery {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
-        String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1] // only simply cfg.query
+        def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
         List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 

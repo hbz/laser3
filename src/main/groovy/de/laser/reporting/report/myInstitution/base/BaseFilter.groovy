@@ -10,8 +10,11 @@ import org.springframework.context.ApplicationContext
 
 class BaseFilter {
 
-    static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
+    static String getCurrentFilterSource(GrailsParameterMap params, String source) {
+        params.get(BaseConfig.FILTER_PREFIX + source + BaseConfig.FILTER_SOURCE_POSTFIX)
+    }
 
+    static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
         params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(BaseConfig.FILTER_SOURCE_POSTFIX) }
     }
 
