@@ -100,7 +100,15 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
+                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_ORG) {
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+
+                        whereParts.add( 'plt.' + p + '.id in (:p' + (++pCount) + ')')
+                        queryParams.put( 'p' + pCount, pList )
+
+                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
                         whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
@@ -169,7 +177,8 @@ class PlatformFilter extends BaseFilter {
         }
 
         if (esFilterUsed) {
-            idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
+            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
+            orphanedIdList = []
         }
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'IdList', idList)
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'ESRecords', esRecords)
