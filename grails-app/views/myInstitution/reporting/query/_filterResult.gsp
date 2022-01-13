@@ -28,7 +28,7 @@
 </g:elseif>
 
 <g:elseif test="${filter == BaseConfig.KEY_PLATFORM}">
-   ${message(code: 'reporting.filterResult.platform', args: [filterResult.data.platformIdList.size(), filterResult.data.platformESRecords.size()])}
+    ${message(code: 'reporting.filterResult.platform', args: [filterResult.data.platformIdList.size(), filterResult.data.platformESRecords.size()])}
 </g:elseif>
 
 <g:elseif test="${filter == BaseConfig.KEY_SUBSCRIPTION}">

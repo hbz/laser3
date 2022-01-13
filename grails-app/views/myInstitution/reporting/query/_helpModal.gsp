@@ -28,7 +28,7 @@
             Merkmale von Lizenzen
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Lizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Lizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
         </p>
         <p>
@@ -44,7 +44,7 @@
             Merkmale von Teilnehmerlizenzen
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Teilnehmerlizenzen konkret vergeben wurden.
+            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Teilnehmerlizenzen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
         </p>
         <p>
@@ -183,7 +183,7 @@
             Merkmale von Verträgen
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Verträge konkret vergeben wurden.
+            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Verträge konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
         </p>
         <p>
@@ -235,7 +235,7 @@
             Merkmale von Organisationen
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Organisationen konkret vergeben wurden.
+            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Organisationen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
         </p>
         <p>
@@ -379,12 +379,12 @@
 
     %{-- platform --}%
 
-    <div class="help-section" data-help-section="platform-x-property">
+    <div class="help-section" data-help-section="platform-x-propertyLocal">
         <p class="ui header">
             Merkmale von Plattformen
         </p>
         <p>
-            Gelistet werden alle relevanten Merkmale - also <strong>private oder öffentliche Merkmale</strong>, die für Plattformen konkret vergeben wurden.
+            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Plattformen konkret vergeben wurden.
             Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
         </p>
         <p>
@@ -392,6 +392,20 @@
             <i class="icon circle blue"></i> Plattform mit Merkmal X, <br />
             <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Plattformen <br />
             <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Plattformen <br />
+        </p>
+    </div>
+
+    <div class="help-section" data-help-section="platform-x-propertyWekb">
+        <p class="ui header">
+            Merkmale von Plattformen
+        </p>
+        <p>
+            Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
+        Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
+        </p>
+        <p>
+            Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
         </p>
     </div>
 
