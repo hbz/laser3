@@ -101,10 +101,12 @@ class PlatformFilter extends BaseFilter {
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
                     if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_ORG) {
-                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
-                        queryParams.put( 'p' + pCount, params.long(key) )
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
-                        filterLabelValue = Org.get(params.long(key)).name
+                        whereParts.add( 'plt.' + p + '.id in (:p' + (++pCount) + ')')
+                        queryParams.put( 'p' + pCount, pList )
+
+                        filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
                         whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )

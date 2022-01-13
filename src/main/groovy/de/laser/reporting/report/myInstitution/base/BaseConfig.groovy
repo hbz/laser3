@@ -282,22 +282,22 @@ class BaseConfig {
         else if (key == CUSTOM_IMPL_KEY_PKG_PROVIDER) {
             return [
                     label: messageSource.getMessage('default.provider.label', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList) order by org.sortname, org.name',
+                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
                             [ otList: [RDStore.OT_PROVIDER] ]).collect{[
                         id: it.id,
-                        value_de: it.name,
-                        value_en: it.name,
-                ]}
+                        value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                        value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_ORG) { // TODO
+        else if (key == CUSTOM_IMPL_KEY_PLT_ORG) {
             return [
                     label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org order by org.sortname, org.name').collect{[
+                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
                         id: it.id,
-                        value_de: it.name,
-                        value_en: it.name,
-                ]}
+                        value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                        value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
