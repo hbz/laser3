@@ -20,7 +20,7 @@ class PackageXCfg extends BaseConfig {
                     ],
                     fields: [
                             'breakable'         : FIELD_TYPE_ELASTICSEARCH,
-                            'consistent'        : FIELD_TYPE_ELASTICSEARCH,
+                            //'consistent'        : FIELD_TYPE_ELASTICSEARCH,
                             'contentType'       : FIELD_TYPE_REFDATA,
                             'file'              : FIELD_TYPE_REFDATA,
                             'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
@@ -33,9 +33,9 @@ class PackageXCfg extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'contentType', 'file', 'packageStatus' ],
-                                    [ 'scope', 'paymentType', 'breakable' ],
-                                    [ 'openAccess', 'consistent' ],
                                     [ 'provider', 'platform' ],
+                                    [ 'breakable', 'scope' ],
+                                    [ 'paymentType', 'openAccess']
                             ]
                     ],
                     query : [
