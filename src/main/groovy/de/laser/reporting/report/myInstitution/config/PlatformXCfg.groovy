@@ -26,14 +26,16 @@ class PlatformXCfg extends BaseConfig {
                             'shibbolethAuthentication'  : FIELD_TYPE_ELASTICSEARCH,
                             'softwareProvider'          : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                    : FIELD_TYPE_REFDATA,
+                            'counterCertified'          : FIELD_TYPE_ELASTICSEARCH,
+                            'statisticsFormat'          : FIELD_TYPE_ELASTICSEARCH
                             //'type'                    : FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default: [
                                     [ 'org', 'status'],
                                     [ 'serviceProvider', 'softwareProvider'],
-                                    [ 'ipAuthentication', 'shibbolethAuthentication', 'proxySupported' ],
-                                    [ 'passwordAuthentication' ]
+                                    [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
+                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]
                     ],
                     query : [
@@ -98,13 +100,13 @@ class PlatformXCfg extends BaseConfig {
             'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
             'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],
             'platform-proxySupported'               : [filter: true,    export: true,   label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N],
-            'platform-counterCertified'             : [                 export: true,   label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
+            'platform-counterCertified'             : [filter: true,    export: true,   label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
             'platform-counterR3Supported'           : [                 export: true,   label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N],
             'platform-counterR4Supported'           : [                 export: true,   label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N],
             'platform-counterR5Supported'           : [                 export: true,   label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N],
             'platform-counterR4SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N],
             'platform-counterR5SushiApiSupported'   : [                 export: true,   label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N],
-            'platform-statisticsFormat'             : [                 export: true,   label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT],
+            'platform-statisticsFormat'             : [filter: true,    export: true,   label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT],
             'platform-statisticsUpdate'             : [                 export: true,   label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY]
     ]
 

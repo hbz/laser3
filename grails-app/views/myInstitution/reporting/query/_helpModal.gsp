@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.GlobalExportHelper;" %>
+<%@ page import="de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <semui:infoModal id="${modalID}">
@@ -402,6 +402,15 @@
         <p>
             Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
         Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
+        </p>
+        <p>
+            <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
+
+            <ol class="ui list">
+                <g:each in="${esProperties}" var="prop">
+                    <li value="*"><g:message code="${PlatformXCfg.ES_DATA.get(prop).label}" /></li>
+                </g:each>
+            </ol>
         </p>
         <p>
             Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
