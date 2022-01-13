@@ -68,7 +68,21 @@ class PlatformXCfg extends BaseConfig {
                                     ],
                                     'platform-x-propertyWekb' : [
                                             detailsTemplate     : 'platform',
-                                            chartTemplate       : 'generic'
+                                            chartTemplate       : 'generic',
+                                            esProperties        : [
+                                                    'platform-ipAuthentication',
+                                                    'platform-shibbolethAuthentication',
+                                                    'platform-passwordAuthentication',
+                                                    'platform-proxySupported',
+                                                    'platform-counterCertified',
+                                                    'platform-counterR3Supported',
+                                                    'platform-counterR4Supported',
+                                                    'platform-counterR5Supported',
+                                                    'platform-counterR4SushiApiSupported',
+                                                    'platform-counterR5SushiApiSupported',
+                                                    'platform-statisticsFormat',
+                                                    'platform-statisticsUpdate'
+                                            ]
                                     ]
                             ]
                     ]

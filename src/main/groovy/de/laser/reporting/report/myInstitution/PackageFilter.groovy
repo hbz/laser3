@@ -184,7 +184,8 @@ class PackageFilter extends BaseFilter {
         }
 
         if (esFilterUsed) {
-            idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
+            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
+            orphanedIdList = []
         }
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'IdList', idList)
         filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)

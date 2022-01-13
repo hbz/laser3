@@ -169,7 +169,8 @@ class PlatformFilter extends BaseFilter {
         }
 
         if (esFilterUsed) {
-            idList = orphanedIdList + esRecords.keySet()?.collect{ Long.parseLong(it) } // ????
+            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
+            orphanedIdList = []
         }
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'IdList', idList)
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'ESRecords', esRecords)

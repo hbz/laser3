@@ -4,6 +4,7 @@ import de.laser.*
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
@@ -91,18 +92,20 @@ class PlatformQuery extends BaseQuery {
             }
             if (params.query in ['platform-x-propertyWekb']) {
 
-                List<List> queried = []
+                List<String> esProperties = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(params.query).esProperties ?: []
+                List<List> queryList = []
+                Set<Long> positiveIdSet = []
 
-                (PlatformXCfg.ES_DATA.keySet() - 'platform-altname' - 'platform-x-propertyWekb').each { String esQuery ->
-                    Map<String, Object> prop = PlatformXCfg.ES_DATA.getAt(esQuery)
+                esProperties.each { String esProp ->
+                    Map<String, Object> prop = PlatformXCfg.ES_DATA.getAt(esProp)
                     Map<String, Object> tmp = [data: [], dataDetails: []]
-                    _processESRefdataQuery(esQuery, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
+                    _processESRefdataQuery(esProp, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
 
-                    queried.add([prop, tmp])
+                    queryList.add([prop, tmp])
                 }
-                //println groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(queried))
+                //println groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(queryList))
 
-                queried.eachWithIndex { List entry, int idx ->
+                queryList.eachWithIndex { List entry, int idx ->
                     Set<Long> combinedIdSet = []
                     entry[1].dataDetails.each { dd ->
                         if (dd.id != null && dd.id != 0) {
@@ -120,8 +123,12 @@ class PlatformQuery extends BaseQuery {
                                 idList: combinedIdSet.toList(),
                                 value1: combinedIdSet.size()
                         ] )
+                        positiveIdSet.addAll(combinedIdSet)
                     }
                 }
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
         }
         result
