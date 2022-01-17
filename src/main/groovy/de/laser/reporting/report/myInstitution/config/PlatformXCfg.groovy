@@ -63,7 +63,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     distribution : [
                             default : [
-                                    'platform-x-propertyLocal' : [
+                                    'platform-x-property' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : '2axis3values',
                                             chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
@@ -130,8 +130,9 @@ class PlatformXCfg extends BaseConfig {
             'platform-counterR5Supported' : false, // ES
             'platform-counterR4SushiApiSupported' : false, // ES
             'platform-counterR5SushiApiSupported' : false, // ES
-            // 'platform-x-property' : false,
-            '___lastUpdated' : true, // virtual
-            '___wekb' : true // virtual
+            '_?_propertyLocal' : true, // virtual, optional
+            //'_?_propertyWekb' : true, // virtual, optional
+            '_+_lastUpdated' : true, // virtual
+            '_+_wekb' : true // virtual
     ]
 }

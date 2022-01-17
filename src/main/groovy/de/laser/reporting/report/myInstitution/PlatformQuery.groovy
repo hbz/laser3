@@ -79,7 +79,7 @@ class PlatformQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['platform-x-propertyLocal']) {
+            if (params.query in ['platform-x-property']) {
 
                 handleGenericPropertyXQuery(
                         params.query,
@@ -101,27 +101,28 @@ class PlatformQuery extends BaseQuery {
                     Map<String, Object> tmp = [data: [], dataDetails: []]
                     _processESRefdataQuery(esProp, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
 
-                    queryList.add([prop, tmp])
+                    queryList.add([esProp, prop, tmp])
                 }
                 //println groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(queryList))
 
                 queryList.eachWithIndex { List entry, int idx ->
                     Set<Long> combinedIdSet = []
-                    entry[1].dataDetails.each { dd ->
+                    entry[2].dataDetails.each { dd ->
                         if (dd.id != null && dd.id != 0) {
                             combinedIdSet.addAll(dd.idList)
                         }
                     }
                     if (combinedIdSet) {
-                        String label = messageSource.getMessage(entry[0].label, null, locale)
+                        String label = messageSource.getMessage(entry[1].label, null, locale)
 
-                        result.data.add([idx, label, combinedIdSet.size()])
+                        result.data.add([idx + 1, label, combinedIdSet.size()])
                         result.dataDetails.add([
                                 query : params.query,
-                                id    : idx,
+                                id    : idx + 1, // 0 = NO_COUNTERPART_ID
                                 label : label,
                                 idList: combinedIdSet.toList(),
-                                value1: combinedIdSet.size()
+                                value1: combinedIdSet.size(),
+                                esProperty: entry[0] // ?? TODO
                         ] )
                         positiveIdSet.addAll(combinedIdSet)
                     }

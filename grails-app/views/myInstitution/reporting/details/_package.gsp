@@ -94,7 +94,7 @@
                         ${pkg.file?.getI10n('value')}
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="___currentTitles">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_currentTitles">
 
                         <%
                             List tipps = TitleInstancePackagePlatform.executeQuery(
@@ -197,7 +197,7 @@
                         </g:if>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="___lastUpdated">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(pkg.id.toString()).lastUpdatedDisplay)}" />
@@ -207,7 +207,7 @@
                         </g:else>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="___wekb">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_wekb">
 
                         <g:if test="${wekb?.baseUrl && pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">

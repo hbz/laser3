@@ -16,11 +16,23 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Boolean> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key )
+                    Map<String, Boolean> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+
+                    if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
+
+                    String wekbProperty
+                    if (query == 'platform-x-propertyWekb') {
+                        if (params.id != null && params.id != 0) {
+                            wekbProperty = GlobalExportHelper.getQueryCache(token).dataDetails.find { it.id == params.long('id') }.esProperty
+                            dtConfig[wekbProperty] = true
+                        }
+                    }
+                    dtConfig.remove(null) // ?????
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">
                     <g:set var="label" value="${ BaseDetails.getFieldLabelforColumns( key, k ) }" />
+
                     <g:if test="${b}">
                         <th data-column="dtc:${k}">${label}</th>
                     </g:if>
@@ -189,7 +201,15 @@
                         </g:else>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="___lastUpdated">
+                    <g:if test="${dtConfig.containsKey('_?_propertyLocal')}">
+                        <laser:reportDetailsTableTD config="${dtConfig}" field="_?_propertyLocal">
+
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+
+                        </laser:reportDetailsTableTD>
+                    </g:if>
+
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(plt.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(plt.id.toString()).lastUpdatedDisplay)}" />
@@ -199,7 +219,7 @@
                         </g:else>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="___wekb">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_wekb">
 
                         <g:if test="${wekb?.baseUrl && plt.gokbId}">
                             <g:if test="${esRecordIds.contains(plt.id)}">
@@ -213,14 +233,6 @@
                             </g:else>
                         </g:if>
                     </laser:reportDetailsTableTD>
-
-                    %{--
-                    <g:if test="${query in [ 'platform-x-property' ]}">
-                        <td>
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
-                        </td>
-                    </g:if>
-                    --}%
                 </tr>
             </g:each>
         </tbody>
