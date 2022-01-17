@@ -130,8 +130,7 @@ class PlatformXCfg extends BaseConfig {
             'platform-counterR5Supported' : false, // ES
             'platform-counterR4SushiApiSupported' : false, // ES
             'platform-counterR5SushiApiSupported' : false, // ES
-            '_?_propertyLocal' : true, // virtual, optional
-            //'_?_propertyWekb' : true, // virtual, optional
+            '_?_propertyLocal' : true, // virtual, optional, fixed position
             '_+_lastUpdated' : true, // virtual
             '_+_wekb' : true // virtual
     ]

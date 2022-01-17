@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.reporting.report.GenericHelper; de.laser.reporting.report.myInstitution.config.PackageXCfg; de.laser.reporting.export.myInstitution.PackageExport; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.reporting.report.GenericHelper; de.laser.reporting.report.myInstitution.config.PackageXCfg; de.laser.reporting.export.myInstitution.PackageExport; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <div class="ui segment hidden" id="reporting-dtc-wrapper">
 
@@ -33,7 +33,7 @@
                             label = label + ' (we:kb)'
                         }
                         else if (k == '_?_propertyLocal') {
-                            label = label +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
+                            label = BaseDetailsExport.getMessage('x-property') +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
                         }
 
                         println '<div class="field"><div class="ui checkbox">'
