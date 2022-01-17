@@ -44,12 +44,12 @@
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:provider_source" value="depending-provider" />
+            <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:platform_source" value="depending-platform" />
+            <input type="hidden" name="filter:platform_source" value="filter-depending-platform" />
         </g:if>
 
 %{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />--}%

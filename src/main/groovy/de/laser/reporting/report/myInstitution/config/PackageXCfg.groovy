@@ -110,7 +110,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'depending-provider'
+                            'filter-depending-provider'
                     ],
                     fields : [ ],
                     filter : [
@@ -132,7 +132,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'depending-platform'
+                            'filter-depending-platform'
                     ],
                     fields : [ ],
                     filter : [
