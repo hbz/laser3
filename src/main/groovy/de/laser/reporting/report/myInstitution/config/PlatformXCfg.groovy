@@ -63,7 +63,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     distribution : [
                             default : [
-                                    'platform-x-propertyLocal' : [
+                                    'platform-x-property' : [
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : '2axis3values',
                                             chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
@@ -100,7 +100,7 @@ class PlatformXCfg extends BaseConfig {
             'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
             'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],
             'platform-proxySupported'               : [filter: true,    export: true,   label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N],
-            'platform-counterCertified'             : [filter: true,    export: true,   label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
+            'platform-counterCertified'             : [filter: true,    export: true,   mapping: 'counterCertified.value',              label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
             'platform-counterR3Supported'           : [                 export: true,   label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N],
             'platform-counterR4Supported'           : [                 export: true,   label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N],
             'platform-counterR5Supported'           : [                 export: true,   label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N],
@@ -130,8 +130,8 @@ class PlatformXCfg extends BaseConfig {
             'platform-counterR5Supported' : false, // ES
             'platform-counterR4SushiApiSupported' : false, // ES
             'platform-counterR5SushiApiSupported' : false, // ES
-            // 'platform-x-property' : false,
-            '___lastUpdated' : true, // virtual
-            '___wekb' : true // virtual
+            '_?_propertyLocal' : true, // virtual, optional, fixed position
+            '_+_lastUpdated' : true, // virtual
+            '_+_wekb' : true // virtual
     ]
 }

@@ -180,7 +180,7 @@ class PackageXCfg extends BaseConfig {
             'provider' : true,
             'platform' : true,
             'file' : false,
-            '___currentTitles' : true, // virtual
+            '_+_currentTitles' : true, // virtual
             'package-breakable' : false, // ES
             'package-paymentType' : false, // ES
             'package-openAccess' : false, // ES
@@ -193,7 +193,7 @@ class PackageXCfg extends BaseConfig {
             'package-description' : false, // ES
             'package-descriptionURL' : false, // ES
             'package-x-curatoryGroup' : false, // ES
-            '___lastUpdated' : true, // virtual
-            '___wekb' : true // virtual
+            '_+_lastUpdated' : true, // virtual
+            '_+_wekb' : true // virtual
     ]
 }

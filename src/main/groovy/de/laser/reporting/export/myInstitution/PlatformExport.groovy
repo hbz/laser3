@@ -45,6 +45,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'counterR4SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
                                     'counterR5Supported'           : FIELD_TYPE_ELASTICSEARCH,
                                     'counterR5SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
+                                    'x-property'                   : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]

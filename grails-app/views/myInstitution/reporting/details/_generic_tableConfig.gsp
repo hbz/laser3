@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.reporting.report.GenericHelper; de.laser.reporting.report.myInstitution.config.PackageXCfg; de.laser.reporting.export.myInstitution.PackageExport; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.reporting.export.base.BaseDetailsExport; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.reporting.report.GenericHelper; de.laser.reporting.report.myInstitution.config.PackageXCfg; de.laser.reporting.export.myInstitution.PackageExport; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <div class="ui segment hidden" id="reporting-dtc-wrapper">
 
@@ -13,16 +13,29 @@
                 // TODO : localDB-Merkmal anzeigen, falls Verteilung -> Merkmal
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
-                Map<String, Object> dtCfg = BaseConfig.getCurrentDetailsTableConfig( key )
                 Map<String, Object> esData = BaseConfig.getCurrentEsData( key )
+                Map<String, Object> dtCfg = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+
+                if (query != 'platform-x-property') { dtCfg.remove('_?_propertyLocal') }
+
+                String wekbProperty
+                if (query == 'platform-x-propertyWekb') {
+                    if (params.id != null && params.id != 0) {
+                        wekbProperty = GlobalExportHelper.getQueryCache(token).dataDetails.find { it.id == params.long('id') }.esProperty
+                        dtCfg[wekbProperty] = true
+                    }
+                }
+                dtCfg.remove(null) // ?????
 
                 BaseDetails.reorderFieldsInColumnsForUI( dtCfg, 3 ).each { col ->
                     println '<div class="field grouped fields">'
                     col.each { k, b ->
-
                         String label = BaseDetails.getFieldLabelforColumns( key, k )
                         if (esData.containsKey(k)) {
                             label = label + ' (we:kb)'
+                        }
+                        else if (k == '_?_propertyLocal') {
+                            label = BaseDetailsExport.getMessage('x-property') +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
                         }
 
                         println '<div class="field"><div class="ui checkbox">'

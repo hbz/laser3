@@ -379,7 +379,7 @@
 
     %{-- platform --}%
 
-    <div class="help-section" data-help-section="platform-x-propertyLocal">
+    <div class="help-section" data-help-section="platform-x-property">
         <p class="ui header">
             Merkmale von Plattformen
         </p>
