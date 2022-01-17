@@ -197,7 +197,7 @@ class PlatformFilter extends BaseFilter {
 
         String filterSource = getCurrentFilterSource(params, partKey)
 
-        if (! filterSource.startsWith('filter-depending-')) {
+        if (filterSource && ! filterSource.startsWith('filter-depending-')) {
             filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource )])
         }
 
