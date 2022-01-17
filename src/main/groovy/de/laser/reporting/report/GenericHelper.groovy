@@ -14,7 +14,6 @@ class GenericHelper {
     // TODO
     static boolean isFieldMultiple(String object, String fieldName) {
         boolean bool = false
-        //println object + ' --- ' + fieldName
 
         if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
             bool = true
