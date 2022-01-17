@@ -1,5 +1,6 @@
 package de.laser.reporting.report.myInstitution.config
 
+import de.laser.Org
 import de.laser.Platform
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -41,7 +42,7 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default: [
                                     platform : [
-                                            'platform-org',     // TODO - move to query2 !?
+                                           // 'platform-org',     // TODO - move to query2 !?
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
                                             'platform-status',
@@ -85,10 +86,37 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-statisticsFormat',
                                                     'platform-statisticsUpdate'
                                             ]
+                                    ],
+                                    'platform-x-org' : [
+                                            detailsTemplate     : 'platform',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                            ]
+                    ]
+            ],
+
+            provider : [
+                    meta : [
+                            class:  Org,
+                            cfgKey: KEY_PLATFORM
+                    ],
+                    source : [
+                            'filter-depending-provider'
+                    ],
+                    fields : [ ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    provider : [
+                                            'provider-orgType',
+                                            'provider-*'
                                     ]
                             ]
                     ]
-            ]
+            ],
     ]
 
     static Map<String, Map> ES_DATA = [
@@ -100,7 +128,7 @@ class PlatformXCfg extends BaseConfig {
             'platform-shibbolethAuthentication'     : [filter: true,    export: true,   label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N],
             'platform-passwordAuthentication'       : [filter: true,    export: true,   label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N],
             'platform-proxySupported'               : [filter: true,    export: true,   label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N],
-            'platform-counterCertified'             : [filter: true,    export: true,   mapping: 'counterCertified.value',              label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
+            'platform-counterCertified'             : [filter: true,    export: true,   /* mapping: 'counterCertified.value', */        label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N],
             'platform-counterR3Supported'           : [                 export: true,   label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N],
             'platform-counterR4Supported'           : [                 export: true,   label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N],
             'platform-counterR5Supported'           : [                 export: true,   label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N],

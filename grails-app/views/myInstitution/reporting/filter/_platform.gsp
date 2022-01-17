@@ -34,3 +34,8 @@
             </div>
         </div>
     </div><!-- .tab -->
+
+    <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).provider}" />
+    <g:if test="${config}">
+        <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
+    </g:if>

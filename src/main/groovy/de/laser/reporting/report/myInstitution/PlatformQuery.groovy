@@ -45,18 +45,6 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.IP_AUTHENTICATION, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['org']) {
-
-            // TODO
-            handleGenericAllQuery(
-                    params.query,
-                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
-                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
-                    idList,
-                    result
-            )
-            handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
-        }
         else if (suffix in ['passwordAuthentication', 'proxySupported', 'shibbolethAuthentication']) {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
@@ -90,7 +78,7 @@ class PlatformQuery extends BaseQuery {
                         result
                 )
             }
-            if (params.query in ['platform-x-propertyWekb']) {
+            else if (params.query in ['platform-x-propertyWekb']) {
 
                 List<String> esProperties = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(params.query).esProperties ?: []
                 List<List> queryList = []
@@ -130,6 +118,18 @@ class PlatformQuery extends BaseQuery {
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
+            }
+            if (params.query in ['platform-x-org']) {
+
+                // TODO
+                handleGenericAllQuery(
+                        params.query,
+                        'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
+                        'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
+                        idList,
+                        result
+                )
+                handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
             }
         }
         result
