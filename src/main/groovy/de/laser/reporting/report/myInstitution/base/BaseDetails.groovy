@@ -9,7 +9,6 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.report.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -81,15 +80,12 @@ class BaseDetails {
 
     static String getFieldLabelforColumns(String key, String field) {
 
-        // TMP
-        // TMP
-        // TMP
-
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         Map<String, Object> esDataConfig = BaseConfig.getCurrentEsData(key)
 
-        //println ' ... ' + key + ' ------ ' + field
-        // println esDataConfig
+//        println ' ... ' + key + ' ------ ' + field
+//        println esDataConfig
+
         String label = field
 
         if (field.startsWith( key + '-' )) {
@@ -102,17 +98,21 @@ class BaseDetails {
                 label = g.message(code: code)
 
                 if (label == code) {
-                    if (field == '___lastUpdated') {
+                    if (field == '_+_lastUpdated') {
                         label = g.message(code: 'default.lastUpdated.label')
                     }
-                    else if (field == '___wekb') {
+                    else if (field == '_+_wekb') {
                         label = g.message(code: 'wekb')
                     }
-                    else if (field == '___currentTitles') {
+                    else if (field == '_+_currentTitles') {
                         label = g.message(code: 'package.show.nav.current')
                     }
+                    else if (field == '_?_propertyLocal') {
+                        label = g.message(code: 'reporting.details.property.value')
+                        //label = BaseDetailsExport.getMessage('x-property')
+                    }
                     else {
-                        println 'label != code - [ ' + key + ' --- ' + field + ' ]'
+                        println 'label != code - [ ' + key + ' -<>- ' + field + ' ]'
                     }
                 }
             }

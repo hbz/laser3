@@ -135,7 +135,10 @@ class ReportingGlobalService {
 
         result.filterResult = PlatformFilter.filter(params)
 
-        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query.default )
+        //result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_PLATFORM).get(pk).query.default)
+        }
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution )
     }
 

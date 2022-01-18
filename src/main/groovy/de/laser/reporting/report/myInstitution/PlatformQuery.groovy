@@ -45,18 +45,6 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.IP_AUTHENTICATION, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['org']) {
-
-            // TODO
-            handleGenericAllQuery(
-                    params.query,
-                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
-                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
-                    idList,
-                    result
-            )
-            handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
-        }
         else if (suffix in ['passwordAuthentication', 'proxySupported', 'shibbolethAuthentication']) {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
@@ -79,7 +67,7 @@ class PlatformQuery extends BaseQuery {
         }
         else if ( suffix in ['x']) {
 
-            if (params.query in ['platform-x-propertyLocal']) {
+            if (params.query in ['platform-x-property']) {
 
                 handleGenericPropertyXQuery(
                         params.query,
@@ -90,7 +78,7 @@ class PlatformQuery extends BaseQuery {
                         result
                 )
             }
-            if (params.query in ['platform-x-propertyWekb']) {
+            else if (params.query in ['platform-x-propertyWekb']) {
 
                 List<String> esProperties = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(params.query).esProperties ?: []
                 List<List> queryList = []
@@ -101,27 +89,28 @@ class PlatformQuery extends BaseQuery {
                     Map<String, Object> tmp = [data: [], dataDetails: []]
                     _processESRefdataQuery(esProp, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
 
-                    queryList.add([prop, tmp])
+                    queryList.add([esProp, prop, tmp])
                 }
                 //println groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(queryList))
 
                 queryList.eachWithIndex { List entry, int idx ->
                     Set<Long> combinedIdSet = []
-                    entry[1].dataDetails.each { dd ->
+                    entry[2].dataDetails.each { dd ->
                         if (dd.id != null && dd.id != 0) {
                             combinedIdSet.addAll(dd.idList)
                         }
                     }
                     if (combinedIdSet) {
-                        String label = messageSource.getMessage(entry[0].label, null, locale)
+                        String label = messageSource.getMessage(entry[1].label, null, locale)
 
-                        result.data.add([idx, label, combinedIdSet.size()])
+                        result.data.add([idx + 1, label, combinedIdSet.size()])
                         result.dataDetails.add([
                                 query : params.query,
-                                id    : idx,
+                                id    : idx + 1, // 0 = NO_COUNTERPART_ID
                                 label : label,
                                 idList: combinedIdSet.toList(),
-                                value1: combinedIdSet.size()
+                                value1: combinedIdSet.size(),
+                                esProperty: entry[0] // ?? TODO
                         ] )
                         positiveIdSet.addAll(combinedIdSet)
                     }
@@ -129,6 +118,18 @@ class PlatformQuery extends BaseQuery {
 
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
+            }
+            if (params.query in ['platform-x-org']) {
+
+                // TODO
+                handleGenericAllQuery(
+                        params.query,
+                        'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
+                        'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
+                        idList,
+                        result
+                )
+                handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
             }
         }
         result

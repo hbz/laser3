@@ -34,12 +34,26 @@
             </g:each>
         </div><!-- .tab -->
 
+        <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
+            <div class="field">
+                <div style="text-align:center; padding:2em 0">
+                    <asset:image src="help/reporting.packages.png" absolute="true" style="width:96%" />
+                </div>
+            </div>
+        </div><!-- .tab -->
+
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />
         <g:if test="${config}">
+            <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
+        </g:if>
 
-            <input type="hidden" name="filter:provider_source" value="depending-provider" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:platform_source" value="filter-depending-platform" />
+        </g:if>
 
-
+%{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />--}%
+%{--        <g:if test="${config}">--}%
 %{--            <div class="ui bottom attached tab segment" data-tab="package-filter-tab-2">--}%
 %{--                <div class="field">--}%
 %{--                    <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>--}%
@@ -55,14 +69,10 @@
 %{--                    </div>--}%
 %{--                </g:each>--}%
 %{--            </div><!-- .tab -->--}%
+%{--        </g:if>--}%
 
-        </g:if>
-
-        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
-        <g:if test="${config}">
-
-            <input type="hidden" name="filter:platform_source" value="depending-platform" />
-
+%{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />--}%
+%{--        <g:if test="${config}">--}%
 %{--            <div class="ui bottom attached tab segment" data-tab="package-filter-tab-3">--}%
 %{--                <div class="field">--}%
 %{--                    <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>--}%
@@ -78,13 +88,5 @@
 %{--                    </div>--}%
 %{--                </g:each>--}%
 %{--            </div><!-- .tab -->--}%
+%{--        </g:if>--}%
 
-        </g:if>
-
-        <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
-            <div class="field">
-                <div style="text-align:center; padding:2em 0">
-                    <asset:image src="help/reporting.packages.png" absolute="true" style="width:96%" />
-                </div>
-            </div>
-        </div><!-- .tab -->
