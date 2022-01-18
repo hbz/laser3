@@ -44,8 +44,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
-<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
+<semui:surveyStatus object="${surveyInfo}"/>
+
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
     <g:render template="nav"/>
