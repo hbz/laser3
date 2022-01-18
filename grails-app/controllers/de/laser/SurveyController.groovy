@@ -1010,7 +1010,7 @@ class SurveyController {
                             Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
                             Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
-                            surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100)) : surveyCostItem.costInBillingCurrency
+                            surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
                         }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
@@ -2738,7 +2738,7 @@ class SurveyController {
 
         result.mode = result.costItem ? "edit" : ""
         result.taxKey = result.costItem ? result.costItem.taxKey : null
-        result.idSuffix = "edit_${result.costItem.id}"
+        result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         render(template: "/survey/costItemModal", model: result)
     }
 
