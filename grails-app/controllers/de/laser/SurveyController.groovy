@@ -4181,7 +4181,7 @@ class SurveyController {
 
         //MultiYearTerm Subs
         result.parentSubChilds.each { sub ->
-            if (sub.isCurrentMultiYearSubscriptionNew()){
+            if (sub.isCurrentMultiYearSubscriptionToParentSub()){
                 sub.getAllSubscribers().each { org ->
                     if (!(org in result.parentSuccessortParticipantsList)) {
 

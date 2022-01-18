@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4071    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehrjahreslizenzen werden in Umfrage nicht richtig angezeigt und nicht richtig Übertrag mit Umfrage
+
 4031    10.01.2022  rc-2.2  2.2.9       Moe     Bug         Excel Export Gesamttitelliste: "Verlag" fehlt
 
 4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
