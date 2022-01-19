@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3991    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Auswahl Rechnungskontakt nicht verfügbar bei Bearbeitung Anbieterkontakt
+
 3949    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Meine Dokumente im Einrichtungsprofil verschwinden nach Umbenennung
 
 4069    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehr als 2 Nachkommerstellen bei Kosten wegen Ausschüttungsfunktion mit Preissteigerung
