@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4075    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Umfragen nicht auffindbar / sichtbar
+
 3962    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Anzeige bei Erstellung und Löschung eigener Merkmale
 
 3991    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Auswahl Rechnungskontakt nicht verfügbar bei Bearbeitung Anbieterkontakt

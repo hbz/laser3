@@ -92,12 +92,20 @@ class SurveyController {
         pu.setBenchmark("before properties")
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
         pu.setBenchmark("after properties")
-        if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = [sdfyear.format(new Date())]
-        }
+
         pu.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+
+        if (params.validOnYear == null || params.validOnYear == '') {
+            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            String newYear = sdfyear.format(new Date())
+
+            if(!(newYear in result.surveyYears)){
+                result.surveyYears << newYear
+            }
+            params.validOnYear = [newYear]
+        }
+
         pu.setBenchmark("after surveyYears and before current org ids of providers and agencies")
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
         pu.setBenchmark("after providers and agencies and before subscriptions")
@@ -162,14 +170,19 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = [sdfyear.format(new Date())]
+            String newYear = sdfyear.format(new Date())
+
+            if(!(newYear in result.surveyYears)){
+                result.surveyYears << newYear
+            }
+            params.validOnYear = [newYear]
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
-
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )
 
