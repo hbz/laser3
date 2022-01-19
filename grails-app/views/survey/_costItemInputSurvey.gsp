@@ -172,6 +172,7 @@
         ciec: $("#ciec_${idSuffix}"),
         costElems: $("#newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
+        percentOnOldPrice: $("#percentOnOldPrice"),
         costItemElementConfigurations: {
     <%
         costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -260,7 +261,9 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                if(JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
+                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                } else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else {

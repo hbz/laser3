@@ -448,7 +448,7 @@ class SurveyConfig {
 
             Integer subMembersWithMultiYear = 0
             subChilds.each {
-                if(it.isCurrentMultiYearSubscriptionNew())
+                if(it.isCurrentMultiYearSubscriptionToParentSub())
                 {
                     subMembersWithMultiYear++
                 }

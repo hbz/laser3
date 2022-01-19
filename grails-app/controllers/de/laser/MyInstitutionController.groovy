@@ -1869,6 +1869,8 @@ join sub.orgRelations or_sub where
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
+
         //SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.tab = params.tab ?: 'new'
@@ -1879,12 +1881,16 @@ join sub.orgRelations or_sub where
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = [sdfyear.format(new Date())]
+            String newYear = sdfyear.format(new Date())
+
+            if(!(newYear in result.surveyYears)){
+                result.surveyYears << newYear
+            }
+            params.validOnYear = [newYear]
         }
 
         result.propList = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList order by pd.name_de asc", [defList: [PropertyDefinition.SVY_PROP]])
 
-        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
 
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
@@ -3929,8 +3935,9 @@ join sub.orgRelations or_sub where
                         log.error(e.toString())
                     }
 
+                    String oldPropertyName = privatePropDef.getI10n('name')
                     privatePropDef.delete()
-                    messages += message(code: 'default.deleted.message', args: [privatePropDef.descr, privatePropDef.name])
+                    messages += message(code: 'default.deleted.message', args: [message(code: "propertyDefinition.${privatePropDef.descr}.create.label"), oldPropertyName])
                 }
             }
             messages
