@@ -33,7 +33,7 @@ class DocstoreControllerService {
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)
-                doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+                doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
                 doc_context.save()
 
                 log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}")

@@ -144,8 +144,8 @@ class SurveyControllerService {
             //result.orgsLateCommers = []
             List orgsWithMultiYearTermOrgsID = []
             List orgsLateCommersOrgsID = []
-            result.parentSubChilds.each { sub ->
-                if (sub.isCurrentMultiYearSubscriptionNew()) {
+            result.parentSubChilds.each { Subscription sub ->
+                if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     result.orgsWithMultiYearTermSub << sub
                     sub.getAllSubscribers().each { org ->
                         orgsWithMultiYearTermOrgsID << org.id
