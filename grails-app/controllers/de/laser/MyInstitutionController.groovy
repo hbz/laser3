@@ -3608,8 +3608,9 @@ join sub.orgRelations or_sub where
                         log.error(e.toString())
                     }
 
+                    String oldPropertyName = privatePropDef.getI10n('name')
                     privatePropDef.delete()
-                    messages += message(code: 'default.deleted.message', args: [privatePropDef.descr, privatePropDef.name])
+                    messages += message(code: 'default.deleted.message', args: [message(code: "propertyDefinition.${privatePropDef.descr}.create.label"), oldPropertyName])
                 }
             }
             messages
