@@ -2489,6 +2489,7 @@ person.function,Functional Contact Library Address,Bibliotheksanschrift,Library 
 person.function,Functional Contact Postal Address,Postanschrift,Postal address,,
 person.function,GASCO-Contact,GASCO-Kontakt,GASCO-Contact,,
 person.function,General contact person,Hauptkontakt,General Contact Person,,
+person.function,Legal contact,Vertragskontakt,Legal contact,,
 person.function,Responsible Admin,Verantwortlicher Admin,Responsible Admin,,
 person.function,Statistical Support,Statistik-Support,Statistical Support,,
 person.function,Technichal Support,Technischer Support,Technical Support,,
