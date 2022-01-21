@@ -78,44 +78,35 @@
     </div>
 </g:if>
 <g:else>
-    <br />
+<div class="ui top attached stackable tabular menu">
 
-    <div class="ui grid">
+    <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
+            controller="survey" action="surveyEvaluation"
+            params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
+        ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
+        <div class="ui floating circular label">${participantsFinishTotal}</div>
+    </g:link>
 
-        <div class="sixteen wide stretched column">
-            <div class="ui top attached tabular menu">
+    <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
+            controller="survey" action="surveyEvaluation"
+            params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
+        ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
+        <div class="ui floating circular label">${participantsNotFinishTotal}</div>
+    </g:link>
 
-                <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-                        controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
-                    ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                    <div class="ui floating circular label">${participantsFinishTotal}</div>
-                </g:link>
+    <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
+            controller="survey" action="surveyEvaluation"
+            params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
+        ${message(code: 'surveyEvaluation.participantsView')}
+        <div class="ui floating circular label">${participantsTotal}</div>
+    </g:link>
 
-                <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-                        controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
-                    ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                    <div class="ui floating circular label">${participantsNotFinishTotal}</div>
-                </g:link>
-
-                <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-                        controller="survey" action="surveyEvaluation"
-                        params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
-                    ${message(code: 'surveyEvaluation.participantsView')}
-                    <div class="ui floating circular label">${participantsTotal}</div>
-                </g:link>
-
-            </div>
-
-
-            <g:render template="evaluationParticipantsView" model="[showCheckbox: false,
-                                                                    tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
-
-        </div>
-    </div>
-
-    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+</div>
+<div class="ui bottom attached tab segment active">
+    <g:render template="evaluationParticipantsView" model="[showCheckbox: false,
+                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
+</div>
+<g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 </g:else>
 

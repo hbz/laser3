@@ -22,8 +22,7 @@
 @borderWidth: 1px;
 @borderShadow: 0px 0px 0px @borderWidth @solidBorderColor;
 @boxShadow:
-  @shadowBoxShadow,
-  @borderShadow
+  @shadowBoxShadow
 ;
 @border: 1px solid @laSecondaryColor;
 @zIndex: auto;

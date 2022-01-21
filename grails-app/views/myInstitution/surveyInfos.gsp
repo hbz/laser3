@@ -25,14 +25,13 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
+${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
 <semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+
 
 <semui:messages data="${flash}"/>
 
 <br />
-
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
