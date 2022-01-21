@@ -19934,6 +19934,12 @@ dd {
   background: #004678 !important;
   border: 1px solid #FFFFFF;
 }
+
+/* Bottom */
+
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}
 /*!
  * # Semantic UI 2.4.2 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -29602,8 +29608,8 @@ Floated Menu / Item
   padding: 0em;
   border: 1px solid #d3dae3;
   border-radius: 0;
-  -webkit-box-shadow: 0px 1px 3px 0px #D4D4D5, 0px 0px 0px 1px #D4D4D5;
-  box-shadow: 0px 1px 3px 0px #D4D4D5, 0px 0px 0px 1px #D4D4D5;
+  -webkit-box-shadow: 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 1px 3px 0px #D4D4D5;
   -webkit-transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease;
