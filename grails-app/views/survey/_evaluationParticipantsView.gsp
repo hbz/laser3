@@ -105,7 +105,7 @@
 
 <g:form action="${processAction}" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
-
+    <br><br>
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
@@ -190,6 +190,7 @@
                 </th>
                 </g:if>
             </g:each>
+            <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -232,58 +233,46 @@
                                 (${fieldValue(bean: participant, field: "name")})
                             </g:link>
 
-                            <div class="ui grid">
-                                <div class="right aligned wide column">
 
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                        <g:link controller="survey" action="evaluationParticipant"
-                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                                class="ui icon button">
-                                            <i class="chart pie icon"></i>
-                                        </g:link>
-                                    </span>
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.processedOrg')}">
+                                    <i class="edit green icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                                    <i class="edit red icon"></i>
+                                </span>
+                            </g:else>
 
-                                    <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.newOrg')}">
-                                            <i class="star black large  icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.processedOrg')}">
-                                            <i class="edit green icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                            <i class="edit red icon"></i>
-                                        </span>
-                                    </g:else>
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.finishOrg')}">
+                                    <i class="check green icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                                    <i class="x red icon"></i>
+                                </span>
+                            </g:else>
 
-                                    <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.finishOrg')}">
-                                            <i class="check green icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                            <i class="x red icon"></i>
-                                        </span>
-                                    </g:else>
+                            <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                    <i class="exclamation triangle yellow large icon"></i>
+                                </span>
+                            </g:if>
 
-                                    <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                            <i class="exclamation triangle yellow large icon"></i>
-                                        </span>
-                                    </g:if>
-                                </div>
-                            </div>
                         </td>
                     </g:if>
 
@@ -326,29 +315,35 @@
                         </td>
                     </g:if>
                 </g:each>
+                <td>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                            class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                        <i class="chart pie icon"></i>
+                    </g:link>
+                </td>
+
             </tr>
 
         </g:each>
         </tbody>
     </table>
-
+    <br><br>
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"
            value="${participants.findAll { !it.org.hasAccessOrg() }}"/>
 
-    <div class="four wide column">
-        <g:if test="${surveyParticipantsHasNotAccess}">
-            <a data-semui="modal" class="ui icon button right floated"
-               data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
-               href="#copyEmailaddresses_static">
-                <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-            </a>
-        </g:if>
-    </div>
 
-    <br />
-    <br />
+    <g:if test="${surveyParticipantsHasNotAccess}">
+        <a data-semui="modal" class="ui icon button right floated"
+           data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
+           href="#copyEmailaddresses_static">
+            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+        </a>
+    </g:if>
+
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -416,7 +411,9 @@
                         ${message(code: 'surveyInfo.finishedDate')}
                     </th>
                 </g:if>
+
             </g:each>
+            <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -462,59 +459,46 @@
                                 (${fieldValue(bean: participant, field: "name")})
                             </g:link>
 
-                            <div class="ui grid">
-                                <div class="right aligned wide column">
 
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                        <g:link controller="survey" action="evaluationParticipant"
-                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                                class="ui icon button">
-                                            <i class="chart pie icon"></i>
-                                        </g:link>
-                                    </span>
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+                            <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.processedOrg')}">
+                                    <i class="edit green icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                                    <i class="edit red icon"></i>
+                                </span>
+                            </g:else>
 
+                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.finishOrg')}">
+                                    <i class="check green icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                                    <i class="x red icon"></i>
+                                </span>
+                            </g:else>
 
-                                    <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.newOrg')}">
-                                            <i class="star black large  icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.processedOrg')}">
-                                            <i class="edit green icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                            <i class="edit red icon"></i>
-                                        </span>
-                                    </g:else>
+                            <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                    <i class="exclamation triangle yellow large icon"></i>
+                                </span>
+                            </g:if>
 
-                                    <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.finishOrg')}">
-                                            <i class="check green icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                            <i class="x red icon"></i>
-                                        </span>
-                                    </g:else>
-
-                                    <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                            <i class="exclamation triangle yellow large icon"></i>
-                                        </span>
-                                    </g:if>
-                                </div>
-                            </div>
                         </td>
                     </g:if>
 
@@ -554,7 +538,16 @@
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
+
                 </g:each>
+                <td>
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
+                            class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                        <i class="chart pie icon"></i>
+                    </g:link>
+                </td>
             </tr>
 
         </g:each>
