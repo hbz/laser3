@@ -205,7 +205,7 @@ class PropertyService {
                     tenant      : tenant.globalUID]
 
             PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
-            Object[] args = [privatePropDef.descr, privatePropDef.getI10n('name')]
+            Object[] args = [messageSource.getMessage("propertyDefinition.${privatePropDef.descr}.create.label", null, locale), privatePropDef.getI10n('name')]
             if (privatePropDef.save()) {
                 return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
             }

@@ -184,6 +184,30 @@ class PlatformFilter extends BaseFilter {
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'ESRecords', esRecords)
         filterResult.data.put( BaseConfig.KEY_PLATFORM + 'OrphanedIdList', orphanedIdList)
 
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
+            if (pk == 'provider') {
+                _handleInternalOrgFilter(params, pk, filterResult)
+            }
+        }
+
         filterResult
+    }
+
+    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = getCurrentFilterSource(params, partKey)
+
+        if (filterSource && ! filterSource.startsWith('filter-depending-')) {
+            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource )])
+        }
+
+        if (! filterResult.data.get('platformIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+        }
+
+        String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
+        Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
+
+        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 }

@@ -208,7 +208,10 @@ class PackageFilter extends BaseFilter {
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (! filterSource.startsWith('filter-depending-')) {
+            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+        }
 
         if (! filterResult.data.get('packageIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
@@ -226,7 +229,10 @@ class PackageFilter extends BaseFilter {
     static void _handleInternalPlatformFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+
+        if (filterSource && ! filterSource.startsWith('filter-depending-')) {
+            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.source.' + filterSource)])
+        }
 
         if (! filterResult.data.get('packageIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )

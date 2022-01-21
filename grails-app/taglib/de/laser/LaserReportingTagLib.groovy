@@ -256,7 +256,16 @@ class LaserReportingTagLib {
 
         Map<String, Object> record = esRecords.getAt(id as String) as Map
         if (record) {
-            String value = record.get( record.mapping ?: field )
+            String value = record.get( field )
+            // workaround - nested values
+            if (esConfig.mapping) {
+                def tmp = record
+                esConfig.mapping.split('\\.').each{ m ->
+                    if (tmp) { tmp = tmp.get(m) }
+                }
+                value = tmp
+            }
+            //String value = record.get( record.mapping ?: field )
             if (value) {
                 RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esConfig.rdc as String)
                 if (rdv) {
