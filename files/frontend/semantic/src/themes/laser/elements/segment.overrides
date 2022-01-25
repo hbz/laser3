@@ -53,3 +53,7 @@
     font-size: 1.07142857rem!important;
   }
 }
+/* Bottom */
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}

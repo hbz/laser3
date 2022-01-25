@@ -67,7 +67,7 @@
 <div class="ui grid">
 
     <div class="sixteen wide stretched column">
-        <div class="ui top attached tabular menu">
+        <div class="ui top attached stackable tabular menu">
 
             <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
                     controller="survey" action="openParticipantsAgain"
