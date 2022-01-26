@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4085    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kostenausschüttungsfunktion überschreibt immer wieder Teilnehmer Sichtbarkeit
+
 4086    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kosten werden überschrieben
 
 4075    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Umfragen nicht auffindbar / sichtbar
