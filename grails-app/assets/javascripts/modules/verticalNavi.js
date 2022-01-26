@@ -62,7 +62,7 @@ verticalNavi = {
                 $('.la-js-verticalNavi-clone').addClass('accordion');
 
 
-                $('.ui.accordion').accordion();
+                $('#mainMenue.ui.accordion').accordion();
                 $('.la-js-verticalNavi-clone')
                 .sidebar({
                     context: $('body')
@@ -74,7 +74,7 @@ verticalNavi = {
 
         });
 
-        $('.ui.accordion').accordion();
+        $('#mainMenue.ui.accordion').accordion();
         $('.la-js-verticalNavi-clone')
         .sidebar({
             context: $('body')
