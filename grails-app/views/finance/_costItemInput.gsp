@@ -23,11 +23,22 @@
                         <div class="field">
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
-                            <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
-                                      from="${yn}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${newIsVisibleForSubscriberValue}" />
+                            <g:if test="${idSuffix == 'bulk'}">
+                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                              from="${yn}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              noSelection="${[null:message(code:'default.select.choose.label')]}"
+                                              value="" />
+                            </g:if>
+                            <g:else>
+                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                              from="${yn}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              value="${newIsVisibleForSubscriberValue}" />
+                            </g:else>
+
                         </div><!-- .field -->
                     </div>
                 </g:if>
@@ -238,8 +249,8 @@
                     <div class="field">
                         <g:if test="${validSubChilds}">
                             <label>${licenseeLabel}</label>
-                            <g:if test="${contextSub && contextSub.instanceOf()}">
-                                <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
+                            <g:if test="${(mode != 'copy') && costItem && costItem.sub && costItem.sub.instanceOf}">
+                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriber().sortname}" />
                             </g:if>
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
@@ -416,6 +427,7 @@
         costElems: $("#newCostInLocalCurrency_${idSuffix}, #newCostCurrencyRate_${idSuffix}, #newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
         newSubscription: $("#newSubscription_${idSuffix}"),
+        isVisibleForSubscriber: $("#newIsVisibleForSubscriber_${idSuffix}"),
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -690,21 +702,33 @@
             this.currentForm.submit(function(e){
                 e.preventDefault();
                 if('${idSuffix}' === 'bulk') {
+                    var isValueSetForVisibleForSubscriber = $("#percentOnOldPrice").val() > 0 ? true : (${showVisibilitySettings} ? (JSPC.app.finance${idSuffix}.isVisibleForSubscriber.val() != 'null') : true)
+
                     if((JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costLocalCurrency.val()) ||
                         (JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val()) ||
                         (JSPC.app.finance${idSuffix}.costLocalCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val())) {
                         let valuesCorrect = JSPC.app.finance${idSuffix}.checkValues();
-                        if(valuesCorrect) {
+                        if(valuesCorrect && isValueSetForVisibleForSubscriber) {
                             JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
                             JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                         }
                         else {
-                             alert("${message(code:'financials.newCosts.calculationError')}");
+                                if(!isValueSetForVisibleForSubscriber) {
+                                    alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
+                                }
+                                else{
+                                    alert("${message(code:'financials.newCosts.calculationError')}");
+                                }
                         }
                     }
                     else {
-                        //modifications in only one of the fields
-                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                        if(!isValueSetForVisibleForSubscriber) {
+                                    alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
+                        }
+                        else{
+                                    //modifications in only one of the fields
+                                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                        }
                     }
                 }
                 else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
