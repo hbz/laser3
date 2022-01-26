@@ -700,7 +700,7 @@
             this.currentForm.submit(function(e){
                 e.preventDefault();
                 if('${idSuffix}' === 'bulk') {
-                    var isValueSetForVisibleForSubscriber = ${showVisibilitySettings} ? (JSPC.app.finance${idSuffix}.isVisibleForSubscriber.val() != 'null') : true
+                    var isValueSetForVisibleForSubscriber = $("#percentOnOldPrice").val() > 0 ? true : (${showVisibilitySettings} ? (JSPC.app.finance${idSuffix}.isVisibleForSubscriber.val() != 'null') : true)
 
                     if((JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costLocalCurrency.val()) ||
                         (JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val()) ||
