@@ -388,7 +388,16 @@ if (customerType) {
             <i aria-hidden="true" class="trash alternate outline icon"></i>
         </laser:remoteLink>
     </div>
+    <h2 class="ui dividing header">Responsive Tabellen<a class="anchor" id="icons"></a></h2>
+    <h4 class="ui header">CSS</h4>
+    <div class="html ui top attached segment example">
 
+        <div class="ui doubling five column grid">
+
+        </div>
+
+        <div class="ui top attached label">Aussehen der Tabelle</div>
+    </div>
 </section>
 
 <h1>Offene Fragen in Bezug auf WCAG</h1>
