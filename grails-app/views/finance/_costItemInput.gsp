@@ -237,8 +237,8 @@
                     <div class="field">
                         <g:if test="${validSubChilds}">
                             <label>${licenseeLabel}</label>
-                            <g:if test="${contextSub && contextSub.instanceOf()}">
-                                <input class="la-full-width" readonly="readonly" value="${contextSub.getSubscriber().sortname}" />
+                            <g:if test="${(mode != 'copy') && costItem && costItem.sub && costItem.sub.instanceOf}">
+                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriber().sortname}" />
                             </g:if>
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
