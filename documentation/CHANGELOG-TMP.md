@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4083    27.01.2022  rc-2.2  2.2.9       Moe     Bug         Performance verbessern bei Teilnehmer verwalten (Merkmale)
+
 4085    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kostenausschüttungsfunktion überschreibt immer wieder Teilnehmer Sichtbarkeit
 
 4086    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kosten werden überschrieben
