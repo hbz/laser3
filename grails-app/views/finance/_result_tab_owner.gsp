@@ -142,7 +142,7 @@
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>
                         <br />
-                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}">
+                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
                             <semui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
                         </span>
                     </td>
