@@ -663,6 +663,7 @@ class AjaxHtmlController {
                         hideEmptyResults: params.containsKey('hideEmptyResults-pdf'),
                         useHyperlinks: params.containsKey('useHyperlinks-pdf'),
                         useLineNumbers: params.containsKey('useLineNumbers-pdf'),
+                        useSmallFont: params.containsKey('useSmallFont-pdf'),
                         pageFormat: params.get('pageFormat-pdf') != 'auto'
                 ]
 
