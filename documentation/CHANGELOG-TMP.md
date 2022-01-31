@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4089    31.01.2022  rc-2.2  2.2.9       Andreas Bug         Fehlzuordnung Teilnehmervertrag-Lizenz bei Übertrag behoben
+
 4079    28.01.2022  rc-2.2  2.2.9       Moe     Bug         Titelumfrage: Titel können nicht nachträglich gelöscht werden von Konsortialstelle
 
 4083    27.01.2022  rc-2.2  2.2.9       Moe     Bug         Performance verbessern bei Teilnehmer verwalten (Merkmale)
