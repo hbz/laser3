@@ -19715,6 +19715,12 @@ dd {
 .ui.segment.la-footer h2 {
   font-size: 1.07142857rem !important;
 }
+
+/* Bottom */
+
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}
 /*!
  * # Semantic UI 2.4.2 - Step
  * http://github.com/semantic-org/semantic-ui/

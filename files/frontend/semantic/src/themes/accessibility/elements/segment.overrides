@@ -90,3 +90,7 @@
     border: 1px solid @white;
   }
 }
+/* Bottom */
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}

@@ -8,30 +8,26 @@
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
-            <div class="ui horizontal segments">
-                <div class="ui segment center aligned">
-                    <g:link controller="subscription" action="members" id="${subscription.id}">
-                        <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
-                        <div class="ui circular label">
-                            ${countParticipants.subMembers}
-                        </div>
-                    </g:link>
-                </div>
 
-                <div class="ui segment center aligned">
-                    <g:link controller="survey" action="surveyParticipants"
-                            id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id]">
-                        <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
-                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
-                    </g:link>
+                <g:link class="ui icon button right floated" controller="subscription" action="members" id="${subscription.id}">
+                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
+                    <div class="ui circular label">
+                        ${countParticipants.subMembers}
+                    </div>
+                </g:link>
 
-                    <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
-                        ( ${countParticipants.subMembersWithMultiYear}
-                        ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
-                    </g:if>
-                </div>
-            </div>
+                <g:link class="ui icon button right floated"  controller="survey" action="surveyParticipants"
+                        id="${surveyConfig.surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id]">
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
+                    <div class="ui circular label">${countParticipants.surveyMembers}</div>
+                </g:link>
+
+                <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                    ( ${countParticipants.subMembersWithMultiYear}
+                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
+                </g:if>
+                <br><br><br>
         </g:if>
 
         <div class="ui card ">

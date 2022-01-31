@@ -32,8 +32,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
 </h1>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
+
 
 
 
@@ -83,7 +84,7 @@
         </div>--}%
 
         <div class="sixteen wide stretched column">
-            <div class="ui top attached tabular menu">
+            <div class="ui top attached stackable tabular menu">
                 <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
                         id="${surveyConfig.surveyInfo.id}"
