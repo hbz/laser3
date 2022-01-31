@@ -62,11 +62,13 @@
     <table>
         <thead>
             <tr>
+                <% int cellIndex = 0 %>
                 <g:if test="${options.useLineNumbers}">
                     <th class="th_0"></th>
+                    <% cellIndex = 1 %>
                 </g:if>
                 <g:each in="${header}" var="cell" status="i">
-                    <th class="th_${i+1}">${cell[0]}</th>
+                    <th class="th_${i+cellIndex}">${cell[0]}</th>
                 </g:each>
             </tr>
         </thead>
@@ -77,7 +79,7 @@
                         <td class="td_0">${i+1}.</td>
                     </g:if>
                     <g:each in="${row}" var="cell" status="j">
-                        <td <% if(j%2==0) { print 'class="odd td_' + (j+1) + '"' } else { print 'class="even td_' + (j+1) + '"' }%>>
+                        <td <% if(j%2==0) { print 'class="odd td_' + (j+cellIndex) + '"' } else { print 'class="even td_' + (j+cellIndex) + '"' }%>>
                             <g:each in="${cell}" var="cp">
                                 <g:if test="${cp.startsWith('http://') || cp.startsWith('https://')}">
                                     <g:if test="${cp.indexOf('@') > 0}">
