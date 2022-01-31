@@ -12,7 +12,6 @@
             <g:if test="${options.pageFormat}"> th, td { word-break: break-all; } </g:if>
         </style>
     </g:if>
-
 </head>
 <body>
     <p><span class="warningTMP">DEMO : Funktionalität in Entwicklung</span></p>

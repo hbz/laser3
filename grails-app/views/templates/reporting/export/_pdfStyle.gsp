@@ -6,7 +6,7 @@ h1 {
     border-bottom: 1px solid #BFD7EA;
 }
 h1 > span {
-    font-size: 80%;
+    font-size: 60%;
     color: rgba(0,0,0, 0.35);
 }
 
