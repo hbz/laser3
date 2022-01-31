@@ -9,6 +9,10 @@
 
 4089    31.01.2022  rc-2.2  2.2.9       Andreas Bug         Fehlzuordnung Teilnehmervertrag-Lizenz bei Übertrag behoben
 
+4060    31.01.2022  rc-2.2  2.2.9       Andreas Bug         Tippfehler in Referenzwert behoben
+
+4050    31.01.2022  rc-2.2  2.2.9       Andreas Feature     Erledigte Überträge werden nach Ablauf des Reminder-Zeitpunktes nicht mehr angezeigt
+
 4079    28.01.2022  rc-2.2  2.2.9       Moe     Bug         Titelumfrage: Titel können nicht nachträglich gelöscht werden von Konsortialstelle
 
 4083    27.01.2022  rc-2.2  2.2.9       Moe     Bug         Performance verbessern bei Teilnehmer verwalten (Merkmale)
