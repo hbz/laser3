@@ -1,10 +1,27 @@
 
     Declare the current branch and version; 
     Hotfix changelogs are generated as follows:
+    
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+
+4085    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kostenausschüttungsfunktion überschreibt immer wieder Teilnehmer Sichtbarkeit
+
+4086    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kosten werden überschrieben
+
+4075    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Umfragen nicht auffindbar / sichtbar
+
+3962    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Anzeige bei Erstellung und Löschung eigener Merkmale
+
+3991    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Auswahl Rechnungskontakt nicht verfügbar bei Bearbeitung Anbieterkontakt
+
+3949    19.01.2022  rc-2.2  2.2.9       Moe     Bug         Meine Dokumente im Einrichtungsprofil verschwinden nach Umbenennung
+
+4069    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehr als 2 Nachkommerstellen bei Kosten wegen Ausschüttungsfunktion mit Preissteigerung
+
+4071    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehrjahreslizenzen werden in Umfrage nicht richtig angezeigt und nicht richtig Übertrag mit Umfrage
 
 4063    17.01.2021  dev     2.3         David   Feature     Reporting: Merkmale - Pakete/Plattformen
 
