@@ -63,6 +63,7 @@
                                                 <div class="ui right labeled input">
                                                     <input type="number"
                                                            name="percentOnOldPrice"
+                                                            id="percentOnOldPrice"
                                                            placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
                                                            value="" step="0.01"/>
                                                     <div class="ui basic label">%</div>

@@ -624,6 +624,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
+    boolean isCurrentMultiYearSubscriptionToParentSub() {
+        return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
+    }
+
     @Deprecated
     boolean islateCommer() {
         return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
