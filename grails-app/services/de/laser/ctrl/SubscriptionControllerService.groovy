@@ -2387,7 +2387,13 @@ class SubscriptionControllerService {
 
                         if (tippExistsInParentSub) {
                             try {
-                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                RefdataValue acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+
+                                if(result.contextOrg.id == result.surveyConfig.surveyInfo.owner.id && SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.subscription.subscriber).finishDate != null){
+                                    acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                                }
+
+                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                                     log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                                     ++countIEsToAdd
                                     removeFromCache << it.key
