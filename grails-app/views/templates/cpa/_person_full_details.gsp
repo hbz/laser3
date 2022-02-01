@@ -74,7 +74,8 @@
 
         <g:if test="${person.contacts}">
             <g:each in="${person.contacts.toSorted()}" var="contact">
-                <g:if test="${tmplConfigShow.contains(contact.contentType.value)}">
+                <%-- contentType should be made not nullable ... subject of kanban! --%>
+                <g:if test="${contact.contentType && tmplConfigShow.contains(contact.contentType.value)}">
                     <g:render template="/templates/cpa/contact" model="${[
                             overwriteEditable   : editable,
                             contact             : contact,

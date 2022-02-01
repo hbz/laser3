@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4090    01.02.2022  rc-2.2  2.2.9       Andreas Bug         Kontakte ohne Adresse konnten nicht dargestellt werden
+
 4089    31.01.2022  rc-2.2  2.2.9       Andreas Bug         Fehlzuordnung Teilnehmervertrag-Lizenz bei Übertrag behoben
 
 4060    31.01.2022  rc-2.2  2.2.9       Andreas Bug         Tippfehler in Referenzwert behoben
