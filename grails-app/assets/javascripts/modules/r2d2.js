@@ -465,6 +465,9 @@ r2d2 = {
         });
 
         // accordions
+
+        $(ctxSel + ' .ui.accordion').accordion();
+
         $(ctxSel + ' .ui.metaboxContent.accordion').accordion({
 
             onOpening: function() {
@@ -478,6 +481,7 @@ r2d2 = {
                 $(".metaboxContent ").css('box-shadow','none');
             }
         });
+
 
         // tabs
         $(ctxSel + ' .tabular.menu .item').tab();
