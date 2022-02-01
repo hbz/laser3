@@ -61,8 +61,6 @@
 <section id="example">
     %{-- ICONS  --}%
     <g:render template="frontend_icons" />
-    %{-- LABELS --}%
-    <g:render template="frontend_labels" />
     %{-- DROPDOWNS --}%
     <g:render template="frontend_dropdowns" />
     %{-- DECKSAVER --}%
@@ -73,9 +71,10 @@
     <g:render template="frontend_modals" />
     %{-- CONFIRMATION MODAL  --}%
     <g:render template="frontend_confirmationModals" />
-
     %{-- RESPONSIBLE TABELLEN  --}%
     <g:render template="frontend_responsibleTable" />
+    %{-- LABELS --}%
+    <g:render template="frontend_labels" />
 </section>
 %{-- OFFENE FRAGEN WCAG  --}%
 <g:render template="frontend_wcag" />

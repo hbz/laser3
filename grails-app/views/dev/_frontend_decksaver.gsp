@@ -2,7 +2,7 @@
 <div class="dropdown example">
 
     <div class="html ui top attached segment">
-        <ui>
+        <ul>
             <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
                 <ol>
                     <li>class <strong>'la-js-dont-hide-this-card'</strong> zu ins Markup einer Tabellen-Zelle</li>
@@ -10,7 +10,7 @@
                 </ol>
             </li>
             <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
-        </ui>
+        </ul>
         <br />
 
         <div class="ui top attached label">Cards müssen "ausgeschaltet" werden, wenn es keinen Inhalt gibt
