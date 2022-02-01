@@ -233,7 +233,7 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>
