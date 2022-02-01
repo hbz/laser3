@@ -1,5 +1,4 @@
-<h4 class="ui header">Dropdowns</h4>
-
+<h2 class="ui dividing header">Dropdowns<a class="anchor" id="form-elemente"></a></h2>
 
 <!-- START Example with form selection -->
 <div class="dropdown example">
