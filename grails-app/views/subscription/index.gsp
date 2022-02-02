@@ -60,6 +60,17 @@
     </div>
 </g:if>
 
+<g:if test="${frozenHoldings}">
+    <div class="ui exclamation icon negative message">
+        <i class="exclamation icon"></i>
+        <ul class="list">
+            <g:each in="${frozenHoldings}" var="sp">
+                <li><g:message code="subscription.details.frozenHoldings.header" args="${[sp.name]}"/> ${message(code: "subscription.details.frozenHoldings.entry")}</li>
+            </g:each>
+        </ul>
+    </div>
+</g:if>
+
 <div class="ui grid">
 
     <div class="row">
