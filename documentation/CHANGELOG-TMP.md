@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4095    02.02.2022  rc-2.2  2.2.9       Andreas Bug         Nachladeroutine für verpasste Titel implementiert
+
 4093    01.02.2022  rc-2.2  2.2.9       Andreas Bug         Cronjob brach zu früh ab
 
 4090    01.02.2022  rc-2.2  2.2.9       Andreas Bug         Kontakte ohne Adresse konnten nicht dargestellt werden
