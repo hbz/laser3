@@ -5,6 +5,7 @@
 
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+4099    02.02.2022  dev     2.3         Ingrid  Feature     Versteckte Funktion im Datepicker deutlicher machen
 
 4085    26.01.2022  rc-2.2  2.2.9       Moe     Bug         Kostenausschüttungsfunktion überschreibt immer wieder Teilnehmer Sichtbarkeit
 
