@@ -246,7 +246,7 @@ class SubscriptionControllerService {
             //}
             pu.setBenchmark('costs')
             //cost items
-            //params.forExport = true
+            params.subDetailsPage = true
             LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeControllerService.getResultGenerics(params))
             result.costItemSums = [:]
             if (costItems.own) {
