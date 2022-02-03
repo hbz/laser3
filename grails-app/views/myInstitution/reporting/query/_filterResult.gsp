@@ -4,6 +4,10 @@
     ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
 </g:if>
 
+<g:elseif test="${filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+    ${message(code: 'reporting.filterResult.issueEntitlement', args: [filterResult.data.issueEntitlementIdList.size()])}
+</g:elseif>
+
 <g:elseif test="${filter == BaseConfig.KEY_LICENSE}">
     ${message(code: 'reporting.filterResult.license.part', args: [filterResult.data.licenseIdList.size()])}
     <g:if test="${filterResult.data.licensorIdList.size()}">

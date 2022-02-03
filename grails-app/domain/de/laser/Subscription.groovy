@@ -606,6 +606,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    String getLabel() {
+        SimpleDateFormat sdf = DateUtils.getSDF_dmy()
+        name + ' (' + (startDate ? sdf.format(startDate) : '') + ' - ' + (endDate ? sdf.format(endDate) : '') + ')'
+    }
+
   String toString() {
       name ? "${name}" : "Subscription ${id}"
   }

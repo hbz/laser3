@@ -43,7 +43,7 @@ class PackageFilter extends BaseFilter {
                 List<Long> subIdList = Subscription.executeQuery(
                         "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
                         [roleTypes: [
-                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS
                         ], ctx: contextService.getOrg()])
 
                 queryParams.packageIdList = Package.executeQuery(
@@ -53,7 +53,7 @@ class PackageFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'package_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_PACKAGE + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -125,7 +125,7 @@ class PackageFilter extends BaseFilter {
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else {
-                        println ' --- ' + pType +' not implemented --- '
+                        println ' --- ' + pType + ' not implemented --- '
                     }
                 }
 

@@ -50,7 +50,7 @@ class PlatformFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'platform_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_PLATFORM + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->

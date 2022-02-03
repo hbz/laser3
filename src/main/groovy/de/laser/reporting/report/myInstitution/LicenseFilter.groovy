@@ -60,7 +60,7 @@ class LicenseFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'license_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_LICENSE + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->

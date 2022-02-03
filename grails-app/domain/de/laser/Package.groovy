@@ -3,6 +3,7 @@ package de.laser
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.helper.DateUtils
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
@@ -262,6 +263,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         } else {
             return pc_to_delete.size()
         }
+    }
+
+    String getLabel() {
+        name + (nominalPlatform ? ' (' + nominalPlatform.name + ')' : '')
     }
 
   String toString() {
