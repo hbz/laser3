@@ -28,11 +28,11 @@
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)}"/>
                 <g:set var="allowedToSelect"
-                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
+                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id)))}"/>
             </g:if>
             <g:else>
                 <g:set var="allowedToSelect"
-                       value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
+                       value="${!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id))}"/>
             </g:else>
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>

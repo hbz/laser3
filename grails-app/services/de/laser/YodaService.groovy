@@ -15,6 +15,8 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
 import grails.web.mapping.LinkGenerator
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.ContentType
@@ -22,6 +24,8 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
+
+import java.sql.Timestamp
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
@@ -37,6 +41,7 @@ class YodaService {
     GokbService gokbService = Holders.grailsApplication.mainContext.getBean('gokbService')
     LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
     GlobalService globalService
+    EscapeService escapeService
 
     /**
      * Checks whether debug information should be displayed
@@ -863,6 +868,110 @@ class YodaService {
             oldRecord.save()
         }
         Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
+    }
+
+    /**
+     * Matches the subscription holdings against the package stock where a pending change configuration for new title has been set to auto accept. This method
+     * fetches those packages where auto-accept has been configured and inserts missing titles which should have been registered already on sync run but
+     * failed to do so because of bugs
+     */
+    @Transactional
+    void matchPackageHoldings() {
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+        GregorianCalendar now = GregorianCalendar.getInstance()
+        sql.withTransaction {
+            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +
+                    "(select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) as pkg_cnt, " +
+                    "(select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current) as holding_cnt " +
+                    "from subscription_package join pending_change_configuration on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id " +
+                    "where pcc_setting_key_enum = :newTitle and pcc_setting_value_rv_fk = :accept "+
+                    "and ((select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) != " +
+                    " (select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current))",
+            [newTitle: PendingChangeConfiguration.NEW_TITLE, current: RDStore.TIPP_STATUS_CURRENT.id, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id])
+            subscriptionPackagesConcerned.eachWithIndex { GroovyRowResult row, int ax ->
+                Set<Long> subIds = [row['sp_sub_fk']]
+                List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = :newTitle and sub_parent_sub_fk = :parent", [newTitle: PendingChangeConfiguration.NEW_TITLE, parent: row['sp_sub_fk']])
+                subIds.addAll(inheritingSubs.collect { GroovyRowResult inherit -> inherit['sub_id'] })
+                int pkgId = row['sp_pkg_fk'], subCount = row['holding_cnt'], pkgCount = row['pkg_cnt']
+                boolean perpetualAccess = row['sub_has_perpetual_access']
+                if(pkgCount > 0 && pkgCount > subCount) {
+                    subIds.each { Long subId ->
+                        log.debug("now processing package ${subId}:${pkgId}, counts: ${subCount} vs. ${pkgCount}")
+                        List missingTippRows = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_id not in(select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :subId) and tipp_status_rv_fk = :current", [pkgId: pkgId, subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
+                        sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) values " +
+                                "(:version, :dateCreated, :lastUpdated, :subscription, :tipp, :accessStartDate, :accessEndDate, :reason, :medium, :status, :acceptStatus, :name, :sortname, :perpetualAccess)") { stmt ->
+                            missingTippRows.each { GroovyRowResult tippB ->
+                                Map configMap = [
+                                        version: 0,
+                                        dateCreated: new Timestamp(now.getTimeInMillis()),
+                                        lastUpdated: new Timestamp(now.getTimeInMillis()),
+                                        subscription: subId,
+                                        tipp: tippB['tipp_id'],
+                                        accessStartDate: tippB['tipp_access_start_date'],
+                                        accessEndDate: tippB['tipp_access_end_date'],
+                                        reason: 'should have been added by sync, manual retrigger',
+                                        medium: tippB['tipp_medium_rv_fk'],
+                                        status: tippB['tipp_status_rv_fk'],
+                                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id,
+                                        name: tippB['tipp_name'],
+                                        sortname: escapeService.generateSortTitle(tippB['tipp_name']),
+                                        perpetualAccess: perpetualAccess ? subId : null
+                                ]
+                                log.debug("adding new issue entitlement: ${configMap.toMapString()}")
+                                stmt.addBatch(configMap)
+                            }
+                        }
+                        sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) values " +
+                                "(:version, :issueEntitlement, :dateCreated, :lastUpdated, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :coverageDepth, :coverageNote, :embargo)") { stmt ->
+                            missingTippRows.each { GroovyRowResult tippB ->
+                                List missingTippCoverages = sql.rows("select * from tippcoverage where tc_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
+                                List issueEntitlement = sql.rows("select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current",[tipp: tippB['tipp_id'], subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
+                                Long ieId = issueEntitlement.get(0)['ie_id']
+                                missingTippCoverages.each { GroovyRowResult covB ->
+                                    Map configMap = [
+                                            version: 0,
+                                            issueEntitlement: ieId,
+                                            startDate: covB['tc_start_date'],
+                                            startVolume: covB['tc_start_volume'],
+                                            startIssue: covB['tc_start_issue'],
+                                            endDate: covB['tc_end_date'],
+                                            endVolume: covB['tc_end_volume'],
+                                            endIssue: covB['tc_end_issue'],
+                                            coverageDepth: covB['tc_coverage_depth'],
+                                            coverageNote: covB['tc_coverage_note'],
+                                            embargo: covB['tc_embargo']
+                                    ]
+                                    log.debug("adding new coverage: ${configMap.toMapString()}")
+                                    stmt.addBatch(configMap)
+                                }
+                            }
+                        }
+                        sql.withBatch("insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) values " +
+                                "(:version, :issueEntitlement, :dateCreated, :lastUpdated, :guid, :listCurrency, :listPrice)") { stmt ->
+                            missingTippRows.each { GroovyRowResult tippB ->
+                                List missingTippPrices = sql.rows("select * from price_item where pi_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
+                                List issueEntitlement = sql.rows("select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current",[tipp: tippB['tipp_id'], subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
+                                Long ieId = issueEntitlement.get(0)['ie_id']
+                                missingTippPrices.each { GroovyRowResult piB ->
+                                    Map configMap = [
+                                            version: 0,
+                                            issueEntitlement: ieId,
+                                            dateCreated: new Timestamp(now.getTimeInMillis()),
+                                            lastUpdated: new Timestamp(now.getTimeInMillis()),
+                                            guid: IssueEntitlement.class.name + ":" + UUID.randomUUID().toString(),
+                                            listPrice: piB['pi_list_price'],
+                                            listCurrency: piB['pi_list_currency_rv_fk']
+                                    ]
+                                    log.debug("adding new price item: ${configMap.toMapString()}")
+                                    stmt.addBatch(configMap)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
