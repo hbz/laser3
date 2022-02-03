@@ -264,6 +264,8 @@ class StatusUpdateService extends AbstractLockableService {
 
             SystemEvent.createEvent('LIC_UPDATE_SERVICE_PROCESSING', updatedObjs)
             running = false
+
+            return true
         }
         else {
             log.warn("License check already running ... not starting again.")

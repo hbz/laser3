@@ -1723,13 +1723,17 @@ class SubscriptionControllerService {
                 result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
-            Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
+            Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED }
             if(deletedSPs) {
                 result.deletedSPs = []
                 ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 deletedSPs.each { sp ->
                     result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
+            }
+            Date now = new Date()
+            if (now > result.subscription.endDate) {
+                result.frozenHoldings = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.freezeHolding }.pkg
             }
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
@@ -2649,7 +2653,13 @@ class SubscriptionControllerService {
 
                         if (tippExistsInParentSub) {
                             try {
-                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                RefdataValue acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+
+                                if(result.contextOrg.id == result.surveyConfig.surveyInfo.owner.id && SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.subscription.subscriber).finishDate != null){
+                                    acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                                }
+
+                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                                     log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                                     ++countIEsToAdd
                                     removeFromCache << it.key
