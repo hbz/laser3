@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext
 @Deprecated
 class IssueEntitlementFilter extends BaseFilter {
 
-    static int TMP_QUERY_CONSTRAINT = 30000
+    static int TMP_QUERY_CONSTRAINT = 20000
 
     static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
@@ -174,7 +174,7 @@ class IssueEntitlementFilter extends BaseFilter {
                 else if (pk == 'provider') {
                     _handleInternalOrgFilter(params, pk, filterResult)
                 }
-                else if (pk == 'nominalPlatform') {
+                else if (pk == 'platform') {
                     _handleInternalPlatformFilter(params, pk, filterResult)
                 }
             }

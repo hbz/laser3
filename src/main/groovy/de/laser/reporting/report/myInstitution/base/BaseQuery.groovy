@@ -23,10 +23,11 @@ class BaseQuery {
     static String NO_MATCH_LABEL        = 'noMatch.label'
     static String NO_COUNTERPART_LABEL  = 'noCounterpart.label'
     static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
-    static String NO_PLATFORM_LABEL     = 'noPlatform.label'
-    static String NO_PROVIDER_LABEL     = 'noProvider.label'
-    static String NO_STARTDATE_LABEL    = 'noStartDate.label'
-    static String NO_ENDDATE_LABEL      = 'noEndDate.label'
+    static String NO_PLATFORM_LABEL          = 'noPlatform.label'
+    static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
+    static String NO_PROVIDER_LABEL          = 'noProvider.label'
+    static String NO_STARTDATE_LABEL         = 'noStartDate.label'
+    static String NO_ENDDATE_LABEL           = 'noEndDate.label'
 
     static def NO_DATA_ID           = null
     static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata

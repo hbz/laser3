@@ -161,6 +161,7 @@ class ReportingGlobalService {
 
             def (String prefix, String suffix) = params.query.split('-')
 
+            // println 'doChart() prefix : ' + prefix + ', suffix: ' + suffix
             result.tmpl = TMPL_PATH_CHART + 'generic'
 
             if (prefix in [ BaseConfig.KEY_COSTITEM ]) {

@@ -27,10 +27,14 @@
             </g:each>
         </div><!-- .tab -->
 
-        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).nominalPlatform}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).platform}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:nominalPlatform_source" value="filter-depending-nominalPlatform" />
+            <input type="hidden" name="filter:platform_source" value="filter-depending-platform" />
         </g:if>
+%{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).nominalPlatform}" />--}%
+%{--        <g:if test="${config}">--}%
+%{--            <input type="hidden" name="filter:nominalPlatform_source" value="filter-depending-nominalPlatform" />--}%
+%{--        </g:if>--}%
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).package}" />
         <g:if test="${config}">

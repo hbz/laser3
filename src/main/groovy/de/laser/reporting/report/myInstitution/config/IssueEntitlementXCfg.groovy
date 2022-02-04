@@ -114,6 +114,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
+                                            'package-platform',
                                             'package-packageStatus',
                                             'package-*'
                                     ]
@@ -136,7 +137,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                    //        'provider-orgType',
+                                            'provider-orgType',
                                             'provider-*'
                                     ]
                             ]

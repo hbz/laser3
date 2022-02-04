@@ -75,6 +75,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-platformProvider' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-curatoryGroup' : [ // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -141,6 +146,7 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
+                                            'platform-org',
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
                                             'platform-*'
