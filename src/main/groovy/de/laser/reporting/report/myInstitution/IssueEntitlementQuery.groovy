@@ -2,6 +2,11 @@ package de.laser.reporting.report.myInstitution
 
 
 import de.laser.ContextService
+import de.laser.Org
+import de.laser.Package
+import de.laser.Platform
+import de.laser.Subscription
+import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -29,6 +34,7 @@ class IssueEntitlementQuery extends BaseQuery {
         }
         else if ( suffix in ['*']) {
 
+            // TODO
             handleGenericAllQuery(
                     params.query,
                     'select ie.name, ie.name, count(ie.name) from IssueEntitlement ie where ie.id in (:idList) group by ie.name order by ie.name',
@@ -46,13 +52,78 @@ class IssueEntitlementQuery extends BaseQuery {
                 // TODO
             }
             else if (params.query in ['issueEntitlement-x-provider']) {
-                // TODO
+                result.data = idList ? Org.executeQuery(
+                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                ) : []
+
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) and o.id = :d order by pkg.name',
+                                    [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], d: d[0]]
+                            ),
+                            value2: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
+                                    [idList: idList, prov: RDStore.OR_CONTENT_PROVIDER, d: d[0]]
+                            ).size(),
+                            value1: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
+                                    [idList: idList, prov: RDStore.OR_PROVIDER, d: d[0]] // !!!!
+                            ).size()
+                    ])
+                }
+
+                List<Long> noDataList = Package.executeQuery(
+                        'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
+                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+                )
+
+                handleGenericNonMatchingData2Values_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
             }
-            else if (params.query in ['issueEntitlement-x-platform']) {
-                // TODO
+            else if (params.query in ['issueEntitlement-x-nominalPlatform']) {
+                result.data = idList ? Platform.executeQuery(
+                        'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform p where p.id in (:platformIdList) and pkg.id in (:packageIdList) group by p.id order by p.name',
+                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), packageIdList: BaseFilter.getCachedFilterIdList('platform', params)]
+                ) : []
+
+                result.data.eachWithIndex { d, i ->
+                    List<Long> pkgIdList = Package.executeQuery(
+                            'select pkg.id from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                            [idList: idList, d: d[0]]
+                    )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: pkgIdList
+                    ])
+                }
+
+                List<Long> noDataList = idList ? Package.executeQuery(
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null', [idList: idList]
+                ) : []
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
             }
             else if (params.query in ['issueEntitlement-x-subscription']) {
-                // TODO
+                List<Long> subscriptionIdList = BaseFilter.getCachedFilterIdList('subscription', params) // filter is set
+
+                result.data = idList ? Subscription.executeQuery(
+                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription sub where sub.id in (:idList) order by sub.name, sub.id',
+                        [idList: subscriptionIdList]) : []
+
+                result.data.each { d ->
+
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: subscriptionIdList
+                    ])
+                }
             }
         }
 

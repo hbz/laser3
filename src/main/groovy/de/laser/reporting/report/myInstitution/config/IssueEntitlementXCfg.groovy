@@ -23,14 +23,14 @@ class IssueEntitlementXCfg extends BaseConfig {
                     fields: [
                             'status'            : FIELD_TYPE_REFDATA,
                             'pkg'               : FIELD_TYPE_CUSTOM_IMPL,
-                            'nominalPlatform'   : FIELD_TYPE_CUSTOM_IMPL,
+                            'platform'          : FIELD_TYPE_CUSTOM_IMPL,
                             'provider'          : FIELD_TYPE_CUSTOM_IMPL,
                             'subscription'      : FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
                             default: [
                                     [ 'status', 'subscription' ],
-                                    [ 'pkg', 'provider', 'nominalPlatform' ]
+                                    [ 'pkg', 'provider', 'platform' ]
                             ]
                     ],
                     query : [
@@ -143,13 +143,13 @@ class IssueEntitlementXCfg extends BaseConfig {
                     ]
             ],
 
-            nominalPlatform: [
+            platform: [
                     meta : [
                             class:  Platform,
                             cfgKey: KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'filter-depending-nominalPlatform'
+                            'filter-depending-platform'
                     ],
                     fields : [ ],
                     filter : [
@@ -157,12 +157,12 @@ class IssueEntitlementXCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    nominalPlatform : [
-                                            'nominalPlatform-org',
-                                            'nominalPlatform-status',
+                                    platform : [
+                                            'platform-org',
+                                            'platform-status',
                                     //        'nominalPlatform-serviceProvider',
                                     //        'nominalPlatform-softwareProvider',
-                                            'nominalPlatform-*'
+                                            'platform-*'
                                     ]
                             ]
                     ]

@@ -67,7 +67,7 @@ class BaseConfig {
 
     static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
     //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'nominalPlatform' // ?
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform' // ? nominalPlatform
     static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
     //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
@@ -80,7 +80,7 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
