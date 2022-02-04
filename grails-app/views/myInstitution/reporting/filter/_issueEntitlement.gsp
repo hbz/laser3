@@ -27,6 +27,26 @@
             </g:each>
         </div><!-- .tab -->
 
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).nominalPlatform}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:nominalPlatform_source" value="filter-depending-nominalPlatform" />
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).package}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:package_source" value="filter-depending-package" />
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).provider}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).subscription}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:subscription_source" value="filter-depending-subscription" />
+        </g:if>
+
 %{--        <div class="ui bottom attached tab segment" data-tab="issueEntitlement-filter-tab-help">--}%
 %{--            <div class="field">--}%
 %{--                <div style="text-align:center; padding:2em 0">--}%

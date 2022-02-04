@@ -17,7 +17,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'all-ie',
+                           // 'all-ie',
                             'my-ie'
                     ],
                     fields: [
@@ -158,6 +158,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     nominalPlatform : [
+                                            'nominalPlatform-org',
+                                            'nominalPlatform-status',
                                     //        'nominalPlatform-serviceProvider',
                                     //        'nominalPlatform-softwareProvider',
                                             'nominalPlatform-*'

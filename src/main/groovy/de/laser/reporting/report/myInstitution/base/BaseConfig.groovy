@@ -65,11 +65,11 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
-    static String CUSTOM_IMPL_KEY_IE_PACKAGE            = 'pkg'
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
     //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'nominalPlatform'
-    //static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'org'
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'nominalPlatform' // ?
     static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
+    //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
 
     static String CUSTOM_IMPL_KEY_PKG_PLATFORM          = 'platform'
@@ -276,7 +276,7 @@ class BaseConfig {
                     from: []
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_IE_PACKAGE]) {
+        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE]) {
 
             List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
@@ -295,10 +295,10 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_IE_PLATFORM, CUSTOM_IMPL_KEY_PKG_PLATFORM]) {
+        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM, CUSTOM_IMPL_KEY_PKG_PLATFORM]) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),
-                    //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[
+                    //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[ // ?
                     from: Platform.executeQuery('select plt from Platform plt order by plt.name').collect{[
                             id: it.id,
                             value_de: it.name,
