@@ -479,7 +479,7 @@
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
                                     params="${[member: org.id, status: params.subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id : null, validOn: params.subValidOn, filterSet: true]}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
@@ -488,7 +488,7 @@
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[consortia: genericOIDService.getOID(org), status: subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
@@ -497,7 +497,7 @@
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString(), RDStore.SUBSCRIPTION_EXPIRED.id.toString()], hasPerpetualAccess: RDStore.YN_YES.id.toString(), isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
@@ -506,7 +506,7 @@
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
