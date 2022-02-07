@@ -3,6 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -13,7 +14,7 @@ import org.springframework.context.ApplicationContext
 @Deprecated
 class IssueEntitlementFilter extends BaseFilter {
 
-    static int TMP_QUERY_CONSTRAINT = 20000
+    static int TMP_QUERY_CONSTRAINT = 2000
 
     static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
@@ -152,16 +153,16 @@ class IssueEntitlementFilter extends BaseFilter {
         //println queryParams
         //println whereParts
 
-        Set<Long> idList = []
+        Set<Long> tmpIdSet = []
         List<Long> tmp = queryParams.issueEntitlementIdList.clone() as List
         while (tmp) {
             queryParams.issueEntitlementIdList = tmp.take(TMP_QUERY_CONSTRAINT)
             tmp = tmp.drop(TMP_QUERY_CONSTRAINT) as List<Long>
-            List<Long> tmpIdList = IssueEntitlement.executeQuery( query, queryParams )
-            //println tmpIdList
-            idList.addAll(tmpIdList)
+            tmpIdSet.addAll( IssueEntitlement.executeQuery( query, queryParams ))
         }
-        filterResult.data.put( BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', idList.sort().toList().take(TMP_QUERY_CONSTRAINT)) // postgresql: out-of-range
+        List<Long> idList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
+
+        filterResult.data.put( BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', idList) // postgresql: out-of-range
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
@@ -179,6 +180,14 @@ class IssueEntitlementFilter extends BaseFilter {
                 }
             }
         }
+
+        // -- ES --
+
+        List<Long> pkgIdList = filterResult.data.getAt( BaseConfig.KEY_PACKAGE + 'IdList') as List
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, pkgIdList, cmbKey, filterResult, params )
+
+        List<Long> pltIdList = filterResult.data.getAt( BaseConfig.KEY_PLATFORM + 'IdList') as List
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, pltIdList, cmbKey, filterResult, params )
 
         filterResult
     }

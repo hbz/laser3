@@ -169,7 +169,9 @@ class LicenseFilter extends BaseFilter {
 
         filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{pk ->
+        // -- SUB --
+
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             if (pk != 'base') {
                 _handleInternalOrgFilter(params, pk, filterResult)
             }

@@ -31,7 +31,7 @@ class PackageQuery extends BaseQuery {
         Closure sharedQuery_package_platform = {
             // println 'sharedQuery_package_platform()'
             result.data = idList ? Platform.executeQuery(
-                    'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform plt where plt.id in (:platformIdList) and pkg.id in (:idList) group by plt.id order by plt.name',
+                    'select plt.id, plt.name, count(*) from Package pkg join pkg.nominalPlatform plt where plt.id in (:platformIdList) and pkg.id in (:idList) group by plt.id order by plt.name',
                     [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
             ) : []
 

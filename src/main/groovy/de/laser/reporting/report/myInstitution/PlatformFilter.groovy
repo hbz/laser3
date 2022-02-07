@@ -138,51 +138,11 @@ class PlatformFilter extends BaseFilter {
         List<Long> idList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
         // println 'local matches: ' + idList.size()
 
-        Map<String, Object> esRecords = [:]
-        List<Long> orphanedIdList = []
-        boolean esFilterUsed = false
+        // -- ES --
 
-        if (idList) {
-            if (ElasticSearchHelper.isReachable()) {
-                Map<String, Object> esr = ElasticSearchHelper.getEsPlatformRecords( idList )
-                esRecords = esr.records as Map<String, Object>
-                orphanedIdList = esr.orphanedIds as List<Long>
-            }
-            else {
-                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
-                orphanedIdList = idList
-            }
-        }
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, idList, cmbKey, filterResult, params )
 
-        getCurrentFilterKeys(params, cmbKey).each { key ->
-            if (params.get(key)) {
-                String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
-                String pEsData = BaseConfig.KEY_PLATFORM + '-' + p
-
-                String filterLabelValue
-
-                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PlatformXCfg.ES_DATA.get( pEsData )?.filter) {
-                    RefdataValue rdv = RefdataValue.get(params.long(key))
-
-                    esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
-                    filterLabelValue = rdv.getI10n('value')
-                }
-
-                if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p), value: filterLabelValue])
-                    esFilterUsed = true
-                }
-            }
-        }
-
-        if (esFilterUsed) {
-            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
-            orphanedIdList = []
-        }
-        filterResult.data.put( BaseConfig.KEY_PLATFORM + 'IdList', idList)
-        filterResult.data.put( BaseConfig.KEY_PLATFORM + 'ESRecords', esRecords)
-        filterResult.data.put( BaseConfig.KEY_PLATFORM + 'OrphanedIdList', orphanedIdList)
+        // -- SUB --
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
             if (pk == 'provider') {

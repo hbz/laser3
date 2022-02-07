@@ -110,7 +110,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    provider : [
+                                    platformOrg : [ // label
                                             'provider-orgType',
                                             'provider-*'
                                     ]

@@ -173,6 +173,8 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
+        // -- SUB --
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'memberSubscription') {
