@@ -27,11 +27,11 @@
         <g:each in="${currentConfig.keySet().sort()}" var="key" status="i">
             <%
                 String color = ''
-                if (key.startsWith('grails.plugin'))        { color = '#FFDEAD' }
-                else if (key.startsWith('grails'))          { color = '#FFFFE0' }
-                else if (key.startsWith('dataSource'))      { color = '#E0FFFF' }
-                else if (key.startsWith('java'))            { color = '#E8BFE8' }
-                else if (key.startsWith('spring'))          { color = '#B8FBB8' }
+                if (key.startsWith('grails.plugin'))        { color = '#FDEBD0' }
+                else if (key.startsWith('grails'))          { color = '#FEF9E7' }
+                else if (key.startsWith('dataSource'))      { color = '#F4ECF7' }
+                else if (key.startsWith('java'))            { color = '#D6EAF8' }
+                else if (key.startsWith('spring'))          { color = '#D5F5E3' }
 
                 if (color) { color = 'background-color:' + color }
             %>

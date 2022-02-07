@@ -45,7 +45,7 @@ class CostItemFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'costItem_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_COSTITEM + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->

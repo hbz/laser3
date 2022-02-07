@@ -29,6 +29,18 @@ class PlatformQuery extends BaseQuery {
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
         List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
+        Closure sharedQuery_platform_org = {
+            // println 'sharedQuery_platform_org()'
+            handleGenericAllQuery(
+                    params.query,
+                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
+                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
+                    idList,
+                    result
+            )
+            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
+        }
+
         if (! idList) {
         }
         else if ( suffix in ['*']) {
@@ -64,6 +76,9 @@ class PlatformQuery extends BaseQuery {
         else if ( suffix in ['serviceProvider', 'softwareProvider', 'status']) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
+        }
+        else if ( suffix in ['org']) {
+            sharedQuery_platform_org()
         }
         else if ( suffix in ['x']) {
 
@@ -119,17 +134,8 @@ class PlatformQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
-            if (params.query in ['platform-x-org']) {
-
-                // TODO
-                handleGenericAllQuery(
-                        params.query,
-                        'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
-                        'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
-                        idList,
-                        result
-                )
-                handleGenericNonMatchingData( params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result )
+            else if (params.query in ['platform-x-org']) {
+                sharedQuery_platform_org()
             }
         }
         result

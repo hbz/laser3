@@ -6,6 +6,7 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.*
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.reporting.report.myInstitution.config.IssueEntitlementXCfg
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
@@ -39,6 +40,9 @@ class ReportingGlobalService {
         if (params.filter == BaseConfig.KEY_COSTITEM) {
             doFilterCostItem(result, params.clone() as GrailsParameterMap)
         }
+        else if (params.filter == BaseConfig.KEY_ISSUEENTITLEMENT) {
+            doFilterIssueEntitlement(result, params.clone() as GrailsParameterMap)
+        }
         else if (params.filter == BaseConfig.KEY_LICENSE) {
             doFilterLicense(result, params.clone() as GrailsParameterMap)
         }
@@ -68,6 +72,17 @@ class ReportingGlobalService {
         result.filterResult = CostItemFilter.filter(params)
 
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
+    }
+
+    void doFilterIssueEntitlement (Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filterResult = IssueEntitlementFilter.filter(params)
+
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_ISSUEENTITLEMENT).get(pk).query.default)
+        }
+
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.query.default )
     }
 
     /**
@@ -190,11 +205,23 @@ class ReportingGlobalService {
 
             def (String prefix, String suffix) = params.query.split('-')
 
+            // println 'doChart() prefix : ' + prefix + ', suffix: ' + suffix
             result.tmpl = TMPL_PATH_CHART + 'generic'
 
             if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
                 result.putAll( CostItemQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
+            }
+            else if (prefix in [ BaseConfig.KEY_ISSUEENTITLEMENT ]) {
+                result.putAll( IssueEntitlementQuery.query(clone) )
+                result.labels.tooltip = getTooltipLabels(clone)
+
+                if (suffix in ['x']) {
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.distribution.getAt('default').getAt(clone.query) as Map
+
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.dist.chartLabel.' + it) }
+                    result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
+                }
             }
             else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                 result.putAll( LicenseQuery.query(clone) )
@@ -302,6 +329,9 @@ class ReportingGlobalService {
                     else if (tmpl == BaseConfig.KEY_COSTITEM) {
                         result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                     }
+                    else if (tmpl == BaseConfig.KEY_ISSUEENTITLEMENT) {
+                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.name', [idList: idList])
+                    }
                     else if (tmpl == BaseConfig.KEY_LICENSE) {
                         result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                     }
@@ -323,6 +353,9 @@ class ReportingGlobalService {
 
                     if (prefix in [ BaseConfig.KEY_COSTITEM ]) {
                         result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
+                    }
+                    else if (prefix == BaseConfig.KEY_ISSUEENTITLEMENT) {
+                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.name', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                         result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []

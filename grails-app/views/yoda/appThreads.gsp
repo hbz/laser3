@@ -32,7 +32,7 @@
         <tbody>
             <g:each in="${threads}" var="thread">
 
-                <tr<g:if test="${thread.getName().startsWith('I/O ')}"> style="background-color:#fffaf3"</g:if>>
+                <tr<g:if test="${thread.getName().startsWith('I/O ')}"> style="background-color:#fef9e7"</g:if>>
                     <td>${thread.getId()}</td>
                     <td>
                         <g:if test="${thread.isDaemon()}">

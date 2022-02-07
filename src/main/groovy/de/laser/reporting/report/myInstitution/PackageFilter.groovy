@@ -12,7 +12,6 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -43,7 +42,7 @@ class PackageFilter extends BaseFilter {
                 List<Long> subIdList = Subscription.executeQuery(
                         "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
                         [roleTypes: [
-                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+                                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS
                         ], ctx: contextService.getOrg()])
 
                 queryParams.packageIdList = Package.executeQuery(
@@ -53,7 +52,7 @@ class PackageFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'package_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_PACKAGE + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -125,7 +124,7 @@ class PackageFilter extends BaseFilter {
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else {
-                        println ' --- ' + pType +' not implemented --- '
+                        println ' --- ' + pType + ' not implemented --- '
                     }
                 }
 
@@ -145,51 +144,11 @@ class PackageFilter extends BaseFilter {
         List<Long> idList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
         // println 'local matches: ' + idList.size()
 
-        Map<String, Object> esRecords = [:]
-        List<Long> orphanedIdList = []
-        boolean esFilterUsed = false
+        // -- ES --
 
-        if (idList) {
-            if (ElasticSearchHelper.isReachable()) {
-                Map<String, Object> esr = ElasticSearchHelper.getEsPackageRecords( idList )
-                esRecords = esr.records as Map<String, Object>
-                orphanedIdList = esr.orphanedIds as List<Long>
-            }
-            else {
-                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
-                orphanedIdList = idList
-            }
-        }
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, idList, cmbKey, filterResult, params )
 
-        getCurrentFilterKeys(params, cmbKey).each { key ->
-            if (params.get(key)) {
-                String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p)
-                String pEsData = BaseConfig.KEY_PACKAGE + '-' + p
-
-                String filterLabelValue
-
-                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && PackageXCfg.ES_DATA.get( pEsData )?.filter) {
-                    RefdataValue rdv = RefdataValue.get(params.long(key))
-
-                    esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
-                    filterLabelValue = rdv.getI10n('value')
-                }
-
-                if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p), value: filterLabelValue])
-                    esFilterUsed = true
-                }
-            }
-        }
-
-        if (esFilterUsed) {
-            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
-            orphanedIdList = []
-        }
-        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'IdList', idList)
-        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'ESRecords', esRecords)
-        filterResult.data.put( BaseConfig.KEY_PACKAGE + 'OrphanedIdList', orphanedIdList)
+        // -- SUB --
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
             if (pk != 'base') {

@@ -5,15 +5,12 @@
     <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <g:render template="/templates/reporting/export/pdfStyle" />
-    <style type="text/css">
-    .filterInfo,
-    .filterResult {
-        font-size: 90%;
-    }
-    </style>
 
-    <g:if test="${options.pageFormat}">
-        <style type="text/css"> th, td { word-break: break-all; } </style>
+    <g:if test="${options.useSmallFont || options.pageFormat}">
+        <style type="text/css">
+            <g:if test="${options.useSmallFont}"> body { font-size: 12px !important; } </g:if>
+            <g:if test="${options.pageFormat}"> th, td { word-break: break-all; } </g:if>
+        </style>
     </g:if>
 </head>
 <body>
@@ -21,63 +18,67 @@
 
     <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
 
-    <div class="filterInfo">
-        <g:each in="${filterLabels}" var="lblGroup">
-            ${lblGroup.value.source}
+    <div class="infoWrapper">
+        <div class="filterInfo">
+            <g:each in="${filterLabels}" var="lblGroup">
+                ${lblGroup.value.source}
 
-            <g:each in="${lblGroup.value}" var="label">
-                <g:if test="${label.key != 'source'}">
-                    -
-                    <g:if test="${label.key in ['endDate', 'startDate']}">
-                        ${label.value.label} ${label.value.value}
-                    </g:if>
-                    <g:else>
-                        ${label.value.label}:
-                        <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
-                            <g:if test="${label.value.value instanceof String}">
-                                ${label.value.value}
-                            </g:if>
-                            <g:else>
-                                ${label.value.value.join(', ')}
-                            </g:else>
+                <g:each in="${lblGroup.value}" var="label">
+                    <g:if test="${label.key != 'source'}">
+                        -
+                        <g:if test="${label.key in ['endDate', 'startDate']}">
+                            ${label.value.label} ${label.value.value}
                         </g:if>
                         <g:else>
-                            ${label.value.value}
+                            ${label.value.label}:
+                            <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
+                                <g:if test="${label.value.value instanceof String}">
+                                    ${label.value.value}
+                                </g:if>
+                                <g:else>
+                                    ${label.value.value.join(', ')}
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                ${label.value.value}
+                            </g:else>
                         </g:else>
-                    </g:else>
-                </g:if>
+                    </g:if>
+                </g:each>
+                <br />
             </g:each>
-            <br />
-        </g:each>
-    </div>
+        </div>
 
-    <div class="filterResult">
-        <%= filterResult %>
-    </div>
+        <div class="filterResult">
+            <%= filterResult %>
+        </div>
 
-    <div class="queryInfo">
-        ${queryLabels.join(' > ')}
+        <div class="queryInfo">
+            ${queryLabels.join(' > ')}
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
+                <% int cellIndex = 0 %>
                 <g:if test="${options.useLineNumbers}">
-                    <th></th>
+                    <th class="th_0"></th>
+                    <% cellIndex = 1 %>
                 </g:if>
-                <g:each in="${header}" var="cell">
-                    <th>${cell[0]}</th>
+                <g:each in="${header}" var="cell" status="i">
+                    <th class="th_${i+cellIndex}">${cell[0]}</th>
                 </g:each>
             </tr>
         </thead>
         <tbody>
             <g:each in="${content}" var="row" status="i">
-                <tr <% if(i%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
+                <tr <% if(i%2==0) { print 'class="odd tr_' + i + '"' } else { print 'class="even tr_' + i + '"' }%>>
                     <g:if test="${options.useLineNumbers}">
-                        <td>${i+1}.</td>
+                        <td class="td_0">${i+1}.</td>
                     </g:if>
                     <g:each in="${row}" var="cell" status="j">
-                        <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
+                        <td <% if(j%2==0) { print 'class="odd td_' + (j+cellIndex) + '"' } else { print 'class="even td_' + (j+cellIndex) + '"' }%>>
                             <g:each in="${cell}" var="cp">
                                 <g:if test="${cp.startsWith('http://') || cp.startsWith('https://')}">
                                     <g:if test="${cp.indexOf('@') > 0}">

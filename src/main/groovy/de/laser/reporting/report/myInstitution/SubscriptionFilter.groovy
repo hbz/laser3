@@ -64,7 +64,7 @@ class SubscriptionFilter extends BaseFilter {
 
         //println queryParams
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'subscription_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_SUBSCRIPTION + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
@@ -172,6 +172,8 @@ class SubscriptionFilter extends BaseFilter {
 //        println whereParts
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
+
+        // -- SUB --
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {

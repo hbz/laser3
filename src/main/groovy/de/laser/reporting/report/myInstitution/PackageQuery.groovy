@@ -27,6 +27,33 @@ class PackageQuery extends BaseQuery {
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
         List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
+
+        Closure sharedQuery_package_platform = {
+            // println 'sharedQuery_package_platform()'
+            result.data = idList ? Platform.executeQuery(
+                    'select plt.id, plt.name, count(*) from Package pkg join pkg.nominalPlatform plt where plt.id in (:platformIdList) and pkg.id in (:idList) group by plt.id order by plt.name',
+                    [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
+            ) : []
+
+            result.data.eachWithIndex { d, i ->
+                List<Long> pkgIdList = Package.executeQuery(
+                        'select pkg.id from Package pkg join pkg.nominalPlatform plt where pkg.id in (:idList) and plt.id = :d order by pkg.name',
+                        [idList: idList, d: d[0]]
+                )
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: pkgIdList
+                ])
+            }
+
+            List<Long> noDataList = idList ? Package.executeQuery(
+                    'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null', [idList: idList]
+            ) : []
+            handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
+        }
+
         if (! idList) {
         }
         else if ( suffix in ['*']) {
@@ -62,6 +89,10 @@ class PackageQuery extends BaseQuery {
         else if ( suffix in ['scope']) {
 
             _processESRefdataQuery(params.query, RDConstants.PACKAGE_SCOPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
+        }
+        else if ( suffix in ['platform']) {
+
+            sharedQuery_package_platform()
         }
         else if ( suffix in ['x']) {
 
@@ -166,14 +197,19 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-platform']) {
 
-                result.data = idList ? Platform.executeQuery(
-                        'select p.id, p.name, count(*) from Package pkg join pkg.nominalPlatform p where p.id in (:platformIdList) and pkg.id in (:idList) group by p.id order by p.name',
-                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
+                sharedQuery_package_platform()
+            }
+            else if (params.query in ['package-x-platformProvider']) {
+
+                result.data = idList ? Org.executeQuery(
+                                'select o.id, o.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.org o ' +
+                                'where plt.id in (:platformIdList) and pkg.id in (:idList) and o.id in (:providerIdList) group by o.id order by o.name',
+                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
 
                 result.data.eachWithIndex { d, i ->
                     List<Long> pkgIdList = Package.executeQuery(
-                            'select pkg.id from Package pkg join pkg.nominalPlatform p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                            'select pkg.id from Package pkg join pkg.nominalPlatform plt join plt.org o where pkg.id in (:idList) and o.id = :d order by pkg.name',
                             [idList: idList, d: d[0]]
                     )
                     result.dataDetails.add([
@@ -185,9 +221,9 @@ class PackageQuery extends BaseQuery {
                 }
 
                 List<Long> noDataList = idList ? Package.executeQuery(
-                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.nominalPlatform is null', [idList: idList]
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and (pkg.nominalPlatform is null or pkg.nominalPlatform.org is null)', [idList: idList]
                 ) : []
-                handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_PLATFORM_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-curatoryGroup']) {
 

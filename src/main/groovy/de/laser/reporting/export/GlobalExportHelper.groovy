@@ -40,6 +40,12 @@ class GlobalExportHelper extends BaseExportHelper {
 
     // ----- Cache -----
 
+    static Map<String, Object> getMeta(String token) {
+
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
+        rCache.readMeta()
+    }
+
     static Map<String, Object> getFilterCache(String token) {
 
         ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )

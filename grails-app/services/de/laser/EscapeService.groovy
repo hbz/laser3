@@ -6,6 +6,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.Normalizer
 import java.text.NumberFormat
 
 /**
@@ -70,5 +71,17 @@ class EscapeService {
         dcf.setCurrencySymbol("")
         ((DecimalFormat) nf).setDecimalFormatSymbols(dcf)
         nf.format(input)
+    }
+
+    String generateSortTitle(String name) {
+        //group all sortname generators here
+        String sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+        sortname = sortname.replaceFirst('^copy of ', '')
+        sortname = sortname.replaceFirst('^the ', '')
+        sortname = sortname.replaceFirst('^a ', '')
+        sortname = sortname.replaceFirst('^der ', '')
+        sortname = sortname.replaceFirst('^die ', '')
+        sortname = sortname.replaceFirst('^das ', '')
+        sortname
     }
 }
