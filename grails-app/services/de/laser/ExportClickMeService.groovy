@@ -1853,12 +1853,13 @@ class ExportClickMeService {
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
 
-                ReaderNumber readerNumberFTEwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
-                if(readerNumberFTEwithDueDate){
+                //ReaderNumber readerNumberPeoplewithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, [sort: 'dueDate', order: 'desc'])
+                if(readerNumberStaffwithDueDate){
                     row.add([field: '', style: null])
                     row.add([field: '', style: null])
+                    row.add([field: readerNumberStaffwithDueDate.value, style: null])
                     row.add([field: '', style: null])
-                    row.add([field: readerNumberFTEwithDueDate.value, style: null])
                 }else{
                     RefdataValue currentSemester = RefdataValue.getCurrentSemester()
 
@@ -1918,12 +1919,20 @@ class ExportClickMeService {
                 if(readerNumberFTE){
                     sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
-                if(readerNumberFTEwithDueDate){
-                    sum = sum + (readerNumberFTEwithDueDate.value != null ? readerNumberFTEwithDueDate.value : 0)
+                if(readerNumberPeople){
+                    sum = sum + (readerNumberPeople.value != null ? readerNumberPeople.value : 0)
                 }
+                if(readerNumberUser){
+                    sum = sum + (readerNumberUser.value != null ? readerNumberUser.value : 0)
+                }
+
+                if(readerNumberStaffwithDueDate){
+                    sum = sum + (readerNumberStaffwithDueDate.value != null ? readerNumberStaffwithDueDate.value : 0)
+                }
+
                 row.add([field: sum, style: null])
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberFTEwithDueDate ? readerNumberFTEwithDueDate.dateGroupNote : '')))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffwithDueDate ? readerNumberStaffwithDueDate.dateGroupNote : '')))
 
                 row.add([field: note, style: null])
 

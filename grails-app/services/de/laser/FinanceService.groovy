@@ -507,6 +507,7 @@ class FinanceService {
             ProfilerUtils pu = new ProfilerUtils()
             pu.setBenchmark("init")
             Subscription sub = (Subscription) configMap.subscription
+            params.filterKey = sub.id
             Org org = (Org) configMap.institution
             pu.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
@@ -590,6 +591,7 @@ class FinanceService {
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark("load filter params")
+        params.filterKey = "global"
         Map<String,Object> filterQuery = processFilterParams(params)
         Map<String,Object> result = [filterPresets:filterQuery.filterData]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
@@ -688,8 +690,8 @@ class FinanceService {
         Map<String,Object> result
         String subFilterQuery = "", costItemFilterQuery = ""
         Map<String,Object> queryParams = [:]
-        EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null) {
+        EhcacheWrapper cache = contextService.getCache("/finance/${params.filterKey}/filter/",ContextService.USER_SCOPE)
+        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null && !params.subDetailsPage) {
             Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
             result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
         }

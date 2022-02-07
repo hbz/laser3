@@ -9,9 +9,16 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb controller="myInstitution" action="surveyInfos"
-                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
+    <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+        <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+        <semui:crumb controller="survey" action="show"
+                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
+    </g:if>
+    <g:else>
+        <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+        <semui:crumb controller="myInstitution" action="surveyInfos"
+                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
+    </g:else>
     <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
 </semui:breadcrumbs>
 

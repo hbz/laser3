@@ -525,6 +525,14 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def matchPackageHoldings() {
+        log.debug("match package holdings to issue entitlement holdings ...")
+        flash.message = "Bestände werden korrigiert ..."
+        yodaService.matchPackageHoldings()
+        redirect controller: 'home', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
         yodaService.getTIPPsWithoutGOKBId()

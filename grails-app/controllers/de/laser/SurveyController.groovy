@@ -4259,7 +4259,7 @@ class SurveyController {
                 List<License> licensesToProcess = []
 
                 if(params.generateSlavedLics == "all") {
-                    String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+                    String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                     licensesToProcess.addAll(License.executeQuery(query, [subscription:newParentSub, linkType:RDStore.LINKTYPE_LICENSE]))
                 }
                 else if(params.generateSlavedLics == "partial") {
