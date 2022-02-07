@@ -346,8 +346,18 @@ class SubscriptionControllerService {
                     result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
                 }
             }
-
-            Subscription refSub = (params.statsForSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+            //at this point, we should be sure that at least the parent subscription has a holding!
+            Subscription refSub
+            if (params.statsForSurvey == true) {
+                if(params.loadFor == 'allIEsStats')
+                    refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+                else if(params.loadFor == 'holdingIEsStats')
+                    refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+            }
+            else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
+                refSub = result.subscription
+            }
+            else refSub = result.subscription.instanceOf
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
@@ -1142,13 +1152,14 @@ class SubscriptionControllerService {
 
             result.num_ies_rows = sourceIEs.size()
 
-            if(params.tab == 'allIEsStats') {
+            if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
                 //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
 
                 if(!params.tabStat)
                     params.tabStat = 'total'
 
                 String oldTab = params.tab
+                params.loadFor = oldTab
                 params.tab = params.tabStat
 
                 params.sort= params.sort ?: 'r.reportCount'
