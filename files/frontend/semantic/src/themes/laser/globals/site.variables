@@ -273,7 +273,17 @@
 @laSecondaryBackground: #fffaf5; /*light orange for elements are secondary */
 @laAlternativeBackground: #e6dee2; /*light lila for group of elements */
 
-
+/*---  Generated Light Colors  (Pastels) ---*/
+@lightRedGenerated         : lighten( @red, 40%);
+@lightOrangeGenerated      : lighten( @orange, 40% );
+@lightYellowGenerated      : lighten( @yellow, 40% );
+@lightOliveGenerated       : lighten( @olive, 40% );
+@lightGreenGenerated       : lighten( @green, 40% );
+@lightTealGenerated        : lighten( @teal, 40% );
+@lightBlueGenerated        : lighten( @blue, 40% );
+@lightVioletGenerated      : lighten( @violet, 40% );
+@lightPinkGenerated        : lighten( @pink, 40% );
+@lightBrownGenerated       : lighten( @brown, 40% );
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;
