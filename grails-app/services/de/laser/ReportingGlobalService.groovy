@@ -68,8 +68,7 @@ class ReportingGlobalService {
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_ISSUEENTITLEMENT).get(pk).query.default)
         }
-
-        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.query.default )
+        result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.distribution )
     }
 
     void doFilterLicense (Map<String, Object> result, GrailsParameterMap params) {
@@ -79,7 +78,6 @@ class ReportingGlobalService {
         BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( pk ).query.default )
         }
-
         result.cfgDistributionList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution )
     }
 

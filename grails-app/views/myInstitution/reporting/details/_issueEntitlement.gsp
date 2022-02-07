@@ -11,7 +11,8 @@
             <th>${message(code:'issueEntitlement.label')}</th>
             <th>${message(code:'package.label')}</th>
             <th>${message(code:'platform.label')}</th>
-            <th>${message(code:'tipp.titleType')}</th>
+            <th>${message(code:'subscription.label')}</th>
+            %{--<th>${message(code:'tipp.titleType')}</th>--}%
             <th>${message(code:'default.status.label')} (IE/TIPP)</th>
         </tr>
         </thead>
@@ -20,7 +21,8 @@
                 <tr>
                     <td>${i + 1}.</td>
                     <td>
-                        <g:link controller="tipp" action="show" id="${ie.tipp.id}" target="_blank">${ie.name}</g:link>
+                        <g:link controller="issueEntitlement" action="show" id="${ie.id}" target="_blank">${ie.name}</g:link>
+                        %{-- <g:link controller="tipp" action="show" id="${ie.tipp.id}" target="_blank">${ie.name}</g:link> --}%
                     </td>
                     <td>
                         <g:if test="${ie.tipp.pkg}">
@@ -32,8 +34,13 @@
                             <g:link controller="platform" action="show" id="${ie.tipp.pkg.nominalPlatform.id}" target="_blank">${ie.tipp.pkg.nominalPlatform.name}</g:link>
                         </g:if>
                     </td>
-                    <td>
+                    %{--<td>
                         ${ie.tipp.titleType}
+                    </td>--}%
+                    <td>
+                        <g:if test="${ie.subscription}">
+                            <g:link controller="subscription" action="show" id="${ie.subscription.id}" target="_blank">${ie.subscription.getLabel()}</g:link>
+                        </g:if>
                     </td>
                     <td>
                         ${ie.status.getI10n('value')} / ${ie.tipp.status.getI10n('value')}

@@ -57,7 +57,12 @@ class IssueEntitlementXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'issueEntitlement-x-nominalPlatform' : [
+                                    'issueEntitlement-x-platform' : [
+                                            detailsTemplate     : 'issueEntitlement',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'issueEntitlement-x-platformProvider' : [
                                             detailsTemplate     : 'issueEntitlement',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
