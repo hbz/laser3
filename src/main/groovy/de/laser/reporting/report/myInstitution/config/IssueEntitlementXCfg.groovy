@@ -114,7 +114,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
-                                            'package-platform',
+                                            'package-x-platform',   // KEY_PACKAGE -> distribution
                                             'package-packageStatus',
                                             'package-*'
                                     ]
@@ -159,7 +159,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-org',
+                                            'platform-x-org',       // KEY_PLATFORM -> distribution
                                             'platform-status',
                                     //        'nominalPlatform-serviceProvider',
                                     //        'nominalPlatform-softwareProvider',

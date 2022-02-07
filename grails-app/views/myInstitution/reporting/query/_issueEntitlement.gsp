@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
@@ -16,6 +16,12 @@
             <p><g:message code="reporting.filter.no.matches" /></p>
         </div>
     </g:else>
+
+    <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
+        <div class="ui message negative">
+            <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filterResult.elasticSearchIsNotReachable')}</p>
+        </div>
+    </g:if>
 
     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
