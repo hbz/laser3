@@ -18,6 +18,8 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
+        <g:render template="/templates/reporting/helper" />%{--js--}%
+
         <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
                     data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
@@ -79,7 +81,7 @@
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
 
-        <g:if test="${!filter}">
+        <g:if test="${! filter}">
             <div class="ui segment form">
                 <div class="fields two">
                     <div class="field">
@@ -95,26 +97,11 @@
             </div>
         </g:if>
 
-        <g:each in="${BaseConfig.FILTER}" var="filterItem">
-
-            <g:if test="${!filter || filter == filterItem}">
-                <div id="filter-${filterItem}" class="filter-form-wrapper ${filter ? '' : 'hidden'}">
-                    <g:form action="reporting" method="POST" class="ui form">
-                        <g:render template="/myInstitution/reporting/filter/${filterItem}" />
-
-                        <div class="field">
-                            %{-- <g:link action="reporting" class="ui button">${message(code:'reporting.filter.save')}</g:link> --}%
-                            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
-                            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-                            <input type="hidden" name="filter" value="${filterItem}" />
-                            <input type="hidden" name="token" value="${token}" />
-                        </div>
-                    </g:form>
-                </div>
+        <div id="filter-wrapper">
+            <g:if test="${filter}">
+                <g:render template="/myInstitution/reporting/filter/form" />
             </g:if>
-        </g:each>
-
-        <g:render template="/templates/reporting/helper" />
+        </div>
 
         <g:if test="${filterResult}">
 
@@ -141,6 +128,7 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+            /*-- hab --*/
             JSPC.app.reporting.updateHabMenu = function (current) {
                 var base = ['info', 'bookmark', 'history']
                 var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
@@ -154,7 +142,6 @@
                     $( '#' + current + '-toggle').toggleClass('blue');
                 }
             }
-
             $('#info-toggle').on( 'click', function() {
                 JSPC.app.reporting.updateHabMenu('info');
             })
@@ -167,15 +154,23 @@
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
-            $('#filter-package input.button[type=submit], #filter-platform input.button[type=submit]').on('click', function() {
-                $('#loadingIndicator').show(); /* es */
-            })
-
+            /*-- filter --*/
             $('#filter-chooser').on( 'change', function(e) {
-                $('.filter-form-wrapper').addClass('hidden')
-                $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
+                $.ajax({
+                    url: '<g:createLink controller="myInstitution" action="reporting" />',
+                    data: { init: true, filter: $(this).val() },
+                    dataType: 'html',
+                    beforeSend: function(xhr) { $('#loadingIndicator').show(); }
+                })
+                .done( function (data) {
+                    $('#filter-wrapper').html(data);
+                    r2d2.initDynamicSemuiStuff('#filter-wrapper');
+                    r2d2.initDynamicXEditableStuff('#filter-wrapper');
+                    $('#filter-wrapper > div').removeClass('hidden');
+                })
+                .fail( function() { $("#reporting-modal-error").modal('show'); })
+                .always( function() { $('#loadingIndicator').hide(); });
             })
-
             $('*[id^=query-chooser').on( 'change', function(e) {
                 var value = $(e.target).val();
                 if (value) {
@@ -184,12 +179,12 @@
                     JSPC.app.reporting.requestChartJsonData();
                 }
             })
-
             $('#chart-chooser').on( 'change', function(e) {
                 JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
                 JSPC.app.reporting.requestChartJsonData();
             })
 
+            /*-- charts --*/
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
@@ -246,9 +241,7 @@
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                     })
-                    .always(function() {
-                        $('#loadingIndicator').hide();
-                    });
+                    .always(function() { $('#loadingIndicator').hide(); });
                 }
             }
 
@@ -345,6 +338,5 @@
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
             <p>${message(code:'reporting.modal.nodata')}</p>
         </semui:modal>
-
     </body>
 </html>
