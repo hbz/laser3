@@ -26,13 +26,15 @@
         boolean visible = false //is the document visible?
         boolean inOwnerOrg = false //are we owners of the document?
         boolean inTargetOrg = false //are we in the org to which a document is attached?
+
+        if(it.owner.owner?.id == contextOrg.id){
+            inOwnerOrg = true
+        }
+
         if(it.org) {
 
-            //these settings count only if we view an org's documents
-            if(it.owner.owner?.id == contextOrg.id){
-                inOwnerOrg = true
-            }
-            else if(contextOrg.id == it.targetOrg?.id) {
+            //that setting counts only if we view an org's documents
+            if(contextOrg.id == it.targetOrg?.id) {
                 inTargetOrg = true
             }
 
