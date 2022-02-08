@@ -283,8 +283,8 @@ class StatsSyncService {
                                                     //lsc.missingPeriods.remove(wasMissing)
                                                     GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                                                     if(reportID == Counter4ApiSource.PLATFORM_REPORT_1) {
-                                                        int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
-                                                                "values (:version, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                                                        int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_publisher, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                                                                "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                                                                 "on conflict on constraint unique_counter_4_report do " +
                                                                 "update set c4r_report_count = :reportCount") { stmt ->
                                                             int t = 0
@@ -306,6 +306,7 @@ class StatsSyncService {
                                                                         Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
                                                                         configMap.reportInstitution = keyPair.customerId
                                                                         configMap.platform = c4asPlatform.id
+                                                                        configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
                                                                         /*
                                                                         SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
                                                                         configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
@@ -327,7 +328,7 @@ class StatsSyncService {
                                                                                 'and c4r_report_from = :reportFrom ' +
                                                                                 'and c4r_report_to = :reportTo', selMap)
                                                                         if(existingKey) {
-                                                                            sql.execute('update counter4report set c4r_report_count = :reportCount where c4r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c4r_id')])
+                                                                            sql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c4r_id')])
                                                                         }
                                                                         else
                                                                             stmt.addBatch(configMap)

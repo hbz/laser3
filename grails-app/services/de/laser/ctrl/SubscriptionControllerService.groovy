@@ -482,7 +482,18 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
-            Subscription refSub = (params.statsforSurvey != true && subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0) ? result.subscription : result.subscription.instanceOf //at this point, we should be sure that at least the parent subscription has a holding!
+            //at this point, we should be sure that at least the parent subscription has a holding!
+            Subscription refSub
+            if (params.statsForSurvey == true) {
+                if(params.loadFor == 'allIEsStats')
+                    refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+                else if(params.loadFor == 'holdingIEsStats')
+                    refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+            }
+            else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
+                refSub = result.subscription
+            }
+            else refSub = result.subscription.instanceOf
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List c4sums = [], c5sums = [], monthsInRing = []
@@ -512,9 +523,21 @@ class SubscriptionControllerService {
                         filter += " and r.metricType = :metricType "
                         queryParams.metricType = params.metricType
                     }
+                    Map<String, Object> platformReportParams = queryParams.clone()
+                    platformReportParams.remove("refSub")
+                    platformReportParams.remove("acceptStatus")
+                    platformReportParams.pr = Counter4ApiSource.PLATFORM_REPORT_1
+                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    result.metricTypes = availableMetricTypes
                     result.total = Counter4Report.executeQuery('select new map(r.metricType as metricType, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportType, r.metricType order by r.metricType asc', queryParams)
-                    c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
-                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    if(params.data == 'fetchAll')
+                        result.total.addAll(Counter4Report.executeQuery('select new map(r.metricType as metricType, r.publisher as publisher, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType = :pr'+filter+dateRange+' group by r.reportType, r.metricType, r.publisher order by r.metricType asc', platformReportParams))
+                    if(params.data == 'fetchAll') {
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null) and r.reportType != :pr'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams+[pr: Counter4ApiSource.PLATFORM_REPORT_1]))
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.publisher as publisher, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType = :pr' + filter + dateRange + ' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform, r.publisher order by r.reportFrom asc, r.metricType asc', platformReportParams))
+                    }
+                    else c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) and r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.sums = c4sums
                     result.usages = c4usages
                     result.reportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange+' order by r.reportFrom asc', c5CheckParams)
