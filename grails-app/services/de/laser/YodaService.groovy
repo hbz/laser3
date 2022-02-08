@@ -845,6 +845,11 @@ class YodaService {
         result
     }
 
+    /**
+     * Matches the subscription holdings against the package stock where a pending change configuration for new title has been set to auto accept. This method
+     * fetches those packages where auto-accept has been configured and inserts missing titles which should have been registered already on sync run but
+     * failed to do so because of bugs
+     */
     @Transactional
     void matchPackageHoldings() {
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')

@@ -1465,6 +1465,33 @@ i.icon.la-list-icon:before {
     margin-left: 0.4em;
   }
 }
+
+.calendar table.day th > .link:first-child:after {
+  content: "\f150";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.calendar table.month th > .link:first-child:after {
+  content: "\f151";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.calendar table.year th > .link:first-child:after {
+  content: "\f150";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+}
 /*!
  * # Semantic UI 2.4.2 - Button
  * http://github.com/semantic-org/semantic-ui/

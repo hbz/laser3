@@ -73,6 +73,15 @@ class EscapeService {
         nf.format(input)
     }
 
+    /**
+     * Copy from IssueEntitlement and should replace the methods in the domain classes (see below)
+     * Generates a normalised sort name from the given input
+     * @param name the name to normalise
+     * @return the normalised sort name string
+     * @see IssueEntitlement#generateSortTitle()
+     * @see TitleInstancePackagePlatform#generateSortTitle()
+     * @see Package#generateSortName(java.lang.String)
+     */
     String generateSortTitle(String name) {
         //group all sortname generators here
         String sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()

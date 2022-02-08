@@ -2097,7 +2097,7 @@ class ExportClickMeService {
                 ReaderNumber readerNumberFTE
 
                 //ReaderNumber readerNumberPeoplewithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, [sort: 'dueDate', order: 'desc'])
                 if(readerNumberStaffwithDueDate){
                     row.add([field: '', style: null])
                     row.add([field: '', style: null])

@@ -272,14 +272,14 @@
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
                         <br />
-                        <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}">
+                        <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}:">
                             <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                         </span>
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         <br />
-                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}">
+                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
                             <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         </span>
                     </td>

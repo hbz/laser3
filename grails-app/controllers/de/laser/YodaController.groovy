@@ -580,7 +580,10 @@ class YodaController {
         redirect controller: 'home', action: 'index'
     }
 
-    @Deprecated
+    /**
+     * Another one of the dangerous calls: creates missing titles for packages where auto-accept has been
+     * configured for new titles. Concerned are only those packages where the setting for new titles is set to "accept"
+     */
     @Secured(['ROLE_YODA'])
     def matchPackageHoldings() {
         log.debug("match package holdings to issue entitlement holdings ...")
@@ -589,6 +592,7 @@ class YodaController {
         redirect controller: 'home', action: 'index'
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
