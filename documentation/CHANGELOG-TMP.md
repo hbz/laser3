@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4092    08.02.2022  dev     2.3         David   Feature     Reporting: Basissuche - Einstiegspunkte auslagern
+
 4103    03.02.2022  rc-2.2  2.2.9       Andreas Bug         Filtercache sorgte für Durcheinander beim Laden der Finanzsicht
 
 4098    02.02.2022  rc-2.2  2.2.9       Moe     Bug         Nutzerzahlen bei ClickMeExcel kommen nicht alle mit

@@ -105,7 +105,13 @@ class MyInstitutionController  {
         result.cfgFilterList = BaseConfig.FILTER
         result.cfgChartsList = BaseConfig.CHARTS
 
-        if (params.filter) {
+        if (params.init) {
+            result.filter = params.filter
+            result.xhr = true
+            render template: '/myInstitution/reporting/filter/form', model: result
+            return
+        }
+        else if (params.filter) {
             reportingGlobalService.doFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
