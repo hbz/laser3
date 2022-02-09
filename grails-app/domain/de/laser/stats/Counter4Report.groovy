@@ -82,6 +82,7 @@ class Counter4Report extends AbstractReport {
     }
 
     static constraints = {
+        title               (nullable: true) //because of platform reports!
         title(unique: ['reportType', 'platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo'])
     }
 
