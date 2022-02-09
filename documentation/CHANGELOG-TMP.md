@@ -11,6 +11,10 @@
 
 4109    08.02.2022  rc.2-2  2.3         Andreas Bug         Dokumente wurden falsch ausgegeben
 
+4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports
+
+4024    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Aufteilung der Statistiksicht in der Titelumfrage auf zwei Reiter
+
 4103    03.02.2022  rc-2.2  2.2.9       Andreas Bug         Filtercache sorgte für Durcheinander beim Laden der Finanzsicht
 
 4099    02.02.2022  dev     2.3         Ingrid  Feature     Versteckte Funktion im Datepicker deutlicher machen
