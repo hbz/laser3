@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
+
 4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports
 
 4024    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Aufteilung der Statistiksicht in der Titelumfrage auf zwei Reiter
