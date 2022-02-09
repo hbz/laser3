@@ -16332,6 +16332,7 @@ a.ui.basic.label:hover {
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
+  margin: 0 1.142857em;
 }
 
 .ui.label.la-annual-rings .ui.tiny.label {
@@ -16587,6 +16588,34 @@ a.ui.basic.label:hover {
   z-index: 999;
   padding: 0.2em;
   font-size: 2.5rem;
+}
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.ui.label.survey-renewal {
+  background-color: #ebff82;
+}
+
+.ui.label.survey-interest {
+  background-color: #ff9688;
+}
+
+.ui.label.survey-selection {
+  background-color: #45b2ff;
+}
+
+.ui.label.survey-subscription {
+  background-color: #fee8d2;
 }
 /*!
  * # Semantic UI 2.4.2 - List
