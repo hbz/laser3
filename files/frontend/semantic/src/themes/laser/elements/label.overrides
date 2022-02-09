@@ -25,6 +25,7 @@
   background-color: @laSecondaryBackground;
   border: 1px solid #d3dae3;
   vertical-align: super;
+  margin: 0 1.142857em;
   .ui.tiny.label {
     font-size: .45rem;
   }
@@ -269,3 +270,32 @@
   padding:0.2em;
   font-size: 2.5rem;
 }
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+
+.ui.label.survey-renewal {
+  background-color: @lightGreenGenerated ;
+}
+
+.ui.label.survey-interest {
+  background-color:  @lightRedGenerated;
+}
+
+.ui.label.survey-selection {
+  background-color: @lightBlueGenerated;
+}
+.ui.label.survey-subscription {
+  background-color: @lightOrangeGenerated;
+}
+
