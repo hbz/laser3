@@ -287,6 +287,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
 
+    /**
+     * Outputs this package's name and core data for labelling
+     * @return the concatenated label of this package
+     */
     String getLabel() {
         name + (nominalPlatform ? ' (' + nominalPlatform.name + ')' : '')
     }
