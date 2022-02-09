@@ -25,7 +25,7 @@
 </dl>
 <dl>
     <dt><g:message code="platform.stats.counter.certified"/></dt>
-    <dd>${platformInstanceRecord.counterCertified ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified.value, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+    <dd>${platformInstanceRecord.counterCertified ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
 </dl>
 <dl>
     <dt><g:message code="platform.stats.counter.lastAudit"/></dt>
