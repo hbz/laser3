@@ -766,10 +766,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Subscription.where { instanceOf == this }.findAll()
     }
 
+    /**
+     * Retrieves the property definition groups defined by the given institution for this subscription
+     * @param contextOrg the institution whose property groups should be retrieved
+     * @return the {@link PropertyDefinitionGroup}s for this subscription, defined by the given institution
+     */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Outputs this subscription's name and core data for labelling
+     * @return the concatenated label of this subscription
+     */
     String getLabel() {
         SimpleDateFormat sdf = DateUtils.getSDF_dmy()
         name + ' (' + (startDate ? sdf.format(startDate) : '') + ' - ' + (endDate ? sdf.format(endDate) : '') + ')'
