@@ -80,7 +80,7 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
