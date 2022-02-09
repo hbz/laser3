@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular">
@@ -17,7 +17,10 @@
             <div class="field">
                 <label for="filter:package_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base}" />
-                <g:select name="filter:package_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:package_source')}" />
+                <g:select name="filter:package_source" class="ui selection dropdown la-not-clearable"
+                          from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
+                          optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}"
+                          value="${params.get('filter:package_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
