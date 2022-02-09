@@ -16,7 +16,9 @@ class PackageXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-pkg',
-                            'my-pkg'
+                            'my-pkg',
+                            'all-pkg-deleted',
+                            'my-pkg-deleted'
                     ],
                     fields: [
                             'breakable'         : FIELD_TYPE_ELASTICSEARCH,
@@ -115,7 +117,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'filter-depending-provider'
+                            'filter-restricting-provider'
                     ],
                     fields : [ ],
                     filter : [
@@ -137,7 +139,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'filter-depending-platform'
+                            'filter-restricting-platform'
                     ],
                     fields : [ ],
                     filter : [

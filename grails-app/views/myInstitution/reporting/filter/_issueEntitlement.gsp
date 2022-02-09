@@ -29,26 +29,26 @@
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).platform}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:platform_source" value="filter-depending-platform" />
+            <input type="hidden" name="filter:platform_source" value="filter-restricting-platform" />
         </g:if>
 %{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).nominalPlatform}" />--}%
 %{--        <g:if test="${config}">--}%
-%{--            <input type="hidden" name="filter:nominalPlatform_source" value="filter-depending-nominalPlatform" />--}%
+%{--            <input type="hidden" name="filter:nominalPlatform_source" value="filter-restricting-nominalPlatform" />--}%
 %{--        </g:if>--}%
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).package}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:package_source" value="filter-depending-package" />
+            <input type="hidden" name="filter:package_source" value="filter-restricting-package" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).provider}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
+            <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).subscription}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:subscription_source" value="filter-depending-subscription" />
+            <input type="hidden" name="filter:subscription_source" value="filter-restricting-subscription" />
         </g:if>
 
 %{--        <div class="ui bottom attached tab segment" data-tab="issueEntitlement-filter-tab-help">--}%
@@ -61,12 +61,12 @@
 
     %{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />--}%
     %{--        <g:if test="${config}">--}%
-    %{--            <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />--}%
+    %{--            <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />--}%
     %{--        </g:if>--}%
 
     %{--        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />--}%
     %{--        <g:if test="${config}">--}%
-    %{--            <input type="hidden" name="filter:platform_source" value="filter-depending-platform" />--}%
+    %{--            <input type="hidden" name="filter:platform_source" value="filter-restricting-platform" />--}%
     %{--        </g:if>--}%
 
 

@@ -17,8 +17,9 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                           // 'all-ie',
-                            'my-ie'
+//                            'all-ie',
+                            'my-ie',
+                            'my-ie-deleted'
                     ],
                     fields: [
                             'status'            : FIELD_TYPE_REFDATA,
@@ -106,7 +107,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'filter-depending-package'
+                            'filter-restricting-package'
                     ],
                     fields: [
                             'packageStatus'     : FIELD_TYPE_REFDATA,
@@ -133,7 +134,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'filter-depending-provider'
+                            'filter-restricting-provider'
                     ],
                     fields : [ ],
                     filter : [
@@ -155,7 +156,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             cfgKey: KEY_ISSUEENTITLEMENT
                     ],
                     source : [
-                            'filter-depending-platform'
+                            'filter-restricting-platform'
                     ],
                     fields : [ ],
                     filter : [

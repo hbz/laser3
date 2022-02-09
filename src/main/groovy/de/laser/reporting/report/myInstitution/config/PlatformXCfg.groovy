@@ -16,7 +16,9 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-plt',
-                            'my-plt'
+                            'my-plt',
+                            'all-plt-deleted',
+                            'my-plt-deleted'
                     ],
                     fields: [
                             'org'                       : FIELD_TYPE_CUSTOM_IMPL,
@@ -102,7 +104,7 @@ class PlatformXCfg extends BaseConfig {
                             cfgKey: KEY_PLATFORM
                     ],
                     source : [
-                            'filter-depending-provider'
+                            'filter-restricting-provider'
                     ],
                     fields : [ ],
                     filter : [

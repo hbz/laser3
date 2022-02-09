@@ -32,19 +32,27 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
 
         switch (filterSource) {
-            case 'all-ie':
-                queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery( 'select ie.id from IssueEntitlement ie' )
-                break
+//            case 'all-ie':
+//                queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery( 'select ie.id from IssueEntitlement ie' )
+//                break
             case 'my-ie':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+                List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                subIdList = Subscription.executeQuery( "select s.id from Subscription s where s.status.value != 'Deleted' and s.id in (:subIdList)", [subIdList: subIdList])
+
+                queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery(
+                        'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList) ' +
+                                'and ie.status = :ieStatus and ie.acceptStatus = :ieAcceptStatus',
+                        [subscriptionIdList: subIdList, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                )
+                break
+            case 'my-ie-deleted':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
                 List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
 
                 queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery(
-                        // 'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList)',
-                        // [subscriptionIdList: subIdList]
-                        'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList) ' +
-                                'and ie.status = :ieStatus and ie.acceptStatus = :ieAcceptStatus', // todo: TMP - RESTRICTION
-                        [subscriptionIdList: subIdList, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED] // todo: TMP - RESTRICTION
+                        'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList)',
+                        [subscriptionIdList: subIdList]
                 )
                 break
         }
@@ -167,16 +175,16 @@ class IssueEntitlementFilter extends BaseFilter {
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'subscription') {
-                    _handleInternalSubscriptionFilter(params, pk, filterResult)
+                    _handleInternalSubscriptionFilter(pk, filterResult)
                 }
                 else if (pk == 'package') {
-                    _handleInternalPackageFilter(params, pk, filterResult)
+                    _handleInternalPackageFilter(pk, filterResult)
                 }
                 else if (pk == 'provider') {
-                    _handleInternalOrgFilter(params, pk, filterResult)
+                    _handleInternalOrgFilter(pk, filterResult)
                 }
                 else if (pk == 'platform') {
-                    _handleInternalPlatformFilter(params, pk, filterResult)
+                    _handleInternalPlatformFilter(pk, filterResult)
                 }
             }
         }
@@ -192,36 +200,20 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalPlatformFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
-        String filterSource = getCurrentFilterSource(params, partKey)
+    static void _handleInternalSubscriptionFilter(String partKey, Map<String, Object> filterResult) {
+        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
 
-        if (! filterSource.startsWith('filter-depending-')) {
-            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
-        }
+        String queryBase = 'select distinct(ie.subscription.id) from IssueEntitlement ie'
+        List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
-        if (! filterResult.data.get('packageIdList')) {
-            filterResult.data.put( partKey + 'IdList', [] )
-        }
-
-        String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
-        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
-
-        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
+        Map<String, Object> queryParams = [ issueEntitlementIdList: filterResult.data.issueEntitlementIdList ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? Subscription.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalPackageFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
-        String filterSource = getCurrentFilterSource(params, partKey)
-
-        if (! filterSource.startsWith('filter-depending-')) {
-            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
-        }
-
-        if (! filterResult.data.get('issueEntitlementIdList')) {
-            filterResult.data.put( partKey + 'IdList', [] )
-        }
+    static void _handleInternalPackageFilter(String partKey, Map<String, Object> filterResult) {
+        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
 
         String queryBase = 'select distinct (pkg.id) from SubscriptionPackage subPkg join subPkg.pkg pkg join subPkg.subscription sub join sub.issueEntitlements ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
@@ -232,16 +224,8 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? Package.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
-        String filterSource = getCurrentFilterSource(params, partKey)
-
-        if (! filterSource.startsWith('filter-depending-')) {
-            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
-        }
-
-        if (! filterResult.data.get('packageIdList')) {
-            filterResult.data.put( partKey + 'IdList', [] )
-        }
+    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
+        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
 
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
@@ -252,23 +236,15 @@ class IssueEntitlementFilter extends BaseFilter {
         filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 
-    static void _handleInternalSubscriptionFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
-        String filterSource = getCurrentFilterSource(params, partKey)
+    static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
+        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
 
-        if (! filterSource.startsWith('filter-depending-')) {
-            filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
-        }
+        String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
+        List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 
-        if (! filterResult.data.get('issueEntitlementIdList')) {
-            filterResult.data.put( partKey + 'IdList', [] )
-        }
-
-        String queryBase = 'select distinct(ie.subscription.id) from IssueEntitlement ie'
-        List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
-
-        Map<String, Object> queryParams = [ issueEntitlementIdList: filterResult.data.issueEntitlementIdList ]
+        Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? Subscription.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
     }
 }
