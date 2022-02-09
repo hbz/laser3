@@ -1,8 +1,17 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
+<%@ page import="de.laser.reporting.report.myInstitution.IssueEntitlementFilter; de.laser.reporting.report.myInstitution.base.BaseConfig;" %>
 
 <g:if test="${filter == BaseConfig.KEY_COSTITEM}">
     ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
 </g:if>
+
+<g:elseif test="${filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+    <g:if test="${filterResult.data.issueEntitlementIdList.size() < IssueEntitlementFilter.TMP_QUERY_CONSTRAINT}">
+        ${message(code: 'reporting.filterResult.issueEntitlement', args: [filterResult.data.issueEntitlementIdList.size()])}
+    </g:if>
+    <g:else>
+        ${message(code: 'reporting.filterResult.issueEntitlementTMP', args: [filterResult.data.issueEntitlementIdList.size()])}
+    </g:else>
+</g:elseif>
 
 <g:elseif test="${filter == BaseConfig.KEY_LICENSE}">
     ${message(code: 'reporting.filterResult.license.part', args: [filterResult.data.licenseIdList.size()])}

@@ -16,9 +16,12 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <g:if test="${meta.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:if test="${meta.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+                                    <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
                                     <i class="ui icon university" aria-hidden="true"></i>
                                 </g:elseif>
@@ -83,9 +86,12 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <g:if test="${fav.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:if test="${fav.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+                                    <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
                                     <i class="ui icon university" aria-hidden="true"></i>
                                 </g:elseif>

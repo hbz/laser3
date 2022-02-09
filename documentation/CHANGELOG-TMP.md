@@ -1,10 +1,13 @@
 
     Declare the current branch and version; 
     Hotfix changelogs are generated as follows:
+    
     Changelog for version A.B.C = all tickets in A.B.C-1
 
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+
+4092    08.02.2022  dev     2.3         David   Feature     Reporting: Basissuche - Einstiegspunkte auslagern
 
 4109    08.02.2022  rc.2-2  2.3         Andreas Bug         Dokumente wurden falsch ausgegeben
 

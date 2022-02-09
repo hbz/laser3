@@ -846,31 +846,6 @@ class YodaService {
     }
 
     /**
-     * Clears the retrieved platform duplicates from the database:
-     * <ul>
-     *     <li>duplicates without titles</li>
-     *     <li>platforms without we:kb IDs</li>
-     *     <li>platforms without we:kb record</li>
-     * </ul>
-     */
-    @Transactional
-    void executePlatformCleanup(Map result) {
-        List<String> toDelete = []
-        toDelete.addAll(result.platformDupsWithoutTIPPs.collect{ plat -> plat.globalUID })
-        toDelete.addAll(result.platformsWithoutGOKb.collect{plat -> plat.globalUID })
-        toDelete.addAll(result.inexistentPlatforms.collect{plat -> plat.globalUID })
-        result.platformsToUpdate.each { entry ->
-            Platform oldRecord = Platform.findByGlobalUID(entry.old)
-            Map newRecord = entry.correct
-            oldRecord.name = newRecord.name
-            oldRecord.primaryUrl = newRecord.primaryUrl
-            oldRecord.status = RefdataValue.getByValueAndCategory(newRecord.status,RDConstants.PLATFORM_STATUS)
-            oldRecord.save()
-        }
-        Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
-    }
-
-    /**
      * Matches the subscription holdings against the package stock where a pending change configuration for new title has been set to auto accept. This method
      * fetches those packages where auto-accept has been configured and inserts missing titles which should have been registered already on sync run but
      * failed to do so because of bugs
@@ -972,6 +947,31 @@ class YodaService {
                 }
             }
         }
+    }
+
+    /**
+     * Clears the retrieved platform duplicates from the database:
+     * <ul>
+     *     <li>duplicates without titles</li>
+     *     <li>platforms without we:kb IDs</li>
+     *     <li>platforms without we:kb record</li>
+     * </ul>
+     */
+    @Transactional
+    void executePlatformCleanup(Map result) {
+        List<String> toDelete = []
+        toDelete.addAll(result.platformDupsWithoutTIPPs.collect{ plat -> plat.globalUID })
+        toDelete.addAll(result.platformsWithoutGOKb.collect{plat -> plat.globalUID })
+        toDelete.addAll(result.inexistentPlatforms.collect{plat -> plat.globalUID })
+        result.platformsToUpdate.each { entry ->
+            Platform oldRecord = Platform.findByGlobalUID(entry.old)
+            Map newRecord = entry.correct
+            oldRecord.name = newRecord.name
+            oldRecord.primaryUrl = newRecord.primaryUrl
+            oldRecord.status = RefdataValue.getByValueAndCategory(newRecord.status,RDConstants.PLATFORM_STATUS)
+            oldRecord.save()
+        }
+        Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
     }
 
 }

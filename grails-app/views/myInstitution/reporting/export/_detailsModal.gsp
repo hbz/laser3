@@ -131,7 +131,7 @@
                         </p>
                         <p>
                             <span class="ui checkbox">
-                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" />
+                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" checked="checked" />
                                 <label for="useLineNumbers-pdf">${message(code: 'reporting.modal.export.cfg.pdf.useLineNumbers')}</label>
                             </span>
                             <br />
@@ -143,6 +143,11 @@
                             <span class="ui checkbox">
                                 <input type="checkbox" name="useHyperlinks-pdf" id="useHyperlinks-pdf" />
                                 <label for="useHyperlinks-pdf">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
+                            </span>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="useSmallFont-pdf" id="useSmallFont-pdf" />
+                                <label for="useSmallFont-pdf">${message(code: 'reporting.modal.export.cfg.useSmallFont')}</label>
                             </span>
                         </p>
                     </div>

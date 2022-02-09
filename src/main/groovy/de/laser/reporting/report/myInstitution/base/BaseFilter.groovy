@@ -18,6 +18,17 @@ class BaseFilter {
         params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(BaseConfig.FILTER_SOURCE_POSTFIX) }
     }
 
+    static List<String> getRestrictedConfigSources(Map<String, Object> config) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])) {
+            config.source
+        }
+        else {
+            config.source.findAll{ ! it.endsWith('-deleted') } as List<String>
+        }
+    }
+
     static String getDateModifier(String modifier) {
 
         if (modifier == 'less') {

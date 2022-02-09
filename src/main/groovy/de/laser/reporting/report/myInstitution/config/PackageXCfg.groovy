@@ -16,7 +16,9 @@ class PackageXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-pkg',
-                            'my-pkg'
+                            'my-pkg',
+                            'all-pkg-deleted',
+                            'my-pkg-deleted'
                     ],
                     fields: [
                             'breakable'         : FIELD_TYPE_ELASTICSEARCH,
@@ -75,6 +77,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-platformProvider' : [
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-curatoryGroup' : [ // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
@@ -110,7 +117,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'filter-depending-provider'
+                            'filter-restricting-provider'
                     ],
                     fields : [ ],
                     filter : [
@@ -132,7 +139,7 @@ class PackageXCfg extends BaseConfig {
                             cfgKey: KEY_PACKAGE
                     ],
                     source : [
-                            'filter-depending-platform'
+                            'filter-restricting-platform'
                     ],
                     fields : [ ],
                     filter : [
@@ -141,6 +148,7 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
+                                            'platform-x-org',               // KEY_PLATFORM -> distribution
                                             'platform-serviceProvider',
                                             'platform-softwareProvider',
                                             'platform-*'

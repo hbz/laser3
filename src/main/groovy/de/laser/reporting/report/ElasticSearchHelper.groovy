@@ -2,7 +2,13 @@ package de.laser.reporting.report
 
 import de.laser.Package
 import de.laser.Platform
+import de.laser.RefdataValue
 import de.laser.helper.ConfigUtils
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.reporting.report.myInstitution.base.BaseFilter
+import de.laser.reporting.report.myInstitution.config.PackageXCfg
+import de.laser.reporting.report.myInstitution.config.PlatformXCfg
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
@@ -10,6 +16,63 @@ import groovyx.net.http.Method
 class ElasticSearchHelper {
 
     static final String ELASTIC_SEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
+
+    static void handleEsRecords(String cfgKey, List<Long> idList, String cmbKey, Map<String, Object> filterResult, GrailsParameterMap params) {
+
+        Map<String, Object> esRecords = [:]
+        List<Long> orphanedIdList = []
+        boolean esFilterUsed = false
+
+        if (idList) {
+            if (isReachable()) {
+                Map<String, Object> esr = [:]
+
+                if (cfgKey == BaseConfig.KEY_PACKAGE)       { esr = getEsPackageRecords( idList ) }
+                else if (cfgKey == BaseConfig.KEY_PLATFORM) { esr = getEsPlatformRecords( idList ) }
+
+                esRecords = esr.records as Map<String, Object>
+                orphanedIdList = esr.orphanedIds as List<Long>
+            }
+            else {
+                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+                orphanedIdList = idList
+            }
+        }
+
+        BaseFilter.getCurrentFilterKeys(params, cmbKey).each { key ->
+            if (params.get(key)) {
+                String p = key.replaceFirst(cmbKey,'')
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( cfgKey ).base, p)
+                String pEsData = cfgKey + '-' + p
+
+                String filterLabelValue
+                Map<String, Map> esDataMap = [:]
+
+                if (cfgKey == BaseConfig.KEY_PACKAGE)       { esDataMap = PackageXCfg.ES_DATA }
+                else if (cfgKey == BaseConfig.KEY_PLATFORM) { esDataMap = PlatformXCfg.ES_DATA }
+
+                if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && esDataMap.get( pEsData )?.filter) {
+                    RefdataValue rdv = RefdataValue.get(params.long(key))
+
+                    esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
+                    filterLabelValue = rdv.getI10n('value')
+                }
+
+                if (filterLabelValue) {
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( cfgKey ).base, p), value: filterLabelValue])
+                    esFilterUsed = true
+                }
+            }
+        }
+
+        if (esFilterUsed) {
+            idList = /* orphanedIdList + */ esRecords.keySet()?.collect{ Long.parseLong(it) }
+            orphanedIdList = []
+        }
+        filterResult.data.put( cfgKey + 'IdList', idList)
+        filterResult.data.put( cfgKey + 'ESRecords', esRecords)
+        filterResult.data.put( cfgKey + 'OrphanedIdList', orphanedIdList)
+    }
 
     static Map<String, Object> getEsPackageRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>

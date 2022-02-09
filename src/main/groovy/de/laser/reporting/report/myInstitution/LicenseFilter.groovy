@@ -60,7 +60,7 @@ class LicenseFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'license_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_LICENSE + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
@@ -169,7 +169,9 @@ class LicenseFilter extends BaseFilter {
 
         filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{pk ->
+        // -- SUB --
+
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
             if (pk != 'base') {
                 _handleInternalOrgFilter(params, pk, filterResult)
             }

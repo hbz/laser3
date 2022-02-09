@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <div class="menu ui top attached tabular">
@@ -10,7 +10,10 @@
         <div class="field">
             <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>
             <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base}" />
-            <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:platform_source')}" />
+            <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable"
+                      from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
+                      optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}"
+                      value="${params.get('filter:platform_source')}" />
         </div>
 
         <g:each in="${config.filter.default}" var="cfgFilter">
@@ -37,5 +40,5 @@
 
     <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).provider}" />
     <g:if test="${config}">
-        <input type="hidden" name="filter:provider_source" value="filter-depending-provider" />
+        <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
     </g:if>
