@@ -17,7 +17,7 @@
     <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
 
     <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
-    <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}" />
+    <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
     <table class="ui celled la-table table">
         <thead>
@@ -82,6 +82,12 @@
                     <g:if test="${s.tp == 1}">
                         <g:link controller="yoda" action="toggleBoolSetting" params="${[setting: s.name]}">${s.value}</g:link>
                     </g:if>
+                    <g:else>
+                        <semui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
+                    </g:else>
+                </td>
+                <td>
+                    <g:if test="${s.name == 'StatusUpdateInterval'}">Sekunden</g:if>
                 </td>
             </tr>
         </g:each>

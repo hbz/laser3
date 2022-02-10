@@ -33,6 +33,8 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
+import de.laser.system.SystemMessage
+import de.laser.system.SystemSetting
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -791,5 +793,21 @@ class AjaxJsonController {
         else {
             render result as JSON
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def status() {
+        Map result = [ status: 'error' ]
+        try {
+            result = [
+                    status: 'ok',
+                    maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
+                    messages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false,
+                    interval: Integer.parseInt(SystemSetting.findByName('StatusUpdateInterval').value)
+            ]
+        } catch(Exception e) {
+            log.error( e.getMessage() )
+        }
+        render result as JSON
     }
 }
