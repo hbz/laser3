@@ -794,20 +794,4 @@ class AjaxJsonController {
             render result as JSON
         }
     }
-
-    @Secured(['ROLE_USER'])
-    def status() {
-        Map result = [ status: 'error' ]
-        try {
-            result = [
-                    status: 'ok',
-                    maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
-                    messages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false,
-                    interval: Integer.parseInt(SystemSetting.findByName('StatusUpdateInterval').value)
-            ]
-        } catch(Exception e) {
-            log.error( e.getMessage() )
-        }
-        render result as JSON
-    }
 }

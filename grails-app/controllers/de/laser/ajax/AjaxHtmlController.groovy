@@ -100,12 +100,7 @@ class AjaxHtmlController {
         result += '</p>'
         render result
     }
-
-    @Secured(['ROLE_USER'])
-    def messages() {
-        render template: '/templates/systemMessages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
-    }
-
+    
     @Deprecated
     @Secured(['ROLE_USER'])
     def loadGeneralFilter() {

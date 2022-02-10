@@ -32,10 +32,10 @@
             <td>${message(code: 'system.config.mail.label')}</td>
             <td>
                 <g:if test="${mailConfigDisabled}">
-                    <div class="ui red horizontal label"> ${message(code: 'default.deactivated.label')} </div>
+                    <i class="icon square full red"></i>${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <div class="ui green horizontal label"> ${message(code: 'default.activated.label')} </div>
+                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -55,11 +55,10 @@
             <td>${message(code: 'system.setting.maintenanceMode.label')}</td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <div class="ui red horizontal label"> ${message(code: 'default.deactivated.label')} </div>
-
+                    <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <div class="ui green horizontal label"> ${message(code: 'default.activated.label')} </div>
+                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>

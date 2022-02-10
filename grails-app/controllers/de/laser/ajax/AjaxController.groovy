@@ -1875,25 +1875,6 @@ class AjaxController {
     result;
   }
 
-    @Secured(['permitAll'])
-    def notifyProfiler() {
-        Map<String, Object> result = [status: 'failed']
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
-
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
-
-            SystemProfiler.update(delta, params.uri)
-
-            result.uri = params.uri
-            result.delta = delta
-            result.status = 'ok'
-        }
-
-        render result as JSON
-    }
-
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")

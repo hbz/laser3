@@ -13,7 +13,7 @@ sys = {
 
     status: function () {
         $.ajax({
-            url: JSPC.vars.ajaxJsonStatusUrl,
+            url: JSPC.vars.ajaxStatusUrl,
             success: function (data) {
                 /* console.log(data); */
                 if (data.status && data.status == 'ok') {
@@ -25,7 +25,7 @@ sys = {
                         $('#maintenance').addClass('hidden')
                     }
                     if (data.messages) {
-                        $('#systemMessages').load( JSPC.vars.ajaxHtmlMessagesUrl, function() { $('#systemMessages').removeClass('hidden') })
+                        $('#systemMessages').load( JSPC.vars.ajaxMessagesUrl, function() { $('#systemMessages').removeClass('hidden') })
                     } else {
                         $('#systemMessages').addClass('hidden').empty()
                     }
