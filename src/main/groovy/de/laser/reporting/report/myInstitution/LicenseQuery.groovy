@@ -16,8 +16,7 @@ class LicenseQuery extends BaseQuery {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
-        String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1] // only simply cfg.query
+        def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
@@ -32,17 +31,9 @@ class LicenseQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['licenseCategory']) {
+        else if ( suffix in ['licenseCategory', 'type', 'status']) {
 
-            _processSimpleRefdataQuery(params.query,'licenseCategory', idList, result)
-        }
-        else if ( suffix in ['type']) {
-
-            _processSimpleRefdataQuery(params.query,'type', idList, result)
-        }
-        else if ( suffix in ['status']) {
-
-            _processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['x']) {
 

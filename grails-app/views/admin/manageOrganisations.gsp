@@ -29,7 +29,7 @@
         </g:form>
     </semui:filter>
 
-    <table class="ui sortable celled la-table table">
+    <table class="ui sortable celled la-js-responsive-table la-table table">
         <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
 
         <thead>

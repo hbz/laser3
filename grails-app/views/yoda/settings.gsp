@@ -19,7 +19,7 @@
     <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>${message(code: 'default.setting.label')}</th>

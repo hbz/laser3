@@ -12,8 +12,17 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
+import org.hibernate.Session
+import org.hibernate.jdbc.Work
 import org.hibernate.type.TextType
 
+import java.sql.Connection
+import java.sql.SQLException
+import java.sql.Statement
+
+/**
+ * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
+ */
 @Transactional
 class BootStrapService {
 
@@ -26,8 +35,12 @@ class BootStrapService {
     def sessionFactory
     def userService
 
-    final static BOOTSTRAP = true   // indicates this object is created via bootstrap
+    final static BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
 
+    /**
+     * Runs initialisation and triggers other startup methods
+     * @param servletContext unused
+     */
     void init(def servletContext) {
 
         ConfigUtils.checkConfig()
@@ -129,6 +142,12 @@ class BootStrapService {
         log.debug("adjustDatabasePermissions ..")
         adjustDatabasePermissions()
 
+        /*
+        only for local usage
+        log.debug("vacuumAndAnalyzeTables ..")
+        vacuumAndAnalyseTables()
+         */
+
         log.debug(" .__                            .________ ")
         log.debug(" |  | _____    ______ ___________\\_____  \\ ~ grails3")
         log.debug(" |  | \\__  \\  /  ___// __ \\_  __ \\/  ____/ ")
@@ -137,8 +156,15 @@ class BootStrapService {
         log.debug("           \\/     \\/     \\/              \\/ ")
     }
 
+    /**
+     * Destructor method
+     */
     void destroy() {}
 
+    /**
+     * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are
+     * defined in the server config (see laser2-config example) file which should be stored on each server instance / locale instance separately
+     */
     void setupSystemUsers() {
 
         // Create anonymousUser that serves as a replacement when users are deleted
@@ -213,6 +239,12 @@ class BootStrapService {
         }
     }
 
+    /**
+     * This setup should hold only for the QA environment and is disused as everyone should set up its own environment. Was used to create demo organisations and to assign each
+     * hbz group member to them for demonstration and testing purposes.
+     * @see UserService#setupAdminAccounts()
+     * @see OrganisationService#createOrgsFromScratch()
+     */
     void setupAdminUsers() {
 
         if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_QA) {
@@ -239,6 +271,13 @@ class BootStrapService {
         }
     }
 
+    /**
+     * Sets up the global and institutional roles and grants the permissions to them
+     * @see Role
+     * @see Perm
+     * @see PermGrant
+     * @see UserOrg
+     */
     void setupRolesAndPermissions() {
 
         PermGrant.executeUpdate('delete PermGrant pg')
@@ -315,6 +354,12 @@ class BootStrapService {
         createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
     }
 
+    /**
+     * Parses the given CSV file path according to the file header reference specified by objType
+     * @param filePath the source file to parse
+     * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue or PropertyDefinition
+     * @return the {@link List} of rows (each row parsed as {@link Map}) retrieved from the source file
+     */
     List getParsedCsvData(String filePath, String objType) {
 
         List result = []
@@ -390,6 +435,9 @@ class BootStrapService {
         result
     }
 
+    /**
+     * Creates or updates stored database functions. They are located in the /grails-app/migrations/functions folder
+     */
     void updatePsqlRoutines() {
 
         try {
@@ -430,12 +478,19 @@ class BootStrapService {
         }
     }
 
+    /**
+     * Ensures database permissions for the backup and readonly users
+     */
     void adjustDatabasePermissions() {
 
         Sql sql = new Sql(dataSource)
         sql.rows("SELECT * FROM grants_for_maintenance()")
     }
 
+    /**
+     * @deprecated is replaced by {@link #setupPropertyDefinitions}
+     */
+    @Deprecated
     void createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
@@ -460,6 +515,11 @@ class BootStrapService {
         }
     }
 
+    /**
+     * Assigns to the given role the given permission
+     * @param role the {@link Role} whose permissions should be granted
+     * @param perm the {@link Perm} permission to be granted
+     */
     void ensurePermGrant(Role role, Perm perm) {
         PermGrant existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
@@ -474,6 +534,7 @@ class BootStrapService {
     /**
      * RefdataValue.group is used only for OrgRole to filter the types of role available in 'Add Role' action
      * This is done by providing 'linkType' (using instance class) to the '_orgLinksModal' template.
+     * This method sets those (actually never used) reference groups
      */
     void setOrgRoleGroups() {
         String lic = License.name
@@ -507,6 +568,11 @@ class BootStrapService {
         }
     }
 
+    /**
+     * Processes the hard coded reference value sources and updates the reference values and their categories
+     * @see RefdataValue
+     * @see RefdataCategory
+     */
     void setupRefdata() {
 
         List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
@@ -522,6 +588,10 @@ class BootStrapService {
         }
     }
 
+    /**
+     * Processes the hard coded property definition source and updates the property definitions
+     * @see PropertyDefinition
+     */
     void setupPropertyDefinitions() {
 
         List pdList = getParsedCsvData('setup/PropertyDefinition.csv', 'PropertyDefinition')
@@ -531,6 +601,7 @@ class BootStrapService {
         }
     }
 
+    @Deprecated
     void setupOnixPlRefdata() {
 
         // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
@@ -622,6 +693,7 @@ class BootStrapService {
         // log.debug("new gokb record source: ${gokb_record_source}")
     }
 
+    @Deprecated
     void setupContentItems() {
 
         // The default template for a property change on a title
@@ -658,6 +730,11 @@ No Host Platform URL Content
 ''')
     }
 
+    /**
+     * This is the hard coded list of identifier namespace definitions; the method creates or updates the namespaces according to those entries.
+     * Beware: description_de and description_en are nullable but not blank!
+     * @see IdentifierNamespace
+     */
     void setIdentifierNamespace() {
 
         //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
@@ -722,5 +799,25 @@ No Host Platform URL Content
                 IdentifierNamespace.construct(namespaceProperties)
             }
         }
+    }
+
+    /**
+     * Analyses huge tables for better query execution planning.
+     * Unused, may be activated for local testing
+     */
+    void vacuumAndAnalyseTables() {
+        Session sess = sessionFactory.currentSession
+        sess.doWork(new Work() {
+            void execute(Connection connection) throws SQLException {
+                Statement stmt = connection.createStatement()
+                stmt.execute('analyze pending_change')
+                stmt.execute('analyze issue_entitlement')
+                stmt.execute('analyze issue_entitlement_coverage')
+                stmt.execute('analyze title_instance_package_platform')
+                stmt.execute('analyze tippcoverage')
+                stmt.execute('analyze counter4report')
+                stmt.execute('analyze counter5report')
+            }
+        })
     }
 }

@@ -70,16 +70,17 @@ class ExportService {
 	ContextService contextService
 
 	/**
-		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
-		expect data in structure:
-		@param titleRow - {@link Collection} of column headers [header1,header2,...,headerN]
-		@param columnData - {@link Collection} of the rows, each row is itself a {@link Collection}:
-	 	[
-		 	[column1, column2, ..., columnN], //for row 1
-		 	[column1, column2, ..., columnN], //for row 2
-		 	...
-		 	[column1, column2, ..., columnN]  //for row N
-		]
+	 * new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
+	 * expect data in structure:
+	 * @param titleRow {@link Collection} of column headers [header1,header2,...,headerN]
+	 * @param columnData {@link Collection} of the rows, each row is itself a {@link Collection}:
+	 * [
+	 *   [column1, column2, ..., columnN], //for row 1
+	 *   [column1, column2, ..., columnN], //for row 2
+	 *   ...
+	 *   [column1, column2, ..., columnN]  //for row N
+	 * ]
+	 * @return the table formatted as a character-separated string
 	 */
 	String generateSeparatorTableString(Collection titleRow, Collection columnData,String separator) {
 		List output = []
@@ -93,17 +94,18 @@ class ExportService {
 	}
 
 	/**
-		new XSLX export interface - should subsequently collect the Excel export points
-		expect data in structure:
-		 [sheet:
-		 	titleRow: [colHeader1, colHeader2, ..., colHeaderN]
-			columnData:[
-				[field:field1,style:style1], //for row 1
-				[field:field2,style:style2], //for row 2
-				...,
-				[field:fieldN,style:styleN]  //for row N
-			]
-		 ]
+	 * new XSLX export interface - should subsequently collect the Excel export points
+	 * @param sheets the Map of sheets to export. Expect data in structure:
+	 * [sheet:
+	 *   titleRow: [colHeader1, colHeader2, ..., colHeaderN]
+	 *   columnData:[
+	 *     [field:field1,style:style1], //for row 1
+	 *     [field:field2,style:style2], //for row 2
+	 *     ...,
+	 *     [field:fieldN,style:styleN]  //for row N
+	 *   ]
+	 * ]
+	 * @return an Excel map as SXSSFWorkbook
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -124,6 +126,8 @@ class ExportService {
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
 		bold.setFont(font)
+		XSSFCellStyle lb = wb.createCellStyle()
+		lb.setWrapText(true)
 		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
@@ -160,6 +164,8 @@ class ExportService {
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
 							cell.setCellValue((String) cellData.field)
+							if(cellData.field.contains('\n'))
+								cell.setCellStyle(lb)
 						} else if (cellData.field instanceof Integer) {
 							cell.setCellValue((Integer) cellData.field)
 						} else if (cellData.field instanceof Double || cellData.field instanceof BigDecimal) {
@@ -195,6 +201,14 @@ class ExportService {
         output
     }
 
+	/**
+	 * Prepares the given collection of institutions or organisations for the export in the given format
+	 * @param orgs the collection of organisations (or institutions) to export
+	 * @param message the title of the Excel worksheet
+	 * @param addHigherEducationTitles should be columns included which count only for institutions?
+	 * @param format the file format for the export
+	 * @return depending on the format, an Excel worksheet or a CSV file
+	 */
 	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
 		Locale locale = LocaleContextHolder.getLocale()
 		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('org.shortname.label',null,locale),messageSource.getMessage('globalUID.label',null,locale)]
@@ -462,9 +476,9 @@ class ExportService {
 	}
 
 	/**
-	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and privare properties
-	 * @param propDefConst - a {@link PropertyDefinition} constant which property definition type should be loaded
-	 * @param contextOrg - the context {@link de.laser.Org}
+	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and private properties
+	 * @param propDefConst a {@link PropertyDefinition} constant which property definition type should be loaded
+	 * @param contextOrg the context {@link Org}
 	 * @return a {@link List} of headers
 	 */
 	List<String> loadPropListHeaders(Set<PropertyDefinition> propSet) {
@@ -477,11 +491,10 @@ class ExportService {
 
 	/**
 	 * Fetches for the given {@link Set} of {@link PropertyDefinition}s the values and inserts them into the cell of the given format
-	 *
-	 * @param propertyDefinitions - the {@link Set} of {@link PropertyDefinition}s to read the values off
-	 * @param format - the format (Excel or CSV) in which the values should be outputted
-	 * @param target - the target object whose property set should be consulted
-	 * @param childObjects - a {@link Map} of dependent objects
+	 * @param propertyDefinitions the {@link Set} of {@link PropertyDefinition}s to read the values off
+	 * @param format the format (Excel or CSV) in which the values should be outputted
+	 * @param target the target object whose property set should be consulted
+	 * @param childObjects a {@link Map} of dependent objects
 	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
 	 */
 	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames, Org contextOrg) {
@@ -526,10 +539,14 @@ class ExportService {
 	}
 
 	/**
-	 *
-	 * @param grailsParameterMap
-	 * @param data - the retrieved and filtered COUNTER data
-	 * @return
+	 * Exports the given usage data in an Excel worksheet. The export is COUNTER compliant unless it is used for
+	 * the title selection survey; then, additional data is needed which is not covered by the COUNTER compliance
+	 * @param params the filter parameter map
+	 * @param data the retrieved and filtered COUNTER data
+	 * @param showPriceDate should price columns be displayed?
+	 * @param showMetricType should the metric type be included (what seems not to be the case per definition in COUNTER 4)?
+	 * @param showOtherData should other data be displayed?
+	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
 	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -883,6 +900,19 @@ class ExportService {
 		wb
 	}
 
+	/**
+	 * Assembles the rows containing the usages for each title according to the given report type.
+	 * The reports exports are COUNTER-compliant unless if used for other purposes which make the
+	 * display of other data necessary as well, i.e. list prices, for pick-and-choose purposes
+	 * @param usages the data to prepare
+	 * @param propIdNamespaces the proprietary namespace(s) of the provider
+	 * @param reportType the report type which is about to be exported
+	 * @param showPriceDate should the list price shown?
+	 * @param showMetricType should the metric types be included in the report?
+	 * @param showOtherData should other data being shown as well?
+	 * @param metricType (for COUNTER 4 exports only) the metric typ which should be exported
+	 * @return a map of titles with the row containing the columns as specified for the given report
+	 */
 	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false, String metricType = 'ft_total') {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
@@ -1013,8 +1043,8 @@ class ExportService {
 
 	/**
 	 * Make a XLSX export of cost item results
-	 * @param result - passed from index
-	 * @return
+	 * @param result the loaded financial data
+	 * @return a Excel worksheet of the given cost data
 	 */
 	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -1385,9 +1415,9 @@ class ExportService {
 	}
 
 	/**
-	 *
-	 * @param propDefGroups
-	 * @return
+	 * Exports the current usage of the property definitions within the defined groups
+	 * @param propDefGroups the property definition groups of the institution
+	 * @return an Excel worksheet containing the property distribution among the objects grouped per object type and property definition group
 	 */
 	Map<String,Map> generatePropertyGroupUsageXLS(Map propDefGroups) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -1414,8 +1444,7 @@ class ExportService {
 	/**
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
 	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
-	 *
-	 * @param entitlementData - a {@link Collection} containing the actual data
+	 * @param entitlementData a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
 	Map<String,List> generateTitleExportKBART(Collection<Long> entitlementIDs, String entitlementInstance) {
@@ -1701,6 +1730,13 @@ class ExportService {
 		export
 	}
 
+	/**
+	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
+	 * @param ids the set of identifiers to output
+	 * @param namespace the namespace whose identifiers should be concatenated
+	 * @param separator the character to use for separation
+	 * @return the concatenated string of identifiers
+	 */
 	String joinIdentifiers(Set<Identifier>ids, String namespace, String separator) {
 		String joined = ' '
 		List values = []
@@ -1714,6 +1750,10 @@ class ExportService {
 		joined
 	}
 
+	/**
+	 * became a duplicate of generateTitleExportKBART - separate usage intended???
+	 */
+	@Deprecated
 	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportCSV")
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -2003,8 +2043,17 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null) {
-		log.debug("Begin generateTitleExportXLS")
+	/**
+	 * Was initially set up for generating Excel-export; as for some reason, the CSV export has been abandoned, this export is now
+	 * generic export for non-KBART headers, used for purposes where the KBART headers are not needed in full.
+	 * To use this export for tab-separated values, access result.rows.field directly for the data; it is like PHP's array_column()
+	 * @param entitlementIDs the IDs of the issue entitlements or title instances to export
+	 * @param entitlementInstance the class name to look for the complete objects
+	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
+	 * raw text output; access rows.field for the bare data
+	 */
+	Map<String, List> generateTitleExportCustom(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null) {
+		log.debug("Begin generateTitleExportCustom")
 		Locale locale = LocaleContextHolder.getLocale()
 
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -2251,10 +2300,14 @@ class ExportService {
 			}
 		}
 		export.rows = rows
-		log.debug("End generateTitleExportXLS")
+		log.debug("End generateTitleExportCustom")
 		export
 	}
 
+	/**
+	 * Gets the list of column headers for KBART export
+	 * @return a list of column headers
+	 */
 	List<String> getBaseTitleHeaders() {
 		['publication_title',
 		 'print_identifier',
@@ -2311,6 +2364,7 @@ class ExportService {
 		 'localprice_usd']
 	}
 
+	@Deprecated
 	List<String> getBaseTitleHeadersForCSV() {
 		['publication_title',
 		 'print_identifier',
@@ -2368,6 +2422,11 @@ class ExportService {
 		 'perpetual_access']
 	}
 
+	/**
+	 * Determines the issue entitlement instance of the given object
+	 * @param rowData the object containing the issue entitlement
+	 * @return the {@link IssueEntitlement} instance
+	 */
 	IssueEntitlement getIssueEntitlement(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return (IssueEntitlement) rowData
@@ -2378,6 +2437,11 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Determines the title instance of the given object
+	 * @param rowData the object containing the title
+	 * @return the {@link TitleInstancePackagePlatform} title instance
+	 */
 	TitleInstancePackagePlatform getTipp(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.tipp
@@ -2394,6 +2458,13 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Determines the coverage statement, based on the instance type of the object
+	 * @param rowData the title whose coverage statement should be recovered
+	 * @return the coverage statement or null if there are more than one or none.
+	 * If there are more than one coverage statements for a title, the set of coverages is processed in
+	 * a loop elsewhere
+	 */
 	AbstractCoverage getCoverageStatement(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.coverages.size() == 1 ? (IssueEntitlementCoverage) rowData.coverages[0] : null
@@ -2410,6 +2481,12 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Gets all namespaces in which the given entitlements have identifiers and which are not among the core namespaces
+	 * @param entitlements the title IDs whose identifiers should be queried
+	 * @param entitlementInstance the type of instance whose IDs have been submitted
+	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
+	 */
 	Set<IdentifierNamespace> getOtherIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
 		Set<IdentifierNamespace> result = []
 		//32768 is the maximum number of placeholders Postgres supports. Some placeholders must be reserved for coreTitleNS.
@@ -2427,6 +2504,12 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Gets all core title namespaces in which the given entitlements have identifiers
+	 * @param entitlements the title IDs whose identifiers should be queried
+	 * @param entitlementInstance the type of instance whose IDs have been submitted
+	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
+	 */
 	Set<IdentifierNamespace> getCoreIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
 		Set<IdentifierNamespace> result = []
 		entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size()).each { Collection<Long> entitlementChunk ->

@@ -18,21 +18,21 @@
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <table class="ui celled table table-tworow la-table">
+        <table class="ui celled table table-tworow la-js-responsive-table la-table">
             <thead>
             %{--DOCUMENTS:--}%
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned">
+                    <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
                         <input type="checkbox"  data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked />
                     </th>
                     <g:if test="${!copyObject}">
                                 <th class="six wide">
                                     <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                                 </th>
-                                <th class="one wide center aligned">
+                                <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
                                     <g:if test="${targetObject}">
                                         <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)" />
                                     </g:if>

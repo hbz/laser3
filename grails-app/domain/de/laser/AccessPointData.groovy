@@ -7,6 +7,9 @@ import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 
+/**
+ * Container class for the access configuration.
+ */
 @Slf4j
 class AccessPointData extends AbstractBase {
     
@@ -42,11 +45,11 @@ class AccessPointData extends AbstractBase {
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }
-    
-    static List<RefdataValue> getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category)
-    }
 
+    /**
+     * Gets the input string from the JSON access point data
+     * @return the inputStr field of the data object
+     */
     String getInputStr() {
         JsonSlurper jsonSluper = new JsonSlurper()
         return jsonSluper.parseText(data).getAt('inputStr')
@@ -65,6 +68,11 @@ class AccessPointData extends AbstractBase {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Gets the IP range in the given format iff the access point data is IPv4 or IPv6
+     * @param format one of the following formats: cidr, range, input
+     * @return the IP range in the specified format; null, if datatype is not matching, empty string of format is invalid
+     */
     String getIPString(String format) {
         if(datatype in ['ipv4', 'ipv6']) {
             JsonSlurper jsonSluper = new JsonSlurper()

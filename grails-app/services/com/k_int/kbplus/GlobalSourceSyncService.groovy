@@ -44,7 +44,8 @@ import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
 /**
- * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
+ * Implements the synchronisation workflow with the we:kb. It is currently used for title data and provider (organisation) data
+ * and triggers the subscription holding notifications
  */
 @Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
@@ -96,7 +97,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * The sync process wrapper. It takes every {@link GlobalRecordSource}, fetches the information since a given timestamp
+     * The sync process wrapper. It takes every {@link GlobalRecordSource}, fetches the information from a given timestamp onwards
      * and updates the local records
      */
     void doSync() {
@@ -191,6 +192,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = false
     }
 
+    /**
+     * Reloads all data of the given component type from the connected we:kb instance connected by {@link GlobalRecordSource}
+     * @param componentType the component type (one of Org, TitleInstancePackagePlatform) to update
+     */
     void reloadData(String componentType) {
         running = true
         defineMapFields()
@@ -217,6 +222,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
+    /**
+     * Reloads a concrete property from the we:kb instance. Depending on the property to load, the domain objects having this property both in ElasticSearch index and in LAS:eR are being updated
+     * @param dataToLoad the property to update for every object (one of identifier, ddc, language or editionStatement)
+     */
     void updateData(String dataToLoad) {
         running = true
         executorService.execute({
@@ -402,6 +411,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
+    /**
+     * Takes the prequest result and enters the data load loop until all scroll pages are being processed
+     * @param result the prequest result, containing the set of records and/or the information whether there are further records to process
+     * @param componentType the object type (TitleInstancePackagePlatform or Org) to update
+     * @param changedSince the timestamp from which new records should be loaded
+     * @param pkgFilter an optional package filter to restrict the data to be loaded
+     * @throws SyncException if an error occurs during the update process
+     */
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null) throws SyncException {
         if(result.count >= 5000) {
             int offset = 0, max = 5000
@@ -490,6 +507,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Updates the records on the given page
+     * @param rawRecords the scroll page (JSON result) containing the updated entries
+     * @param offset the total record counter offset which has to be added to the entry loop counter
+     */
     void updateRecords(List<Map> rawRecords, int offset) {
         //necessary filter for DEV database
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
@@ -642,7 +664,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
-     * @param packagesToTrack
+     * @param packagesToTrack the packages to be tracked
      */
     Map<String, Set<PendingChange>> trackPackageHistory() {
         Map<String, Set<PendingChange>> result = [:]
@@ -724,6 +746,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Applies every change done on entitlement or coverage to subscription packages where the change setting is set to accept
+     * @param contextOrg the {@link Org} for which the holding change is being applied (and on whose dashboard the changes will appear)
+     * @param subPkg the {@link SubscriptionPackage} to which the changes should be applied
+     * @param packageChanges the changes recorded for the package
+     * @see PendingChangeConfiguration
+     * @see PendingChange
+     */
     void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<PendingChange> packageChanges) {
         //get for each subscription package the tokens which should be accepted
         String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp and pcc.settingKey not in (:excludes)'
@@ -767,6 +797,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Updates a given {@link TitleInstancePackagePlatform} record (record A) to the state of record B, if A does not exist, it will be created if the package exists
+     * @param tippA the record existing in LAS:eR (a {@link TitleInstancePackagePlatform} object)
+     * @param tippB the record coming from we:kb (a {@link Map} reflecting the objectdata)
+     * @param newPackages the {@link Package}s of the scroll page
+     * @param newPlatforms the {@link Platform}s of the scroll page
+     * @return a {@link Map} containing the recorded differences which are recorded as {@link PendingChange}s
+     */
     Map<String,Object> createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
         Map<String,Object> result = [:]
         //TitleInstancePackagePlatform.withSession { Session sess ->
@@ -796,7 +834,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * {@link IssueEntitlementCoverage}s) are going to be notified; it is up to the respective subscription tenants to accept the changes or not.
      * Replaces the method GokbDiffEngine.diff and the onNewTipp, onUpdatedTipp and onUnchangedTipp closures
      *
-     * @param packageData - A UUID pointing to record extract for a given package
+     * @param packageData A UUID pointing to record extract for a given package
      * @return
      */
     Package createOrUpdatePackage(String packageUUID) throws SyncException {
@@ -937,7 +975,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * Was formerly in the {@link Org} domain class; deployed for better maintainability
      * Checks for a given UUID if the provider exists, otherwise, it will be created.
      *
-     * @param providerUUID - the GOKb UUID of the given provider {@link Org}
+     * @param providerUUID the GOKb UUID of the given provider {@link Org}
      * @throws SyncException
      */
     Org createOrUpdateOrgJSON(Map<String,Object> providerJSON) throws SyncException {
@@ -1029,8 +1067,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * Retrieves an {@link Org} instance as title publisher, if the given {@link Org} instance does not exist, it will be created.
      * The TIPP given with it will be linked with the provider data retrieved.
      *
-     * @param publisherParams - a {@link Map} containing the OAI PMH extract of the title publisher
-     * @param tipp - the title to check against
+     * @param publisherParams a {@link Map} containing the OAI PMH extract of the title publisher
+     * @param tipp the title to check against
      * @throws SyncException
      */
     void lookupOrCreateTitlePublisher(Map<String,Object> publisherParams, TitleInstancePackagePlatform tipp) throws SyncException {
@@ -1050,13 +1088,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Checks for a given provider uuid if there is a link with the package for the given uuid
-     * @param providerUUID - the provider UUID
-     * @param pkg - the package to check against
+     * @param providerUUID the provider UUID
+     * @param pkg the package to check against
      */
     void createOrUpdatePackageProvider(Org provider, Package pkg) {
         setupOrgRole([org: provider, pkg: pkg, roleTypeCheckup: [RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PROVIDER])
     }
 
+    /**
+     * Connects an {@link Org} to a {@link TitleInstancePackagePlatform} or a {@link Package}, linking a provider to its title or package
+     * @param configMap the {@link Map} specifying the connection parameters
+     * @throws SyncException
+     */
     void setupOrgRole(Map configMap) throws SyncException {
         OrgRole role
         def reference
@@ -1083,6 +1126,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Updates a technical or service support for a given provider {@link Org}; overrides an eventually created one and creates if it does not exist
+     * @param provider the provider {@link Org} to which the given support address should be created/updated
+     * @param supportProps the configuration {@link Map} containing the support address properties
+     * @throws SyncException
+     */
     void createOrUpdateSupport(Org provider, Map<String, String> supportProps) throws SyncException {
         Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, supportProps.rdType.getI10n("value"))
         if(!personInstance) {
@@ -1115,7 +1164,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Updates a {@link Platform} with the given parameters. If it does not exist, it will be created.
      *
-     * @param platformUUID - the platform UUID
+     * @param platformUUID the platform UUID
      * @throws SyncException
      */
     Platform createOrUpdatePlatformJSON(String platformUUID) throws SyncException {
@@ -1175,8 +1224,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Compares two packages on domain property level against each other, retrieving the differences between both.
-     * @param pkgA - the old package (as {@link Package} which is already persisted)
-     * @param pkgB - the new package (as unprocessed {@link Map}
+     * @param pkgA the old package (as {@link Package} which is already persisted)
+     * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
      */
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
@@ -1205,6 +1254,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Updates the given record with the data of the updated one. That data which does not differ in
+     * title and holding level (price items do count here as well!) is automatically applied; the other differences
+     * are being recorded and looped separately. The diff records are being then processed to create pending changes
+     * for that the issue entitlement holders may decide whether they (auto-)apply them on their holdings or not
+     * @param tippA the existing title record (in the app)
+     * @param tippB the updated title record (ex we:kb)
+     * @return a map of structure
+     * [
+     *     event: {"add", "update", "delete"},
+     *     target: title,
+     *     diffs: result of {@link #getTippDiff(java.lang.Object, java.lang.Object)}
+     * ]
+     * reflecting those differences in each title record which are not applied automatically on the derived issue entitlements
+     */
     Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
         RefdataValue status = tippStatus.get(tippB.status)
@@ -1371,8 +1435,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Replaces the onNewTipp closure.
      * Creates a new {@link TitleInstancePackagePlatform} with its respective {@link TIPPCoverage} statements
-     * @param pkg
-     * @param tippData
+     * @param pkg the {@link Package} which contains the new title
+     * @param tippData the {@link Map} which contains the we:kb record of the title
+     * @param platformsInPackage the {@link Platform}s contained in the given package
      * @return the new {@link TitleInstancePackagePlatform} object
      */
     TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData, Map<String,Platform> platformsInPackage) throws SyncException {
@@ -1476,9 +1541,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Compares two package entries against each other, retrieving the differences between both.
-     * @param tippa - the old TIPP
-     * @param tippb - the new TIPP
+     * Compares two title entries against each other, retrieving the differences between both.
+     * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
+     * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
      * @return a {@link Set} of {@link Map}s with the differences
      */
     Set<Map<String,Object>> getTippDiff(tippa, tippb) {
@@ -1535,8 +1600,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     /**
      * Compares two sub list entries against each other, retrieving the differences between both.
-     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of  or price items
-     * @param listB - the new statements (a {@link List} of remote records, kept in {@link Map}s)
+     * @param tippA the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of  or price items
+     * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
+     * @param instanceType the container class (may be coverage or price)
      * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
      */
     Set<Map<String,Object>> getSubListDiffs(TitleInstancePackagePlatform tippA, listB, String instanceType) {
@@ -1640,6 +1706,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         subDiffs
     }
 
+    /**
+     * Records the differences between coverage or price list elements
+     * @param itemA the existing list (of {@link TIPPCoverage}s or {@link PriceItem}s)
+     * @param itemB the new list (of {@link IssueEntitlementCoverage}s or {@link PriceItem}s)
+     * @return the {@link Set} of {@link Map}s reflecting the differences
+     */
     Set<Map<String,Object>> compareSubListItem(itemA,itemB) {
         Set<String> controlledProperties = []
         if(itemA instanceof AbstractCoverage) {
@@ -1720,9 +1792,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Contrary to {@link AbstractCoverage}.findEquivalent() resp {@link PriceItem}.findEquivalent(), this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
-     * @param itemB - a {@link Map}, reflecting the non-persisited item
-     * @param listA - a {@link Collection} on {@link TIPPCoverage} or {@link PriceItem} statements, the list to be updated
+     * Contrary to {@link AbstractCoverage#findEquivalent(Collection)} resp. {@link PriceItem#findEquivalent(Collection)}, this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
+     * @param itemB a {@link Map}, reflecting the non-persisited item
+     * @param listA a {@link Collection} on {@link TIPPCoverage} or {@link PriceItem} statements, the list to be updated
      * @return the equivalent LAS:eR {@link TIPPCoverage} or {@link PriceItem} from the collection
      */
     def locateEquivalent(itemB, listA) {
@@ -1756,6 +1828,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         equivalent
     }
 
+    /**
+     * Adds a new coverage statement to the given title
+     * @param tippA the {@link TitleInstancePackagePlatform} or {@link IssueEntitlement} to add the coverage to
+     * @param covB the coverage statement {@link Map}, containing the we:kb data
+     * @return the new {@link AbstractCoverage}
+     */
     AbstractCoverage addNewStatement(tippA, covB) {
         Map<String,Object> params = [startDate: (Date) covB.startDate,
                                      startVolume: covB.startVolume,
@@ -1776,6 +1854,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else null
     }
 
+    /**
+     * Adds a new price item to the given title
+     * @param entitlementA the {@link TitleInstancePackagePlatform} or {@link IssueEntitlement} to add the price item to
+     * @param piB the price item {@link Map}, containing the we:kb data
+     * @return the new {@link PriceItem}
+     */
     PriceItem addNewPriceItem(entitlementA, piB) {
         Map<String,Object> params = [startDate: (Date) piB.startDate,
                                      endDate: (Date) piB.endDate,
@@ -1792,6 +1876,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else null
     }
 
+    /**
+     * Fetches a JSON record from the we:kb API endpoint which has been defined in the {@link GlobalRecordSource} being used in the synchronisation process
+     * @param useScroll use the scroll endpoint for huge data loads?
+     * @param queryParams the parameter {@link Map} to be used for the query
+     * @return a JSON {@link Map} containing the query result
+     * @throws SyncException
+     */
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
         //I need to address a bulk output endpoint like https://github.com/hbz/lobid-resources/blob/f93201bec043cc732b27814a6ab4aea390d1aa9e/web/app/controllers/resources/Application.java, method bulkResult().
         //By then, I should query the "normal" endpoint /wekb/api/find?
@@ -1800,7 +1891,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             http = new HTTPBuilder(source.uri + '/scroll')
             String debugString = source.uri+'/scroll?'
             queryParams.each { String k, v ->
-                debugString += '&' +k + '=' + v
+                debugString += '&' + k + '=' + v
             }
             log.debug(debugString)
         }
@@ -1836,6 +1927,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    /**
+     * In order to save performance, reference data is being loaded prior to the synchronisation
+     */
     void defineMapFields() {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
@@ -1889,6 +1983,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         packagesToNotify = [:]
     }
 
+    /**
+     * Builds an equivalency map between the controlled list of the app and that of the connected we:kb instance
+     * @param rdCat the reference data category constant to build
+     * @see RDConstants
+     */
     void buildWekbLaserRefdataMap(String rdCat) {
         switch(rdCat) {
             case RDConstants.LICENSE_OA_TYPE:

@@ -4,12 +4,12 @@
 <g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            %{-- TODO --}%<th>${(labels.first().trim() != 'distribution') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
+            %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -32,20 +32,7 @@
                     </td>
                     <g:if test="${query == 'org-x-property'}">
                         <td>
-                            <%
-                                List<OrgProperty> properties = BaseDetails.getPropertiesGeneric(org, id as Long, contextService.getOrg()) as List<OrgProperty>
-
-                                println properties.collect { op ->
-                                    String result = (op.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
-
-                                    if (op.getType().isRefdataValueType()) {
-                                        result += (op.getRefValue() ? op.getRefValue().getI10n('value') : '')
-                                    } else {
-                                        result += (op.getValue() ?: '')
-                                    }
-                                    result
-                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
-                            %>
+                            <laser:reportObjectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
                     <g:elseif test="${query == 'org-x-identifier'}">

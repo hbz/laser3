@@ -7,6 +7,12 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
 
+/**
+ * This service handles retrieval and processing of contact data
+ * @see Person
+ * @see Address
+ * @see Contact
+ */
 @Transactional
 class AddressbookService {
 
@@ -14,6 +20,7 @@ class AddressbookService {
     def accessService
     def propertyService
 
+    @Deprecated
     List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
         List orgList = []
         orgRoles.each { or ->
@@ -22,11 +29,13 @@ class AddressbookService {
         getAllVisiblePersons(user, orgList)
     }
 
+    @Deprecated
     List<Person> getAllVisiblePersons(User user, Org org) {
         List orgList = [org]
         getAllVisiblePersons(user, orgList)
     }
 
+    @Deprecated
     List<Person> getAllVisiblePersons(User user, List<Org> orgs) {
         List membershipOrgIds = [contextService.getOrg().id]
 
@@ -45,6 +54,12 @@ class AddressbookService {
         visiblePersons
     }
 
+    /**
+     * Retrieves all private contacts for the given tenant institution
+     * @param tenant the institution ({@link Org}) whose private contacts should be retrieved
+     * @return a list of private person contacts maintained by the given tenant
+     * @see Person
+     */
     List<Person> getPrivatePersonsByTenant(Org tenant) {
         List result = []
 
@@ -58,24 +73,54 @@ class AddressbookService {
         result
     }
 
+    /**
+     * Checks whether the given address is editable by the given user
+     * @param address the address which should be accessed
+     * @param user the user whose grants should be checked
+     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
+     */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
+
+    /**
+     * Checks whether the given contact is editable by the given user
+     * @param address the contact which should be accessed
+     * @param user the user whose grants should be checked
+     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
+     */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
+
+    /**
+     * Checks whether the given person is editable by the given user
+     * @param person the person which should be accessed
+     * @param user the user whose grants should be checked
+     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
+     */
     boolean isPersonEditable(Person person, User user) {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        //true // TODO: Rechte nochmal überprüfen
     }
 
+    @Deprecated
     boolean isNumbersEditable(Numbers numbers, User user) {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        //true // TODO: Rechte nochmal überprüfen
     }
 
+    /**
+     * Retrieves for the given page the visible persons. If it is for the addressbook page
+     * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),
+     * then the list is restricted to the private contacts of the context institution. Otherwise, if an addressbook
+     * page of a foreign institution has been called (coming then from {@link OrganisationController#myPublicContacts()}),
+     * all public contacts are being returned, whoever is tenant of the given contact. The result may be filtered by
+     * the given parameter map
+     * @param fromSite the page for which the list is being returned
+     * @param params a parameter map to filter the results
+     * @return an eventually filtered list of person contacts
+     */
     List getVisiblePersons(String fromSite, GrailsParameterMap params) {
         List qParts = [
                 'p.isPublic = :public'

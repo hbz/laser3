@@ -34,7 +34,10 @@ class Order {
       dateCreated (nullable: true)
   }
 
-
+    /**
+     * Use {@link de.laser.ControlledListService#getOrderNumbers(java.util.Map)} instead
+     */
+    @Deprecated
     @Transient
     static def refdataFind(GrailsParameterMap params) {
         Org owner = Org.findByShortcode(params.shortcode)

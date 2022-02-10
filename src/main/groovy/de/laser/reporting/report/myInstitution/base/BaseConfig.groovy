@@ -3,24 +3,31 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
+import de.laser.Package
+import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.Subscription
+import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
+import de.laser.reporting.report.myInstitution.config.IssueEntitlementXCfg
 import de.laser.reporting.report.myInstitution.config.LicenseConsCfg
 import de.laser.reporting.report.myInstitution.config.LicenseInstCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
+import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
 
 import java.time.Year
 
@@ -29,7 +36,9 @@ class BaseConfig {
     static String KEY_MYINST                    = 'myInstitution'
 
     static String KEY_COSTITEM                  = 'costItem'
+    static String KEY_ISSUEENTITLEMENT          = 'issueEntitlement'
     static String KEY_PACKAGE                   = 'package'
+    static String KEY_PLATFORM                  = 'platform'
     static String KEY_LICENSE                   = 'license'
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_SUBSCRIPTION              = 'subscription'
@@ -44,6 +53,7 @@ class BaseConfig {
     static String FIELD_TYPE_REFDATA            = 'refdata'
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
+    static String FIELD_TYPE_ELASTICSEARCH      = 'elasticSearch'
 
     static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
     static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
@@ -55,69 +65,106 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
+    //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform' // ? nominalPlatform
+    static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
+    //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
+    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
+
+    static String CUSTOM_IMPL_KEY_PKG_PLATFORM          = 'platform'
+    static String CUSTOM_IMPL_KEY_PKG_PROVIDER          = 'provider'
+
+    static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
+    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
+    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
+
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE //, KEY_PACKAGE // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
             CHART_BAR, CHART_PIE
     ]
 
-    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+    static Class getCurrentConfigClass(String key) {
 
+        if (key == KEY_COSTITEM) { CostItemXCfg }
+        else if (key == KEY_ISSUEENTITLEMENT) { IssueEntitlementXCfg }
+        else if (key == KEY_LICENSE) {
+            if (BaseDetailsExport.ctxConsortium()) { LicenseConsCfg }
+            else if (BaseDetailsExport.ctxInst()) { LicenseInstCfg }
+        }
+        else if (key == KEY_ORGANISATION) {
+            if (BaseDetailsExport.ctxConsortium()) { OrganisationConsCfg }
+            else if (BaseDetailsExport.ctxInst()) { OrganisationInstCfg }
+        }
+        else if (key == KEY_PACKAGE) { PackageXCfg }
+        else if (key == KEY_PLATFORM) { PlatformXCfg }
+        else if (key == KEY_SUBSCRIPTION) {
+            if (BaseDetailsExport.ctxConsortium()) { SubscriptionConsCfg }
+            else if (BaseDetailsExport.ctxInst()) { SubscriptionInstCfg }
+        }
+    }
+
+    static Map<String, Object> getCurrentConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('CONFIG')) {
+            config.CONFIG
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Map> getCurrentEsData(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('ES_DATA')) {
+            config.ES_DATA
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
+            config.DETAILS_TABLE_CONFIG
+        }
+        else {
+            [:]
+        }
+    }
+
+    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
         Map<String, Object> cfg = [:]
 
-        if (prefix in [ KEY_LICENSE, 'licensor' ]) {
+        if (prefix in [ KEY_COSTITEM ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        }
+        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
+        }
+        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
         }
         else if (prefix in ['org']) {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
-        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-        }
         else if (prefix in [ KEY_PACKAGE ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
         }
-        else if (prefix in [ KEY_COSTITEM ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        else if (prefix in [ KEY_PLATFORM]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
         }
-
+        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
+            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+        }
         cfg
-    }
-
-    static Map<String, Object> getCurrentConfig(String key) {
-
-        if (key == KEY_PACKAGE) {
-            return PackageXCfg.CONFIG
-        }
-        else if (key == KEY_COSTITEM) {
-            CostItemXCfg.CONFIG
-        }
-        else if (key == KEY_LICENSE) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                LicenseConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                LicenseInstCfg.CONFIG
-            }
-        }
-        else if (key == KEY_ORGANISATION) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                OrganisationConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                OrganisationInstCfg.CONFIG
-            }
-        }
-        else if (key == KEY_SUBSCRIPTION) {
-            if (BaseDetailsExport.ctxConsortium()) {
-                SubscriptionConsCfg.CONFIG
-            }
-            else if (BaseDetailsExport.ctxInst()) {
-                SubscriptionInstCfg.CONFIG
-            }
-        }
     }
 
     static Map<String, Object> getCustomImplRefdata(String key) {
@@ -129,7 +176,8 @@ class BaseConfig {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         ContextService contextService  = mainContext.getBean('contextService')
         MessageSource messageSource    = mainContext.getBean('messageSource')
-        
+        SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.cfg.base.custom'
 
@@ -181,21 +229,21 @@ class BaseConfig {
             ]]
         }
         else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.annual.label', null, locale),
-                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
+                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
-            int y = Year.now().value
+            Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
@@ -226,6 +274,104 @@ class BaseConfig {
             return [
                     label: 'Merkmalswert (nur Referenzwerte)',
                     from: []
+            ]
+        }
+        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE]) {
+
+            List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+
+            List<Long> pkgList = Package.executeQuery(
+                    'select distinct subPkg.pkg from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
+                    [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+            )
+
+            return [
+                    label: messageSource.getMessage('package.label', null, locale),
+                    from: pkgList.collect{[
+                            id: it.id,
+                            value_de: it.getLabel(),
+                            value_en: it.getLabel(),
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM, CUSTOM_IMPL_KEY_PKG_PLATFORM]) {
+            return [
+                    label: messageSource.getMessage('platform.label', null, locale),
+                    //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[ // ?
+                    from: Platform.executeQuery('select plt from Platform plt order by plt.name').collect{[
+                            id: it.id,
+                            value_de: it.name,
+                            value_en: it.name,
+                    ]}
+            ]
+        }
+        else if (key in [CUSTOM_IMPL_KEY_IE_PROVIDER, CUSTOM_IMPL_KEY_PKG_PROVIDER]) {
+            return [
+                    label: messageSource.getMessage('default.provider.label', null, locale),
+                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
+                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
+                            id: it.id,
+                            value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                            value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
+            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            return [
+                    label: messageSource.getMessage('subscription.label', null, locale),
+                    from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
+                        [
+                            id: it.id,
+                            value_de: it.getLabel(),
+                            value_en: it.getLabel(),
+                    ]}
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_ORG) {
+            return [
+                    label: messageSource.getMessage('platform.provider', null, locale),
+                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
+                        id: it.id,
+                        value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                        value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
+            return [
+                    label: messageSource.getMessage('platform.serviceProvider', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
+            return [
+                    label: messageSource.getMessage('platform.softwareProvider', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+    }
+
+    static Map<String, Object> getElasticSearchRefdata(String key) {
+
+        ApplicationContext mainContext = Holders.grailsApplication.mainContext
+        MessageSource messageSource = mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map pkgMap = PackageXCfg.ES_DATA.get(KEY_PACKAGE + '-' + key) as Map<String, String>
+        Map pltMap = PlatformXCfg.ES_DATA.get(KEY_PLATFORM + '-' + key)  as Map<String, String>
+
+        if (pkgMap) {
+            return [
+                    label: messageSource.getMessage(pkgMap.label, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pkgMap.rdc )
+            ]
+        }
+        else if (pltMap) {
+            return [
+                    label: messageSource.getMessage(pltMap.label, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltMap.rdc )
             ]
         }
     }

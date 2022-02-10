@@ -21,7 +21,6 @@
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
                 <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
             </g:if>
-
         </div><!-- .menu -->
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base}" />
@@ -169,7 +168,7 @@
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-help">
                 <div class="field">
                     <div style="text-align:center; padding:2em 0">
-                        <asset:image src="help/reporting.png" absolute="true" style="width:85%" />
+                        <asset:image src="help/reporting.subscriptions.png" absolute="true" style="width:98%" />
                     </div>
                 </div>
             </div><!-- .tab -->

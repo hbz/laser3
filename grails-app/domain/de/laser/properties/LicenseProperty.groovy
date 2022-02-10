@@ -11,6 +11,12 @@ import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
 
+/**
+ * The class's name is what it does: a property (general / custom or private) to a {@link de.laser.License}.
+ * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
+ * As its parent object ({@link #owner}), it may be passed through member subscriptions (inheritance / auditable); the parent property is represented by {@link #instanceOf}.
+ * Next to the property value, it may continue a {@link #paragraph} of an underlying contract text.
+ */
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements Auditable {
 
     def genericOIDService
@@ -82,10 +88,19 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         owner: License
     ]
 
+    /**
+     * The list of fields watched for inheritance
+     * @return a {@link Collection} of field names watched
+     */
     @Override
     Collection<String> getLogIncluded() {
         [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
     }
+
+    /**
+     * The list of fields disregarded for inheritance
+     * @return a {@link Collection} of field names excluded from inheritance
+     */
     @Override
     Collection<String> getLogExcluded() {
         [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
@@ -122,6 +137,11 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this), this.class.simpleName)
     }
 
+    /**
+     * Extends the superclass method by the license paragraph
+     * @param newProp the new license property to be processed
+     * @return the property enriched with this copy base's values and the paragraph
+     */
     @Override
     def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         newProp = super.copyInto(newProp)
@@ -130,6 +150,10 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         newProp
     }
 
+    /**
+     * This method is used by generic access method and reflects changes made to a subscription property to inheriting license properties.
+     * @param changeDocument the map of changes being passed through to the inheriting properties
+     */
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 

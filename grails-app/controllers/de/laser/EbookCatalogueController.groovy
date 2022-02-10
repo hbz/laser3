@@ -9,11 +9,18 @@ import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpSession
 
+/**
+ * This controller is for managing calls to the ebooks catalogue
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class EbookCatalogueController {
 
     def genericOIDService
 
+    /**
+     * The landing page of the catalogue
+     * @return either the selection filter or the list of filter results
+     */
     @Secured(['ROLE_ADMIN'])
     def index() {
 
@@ -96,6 +103,10 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * Retrieves the details to an ebook
+     * @return publicly visible title details
+     */
     @Secured(['ROLE_ADMIN'])
     def details() {
         Map<String, Object> result = [:]
@@ -160,6 +171,11 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * method under development
+     * @param reset
+     * @return
+     */
     private Map<String, Object> _stats_TODO(boolean reset) {
 
         Map<String, Object> result = [:]
@@ -242,6 +258,13 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * method under development
+     * @param params
+     * @param subCount
+     * @param reset
+     * @return
+     */
     private List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
 
         HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()

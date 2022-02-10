@@ -11,18 +11,31 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
-    static boolean isFieldMultiple(String fieldName) {
-        if (fieldName in [ 'annual' ]) {
-            return true
+    // TODO
+    static boolean isFieldMultiple(String object, String fieldName) {
+        boolean bool = false
+
+        if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
+            bool = true
         }
-        return false
+        else if (object in [ 'platform' ] && fieldName in [ 'org' ]) {
+            bool = true
+        }
+        else if (fieldName in [ 'annual' ]) {
+            bool = true
+        }
+        // if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
+        bool
     }
 
-    static boolean isFieldVirtual(String fieldName) {
+    static boolean isFieldVirtual(String object, String fieldName) {
+        boolean bool = false
+
         if (fieldName in [ 'region' ]) {
-            return true
+            bool = true
         }
-        return false
+        // if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
+        bool
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
@@ -47,10 +60,14 @@ class GenericHelper {
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
+//            try {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
+//            } catch(Exception e) {
+//                println " -----------> No message found under code '${csn}.${prop.getName()}.label'"
+//                label = messageSource.getMessage(csn + '.' + prop.getName(), null, locale)
+//            }
         }
-
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
+        else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
@@ -60,23 +77,89 @@ class GenericHelper {
 
             label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataAnnotation
         }
-
-        if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
-            // LaserReportingTagLib:reportFilterRefdata
+        else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
             Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             label = customRdv.get('label')
         }
-        if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
-            // LaserReportingTagLib:reportFilterRefdata
+        else if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
-            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
-            if (!customRdv) {
+            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(fieldName)
+            if (!rdv) {
                 println '>> ' + fieldName + ' : ' + type + ' not found!'
             }
-            label = customRdv.get('label')
+            label = rdv.get('label')
         }
+        else if (type in [BaseConfig.FIELD_TYPE_ELASTICSEARCH, BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH] ) {
+            // LaserReportingTagLib:reportFilterRefdataRelTable
 
+            Map<String, Object> rdv = BaseConfig.getElasticSearchRefdata(fieldName)
+            if (!rdv) {
+                println '>> ' + fieldName + ' : ' + type + ' not found!'
+            }
+            label = rdv.get('label')
+        }
+        else if (type in [BaseDetailsExport.FIELD_TYPE_COMBINATION, null] ) { // TODO: null
+            // LaserReportingTagLib:reportFilterRefdataRelTable
+
+            if (fieldName == '+sortname+name') {
+                label = messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale)
+            }
+            else if (fieldName == 'sortname') {
+                label = messageSource.getMessage('default.sortname.label', null, locale)
+            }
+            else if (fieldName == 'name') {
+                label = messageSource.getMessage('default.name.label', null, locale)
+            }
+            // plt
+            else if (fieldName.startsWith('org+')) {
+                label = messageSource.getMessage('platform.provider', null, locale)
+
+                if (fieldName == 'org+sortname+name') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'org+sortname') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ')'
+                }
+                else if (fieldName == 'org+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+            }
+            //
+            else if (fieldName.startsWith('x-provider+')) {
+                label = messageSource.getMessage('default.provider.label', null, locale)
+
+                if (fieldName == 'x-provider+sortname+name') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-provider+sortname') {
+                    label = label + ' (' + messageSource.getMessage('default.sortname.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-provider+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+            }
+            //
+            else if (fieldName.startsWith('x-platform+')) {
+                label = messageSource.getMessage('platform.label', null, locale)
+
+                if (fieldName == 'x-platform+name+primaryUrl') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ', ' + messageSource.getMessage('platform.primaryUrl.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-platform+name') {
+                    label = label + ' (' + messageSource.getMessage('default.name.label', null, locale) + ')'
+                }
+                else if (fieldName == 'x-platform+primaryUrl') {
+                    label = label + ' (' + messageSource.getMessage('platform.primaryUrl.label', null, locale) + ')'
+                }
+            }
+        }
         label
+    }
+
+    static String flagUnmatched(String value) {
+        '(' + value + ' *)'
     }
 }

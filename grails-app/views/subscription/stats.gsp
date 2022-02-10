@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource" %>
+<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -67,9 +67,17 @@
                     <tr>
                         <th><g:message code="default.usage.consortiaTableHeader"/></th>
                     </tr>
-                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberId, org.sortname as memberName) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
                         <tr>
-                            <td><g:link action="stats" id="${row.memberId}">${row.memberName}</g:link></td>
+                            <td>
+                                <g:link action="stats" id="${row.memberSubId}">${row.memberName}
+                                    <g:set var="checkParams" value="${[max: 1, plat: subscribedPlatforms, refSubs: [row.memberSubId, subscription.id]]}"/>
+                                    <g:if test="${Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams) ||
+                                            Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams)}">
+                                        <span data-tooltip="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
+                                    </g:if>
+                                </g:link>
+                            </td>
                         </tr>
                     </g:each>
                 </table>
@@ -195,7 +203,7 @@
                     </div>
                 </g:form>
             </semui:filter>
-            <semui:tabs>
+            <semui:tabs class="la-overflowX-auto">
                 <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
                     <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}" tab="${month.format("yyyy-MM")}"/>
@@ -203,7 +211,7 @@
             </semui:tabs>
             <div class="ui bottom attached tab active segment">
                 <g:if test="${params.tab == 'total'}">
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
                                 <th><g:message code="default.usage.date"/></th>
@@ -222,7 +230,7 @@
                     </table>
                 </g:if>
                 <g:else>
-                    <table class="ui sortable celled la-table table">
+                    <table class="ui sortable celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
                                 <g:if test="${usages && usages[0].title}">

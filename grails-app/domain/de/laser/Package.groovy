@@ -1,23 +1,28 @@
 package de.laser
 
-import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.helper.DateUtils
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
-import de.laser.interfaces.ShareSupport
-import de.laser.traits.ShareableTrait
 import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.runtime.InvokerHelper
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
+/**
+ * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-chosse).
+ * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Package.groovy">here</a>)
+ * If a package is being subscribed, the subscription is being represented by a {@link SubscriptionPackage} connection
+ * @see TitleInstancePackagePlatform
+ * @see Platform
+ * @see SubscriptionPackage
+ */
 class Package extends AbstractBaseWithCalculatedLastUpdated {
 
     def accessService
@@ -150,6 +155,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.afterUpdateHandler()
     }
 
+    /**
+     * Gets the content provider of this package
+     * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
+     */
   @Transient
   Org getContentProvider() {
     Org result
@@ -160,6 +169,14 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
+    /**
+     * Unlinks a subscription from this package and removes resp. marks as delete every dependent object from this link such as cost items, pending change configurations etc.
+     * The unlinking can be done iff no cost items are linked to the (subscription) package
+     * @param subscription the {@link Subscription} from which the package should be detached
+     * @param contextOrg the {@link Org} whose cost items should be verified
+     * @param deleteEntitlements should the linked entitlements being deleted?
+     * @return true if the unlink was successful, false otherwise
+     */
     @Transient
     boolean unlinkFromSubscription(Subscription subscription, Org contextOrg, deleteEntitlements) {
         SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
@@ -215,6 +232,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
 
+    /**
+     * Clears the changes pending on this package
+     * @param subIds the {@link List} of {@link Subscription} identifiers to be checked
+     * @param confirmed should the deletion really be executed?
+     * @return the number of deleted entries
+     */
     def removePackagePendingChanges(List subIds, confirmed) {
         //log.debug("begin remove pending changes")
         String tipp_class = TitleInstancePackagePlatform.class.getName()
@@ -264,10 +287,27 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         }
     }
 
+    /**
+     * Outputs this package's name and core data for labelling
+     * @return the concatenated label of this package
+     */
+    String getLabel() {
+        name + (nominalPlatform ? ' (' + nominalPlatform.name + ')' : '')
+    }
+
+    /**
+     * Returns a string representation of this package
+     * @return the name and id of this package
+     */
   String toString() {
     name ? "${name}" : "Package ${id}"
   }
 
+    /**
+     * Returns a dropdown-formatted list of packages, filtered by the given config map.
+     * @param params the parameter map to filter the entries against
+     * @return a {@link List} of {@link Map}s, in format [id: {id}, text: {text}]
+     */
   @Transient
   static def refdataFind(GrailsParameterMap params) {
     List<Map<String, Object>> result = []
@@ -410,6 +450,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Generates a sortable title string from the package's name, i.e. removes stopwords, performs normalising etc.
+     * @param input_title the name to normalise
+     * @return the normalised name string
+     * @see Normalizer.Form#NFKD
+     */
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -422,6 +468,13 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   }
 
+    /**
+     * Retrieves the identifier of this package responding to the given namespace
+     * If multiple identifiers respond to the same namespace, the LAST instance is being retrieved.
+     * This method is thus subject of refactoring
+     * @param idtype the namespace string to find
+     * @return the or the last {@link Identifier} in the set of identifiers, responding to the identifier namespace
+     */
     Identifier getIdentifierByType(String idtype) {
         Identifier result
         ids.each { ident ->
@@ -432,6 +485,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
+    /**
+     * Retrieves all titles in this packages which are marked as current
+     * @return a {@link Set} of {@link TitleInstancePackagePlatform}s which are marked as current
+     */
     Set<TitleInstancePackagePlatform> getCurrentTipps() {
         Set<TitleInstancePackagePlatform> result = []
         if (this.tipps) {
@@ -440,6 +497,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
+    /**
+     * Called from linkPackages.gsp
+     * Outputs the name of this package and how many titles are marked as current
+     * @return a concatenated string of this package's name and the number of {@link TitleInstancePackagePlatform}s marked as current
+     */
     String getPackageNameWithCurrentTippsCount() {
         return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
     }

@@ -24,7 +24,7 @@
 </g:if>
 
 
-<div class="ui top attached tabular menu">
+<div class="ui top attached stackable tabular menu">
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
@@ -58,7 +58,7 @@
         </g:form>
     </g:if>
 
-    <div class="ui top attached tabular menu">
+    <div class="ui top attached stackable tabular menu">
         <g:set var="eventTabs" value="${PendingChangeConfiguration.SETTING_KEYS-[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
         <g:each in="${eventTabs}" var="event">
             <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
@@ -70,7 +70,7 @@
     </div>
     <div class="ui bottom attached tab active segment">
         <g:set var="counter" value="${offset + 1}"/>
-        <table class="ui celled la-table table sortable">
+        <table class="ui celled la-js-responsive-table la-table table sortable">
             <thead>
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>

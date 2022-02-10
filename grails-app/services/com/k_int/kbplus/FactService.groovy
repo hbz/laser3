@@ -16,6 +16,9 @@ import org.hibernate.criterion.CriteriaSpecification
 
 import java.time.YearMonth
 
+/**
+ * This service manages the Nationaler Statistikserver usage report workflows
+ */
 @Transactional
 class FactService {
 
@@ -43,6 +46,12 @@ class FactService {
 
   static transactional = false
 
+  /**
+   * Records a new usage report for a title
+   * @param fact the usage report parameters
+   * @return true if the registering was successful, false otherwise
+   * @see Fact
+   */
     boolean registerFact(fact) {
       // log.debug("Enter registerFact");
       boolean result = false
@@ -98,6 +107,17 @@ class FactService {
       result
     }
 
+  /**
+   * Calculates the total cost per use for the given subscription and title type. EBooks are not supported in this service
+   * @param subscription the subscription whose title usages should be calculated and whose cost items should be considered
+   * @param type the title instance type
+   * @param existingMetrics the usage reports for the titles
+   * @return an array containing the results, of structure:
+   * <ol start="0">
+   *     <li>the metric used for calculation</li>
+   *     <li>the cost per use calculation result</li>
+   * </ol>
+   */
   def getTotalCostPerUse(Subscription subscription, String type, List existingMetrics) {
     if (!subscription.costItems){
       log.debug('No Costitems found for for this subscription')
@@ -139,7 +159,7 @@ class FactService {
     totalCostPerUse
   }
 
-
+  @Deprecated
   def generateMonthlyUsageGrid(title_id, org_id, supplier_id) {
 
     Map<String, Object> result = [:]
@@ -183,6 +203,7 @@ class FactService {
     result
   }
 
+  @Deprecated
   def generateYearlyUsageGrid(title_id, org_id, supplier_id) {
 
     Map<String, Object> result = [:]
@@ -232,6 +253,7 @@ class FactService {
    *  Return an array of size n where array[0] = total for year, array[1]=year-1, array[2]=year=2 etc
    *  Array is zero padded for blank years
    */
+  @Deprecated
   def lastNYearsByType(title_id, org_id, supplier_id, report_type, n, year) {
 
     def result = new String[n+1]
@@ -262,6 +284,14 @@ class FactService {
     result
   }
 
+  /**
+   * Generates the usage data for the subscription period of the given subscription and the given title
+   * @param org_id the subscriber whose usage should be used
+   * @param supplier_id the provider whose data should be used
+   * @param subscription the subscription whose period should count
+   * @param title_id the title identifier whose usage should be regarded
+   * @return a graph displaying the usage within the given time span
+   */
   def generateUsageDataForSubscriptionPeriod(org_id, supplier_id, subscription, title_id=null) {
     Map<String, Object> result = [:]
     if (org_id != null &&
@@ -314,6 +344,13 @@ class FactService {
     result
   }
 
+  /**
+   * Assembles the usage data in a coordinate system
+   * @param factList the list of usage reports to process
+   * @param firstAxis the Y axis labels
+   * @param secondAxis the X axis labels
+   * @return a two-dimensional array containing usage data in plots
+   */
   private def generateUsageMDList(factList, firstAxis, secondAxis) {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
@@ -324,6 +361,15 @@ class FactService {
     usage
   }
 
+  /**
+   * Collects all usage reports for the given subscription. The report timespan may be restricted to the subscription period
+   * @param org_id the customer (institution) id whose usages should be retrieved
+   * @param supplier_id the platform id
+   * @param sub the subscription regarded for period
+   * @param title_id the title instance identifier
+   * @param restrictToSubscriptionPeriod should usage data be fetched only for the period of subscription?
+   * @return a list of maps containing the usage data
+   */
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
     String hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
@@ -358,6 +404,18 @@ class FactService {
     transformToListOfMaps(queryResult)
   }
 
+  /**
+   * Transforms the given query result into a list of maps
+   * @param queryResult the result of a query
+   * @return a map of structure
+   * {
+   *     factValue
+   *     reportingYear
+   *     reportingMonth
+   *     factType
+   *     factMetric
+   * }
+   */
   private def transformToListOfMaps(queryResult) {
     def list = []
     queryResult.each { li ->
@@ -372,14 +430,7 @@ class FactService {
     list
   }
 
-
-  /**
-   * @param title_id
-   * @param org_id
-   * @param supplier_id
-   * @param license if given use license start/end as filter
-   * @return ArrayList List of Fact Maps
-   */
+  @Deprecated
   private def getUsageFacts(org_id, supplier_id, title_id=null, license=null) {
     Fact.createCriteria().list {
       createAlias('factType', 'ft')
@@ -405,6 +456,12 @@ class FactService {
     }
   }
 
+  /**
+   * Fills the reporting gaps with zero values
+   * @param licenseYears the years in which the subscription is running
+   * @param factList the base list of usage reports
+   * @return the list of usages with substituted values
+   */
   private def addFactsForSubscriptionPeriodWithoutUsage(licenseYears, factList) {
     def usageYears = factList.reportingYear.unique(false).sort()
     def licenseYearsWithoutUsage = licenseYears - usageYears
@@ -420,6 +477,14 @@ class FactService {
     }
   }
 
+  /**
+   * Collects the usage data for the given institution, platform, subscription and title instance
+   * @param org_id the report institution
+   * @param supplier_id the platform whose usage should be retrieved
+   * @param subscription the subscription upon whose subscription range the queries may be restricted
+   * @param title_id the title instance identifier
+   * @return a map containing the data for a usage graph
+   */
   def generateUsageData(org_id, supplier_id, subscription, title_id=null) {
     Map<String, Object> result = [:]
 
@@ -443,11 +508,25 @@ class FactService {
     result
   }
 
+  /**
+   * Gets the rages where no usage data is available for the given platform, institution and, if given, subscription
+   * @param supplier_id the platform ID whose usages should be retrieved
+   * @param org_id the report institution ID
+   * @param subscription the subscription upon whose subscription range the query may be restricted
+   * @return a map containing lists of missing months grouped per title type
+   */
   Map<String,List> getMissingMonths(supplier_id, org_id, Subscription subscription = null) {
     Org customerOrg = Org.get(org_id)
     return getUsageRanges(supplier_id, customerOrg, subscription)
   }
 
+  /**
+   * Collects the usage ranges for the given platform, report institution and subscription
+   * @param supplier_id the platform ID
+   * @param org the report institution
+   * @param subscription the subscription upon whose time span the ranges may be restricted
+   * @return a map containing the missing usage ranges per title type
+   */
   private Map<String,List> getUsageRanges(supplier_id, Org org, Subscription subscription) {
     String customer = org.getIdentifierByType('wibid')?.value
     String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
@@ -495,6 +574,12 @@ class FactService {
     return missingMonthsPerFactType
   }
 
+  /**
+   * Gets the last usage period for the given platform and institution
+   * @param supplierId the platform ID whose last usage should be retrieved
+   * @param customerId the institution ID for which usage should be queried
+   * @return a map containing for each title type the last availability date
+   */
   Map getLastUsagePeriodForReportType(supplierId, customerId){
     String hqlQuery = "select stc.factType.value, max(stc.availTo) as availTo from StatsTripleCursor stc where " +
         "stc.supplierId=:supplierId and stc.customerId=:customerId " +
@@ -510,6 +595,12 @@ class FactService {
     result
   }
 
+  /**
+   * Collects a list of months in the given date range
+   * @param begin the range start
+   * @param end the range end
+   * @return a list of {@link YearMonth}s
+   */
   List getMonthsOfDateRange(Date begin, Date end){
     List result = []
     YearMonth from = YearMonth.parse(begin.toString().substring(0,7))
@@ -522,6 +613,13 @@ class FactService {
     result
   }
 
+  /**
+   * Gets the sum of usages for the given subscription, title and metric types
+   * @param sub the subscription to query after
+   * @param factType the title instance type
+   * @param metric the metric type
+   * @return the total usage for the given subscription
+   */
   def totalUsageForSub(sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
@@ -534,6 +632,7 @@ class FactService {
     )[0]
   }
 
+  @Deprecated
   def generateExpandableMonthlyUsageGrid(title_id, org_id, supplier_id) {
 
     Map<String, Object> result = [:]
@@ -581,6 +680,12 @@ class FactService {
     result
   }
 
+  /**
+   * Gets all institutions who have a Nationaler Statistikserver requestor ID and key
+   * @return a list of institutions with a requestor ID and API key for the Nationaler Statstikserver
+   * @see Org
+   * @see OrgSetting
+   */
   List<Org> institutionsWithRequestorIDAndAPIKey()
   {
     String hql = "select os.org from OrgSetting as os" +
@@ -589,6 +694,11 @@ class FactService {
     return OrgSetting.executeQuery(hql)
   }
 
+  /**
+   * Gets all platforms where a Nationaler Statistikserver-ID has been registered
+   * @return a list of platforms with a NatStat ID
+   * @see Platform
+   */
   List<Platform> platformsWithNatstatId()
   {
     String hql = "select platform from Platform as platform" +
@@ -596,6 +706,10 @@ class FactService {
     return Platform.executeQuery(hql)
   }
 
+  /**
+   * Gets a list of reporting institutions
+   * @return a list of institutions ({@link Org})
+   */
   List<Org> getFactInstitutionList()
   {
     Fact.withCriteria {
@@ -605,6 +719,10 @@ class FactService {
     }
   }
 
+  /**
+   * Gets a list of statistics providers
+   * @return a list of platforms
+   */
   List<Platform> getFactProviderList()
   {
     Fact.withCriteria {
@@ -614,12 +732,22 @@ class FactService {
     }
   }
 
+  /**
+   * Gets the counts of statistics cursors for each platform
+   * @return a list of cursor counts, grouped by platform
+   */
   def getSupplierCursorCount()
   {
     String hql = 'select supplierId, count(*) from StatsTripleCursor group by supplierId'
     return StatsTripleCursor.executeQuery(hql)
   }
 
+  /**
+   * Called from view
+   * Gets error reports for the given stats range
+   * @param asr the given available statistics range to look for
+   * @return error messages if any
+   */
   def getStatsErrors(asr)
   {
     ArrayList results = StatsTripleCursor.createCriteria().list() {

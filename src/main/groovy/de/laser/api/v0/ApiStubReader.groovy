@@ -13,6 +13,10 @@ import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
 import groovy.util.logging.Slf4j
 
+/**
+ * This class is responsible for delivering stubs, i.e. object fragments with just the essential details
+ * and identifiers in order to request full object details if necessary
+ */
 @Slf4j
 class ApiStubReader {
 
@@ -21,10 +25,10 @@ class ApiStubReader {
     /**
      * Resolving collection of items to stubs. Delegate context to gain access
      *
-     * @param Collection<Object> list
-     * @param type
-     * @param com.k_int.kbplus.Org context
-     * @return Collection<Object>
+     * @param list the {@link Collection<Object>} of objects to return
+     * @param type the type of stub to deliver
+     * @param context {@link Org}
+     * @return a {@link Collection<Object>} of object stubs
      */
     static Collection<Object> getStubCollection(Collection<Object> list, def type, Org context) {
         def result = []
@@ -47,6 +51,9 @@ class ApiStubReader {
     // ################### STUBS ###################
 
     /**
+     * Checks if the requesting institution has access to the given license and returns its stub if access is granted
+     * @param lic the {@link License} being requested
+     * @param context the institution ({@link Org}) requesting access
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestLicenseStub(License lic, Org context) {
@@ -67,6 +74,9 @@ class ApiStubReader {
     // ################### STUBS ###################
 
     /**
+     * Checks if the requesting institution has access to the given access point and returns its stub if access is granted
+     * @param orgAccessPoint the {@link OrgAccessPoint} being requested
+     * @param context the institution ({@link Org}) requesting access
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestOrgAccessPointStub(OrgAccessPoint orgAccessPoint, Org context) {
@@ -85,6 +95,9 @@ class ApiStubReader {
     }
 
     /**
+     * Substitution call, setting the invoice tool flag to false as default
+     * @param sub the {@link Subscription} being requested
+     * @param context the institution ({@link Org}) requesting access
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestSubscriptionStub(Subscription sub, Org context) {
@@ -92,6 +105,10 @@ class ApiStubReader {
     }
 
     /**
+     * Checks if the requesting institution has access to the given subscription and returns its stub if access is granted
+     * @param sub the {@link Subscription} being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @param isInvoiceTool is the hbz invoice tool doing the request?
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestSubscriptionStub(Subscription sub, Org context, boolean isInvoiceTool){
@@ -110,6 +127,10 @@ class ApiStubReader {
     }
 
     /**
+     * Requests access either to the package or to the subscription with respective entitlements
+     * @param subpkg the {@link SubscriptionPackage} whose subscription/package and entitlements should be retrieved
+     * @param ignoreRelation should further relations be followed up?
+     * @param context the institution ({@link Org}) requesting access
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static requestSubscriptionPackageStubMixed(SubscriptionPackage subpkg, ignoreRelation, Org context) {

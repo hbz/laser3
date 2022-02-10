@@ -36,7 +36,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'license' : [
+                                    license : [
                                             'license-licenseCategory',
                                             //'license-type',
                                             //'license-openEnded',
@@ -45,8 +45,8 @@ class LicenseConsCfg extends BaseConfig {
                                     ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            default : [
                                      'license-x-identifier' : [
                                              detailsTemplate     : 'license',
                                              chartTemplate       : '2axis2values_nonMatches',
@@ -54,8 +54,8 @@ class LicenseConsCfg extends BaseConfig {
                                      ],
                                     'license-x-property' : [
                                             detailsTemplate     : 'license',
-                                            chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'base', 'x.properties' ]
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                     ],
                                     'license-x-annual' : [
                                             detailsTemplate     : 'license',
@@ -84,7 +84,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'licensor' : [
+                                    licensor : [
                                             'licensor-orgType',
                                             'licensor-country',
                                             'licensor-region',

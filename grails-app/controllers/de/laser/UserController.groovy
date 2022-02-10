@@ -11,6 +11,9 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller handles calls related to global user management
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UserController  {
 
@@ -24,11 +27,18 @@ class UserController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 
+    /**
+     * Redirects to the list view
+     */
     @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    /**
+     * Call to delete the given user, listing eventual substitutes for personal belongings.
+     * If confirmed, the deletion will be executed and objects reassigned to the given substitute
+     */
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
@@ -68,6 +78,9 @@ class UserController  {
         render view: '/user/global/delete', model: result
     }
 
+    /**
+     * Call to list all user accounts in the system
+     */
     @Secured(['ROLE_ADMIN'])
     def list() {
 
@@ -96,6 +109,10 @@ class UserController  {
         render view: '/user/global/list', model: result
     }
 
+    /**
+     * Call to edit the given user profile. This is a global institution context-independent call, so
+     * affiliations of the user may be edited freely
+     */
     @Secured(['ROLE_ADMIN'])
     def edit() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
@@ -119,6 +136,10 @@ class UserController  {
         render view: '/user/global/edit', model: result
     }
 
+    /**
+     * Shows the affiliations and global roles given user
+     * @return a list of the user's affiliations and roles
+     */
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
@@ -128,6 +149,10 @@ class UserController  {
         result
     }
 
+    /**
+     * Creates a new random password to the given user and sends that via mail to the address registered to the account
+     * @return a redirect to the referer
+     */
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
@@ -161,6 +186,10 @@ class UserController  {
         }
     }
 
+    /**
+     * Assigns the given user to the given institution
+     * @return a redirect to the user profile editing page
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def addAffiliation(){
@@ -182,6 +211,13 @@ class UserController  {
         redirect controller: 'user', action: 'edit', id: params.id
     }
 
+    /**
+     * Call to create a new user system-widely. This procedure can only be
+     * called by global admins and is used for example to create the first access to the app to
+     * an institution, mainly the institution admin, before user management is being handed over to
+     * the institution itself
+     * @return the user creation form
+     */
     @Secured(['ROLE_ADMIN'])
     def create() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
@@ -196,6 +232,10 @@ class UserController  {
         render view: '/user/global/create', model: result
     }
 
+    /**
+     * Takes the given form parameters and creates a new user account based on the data submitted
+     * @return the profile editing view in case of success, the creation view otherwise
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def processCreateUser() {

@@ -148,3 +148,14 @@
     flex-direction: column;
   }
 }
+.ui.secondary.pointing.menu {
+  .item {
+    flex-shrink: 1;
+    align-self: center;
+    text-align: center;
+  }
+}
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

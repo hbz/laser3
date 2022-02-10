@@ -44,8 +44,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
-<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
+<semui:surveyStatus object="${surveyInfo}"/>
+
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
     <g:render template="nav"/>
@@ -315,7 +316,7 @@ ${surveyInfo.name}
 
                     <div class="eight wide column">
 
-                        <table class="ui celled sortable table la-table" id="parentSubscription">
+                        <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                             <thead>
                             <tr>
                                 <th>${message(code: 'sidewide.number')}</th>
@@ -386,7 +387,7 @@ ${surveyInfo.name}
 
                     <div class="eight wide column">
 
-                        <table class="ui celled sortable table la-table" id="parentSuccessorSubscription">
+                        <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSuccessorSubscription">
                             <thead>
                             <tr>
                                 <th>${message(code: 'sidewide.number')}</th>

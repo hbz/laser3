@@ -8,7 +8,7 @@
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
             <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
@@ -21,7 +21,7 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <th></th>
+                    <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -185,7 +185,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled monitor stackable la-table compact table">
+            <table class="ui celled monitor stackable la-js-responsive-table la-table la-compact table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
@@ -219,7 +219,7 @@
                             <i class="map orange icon"></i>
                         </span>
                     </th>
-                    <th></th>
+                    <th>${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -250,7 +250,7 @@
                                     <span data-position="top right"
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack blue icon"></i>
+                                        <i class="grey la-thumbtack-regular icon"></i>
                                     </span>
                                 </g:if>
 

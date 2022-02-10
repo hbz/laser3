@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import de.laser.Doc
 import de.laser.DocContext
 import de.laser.FTControl
-import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.License
@@ -16,7 +15,6 @@ import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.TitleInstancePackagePlatform
-import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
@@ -27,36 +25,28 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import grails.converters.JSON
-import groovy.json.JsonOutput
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
-import org.elasticsearch.action.DocWriteResponse
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
 import org.elasticsearch.action.admin.indices.flush.FlushResponse
 import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.support.replication.ReplicationResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.core.CountResponse
-import org.elasticsearch.client.indices.CreateIndexRequest
-import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.common.xcontent.XContentType
-import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.rest.RestStatus
-import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.hibernate.ScrollMode
 import org.hibernate.Session
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
+/**
+ * This service handles the app's ElasticSearch connection and the app's data indexing
+ */
 //@Transactional
 class DataloadService {
 
@@ -81,7 +71,11 @@ class DataloadService {
     def lastIndexUpdate = null
     Future activeFuture
 
-
+    /**
+     * Cronjob- or Yoda-triggered.
+     * Starts the update of the ElasticSearch indices and initialises a parallel thread for the update
+     * @return false if the job is already running, true otherwise
+     */
     def updateFTIndexes() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
         if(update_running == false) {
@@ -103,6 +97,13 @@ class DataloadService {
         }
     }
 
+    /**
+     * Performs the index update and sets a lock to prevent multiple execution.
+     * See the aggr_es_indices (taken at ESWrapperService.es_indices) configuration for
+     * the domains being indexed and the fields recorded for each index
+     * @return true if the update was successful, false otherwise
+     * @see ESWrapperService#es_indices
+     */
     boolean doFTUpdate() {
 
         SystemEvent.createEvent('FT_INDEX_UPDATE_START')
@@ -881,6 +882,13 @@ class DataloadService {
         return true
     }
 
+    /**
+     * Updates the given domain index with the given record generating closure.
+     * This bulk operation is being flushed at every 100 records
+     * @param domain the domain class whose index should be updated
+     * @param recgen_closure the closure to be used for record generation
+     * @see ESWrapperService#es_indices
+     */
     def updateES( domain, recgen_closure) {
 
     RestHighLevelClient esclient = ESWrapperService.getClient()
@@ -1067,6 +1075,7 @@ class DataloadService {
         }
   }
 
+    @Deprecated
     def lookupOrCreateCanonicalIdentifier(ns, value) {
         // TODO [ticket=1789]
         log.debug("lookupOrCreateCanonicalIdentifier(${ns},${value})");
@@ -1075,6 +1084,7 @@ class DataloadService {
         Identifier.construct([value:value, reference:null, namespace:ns])
   }
 
+    @Deprecated
     def dataCleanse() {
         log.debug("dataCleanse")
         executorService.execute({
@@ -1084,6 +1094,7 @@ class DataloadService {
         log.debug("dataCleanse returning")
     }
 
+    @Deprecated
   def doDataCleanse() {
     log.debug("dataCleansing");
     // 1. Find all packages that do not have a nominal platform
@@ -1163,6 +1174,11 @@ class DataloadService {
 
   }
 
+    /**
+     * Drops an old domain index and reinitialises it. An eventually running job is being cancelled; execution
+     * is done if the job could be cancelled.
+     * The new index is being rebuilt right after resetting
+     */
     def clearDownAndInitES() {
         log.debug("Clear down and init ES");
 
@@ -1223,6 +1239,13 @@ class DataloadService {
         SystemEvent.createEvent('YODA_ES_RESET_END')
     }
 
+    /**
+     * Compares the count of database entries for the given domain class with the count of ElasticSearch index entries for the
+     * given domain class. The counts are being retained in the FTControl entry for the given domain
+     * @param domainClassName the domain class to check the entry counts of
+     * @return true if successful, false otherwise
+     * @see FTControl
+     */
     boolean checkESElementswithDBElements(String domainClassName) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
@@ -1279,6 +1302,12 @@ class DataloadService {
 
     }
 
+    /**
+     * Compares the count of database entries for each domain class with the count of ElasticSearch index entries for the
+     * respective domain class. The counts are being retained in the FTControl entries for each domain
+     * @return true if successful, false otherwise
+     * @see FTControl
+     */
     boolean checkESElementswithDBElements() {
 
         log.debug("Begin to check ES Elements with DB Elements")
@@ -1338,6 +1367,9 @@ class DataloadService {
 
     }
 
+    /**
+     * Kills an eventually running process
+     */
     public synchronized void killDataloadService() {
         if (activeFuture != null) {
             activeFuture.cancel(true)

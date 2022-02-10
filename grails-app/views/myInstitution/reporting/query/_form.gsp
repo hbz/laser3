@@ -1,35 +1,38 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<g:set var="esData" value="${BaseConfig.getCurrentEsData(cfgKey) ?: [:]}" />
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
-        <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
+        <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qci}">${BaseConfig.getMessage(field.key)}</label>
-                    <g:select name="query-chooser"
-                              id="query-chooser-1-${qci}"
-                              from="${field.value}"
-                              optionKey="${{it}}"
-                              optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
-                              class="ui selection dropdown la-not-clearable"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                    <label for="query-chooser-1-${qi}">${BaseConfig.getMessage(field.key)}</label>
+                    <semui:dropdownWithI18nExplanations name="query-chooser"
+                                                        id="query-chooser-1-${qi}"
+                                                        from="${field.value}"
+                                                        optionKey="${{it}}"
+                                                        optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
+                                                        optionExpl="${{esData.keySet().contains(it) ? '(we:kb)' : ''}}"
+                                                        class="ui selection dropdown la-not-clearable"
+                                                        noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
             </g:each>
         </g:each>
     </div>
 
-    <div class="fields <laser:numberToString number="${2 + cfgQuery2List.size()}"/>">
-        <g:each in="${cfgQuery2List}" var="cfgQuery" status="qci">
-            <g:each in="${cfgQuery}" var="field">
+    <div class="fields <laser:numberToString number="${2 + cfgDistributionList.size()}"/>">
+        <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
+            <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${qci}">${BaseConfig.getMessage(field.key)}</label>
-                         <g:select name="query-chooser"
-                              id="query-chooser-2-${qci}"
-                              from="${field.value}"
-                              optionKey="key"
-                              optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
-                              class="ui selection dropdown la-not-clearable"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                    <label for="query-chooser-2-${di}">${BaseConfig.getMessage('distribution')}</label>
+                         <semui:dropdownWithI18nExplanations name="query-chooser"
+                                                             id="query-chooser-2-${di}"
+                                                             from="${field.value}"
+                                                             optionKey="${{it.key}}"
+                                                             optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
+                                                             optionExpl="${{esData.keySet().contains(it.key) ? '(we:kb)' : ''}}"
+                                                             class="ui selection dropdown la-not-clearable"
+                                                             noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
             </g:each>
         </g:each>
@@ -61,5 +64,8 @@
         filter: '${cfgKey}',
         token: '${token}'
     }
+    $('#filter-package input.button[type=submit]').on('click', function() {
+        $('#loadingIndicator').show();
+    })
 </laser:script>
 

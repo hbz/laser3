@@ -264,7 +264,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                         </g:each>
                     </g:each>
                 </p>
-                <table class="ui sortable celled la-table table">
+                <table class="ui sortable celled la-js-responsive-table la-table table">
                     <thead>
                         <tr>
                             <th class="six wide">Title/Name</th>
@@ -477,7 +477,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -549,7 +549,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -602,7 +602,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted blue chart pie"></i>
+                                        <i class="circular icon inverted pink chart pie"></i>
                                     </span>
 
                                     <g:link controller="survey" action="show"
@@ -614,7 +614,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -643,7 +643,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted blue chart pie"></i>
+                                        <i class="circular icon inverted pink chart pie"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
@@ -654,7 +654,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -688,7 +688,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -717,7 +717,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
+                                            <i class="circular icon inverted grey sticky note"></i>
                                     </span>
 
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="notes" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
@@ -727,7 +727,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -746,7 +746,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     <g:set var="docContext" value="${DocContext.get(hit.getSourceAsMap().dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted orange file alternate outline"></i>
+                                        <i class="circular icon inverted grey file alternate outline"></i>
                                     </span>
 
 
@@ -757,7 +757,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -775,7 +775,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
+                                        <i class="circular la-book icon"></i>
                                     </span>
 
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="index" id="${hit.getSourceAsMap().objectId}" params="[filter: hit.getSourceAsMap().name]">${hit.getSourceAsMap().name}</g:link>
@@ -785,7 +785,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -802,7 +802,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
+                                        Subscription<i class="circular la-subscription icon"></i>
                                     </span>
 
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
@@ -812,7 +812,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -856,7 +856,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted red sticky note"></i>
+                                            <i class="circular la-license icon" ></i>
                                     </span>
 
                                     <g:link controller="${hit.getSourceAsMap().objectClassName}" action="show" id="${hit.getSourceAsMap().objectId}">${hit.getSourceAsMap().name}</g:link>
@@ -866,7 +866,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <g:if test="${hit.getSourceAsMap().visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate red large icon"></i>
+                                                    <i class="shield alternate grey large icon"></i>
                                                 </span>
                                             </g:if>
                                         </div>

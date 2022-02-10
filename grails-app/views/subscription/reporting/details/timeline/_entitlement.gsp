@@ -4,7 +4,7 @@
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <g:if test="${minusList}">
-    <div class="ui top attached tabular menu">
+    <div class="ui top attached stackable tabular menu">
         <a data-tab="positive" class="item active">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.3')}</a>
         <a data-tab="minus" class="item">${message(code:'reporting.local.subscription.timeline.chartLabel.entitlement.1')}</a>
     </div>
@@ -16,7 +16,7 @@
 
         <g:set var="plusListNames" value="${plusList.collect{ it.name }}" />
 
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
                 <th></th>
@@ -58,7 +58,7 @@
 <g:if test="${minusList}">
 
     <div data-tab="minus" class="ui bottom attached tab segment">
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
                 <th></th>

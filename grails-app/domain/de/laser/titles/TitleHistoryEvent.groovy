@@ -4,6 +4,9 @@ import de.laser.TitleInstancePackagePlatform
 
 import javax.persistence.Transient
 
+/**
+ * This class reflects an event when one title changed into another. Recorded are the old and the new names of the title instance
+ */
 class TitleHistoryEvent {
 
   Date eventDate

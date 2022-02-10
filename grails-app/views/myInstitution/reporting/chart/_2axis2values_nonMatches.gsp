@@ -12,7 +12,7 @@
             ]
         },
         legend: JSPC.app.reporting.helper._pie.legend,
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
@@ -31,7 +31,7 @@
                 name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
-                center: ['60%', '45%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -39,7 +39,17 @@
                     value: 'value2',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series._pie.emphasis
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
+                    }
+                }
             },
         ]
     };

@@ -110,7 +110,7 @@
         </div>
         <div class="field"></div>
     </div>
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
             <th rowspan="3" style="vertical-align:middle;">

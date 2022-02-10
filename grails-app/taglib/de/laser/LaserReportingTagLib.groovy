@@ -1,9 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -51,14 +53,17 @@ class LaserReportingTagLib {
         if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+        else if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
             out << laser.reportFilterCustomImpl(config: attrs.config, field: attrs.field, key: attrs.key)
+        }
+        else if (fieldType == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
+            out << laser.reportFilterElasticSearch(config: attrs.config, field: attrs.field, key: attrs.key)
         }
     }
 
@@ -120,7 +125,7 @@ class LaserReportingTagLib {
 
         out << laser.select([
                 class      : "ui fluid search dropdown",
-                name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
+                name       : GenericHelper.isFieldVirtual(attrs.config.meta.cfgKey, attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -129,7 +134,7 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
 
-        if ( GenericHelper.isFieldVirtual(attrs.refdata) ) {
+        if ( GenericHelper.isFieldVirtual(attrs.config.meta.cfgKey, attrs.refdata) ) {
             out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
         }
         out << '</div>'
@@ -137,7 +142,13 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
+        // TODO
         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
+        if (!customRdv) {
+            customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata)
+        }
+
+        //println '||->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
@@ -156,9 +167,9 @@ class LaserReportingTagLib {
             optionValue: 'value',
             noSelection: ['': message(code: 'default.select.choose.label')]
         ]
-        if ( GenericHelper.isFieldMultiple(attrs.refdata) ) {  // TODO - other tags
+        if ( GenericHelper.isFieldMultiple(attrs.config.meta.cfgKey, attrs.refdata) ) {  // TODO - other tags
             map.put('multiple', true)
-            map.put('value', params.list(filterName).collect { Integer.parseInt(it) })
+            map.put('value', params.list(filterName).collect { Long.parseLong(it) })
         }
         else {
             map.put('value', params.int(filterName))
@@ -168,9 +179,103 @@ class LaserReportingTagLib {
     }
 
     def reportFilterCustomImpl = { attrs, body ->
-
         //println '> reportFilterCustomImpl: ' + attrs.field
         out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+    }
+
+    def reportFilterElasticSearch = { attrs, body ->
+        //println '> reportFilterElasticSearch: ' + attrs.field
+        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key) // TODO
+    }
+
+    def reportObjectProperties = { attrs, body ->
+
+        Long pdId = attrs.propDefId as Long
+        Org tenant = attrs.tenant as Org
+        List<AbstractPropertyWithCalculatedLastUpdated> properties = BaseDetails.getPropertiesGeneric(attrs.owner, pdId, tenant) as List<AbstractPropertyWithCalculatedLastUpdated>
+
+        List<String> props = properties.collect { prop ->
+            String result = ''
+            Map<String, List> tmp = [ tooltips:[], icons:[] ]
+            if (prop.getType().isRefdataValueType()) {
+                result += (prop.getRefValue() ? prop.getRefValue().getI10n('value') : '')
+            } else {
+                result += (prop.getValue() ?: '')
+            }
+
+            if (prop.type.tenant?.id == tenant.id) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
+                tmp.icons.add( '<i class="icon shield alternate la-light-grey"></i>' )
+            }
+            if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
+                tmp.icons.add( '<i class="icon eye slash alternate yellow"></i>' )
+            }
+            if (tmp.icons) {
+                result = result + '&nbsp;&nbsp;&nbsp;'
+                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
+                result = result + tmp.icons.join('')
+                result = result + '</span>'
+            }
+            result
+        }.sort().findAll() // removing empty and null values
+
+        out << props.join(' ,<br/>')
+    }
+
+    def reportDetailsTableTD = { attrs, body ->
+
+        Map<String, Boolean> config = attrs.config as Map
+
+        if ( config.containsKey( attrs.field )) {
+            String markup = '<td data-column="dtc:' + attrs.field + '"'
+
+            if (config.get( attrs.field ) != true) {
+                markup = markup + ' class="hidden"'
+            }
+            out << markup + '>'
+            out << body()
+            out << '</td>'
+        }
+        else {
+            out << '### ' + attrs.field + ' ###'
+        }
+    }
+
+    def reportDetailsTableEsValue = { attrs, body ->
+
+        // TMP
+        // TMP
+
+        String key = attrs.key
+        Long id = attrs.id as Long
+        String field = attrs.field
+
+        Map<String, Object> esRecords = attrs.records as Map
+        Map<String, Object> esConfig  = BaseConfig.getCurrentEsData(key).get( key + '-' + field )
+
+        Map<String, Object> record = esRecords.getAt(id as String) as Map
+        if (record) {
+            String value = record.get( field )
+            // workaround - nested values
+            if (esConfig.mapping) {
+                def tmp = record
+                esConfig.mapping.split('\\.').each{ m ->
+                    if (tmp) { tmp = tmp.get(m) }
+                }
+                value = tmp
+            }
+            //String value = record.get( record.mapping ?: field )
+            if (value) {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esConfig.rdc as String)
+                if (rdv) {
+                    out << rdv.getI10n('value')
+                }
+                else {
+                    out << GenericHelper.flagUnmatched( value )
+                }
+            }
+        }
     }
 
     static String getUniqueId(String id) {

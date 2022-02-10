@@ -27,6 +27,9 @@ import org.springframework.transaction.TransactionStatus
 
 import java.sql.Timestamp
 
+/**
+ * This service handles bulk and cleanup operations, testing areas and debug information
+ */
 //@CompileStatic
 //@Transactional
 class YodaService {
@@ -40,15 +43,26 @@ class YodaService {
     GlobalService globalService
     EscapeService escapeService
 
+    /**
+     * Checks whether debug information should be displayed
+     * @return true if setting is enabled by config or the viewer has admin rights, false otherwise
+     */
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
         return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
     }
 
+    /**
+     * Copies missing medium values into the issue entitlements; values are being taken from the title the holding records have been derived
+     */
     void fillIEMedium() {
         IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.medium = (select tipp.medium from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.medium != null) where ie.medium = null")
     }
 
+    /**
+     * Locates duplicate packages in the system
+     * @return a map of packages duplicates, grouped by such with and such without titles
+     */
     Map<String,Object> listDuplicatePackages() {
         List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
         pkgDuplicates.addAll(Package.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value))
@@ -67,6 +81,10 @@ class YodaService {
         result
     }
 
+    /**
+     * Removes the given list of packages
+     * @param toDelete the list of package database identifiers which should be deleted
+     */
     void executePackageCleanup(List<Long> toDelete) {
         toDelete.each { pkgId ->
             Package pkg = Package.get(pkgId)
@@ -74,6 +92,7 @@ class YodaService {
         }
     }
 
+    @Deprecated
     Map<String,Object> listDuplicateTitles() {
         Map<String,Object> result = [:]
         List rows = TitleInstance.executeQuery('select ti.gokbId,count(ti.gokbId) from TitleInstance ti group by ti.gokbId having count(ti.gokbId) > 1')
@@ -110,6 +129,7 @@ class YodaService {
         result
     }
 
+    @Deprecated
     Map<String,Object> checkTitleData(duplicateRows) {
         GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
         globalSourceSyncService.setSource(grs)
@@ -301,6 +321,12 @@ class YodaService {
         [missingTitles:missingTitles,mergingTitles:mergingTitles,remappingTitles:remappingTitles,titlesWithoutTIPPs:titlesWithoutTIPPs,nextPhase:nextPhase,tippMergers:tippMergers]
     }
 
+    /**
+     * Checks the titles marked as deleted and verifies its holding state and we:kb equivalency state. It needs
+     * refactoring because it uses the OAI endpoint to determine titles. The complex decision procedure to mark a record
+     * as purgeable is explained along the code
+     * @return a {@link Map} containing the concerned title records, grouped by their state
+     */
     Map<String,Object> listDeletedTIPPs() {
         globalService.cleanUpGorm()
         //merge duplicate tipps
@@ -527,6 +553,13 @@ class YodaService {
         [deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,deletedWithGOKbRecord:deletedWithGOKbRecord,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys,excludes:excludes]
     }
 
+    /**
+     * Remaps the issue entitlements which hang on duplicates, merges title duplicates and deletes false records.
+     * Very dangerous method, handle with extreme care!
+     * Deprecated in its current form, it needs update if the cleanup needs to be used again one time
+     * @param result the decision map build in {@link #listDeletedTIPPs()}
+     * @return a {@link List} of title records which should be reported because there are holdings on them
+     */
     List<List<String>> executeTIPPCleanup(Map result) {
         //first: merge duplicate entries
         result.mergingTIPPs.each { mergingTIPP ->
@@ -604,6 +637,16 @@ class YodaService {
         reportRows
     }
 
+    /**
+     * Retrieves titles without we:kb ID
+     * @return a map containing faulty titles in the following structure:
+     * <ul>
+     *     <li>titles with a remapping target</li>
+     *     <li>titles with issue entitlements</li>
+     *     <li>deletable entries</li>
+     *     <li>titles which should receive a UUID</li>
+     * </ul>
+     */
     Map<String,Object> getTIPPsWithoutGOKBId() {
         List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value)
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
@@ -631,6 +674,11 @@ class YodaService {
         [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
+    /**
+     * Deletes the given titles and merges duplicates with the given instance
+     * @param toDelete titles to be deleted
+     * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
+     */
     void purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy) {
         toDelete.each { oldTippId, newTippId ->
             TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
@@ -642,6 +690,11 @@ class YodaService {
         }
     }
 
+    /**
+     * Call to load titles marked as deleted; if the confirm is checked, the deletion of titles and issue entitlements marked as deleted as well is executed
+     * @param doIt execute the cleanup?
+     * @return a result map of titles whose we:kb entry has been marked as deleted
+     */
     Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
         GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
         Map<String, Object> result = [:]
@@ -704,6 +757,12 @@ class YodaService {
         result
     }
 
+    /**
+     * Deprecated in its current form as it uses the obsolete OAI endpoint to retrieve data; was used to
+     * compare the LAS:eR platform data against the we:kb (then still GOKb) mirror instance and to determine
+     * those records which are obsolete in LAS:eR
+     * @return a {@link Map} containing obsolete platform records
+     */
     Map<String, Object> listPlatformDuplicates() {
         Map<String,Object> result = [:]
         Map<String, GPathResult> oaiRecords = [:]
@@ -786,6 +845,11 @@ class YodaService {
         result
     }
 
+    /**
+     * Matches the subscription holdings against the package stock where a pending change configuration for new title has been set to auto accept. This method
+     * fetches those packages where auto-accept has been configured and inserts missing titles which should have been registered already on sync run but
+     * failed to do so because of bugs
+     */
     @Transactional
     void matchPackageHoldings() {
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
@@ -885,6 +949,14 @@ class YodaService {
         }
     }
 
+    /**
+     * Clears the retrieved platform duplicates from the database:
+     * <ul>
+     *     <li>duplicates without titles</li>
+     *     <li>platforms without we:kb IDs</li>
+     *     <li>platforms without we:kb record</li>
+     * </ul>
+     */
     @Transactional
     void executePlatformCleanup(Map result) {
         List<String> toDelete = []

@@ -44,14 +44,16 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller manages calls to render maps of entries; mostly for live update of dropdown menus
+ * IMPORTANT: only json rendering here, no object manipulation done here!
+ * Object manipulation is done in the general AJAX controller!
+ * @see AjaxController
+ * @see AjaxHtmlController
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
-    /**
-     * only json rendering here ..
-     * no object manipulation
-     *
-     */
     def accessService
     def compareService
     def contextService
@@ -64,6 +66,10 @@ class AjaxJsonController {
     def reportingLocalService
     def subscriptionService
 
+    /**
+     * Test call
+     * @return a sample object
+     */
     @Secured(['ROLE_USER'])
     def test() {
         Map<String, Object> result = [status: 'ok']
@@ -71,6 +77,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Updates the subscription list for the copy elements target list; the subscription name output follows the dropdown naming convention specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @return a {@link List} of {@link Map}s of structure [value: oid, text: subscription name]
+     */
     @Secured(['ROLE_USER'])
     def adjustSubscriptionList(){
         List data
@@ -130,6 +140,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Updates the license list for the copy elements target list; the license name output follows the dropdown naming convention specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @return a {@link List} of {@link Map}s of structure [value: oid, text: license name]
+     */
     @Secured(['ROLE_USER'])
     def adjustLicenseList(){
         Set<License> data
@@ -162,6 +176,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Updates the subscription list for the comparison pair list; the subscription name output follows the dropdown naming convention specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @return a {@link List} of {@link Map}s of structure [value: oid, text: subscription name]
+     */
     @Secured(['ROLE_USER'])
     def adjustCompareSubscriptionList(){
         List<Subscription> data
@@ -199,6 +217,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Updates the license list for the comparison pair list; the license name output follows the dropdown naming convention specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @return a {@link List} of {@link Map}s of structure [value: oid, text: license name]
+     */
     @Secured(['ROLE_USER'])
     def adjustCompareLicenseList(){
         List<License> data
@@ -231,6 +253,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Updates the list of selectable metrics for the given report types in the statistics filter
+     * @return a {@link List} of available metric types
+     */
     @Secured(['ROLE_USER'])
     def adjustMetricList() {
         Map<String, Object> result = [:], queryParams = [reportTypes: params.list("reportTypes[]"), platforms: params.list("platforms[]").collect { platId -> Long.parseLong(platId) }, customer: params.customer as long]
@@ -243,12 +269,20 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Performs a query among the given domain objects matching the given key to find inconsistent entries
+     * @return a {@link List} of entries matching the domain key, field key and value
+     */
     @Secured(['ROLE_USER'])
     def consistencyCheck() {
         List result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
         render result as JSON
     }
 
+    /**
+     * Checks for the cost item input whether the given issue entitlement belongs indeed to the given package and subscription, if they are set at all
+     * @return a {@link Map} of validation results
+     */
     @Secured(['ROLE_USER'])
     def checkCascade() {
         Map<String, Object> result = [sub:true, subPkg:true, ie:true]
@@ -287,6 +321,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves the dropdown values for an xEditableBoolean field
+     * @return the dropdown value {@link Map} with structure [value: 0/1, text: RefdataValue of category {@link RDConstants#Y_N}]
+     */
     @Secured(['ROLE_USER'])
     def getBooleans() {
         List result = [
@@ -306,6 +344,10 @@ class AjaxJsonController {
         render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
     }*/
 
+    /**
+     * Retrieves a list of reference data values belonging to the category linked to the property definition
+     * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] fpr dropdown display
+     */
     @Secured(['ROLE_USER'])
     def getPropRdValues() {
         List<Map<String, Object>> result = []
@@ -321,6 +363,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of values belonging to the given property definition
+     * @return a {@link List} of {@link Map}s of structure [value: value, name: translated name] fpr dropdown display; value may be: reference data value key, date or integer/free text value
+     */
     @Secured(['ROLE_USER'])
     def getPropValues() {
         List<Map<String, Object>> result = []
@@ -393,6 +439,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves provider {@link Org}s with their private contacts; the result may be filtered by name
+     * @return a {@link Map} containing entries for a DataTables table output
+     */
     @Secured(['ROLE_USER'])
     def getProvidersWithPrivateContacts() {
         Map<String, Object> result = [:]
@@ -437,6 +487,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves the region list for German speaking countries
+     * @return a {@link Set} of reference data entries
+     */
     @Secured(['ROLE_USER'])
     def getRegions() {
         SortedSet<RefdataValue> result = new TreeSet<RefdataValue>()
@@ -468,9 +522,12 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Triggers the lookup of values for the given domain class; serves as fallback for static refdataFind calls
+     * @return a sorted {@link List} of {@link Map}s of structure [id: oid, text: subscription text] with the query results
+     */
     @Secured(['ROLE_USER'])
     def lookup() {
-        // fallback for static refdataFind calls
         params.shortcode  = contextService.getOrg().shortcode
 
         Map<String, Object> result = [values: []]
@@ -489,21 +546,39 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of budget codes for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getBudgetCodes(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupBudgetCodes() {
         render controlledListService.getBudgetCodes(params) as JSON
     }
 
+    /**
+     * Retrieves a list of various elements for dropdown display; was used for the myInstitution/document view to attach documents to all kinds of objects
+     * @see de.laser.DocContext
+     * @see de.laser.Doc
+     * @return the result of {@link de.laser.ControlledListService#getElements(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupCombined() {
         render controlledListService.getElements(params) as JSON
     }
 
+    /**
+     * Retrieves a list of invoice numbers for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupInvoiceNumbers() {
         render controlledListService.getInvoiceNumbers(params) as JSON
     }
 
+    /**
+     * Retrieves a list of issue entitlements for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getIssueEntitlements(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupIssueEntitlements() {
         params.checkView = true
@@ -515,26 +590,54 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Retrieves a list of licenses for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupLicenses() {
         render controlledListService.getLicenses(params) as JSON
     }
 
+    /**
+     * Retrieves a list of order numbers for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getOrderNumbers(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupOrderNumbers() {
         render controlledListService.getOrderNumbers(params) as JSON
     }
 
+    /**
+     * Retrieves a list of provider and agency {@link Org}s for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupProvidersAgencies() {
         render controlledListService.getProvidersAgencies(params) as JSON
     }
 
+    /**
+     * Retrieves a list of {@link Org}s in general for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getOrgs(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupOrgs() {
         render controlledListService.getOrgs(params) as JSON
     }
 
+    /**
+     * Retrieves a list of provider {@link Org}s and their associated {@link Platform}s for dropdown display
+     * @return a {@link List} of {@link Map}s of structure
+     * {
+     *   name: provider name,
+     *   value: platform oid,
+     *   platforms: {
+     *     name: platform name,
+     *     value: platform oid
+     *   }
+     * }
+     */
     @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
         List result = []
@@ -551,11 +654,19 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of cost item references for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getReferences(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupReferences() {
         render controlledListService.getReferences(params) as JSON
     }
 
+    /**
+     * Retrieves all {@link Role}s; the roles may be filtered by type
+     * @return a {@link List} of {@link Map}s of structure [text: translated role designator string, key: translated {@link Role#authority} string, value: role oid]
+     */
     @Secured(['ROLE_USER'])
     def lookupRoles() {
         List result = []
@@ -568,11 +679,19 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of subscriptions for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupSubscriptions() {
         render controlledListService.getSubscriptions(params) as JSON
     }
 
+    /**
+     * Retrieves a list of subscription packages for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionPackages() {
         if (params.ctx != "undefined") {
@@ -583,6 +702,10 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Retrieves a list of subscriptions and licenses for dropdown display
+     * @return the composite result of {@link de.laser.ControlledListService#getLicenses(java.util.Map)} and {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupSubscriptionsLicenses() {
         Map<String, Object> result = [results:[]]
@@ -592,6 +715,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of current and intended subscriptions for dropdown display
+     * @return the filtered result of {@link de.laser.ControlledListService#getSubscriptions(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupCurrentAndIndendedSubscriptions() {
         params.status = [RDStore.SUBSCRIPTION_INTENDED, RDStore.SUBSCRIPTION_CURRENT]
@@ -599,6 +726,10 @@ class AjaxJsonController {
         render controlledListService.getSubscriptions(params) as JSON
     }
 
+    /**
+     * Retrieves a list of title groups for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getTitleGroups(java.util.Map)}
+     */
     @Secured(['ROLE_USER'])
     def lookupTitleGroups() {
         params.checkView = true
@@ -610,6 +741,10 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Retrieves all reference data values by the given category for dropdown display
+     * @return a {@link List} of {@link Map}s of structure [value: reference data value oid, text: translated reference data value]
+     */
     @Secured(['ROLE_USER'])
     def refdataSearchByCategory() {
         List result = []
@@ -647,29 +782,43 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Searches for property definition alternatives based on the OID of the property definition which should be replaced
+     * @return a {@link List} of {@link Map}s of structure [value: result oid, text: translated property definition name, isPrivate: does the property definition have a tenant?]
+     * @see PropertyDefinition
+     */
     @Secured(['ROLE_USER'])
     def searchPropertyAlternativesByOID() {
         List<Map<String, Object>> result = []
         PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+        Org contextOrg = contextService.getOrg()
+        List<PropertyDefinition> queryResult
+        if(pd.refdataCategory) {
+            queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.refdataCategory = :refdataCategory and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
+                    [descr   : pd.descr,
+                     refdataCategory: pd.refdataCategory,
+                     type    : pd.type,
+                     multiple: pd.multipleOccurrence,
+                     tenant  : contextOrg])
+        }
+        else {
+            queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
+                    [descr   : pd.descr,
+                     type    : pd.type,
+                     multiple: pd.multipleOccurrence,
+                     tenant  : contextOrg])
+        }
 
-        List<PropertyDefinition> queryResult = PropertyDefinition.findAllWhere(
-                descr: pd.descr,
-                refdataCategory: pd.refdataCategory,
-                type: pd.type,
-                multipleOccurrence: pd.multipleOccurrence,
-                tenant: pd.tenant
-        )//.minus(pd)
-
-        queryResult.each { it ->
+        queryResult.each { PropertyDefinition it ->
             PropertyDefinition rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
             if (pd.isUsedForLogic) {
                 if (it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}", isPrivate: rowobj.tenant ? true : false])
                 }
             }
             else {
                 if (! it.isUsedForLogic) {
-                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}", isPrivate: rowobj.tenant ? true : false])
                 }
             }
         }
@@ -680,6 +829,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Validation query; checks if the user with the given username exists
+     * @return true if there is a {@link User} matching the given input query, false otherwise
+     */
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
@@ -691,6 +844,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Retrieves a list of email addresses, matching the specified request parameters
+     * @return a {@link List} of email addresses matching the parameters
+     */
     @Secured(['ROLE_USER'])
     def getEmailAddresses() {
         List result = []
@@ -741,6 +898,10 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
+    /**
+     * Checks the current state of the reporting cache
+     * @return a {@link Map} reflecting the existence, the filter cache, query cache and details cache states
+     */
     @Secured(['ROLE_USER'])
     def checkReportingCache() {
 
@@ -768,6 +929,10 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    /**
+     * Outputs a chart from the given report parameters
+     * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")

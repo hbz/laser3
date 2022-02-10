@@ -14,6 +14,11 @@ import de.uni_freiburg.ub.IpRangeCollection
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 
+/**
+ * An access configuration for an organisation. It defined conditions of access the organisation has met to use certain kinds of resources; those may be platforms or subscription packages.
+ * They are specified in the {@link OrgAccessPointLink} domain.
+ * The condition itself i.e. what conditions (e.g. IPv4/IPv6 ranges, EZProxy/Proxy/Shibboleth/OpenAthens configurations etc.) are needed to be met are specified in one or more {@link AccessPointData} objects.
+ */
 @Slf4j
 class OrgAccessPoint extends AbstractBase {
 
@@ -61,10 +66,6 @@ class OrgAccessPoint extends AbstractBase {
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
-    }
-
-    static List<RefdataValue> getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category)
     }
 
     String[] getIpRangeStrings(String datatype, String format) {

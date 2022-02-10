@@ -11,18 +11,32 @@ import grails.gorm.transactions.Transactional
 
 import java.sql.Timestamp
 
+/**
+ * This service is a helper service for the due dates service processes
+ */
 @Transactional
 class QueryService {
     def subscriptionsQueryService
     def taskService
 
+    /**
+     * Gets the date from which the given user wishes to be informed
+     * @param user the user whose setting should be retrieved
+     * @param userSettingKey the setting key constant for task reminding
+     * @return the starting date for queries
+     */
     private java.sql.Date computeInfoDate(User user, UserSetting.KEYS userSettingKey){
         int daysToBeInformedBeforeToday = user.getSetting(userSettingKey, UserSetting.DEFAULT_REMINDER_PERIOD)?.getValue() ?: 1
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         infoDate
     }
 
-
+    /**
+     * Retrieves due objects according to the given user's settings
+     * @param contextOrg the user's institution
+     * @param contextUser the user whose due objects should be retrieved
+     * @return a list of objects with upcoming due dates
+     */
     List getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
@@ -116,6 +130,15 @@ class QueryService {
         dueObjects
     }
 
+    /**
+     * Generates a due object query according to the given arguments
+     * @param propertyClass the class of objects to retrieve
+     * @param contextOrg the institution whose perspective is going to be taken
+     * @param fromDateValue the time point from which objects should be retrieved
+     * @param toDateValue the time point until objects should be retrieved
+     * @param isPublic should only public objects being retrieved?
+     * @return a map containing query and query parameters
+     */
     private Map<String, Object> getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue, boolean isPublic){
         Map<String, Object> result = [:]
         String query
@@ -144,40 +167,98 @@ class QueryService {
         result
     }
 
+    /**
+     * Retrieves due public subscription properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due subscription properties
+     */
     List<SubscriptionProperty> getDueSubscriptionCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, true)
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Retrieves due public license properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due license properties
+     */
     List<LicenseProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, true)
         LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Retrieves due public organisation properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due organisation properties
+     */
     List<OrgProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
         def query = getQuery(OrgProperty.class, contextOrg, fromDateValue, toDateValue, false)
         OrgProperty.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Retrieves due private subscription properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due private subscription properties
+     */
     List<SubscriptionProperty> getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, false)
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Retrieves due private license properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due private license properties
+     */
     List<LicenseProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, false)
         LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Generates a generic query for due subscriptions
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @return
+     */
     private Map getMySubscriptionsQuery(Org contextOrg){
         getDueSubscriptionsQuery(contextOrg, null, null, null, null)
     }
 
+    /**
+     * Gets due subscriptions for the given institution
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @param endDateFrom the start time from which end dates should be considered
+     * @param endDateTo the end time until which end dates should be considered
+     * @param manualCancellationDateFrom the start time from which cancellation dates should be considered
+     * @param manualCancellationDateTo the end time until which cancellation dates should be considered
+     * @return a list of due subscriptions
+     */
     List<Subscription> getDueSubscriptions(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
         def query = getDueSubscriptionsQuery(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo)
         Subscription.executeQuery(query.query, query.queryParams)
     }
 
+    /**
+     * Generates a query for due subscriptions
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @param endDateFrom the start time from which end dates should be considered
+     * @param endDateTo the end time until which end dates should be considered
+     * @param manualCancellationDateFrom the start time from which cancellation dates should be considered
+     * @param manualCancellationDateTo the end time until which cancellation dates should be considered
+     * @return a map containing the query string and the parameters for the query
+     */
     private Map<String, Object> getDueSubscriptionsQuery(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
         def queryParams = [:]
         queryParams.endDateFrom = endDateFrom
@@ -194,6 +275,11 @@ class QueryService {
         result
     }
 
+    /**
+     * Generates a query for due licenses
+     * @param institution the institution whose licenses should be accessed
+     * @return a map containing the query string and the query arguments
+     */
     private Map<String, Object> getMyLicensesQuery(Org institution){
         Map<String, Object> result = [:]
         def base_qry

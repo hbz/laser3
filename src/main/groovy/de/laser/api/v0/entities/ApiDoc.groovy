@@ -9,11 +9,18 @@ import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link Doc}
+ */
 @Slf4j
 class ApiDoc {
 
     /**
-     * @return ApiBox(obj: Doc | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND)
+     * Locates the given {@link Doc} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, uuid}
+     * @param the identifier value
+     * @return {@link ApiBox}(obj: Doc | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findDocumentBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -50,6 +57,10 @@ class ApiDoc {
     }
 
     /**
+     * Checks if the given institution can access the given document. The cost item
+     * is returned in case of success
+     * @param doc the {@link Doc} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the cost item
      * @return Doc | FORBIDDEN
      */
     static requestDocument(Doc doc, Org context){
@@ -60,6 +71,7 @@ class ApiDoc {
     }
 
     /**
+     * Should return always null because ONIX PL is not in use in LAS:eR
      * @return Doc | FORBIDDEN | null
      */
     static requestOnixPlDocument(License license, Org context){
@@ -86,6 +98,9 @@ class ApiDoc {
     }
 
     /**
+     * Assembles the given document attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param doc the {@link Doc} which should be output
      * @return Map<String, Object>
      */
     static Map<String, Object> getDocumentMap(Doc doc) {

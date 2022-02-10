@@ -30,6 +30,9 @@ import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+/**
+ * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
@@ -121,10 +124,18 @@ class AjaxController {
     ]
   ]
 
+    /**
+     * Test call
+     * @return the string 'test()'
+     */
     def test() {
         render 'test()'
     }
 
+    /**
+     * Renders the given dialog message template
+     * @return the template responding the given parameter
+     */
     def genericDialogMessage() {
 
         if (params.template) {
@@ -135,6 +146,10 @@ class AjaxController {
         }
     }
 
+    /**
+     * Updates the user session cache for the given cache map key (formed by a key prefix and an uri) with the given value
+     * @return void (an empty map)
+     */
     def updateSessionCache() {
         if (contextService.getUser()) {
             SessionCacheWrapper cache = contextService.getSessionCache()
@@ -155,6 +170,12 @@ class AjaxController {
         render result as JSON
     }
 
+    /**
+     * This is the call route for processing an xEditable reference data or role change
+     * @return the new value for display update in the xEditable field
+     * @see SemanticUiInplaceTagLib#xEditableRole
+     * @see SemanticUiInplaceTagLib#xEditableRefData
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def genericSetRel() {
@@ -342,6 +363,10 @@ class AjaxController {
     }
   }
 
+    /**
+     * Retrieves lists for a reference data value dropdown. The config parameter is used to build the underlying query
+     * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON
+     */
     @Secured(['ROLE_USER'])
     def sel2RefdataSearch() {
 
@@ -436,6 +461,11 @@ class AjaxController {
         }
     }
 
+    /**
+     * This method is used for the title selection views at addEntitlement and controls which entitlements have been selected for later processing.
+     * The caching ensures that the selections remain also when the page of results is being changed; this method updates a respective cache entry or (de-)selects the whole selection
+     * @return a {@link Map} reflecting the success status and the number of changes performed
+     */
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
@@ -520,6 +550,11 @@ class AjaxController {
       render success as JSON
   }
 
+    /**
+     * This method is used by the addEntitlements view and updates the cache for the entitlement candidates which should be added to the local subscription holding;
+     * when the entitlements are being processed, the data from the cache is being applied to the entitlements
+     * @return a {@link Map} reflecting the success status
+     */
   @Secured(['ROLE_USER'])
   def updateIssueEntitlementOverwrite() {
       Map success = [success:false]
@@ -563,6 +598,9 @@ class AjaxController {
       render success as JSON
   }
 
+    /**
+     * Adds a relation link from a given object to an {@link Org}. The org may be an institution or an other organisation like a provider
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def addOrgRole() {
@@ -610,6 +648,9 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Deletes the given relation link between an {@link Org} its target
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def delOrgRole() {
@@ -625,6 +666,9 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Adds a relation link from a given object to a {@link Person}
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def addPrsRole() {
@@ -662,6 +706,9 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Deletes the given relation link between a {@link Person} its target
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def delPrsRole() {
@@ -676,6 +723,12 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Inserts a new reference data value. Beware: the inserted reference data value does not survive database resets nor is that available throughout the instances;
+     * this has to be considered when running this webapp on multiple instances!
+     * If you wish to insert a reference data value which persists and is available on different instances, enter the parameters in RefdataValue.csv. This resource file is
+     * (currently, as of November 18th, '21) located at /src/main/webapp/setup
+     */
     @Secured(['ROLE_USER'])
     def addRefdataValue() {
 
@@ -716,6 +769,12 @@ class AjaxController {
         }
     }
 
+    /**
+     * Inserts a new reference data category. Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
+     * this has to be considered when running this webapp on multiple instances!
+     * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in RefdataCategory.csv. This resource file is
+     * (currently, as of November 18th, '21) located at /src/main/webapp/setup
+     */
     @Secured(['ROLE_USER'])
     def addRefdataCategory() {
 
@@ -754,6 +813,15 @@ class AjaxController {
         }
     }
 
+    /**
+     * Inserts a new custom property definition, i.e. a type of property which is usable by every institution.
+     * Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
+     * this has to be considered when running this webapp on multiple instances!
+     * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in PropertyDefinition.csv. This resource file is
+     * (currently, as of November 18th, '21) located at /src/main/webapp/setup.
+     * Note the global usability of this property definition; see {@link MyInstitutionController#managePrivatePropertyDefinitions()} with params.cmd == add for property types which
+     * are for an institution's internal usage only
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def addCustomPropertyType() {
@@ -852,6 +920,9 @@ class AjaxController {
         }
     }
 
+    /**
+     * Adds a value to a custom property and updates the property enumeration fragment
+     */
   @Secured(['ROLE_USER'])
   def addCustomPropertyValue(){
     if(params.propIdent.length() > 0) {
@@ -924,6 +995,9 @@ class AjaxController {
     }
   }
 
+    /**
+     * Adds a custom property group binding, i.e. sets the configuration of a property type group for a given object and updates the group bindings view fragment
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def addCustomPropertyGroupBinding() {
@@ -960,7 +1034,9 @@ class AjaxController {
         ])
     }
 
-
+    /**
+     * Unsets a configuration for a property definition group for a given object and updates the property group view
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def deleteCustomPropertyGroupBinding() {
@@ -983,8 +1059,7 @@ class AjaxController {
     }
 
     /**
-    * Add domain specific private property
-    * @return
+    * Adds a value to a domain specific private property and updates the property enumeration fragment
     */
     @Secured(['ROLE_USER'])
     def addPrivatePropertyValue(){
@@ -1051,6 +1126,9 @@ class AjaxController {
       }
     }
 
+    /**
+     * Toggles the sharing of the given object, i.e. de-/activates its visiblity in member objects
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleShare() {
@@ -1079,6 +1157,10 @@ class AjaxController {
         }
     }
 
+    /**
+     * Switches between the member subscription visiblity; is applicable for administrative subscriptions only. A SUBCRIBER_CONS_HIDDEN cannot see nor access the given subscription
+     * @see de.laser.interfaces.CalculatedType#TYPE_ADMINISTRATIVE
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleOrgRole() {
@@ -1093,6 +1175,11 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Toggles the inheritance of the given object, i.e. passes or retires a consortial parent object to or from member objects.
+     * The change is being reflected via a {@link PendingChange} because the inheritance means a change on the object itself and each consortium may decide
+     * whether the changes should be automatically applied or only after confirmation
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleAudit() {
@@ -1157,6 +1244,11 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Toggles inheritance of the given identifier object, i.e. passes or retires an identifier to or from member objects
+     * This change is being reflected via a {@link PendingChange} because the inheritance means a change on the object itself and each consortium may decide
+     * whether the changes should be automatically applied or only after confirmation
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleIdentifierAuditConfig() {
@@ -1204,6 +1296,16 @@ class AjaxController {
         render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
     }
 
+    /**
+     * Enables or disables the visibility of a custom property
+     * Visibility is important in a context where several institutions may see the property, those are
+     * <ul>
+     *     <li>member subscriptions</li>
+     *     <li>organisations resp. institutions ({@link Org}s)</li>
+     *     <li>platforms</li>
+     * </ul>
+     * If isPublic is set to false, only that institution may see the property who created it
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def togglePropertyIsPublic() {
@@ -1241,6 +1343,19 @@ class AjaxController {
         }
     }
 
+    /**
+     * Toggles inheritance of the given property, i.e. passes or retires a property to or from member objects
+     * This change is being reflected via a {@link PendingChange} because the inheritance means a change on the object itself and each consortium may decide
+     * whether the changes should be automatically applied or only after confirmation.
+     * If a property change is being applied, the following rules hold:
+     * <ul>
+     *     <li>if it does not exist in the given member object, it will be created</li>
+     *     <li>if a property of the same definition exists and multiple occurrence is active for the property definition, it will be created</li>
+     *     <li>if a property of the same definition exists and multiple occurrence is inactive, the current value will be overwritten</li>
+     *     <li>if the property exists in the member object, it will be deleted</li>
+     * </ul>
+     * The property enumeration fragment is being updated after the process
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def togglePropertyAuditConfig() {
@@ -1325,6 +1440,9 @@ class AjaxController {
         }
     }
 
+    /**
+     * Removes the given custom property from the object
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def deleteCustomProperty() {
@@ -1383,9 +1501,7 @@ class AjaxController {
     }
 
   /**
-    * Delete domain specific private property
-    *
-    * @return
+    * Deletes the given domain specific private property from the object
     */
   @Secured(['ROLE_USER'])
   @Transactional
@@ -1416,16 +1532,26 @@ class AjaxController {
     ])
   }
 
+    /**
+     * Hides the given dashboard due date
+     */
     @Secured(['ROLE_USER'])
     def hideDashboardDueDate(){
         setDashboardDueDateIsHidden(true)
     }
 
+    /**
+     * Shows the given dashboard due date
+     */
     @Secured(['ROLE_USER'])
     def showDashboardDueDate(){
         setDashboardDueDateIsHidden(false)
     }
 
+    /**
+     * Shows or hides the given dashboard due date
+     * @param isHidden is the dashboard due date hidden?
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     private setDashboardDueDateIsHidden(boolean isHidden){
@@ -1468,16 +1594,26 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
+    /**
+     * Marks the given due date as completed
+     */
     @Secured(['ROLE_USER'])
     def dashboardDueDateSetIsDone() {
        setDashboardDueDateIsDone(true)
     }
 
+    /**
+     * Marks the given due date as undone
+     */
     @Secured(['ROLE_USER'])
     def dashboardDueDateSetIsUndone() {
        setDashboardDueDateIsDone(false)
     }
 
+    /**
+     * Marks the given due date as done or undone
+     * @param isDone is the due date completed or not?
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     private setDashboardDueDateIsDone(boolean isDone){
@@ -1527,6 +1663,11 @@ class AjaxController {
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
 
+    /**
+     * Deletes a person (contact)-object-relation. Is a substitution call for {@link #deletePersonRole()}
+     * @see Person
+     * @see PersonRole
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def delete() {
@@ -1542,6 +1683,11 @@ class AjaxController {
       redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Deletes a person (contact)-object-relation
+     * @see Person
+     * @see PersonRole
+     */
     @Secured(['ROLE_ORG_EDITOR'])
     @Transactional
     def deletePersonRole(){
@@ -1551,6 +1697,11 @@ class AjaxController {
         }
     }
 
+    /**
+     * De-/activates the editing mode in certain views. Viewing mode prevents editing of values in those views despite
+     * the context user has editing rights to the object
+     * @return the changed view
+     */
     @Transactional
     @Secured(['ROLE_USER'])
     def toggleEditMode() {
@@ -1572,6 +1723,9 @@ class AjaxController {
         render show
     }
 
+    /**
+     * Adds an identifier to the given owner object
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def addIdentifier() {
@@ -1588,12 +1742,18 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Removes the given identifier from the given owner object
+     */
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
         identifierService.deleteIdentifier(params.owner,params.target)
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Adds a new object to a given collection. Currently only used for UserController.edit()
+     */
     @Transactional
     @Secured(['ROLE_USER'])
   def addToCollection() {
@@ -1618,7 +1778,7 @@ class AjaxController {
                 // if ( key == __new__ then we need to create a new instance )
                 def new_assoc = resolveOID2(params[p.name])
                 if(new_assoc){
-                  new_obj[p.name] = new_assoc               
+                  new_obj[p.name] = new_assoc
                 }
               }
               else {
@@ -1667,7 +1827,12 @@ class AjaxController {
     }
     redirect(url: request.getHeader('referer'))
   }
-    
+
+    /**
+     * Resolves the given oid and returns the object if found
+     * @param oid the oid key to resolve
+     * @return the object matching to the given oid, null otherwise
+     */
   def resolveOID2(String oid) {
     String[] oid_components = oid.split(':')
     def result
@@ -1688,6 +1853,9 @@ class AjaxController {
     result
   }
 
+    /**
+     * Removes a given object from the given owner and refreshes the owner's collection
+     */
     @Transactional
     @Secured(['ROLE_USER'])
   def deleteThrough() {
@@ -1703,6 +1871,13 @@ class AjaxController {
 
   }
 
+    /**
+     * This is the call route for processing an xEditable change other than reference data or role
+     * @return the new value for display update in the xEditable field
+     * @see SemanticUiInplaceTagLib#xEditable
+     * @see SemanticUiInplaceTagLib#xEditableAsIcon
+     * @see SemanticUiInplaceTagLib#xEditableBoolean
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def editableSetValue() {
@@ -1831,6 +2006,9 @@ class AjaxController {
         outs.close()
     }
 
+    /**
+     * Revokes the given role from the given user
+     */
     @Secured(['ROLE_USER'])
     def removeUserRole() {
         User user = resolveOID2(params.user)
@@ -1841,9 +2019,7 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-  /**
-   * ToDo: This function is a duplicate of the one found in InplaceTagLib, both should be moved to a shared static utility
-   */
+  @Deprecated
   def renderObjectValue(value) {
     def result=''
     def not_set = message(code:'refdata.notSet')
@@ -1859,7 +2035,7 @@ class AjaxController {
           else {
             result = value.value ? value.getI10n('value') : not_set
           }
-          break;
+          break
         default:
           if(value instanceof String){
 
@@ -1872,9 +2048,12 @@ class AjaxController {
       }
     }
     // log.debug("Result of render: ${value} : ${result}");
-    result;
+    result
   }
 
+    /**
+     * Deletes the given task
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")

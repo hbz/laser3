@@ -16,6 +16,27 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
+/**
+ * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link Platform}. Titles may be (list is not exhaustive):
+ * <ul>
+ *     <li>(E)Books</li>
+ *     <li>Databases</li>
+ *     <li>Journals</li>
+ *     <li>Films</li>
+ *     <li>...</li>
+ * </ul>
+ * Title instance records may have an access start / access end date; those are set by the provider and define from when to when this title is available in the given package context.
+ * The package context defines the subscribability of the title; usually, titles are subscribed within a package and those packages are then linked to a subscription.
+ * This class represents the global entitlement level, i.e. the title which counts for the package provided by the provider and is independent from negotiatory differences which may vary
+ * from subscription to subscription. See {@link IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
+ * This class is moreover a mirror of the we:kb TitleInstancePackagePlatform implementation <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/TitleInstancePackagePlatform.groovy">(see TitleInstancePackagePlatform in we:kb)</a>
+ * and generally a reflection of a KBART record (see <a href="https://groups.niso.org/apps/group_public/download.php/16900/RP-9-2014_KBART.pdf">KBART specification</a>)
+ * @see Package
+ * @see SubscriptionPackage
+ * @see Subscription
+ * @see Platform
+ * @see IssueEntitlement
+ */
 class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
 
   @Transient
@@ -218,6 +239,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Cascade-trigger: if a title is updated, the whole package should be done likewise. This is necessary for APIs pulling data incrementally from a package endpoint; the OAI-based sync between LAS:eR and we:kb worked likewise
+     * before it was changed to JSON and ElasticSearch harvesting
+     */
   @Transient
   void touchPkgLastUpdated() {
     if(pkg!=null){
@@ -228,6 +253,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     }
   }
 
+    /**
+     * Removes stopwords from the title and generates a sortable title string.
+     * @see Normalizer.Form#NFKD
+     */
     void generateSortTitle() {
         if ( name ) {
             sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -240,6 +269,9 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         }
     }
 
+    /**
+     * Generates a normalised title, i.e. converts the title to lower case, replaces special characters and numbers
+     */
     void generateNormTitle() {
         if (name) {
             normName = name.replaceAll('&',' and ')
@@ -251,6 +283,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         }
     }
 
+    /**
+     * Gets an identifier value of the given namespace
+     * @param idtype the {@link IdentifierNamespace} to which the required identifier belongs to
+     * @return the {@link Identifier}'s value; if multiple, the last identifier's value is being returned (no comment ...)
+     */
   String getIdentifierValue(idtype) {
       String result
     ids?.each { ident ->
@@ -260,6 +297,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     result
   }
 
+    @Deprecated
     private String stringify(obj) {
       String result
     if ( obj != null ) {
@@ -274,6 +312,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         result
     }
 
+    /**
+     * Gets the first author and / or the first editor of the book instance
+     * @return a concatenated string of the first author / first editor of the book
+     */
     String getEbookFirstAutorOrFirstEditor(){
 
         String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
@@ -363,9 +405,13 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
         return sw.toString();
     }
-  /**
-   * Compare the controlledPropertie of two tipps
-  **/
+
+    /**
+     * Compares the controlled properties of two title records.
+     * The controlled properties are defined at {@link #controlledProperties}
+     * @param tippB the title record to compare with
+     * @return the comparison result (-1, 0 or 1)
+     */
   int compare(TitleInstancePackagePlatform tippB){
       if(!tippB) return -1
       boolean noChange = true
@@ -375,6 +421,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       return 1
       }
 
+    /**
+     * Translates the given string into its ASCII representation, i.e. eliminates special chars; required for normalising
+     * @param s the string to decode
+     * @return the ASCII-decoded string
+     */
     private static String asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
@@ -387,6 +438,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     /**
      * Translate the given unicode char in the closest ASCII representation
      * NOTE: this function deals only with latin-1 supplement and latin-1 extended code charts
+     * @param c the character to translate
+     * @return the ASCII representation of the char
      */
     private static char translate(char c) {
         switch(c) {
@@ -594,6 +647,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         return c
     }
 
+    /**
+     * Gets the publishers associated to this title
+     * @return a {@link List} of publisher {@link Org}s
+     */
     List<Org> getPublishers() {
         List<Org> result = []
 

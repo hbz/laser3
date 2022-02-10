@@ -8,30 +8,26 @@
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
-            <div class="ui horizontal segments">
-                <div class="ui segment center aligned">
-                    <g:link controller="subscription" action="members" id="${subscription.id}">
-                        <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
-                        <div class="ui circular label">
-                            ${countParticipants.subMembers}
-                        </div>
-                    </g:link>
-                </div>
 
-                <div class="ui segment center aligned">
-                    <g:link controller="survey" action="surveyParticipants"
-                            id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id]">
-                        <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
-                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
-                    </g:link>
+                <g:link class="ui icon button right floated" controller="subscription" action="members" id="${subscription.id}">
+                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
+                    <div class="ui circular label">
+                        ${countParticipants.subMembers}
+                    </div>
+                </g:link>
 
-                    <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
-                        ( ${countParticipants.subMembersWithMultiYear}
-                        ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
-                    </g:if>
-                </div>
-            </div>
+                <g:link class="ui icon button right floated"  controller="survey" action="surveyParticipants"
+                        id="${surveyConfig.surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id]">
+                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
+                    <div class="ui circular label">${countParticipants.surveyMembers}</div>
+                </g:link>
+
+                <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                    ( ${countParticipants.subMembersWithMultiYear}
+                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
+                </g:if>
+                <br><br><br>
         </g:if>
 
         <div class="ui card ">
@@ -250,7 +246,7 @@
                         </dl>
                     </g:if>
 
-                    <div class="ui form">
+                    <div class="ui form la-padding-left-07em">
                         <div class="field">
                             <label>
                                 <g:message code="surveyConfigsInfo.comment"/>
@@ -313,9 +309,8 @@
                 <div class="content">
                     <div class="header">
                         <g:if test="${!subscription}">
-                            <h2 class="ui icon header"><semui:headerIcon/>
-
-                                <i class="icon clipboard outline la-list-icon"></i>
+                            <semui:headerTitleIcon type="Subscription"/>
+                            <h2 class="ui icon header">
                                 <g:link controller="public" action="gasco"
                                         params="${[q: '"' + surveyConfig.subscription.name + '"']}">
                                     ${surveyConfig.subscription.name}
@@ -330,8 +325,8 @@
                             </div>
                         </g:if>
                         <g:else>
-
-                            <h2 class="ui icon header"><semui:headerIcon/>
+                            <semui:headerTitleIcon type="Subscription"/>
+                            <h2 class="ui icon header">
                             <g:link controller="subscription" action="show" id="${subscription.id}">
                                 ${subscription.name}
                             </g:link>
@@ -566,7 +561,7 @@
                     String dataTooltip = ""
                 %>
 
-                <table class="ui celled compact la-table-inCard table">
+                <table class="ui celled compact la-js-responsive-table la-table-inCard table">
                     <thead>
                     <tr>
                         <th colspan="4" class="center aligned">
@@ -880,7 +875,7 @@
         <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -888,8 +883,11 @@
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
-
-                <th></th>
+                <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                        SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                        && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                    <th>${message(code:'default.actions.label')}</th>
+                </g:if>
             </tr>
             </thead>
 
@@ -947,11 +945,10 @@
                             </div>
                         </g:form>
                     </td>
-
-                    <td>
-                        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                    <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                            SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
+                            && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                        <td>
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"
@@ -961,8 +958,8 @@
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
                             </g:link>
-                        </g:if>
-                    </td>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
             </tbody>
@@ -1009,7 +1006,7 @@
                 total="${surveyResults.size()}"/>
         </h3>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>

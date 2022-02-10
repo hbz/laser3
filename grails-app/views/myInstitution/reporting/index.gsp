@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -18,7 +18,9 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <div style="margin: 0 0.5em">
+        <g:render template="/templates/reporting/helper" />%{--js--}%
+
+        <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
                     data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
@@ -34,32 +36,52 @@
 
         <div id="hab-wrapper"></div>
 
-        <div id="info-content" class="ui message info hidden">
-            <p>
-                <strong>${message(code:'reporting.macro.step1')}</strong> <br />
-                ${message(code:'reporting.macro.info1')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step2')}</strong> <br />
-                ${message(code:'reporting.macro.info2')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step3')}</strong> <br />
-                ${message(code:'reporting.macro.info3')}
-            </p>
-            <p>
-                <i class="icon history"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
-                ${message(code:'reporting.macro.infoHistory')}
-            </p>
-            <p>
-                <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
-                ${message(code:'reporting.macro.infoBookmarks')}
-            </p>
+        <div id="info-content" class="hidden">
+
+            <div class="ui segment">
+                <span class="ui top attached label" style="text-align:center;">
+                    <i class="icon question large"></i>${message(code:'reporting.filter.help')}
+                </span>
+                <div style="margin: 3.5em 2em 0.5em !important">
+                    <p>
+                        <strong>${message(code:'reporting.macro.step1')}</strong> <br />
+                        ${message(code:'reporting.macro.info1')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.macro.step2')}</strong> <br />
+                        ${message(code:'reporting.macro.info2')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.macro.step3')}</strong> <br />
+                        ${message(code:'reporting.macro.info3')}
+                    </p>
+                    <p>
+                        <i class="icon history blue"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
+                        ${message(code:'reporting.macro.infoHistory')}
+                    </p>
+                    <p>
+                        <i class="icon bookmark teal"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
+                        ${message(code:'reporting.macro.infoBookmarks')}
+                    </p>
+                    <p>
+                        <i class="icon question blue"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
+                        ${message(code:'reporting.macro.infoHelp')}
+                    </p>
+                    <p>
+                        <strong>we:kb</strong> <br />
+                        ${message(code:'reporting.macro.infoWekb')}
+                    </p>
+                    <p>
+                        <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
+                        ${message(code:'reporting.macro.infoUnmatched')}
+                    </p>
+                </div>
+            </div>
         </div>
 
         <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
 
-        <g:if test="${!filter}">
+        <g:if test="${! filter}">
             <div class="ui segment form">
                 <div class="fields two">
                     <div class="field">
@@ -75,31 +97,16 @@
             </div>
         </g:if>
 
-        <g:each in="${BaseConfig.FILTER}" var="filterItem">
-
-            <g:if test="${!filter || filter == filterItem}">
-                <div id="filter-${filterItem}" class="filter-form-wrapper ${filter ? '' : 'hidden'}">
-                    <g:form action="reporting" method="POST" class="ui form">
-                        <g:render template="/myInstitution/reporting/filter/${filterItem}" />
-
-                        <div class="field">
-                            %{-- <g:link action="reporting" class="ui button">${message(code:'reporting.filter.save')}</g:link> --}%
-                            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
-                            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-                            <input type="hidden" name="filter" value="${filterItem}" />
-                            <input type="hidden" name="token" value="${token}" />
-                        </div>
-                    </g:form>
-                </div>
+        <div id="filter-wrapper">
+            <g:if test="${filter}">
+                <g:render template="/myInstitution/reporting/filter/form" />
             </g:if>
-        </g:each>
-
-        <g:render template="/templates/reporting/helper" />
+        </div>
 
         <g:if test="${filterResult}">
 
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
@@ -115,22 +122,26 @@
             #history-content table .description ,
             #bookmark-content table .description { margin: 0.3em 0; }
             #last-added-bookmark { margin-left: 1em; }
-            #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
+            #chart-wrapper { height: 400px; width: 98%; margin: 3em auto 2em; }
             h3.ui.header { margin-top: 3em !important; }
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+            /*-- hab --*/
             JSPC.app.reporting.updateHabMenu = function (current) {
                 var base = ['info', 'bookmark', 'history']
                 var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
 
                 $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
+                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
                 $( '#' + current + '-content').toggleClass('hidden');
-                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue');
-                $( '#' + current + '-toggle').toggleClass('blue');
+                if (current == 'bookmark') {
+                    $( '#' + current + '-toggle').toggleClass('teal');
+                } else {
+                    $( '#' + current + '-toggle').toggleClass('blue');
+                }
             }
-
             $('#info-toggle').on( 'click', function() {
                 JSPC.app.reporting.updateHabMenu('info');
             })
@@ -143,25 +154,37 @@
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
+            /*-- filter --*/
             $('#filter-chooser').on( 'change', function(e) {
-                $('.filter-form-wrapper').addClass('hidden')
-                $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
+                $.ajax({
+                    url: '<g:createLink controller="myInstitution" action="reporting" />',
+                    data: { init: true, filter: $(this).val() },
+                    dataType: 'html',
+                    beforeSend: function(xhr) { $('#loadingIndicator').show(); }
+                })
+                .done( function (data) {
+                    $('#filter-wrapper').html(data);
+                    r2d2.initDynamicSemuiStuff('#filter-wrapper');
+                    r2d2.initDynamicXEditableStuff('#filter-wrapper');
+                    $('#filter-wrapper > div').removeClass('hidden');
+                })
+                .fail( function() { $("#reporting-modal-error").modal('show'); })
+                .always( function() { $('#loadingIndicator').hide(); });
             })
-
             $('*[id^=query-chooser').on( 'change', function(e) {
-                var value = $(e.target).dropdown('get value');
+                var value = $(e.target).val();
                 if (value) {
-                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    $('*[id^=query-chooser').not( $('#' + this.id)).dropdown('clear');
                     JSPC.app.reporting.current.request.query = value;
                     JSPC.app.reporting.requestChartJsonData();
                 }
             })
-
             $('#chart-chooser').on( 'change', function(e) {
                 JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
                 JSPC.app.reporting.requestChartJsonData();
             })
 
+            /*-- charts --*/
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
@@ -188,7 +211,7 @@
                                 $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                                $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                $('#chart-wrapper').css('height', 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
                                 $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
@@ -218,9 +241,7 @@
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                     })
-                    .always(function() {
-                        $('#loadingIndicator').hide();
-                    });
+                    .always(function() { $('#loadingIndicator').hide(); });
                 }
             }
 
@@ -317,6 +338,5 @@
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
             <p>${message(code:'reporting.modal.nodata')}</p>
         </semui:modal>
-
     </body>
 </html>

@@ -13,6 +13,9 @@ import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 
+/**
+ * This service handles safe complex object deletion
+ */
 //@CompileStatic
 //@Transactional
 class DeletionService {
@@ -34,6 +37,12 @@ class DeletionService {
     static String FLAG_SUBSTITUTE   = 'teal'
     static String FLAG_BLOCKER      = 'red'
 
+    /**
+     * Deletes the given license; displays eventual attached objects which may cause conflicts
+     * @param lic the license to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the license
+     */
     Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -208,6 +217,12 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given subscription; displays eventual attached objects which may cause conflicts
+     * @param sub the subscription to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the subscription
+     */
     Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -463,6 +478,13 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given organisation; displays eventual attached objects which may cause conflicts
+     * @param org the organisation to delete
+     * @param replacement unused
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the organisation
+     */
     Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -669,6 +691,13 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given user; displays eventual attached objects which may cause conflicts
+     * @param user the user to delete
+     * @param replacement the user which should replace the deleted user and take his data
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the user
+     */
     Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -767,6 +796,12 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given package AND its attached objects; is a cleanup function for false package entries. Use this function
+     * thus with VERY MUCH CARE!
+     * @param pkg the package to delete
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deletePackage(Package pkg) {
         println "processing package #${pkg.id}"
         Package.withTransaction { status ->
@@ -817,6 +852,12 @@ class DeletionService {
         }
     }
 
+    /**
+     * Deletes the given title duplicate after having rebased the depending issue entitlements to the replacement title
+     * @param tipp the title duplicate to delete
+     * @param replacement the replacement title record
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
         //rebasing subscriptions
@@ -845,7 +886,7 @@ class DeletionService {
     /**
      * Use this method with VERY MUCH CARE!
      * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
-     * @param tipp - the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
+     * @param tipp the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */
     boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
@@ -880,6 +921,11 @@ class DeletionService {
         }
     }
 
+    /**
+     * Deletes the given issue entitlement with depending objects
+     * @param ie the issue entitlement to be deleted
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteIssueEntitlement(IssueEntitlement ie) {
         println "processing issue entitlement ${ie}"
         IssueEntitlement.withTransaction { status ->
@@ -898,6 +944,11 @@ class DeletionService {
         }
     }
 
+    /**
+     * Removes the given ElasticSearch entry (document) from the index
+     * @param id the id of the entry to remove
+     * @param className the domain class index from which the entry should be removed
+     */
     void deleteDocumentFromIndex(id, String className) {
         String es_index = ESWrapperService.es_indices.get(className)
         RestHighLevelClient esclient = ESWrapperService.getClient()

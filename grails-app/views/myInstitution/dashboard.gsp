@@ -215,7 +215,7 @@
                                                 <i class="university icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="folder open icon"></i>
+                                                <i class="clipboard outline icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
                                                 <i class="gift icon"></i>
@@ -270,7 +270,7 @@
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
                         <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
                     </g:if>
-                    <table class="ui celled table la-table">
+                    <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
                                 <th rowspan="2">${message(code:'workflow.label')}</th>
@@ -376,6 +376,7 @@
                 url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
             }).done(function(response){
                 $("#surveyWrapper").html(response);
+                  r2d2.initDynamicSemuiStuff('#surveyWrapper');
             })
         }
 

@@ -458,7 +458,7 @@ class SemanticUiTagLib {
         String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
-        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out << '<div role="dialog" class="ui large modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out << '<div class="header">' + title + '</div>'
 
         if (attrs.contentClass) {
@@ -757,6 +757,129 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    def anualRingsModern = { attrs, body ->
+        def object = attrs.object
+
+        def prev = attrs.navPrev
+        def next = attrs.navNext
+        def status = object.status?.value
+        def color
+        def tooltip
+        def startDate
+        def endDate
+        def dash
+
+        def prevStartDate
+        def prevEndDate
+
+        def nextStartDate
+        def nextEndDate
+
+        if (object.status) {
+            tooltip = object.status.getI10n('value')
+            switch (object.status) {
+                case 'Current': color = 'la-status-active'
+                    break
+                case 'Expired': color = 'la-status-inactive'
+                    break
+                default: color = 'la-status-else'
+                    break
+            }
+        } else {
+            tooltip = message(code: 'subscription.details.statusNotSet')
+        }
+        out << "<div class='ui large label la-annual-rings-modern'>"
+        if (object.startDate) {
+            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+        }
+        if (object.endDate) {
+            dash = '–'
+            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+        }
+        if (prev) {
+            if (prev?.size() == 1) {
+                prev?.each { p ->
+                    if (attrs.mapping) {
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+
+                    } else {
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                    }
+                }
+            } else {
+
+                out << "<div class='ui right pointing dropdown'>" +
+                        "<i class='arrow left icon'></i>" +
+                        "<div class='menu'>"
+                prev?.each { p ->
+
+
+                    if (p.startDate) {
+                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (p.endDate) {
+                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (attrs.mapping) {
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                    } else {
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                    }
+                }
+                out << "</div>" +
+                        "</div>"
+            }
+        } else {
+            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        }
+        out << "<span class='la-annual-rings-text'>"
+        out << startDate
+        out << dash
+        out << endDate
+        out << "</span>"
+
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << '       &nbsp;'
+        out << '</a>'
+
+        if (next) {
+
+            if (next?.size() == 1) {
+                next?.each { n ->
+                    if (attrs.mapping) {
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+
+                    } else {
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                    }
+                }
+            } else {
+                out << "<div class='ui left pointing dropdown'>" +
+                        "<i class='arrow right icon'></i>" +
+                        "<div class='menu'>"
+                next?.each { n ->
+
+                    if (n.startDate) {
+                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (n.endDate) {
+                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (attrs.mapping) {
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                    } else {
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                    }
+                }
+                out << "</div>" +
+                        "</div>"
+            }
+        } else {
+            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
+        }
+        out << '</div>'
+    }
+
     def surveyStatus = { attrs, body ->
         def object = attrs.object
 
@@ -883,7 +1006,6 @@ class SemanticUiTagLib {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
 
-        out << '<i aria-hidden="true" class="icon"></i>'
         out << "<span class='la-annual-rings-text'>"
         out << startDate
         out << dash
@@ -893,7 +1015,6 @@ class SemanticUiTagLib {
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
-        out << '<i aria-hidden="true" class="icon"></i>'
 
         if (next) {
             out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: next.surveyInfo.id, params: [surveyConfigID: next.id])
@@ -934,8 +1055,8 @@ class SemanticUiTagLib {
     }
 
     def tabs = { attrs, body ->
-
-        out << '<div class="ui top attached tabular menu" style="overflow-x: auto; overflow-y: hidden">' //ugliest workaround ever!!!!
+        def newClass = attrs.class ?: ''
+        out << '<div class="ui top attached tabular  ' + newClass + ' stackable menu">'
         out << body()
         out << '</div>'
     }

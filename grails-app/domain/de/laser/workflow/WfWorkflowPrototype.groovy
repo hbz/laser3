@@ -6,6 +6,11 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 
+/**
+ * Represents a prototype of a workflow which may be implemented in different contexts (for different {@link de.laser.Org}s and {@link Subscription}s)
+ * For the concrete workflow, see {@link WfWorkflow}
+ * @see WfTaskPrototype
+ */
 class WfWorkflowPrototype extends WfWorkflowBase {
 
     def contextService
@@ -35,14 +40,29 @@ class WfWorkflowPrototype extends WfWorkflowBase {
         description (nullable: true)
     }
 
+    /**
+     * Checks whether this prototype is in use
+     * @return is there a {@link WfTaskPrototype} linked to this prototype?
+     */
     boolean inUse() {
         task != null
     }
 
+    /**
+     * Gets the sequence of task prototypes in this workflow
+     * @return a {@link List} of {@link WfTaskPrototype}s, ordered in intellectualy set order (defined by {@link WfTaskPrototype#next})
+     */
     List<WfTaskPrototype> getSequence() {
         task ? task.getSequence() : []
     }
 
+    /**
+     * Instantiates a new workflow defined by the properties of this prototype, attaches this to the given {@link Subscription} and assigns it to the context {@link de.laser.Org}.
+     * The linked {@link WfTaskPrototype}s are instantiated as well
+     * @param subId the id of the {@link Subscription} to link this workflow to
+     * @return the instantiated complete {@link WfWorkflow} object
+     * @throws Exception
+     */
     WfWorkflow instantiate(Long subId) throws Exception {
 
         WfWorkflow workflow = new WfWorkflow(

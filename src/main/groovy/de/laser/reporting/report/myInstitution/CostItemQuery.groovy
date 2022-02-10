@@ -13,8 +13,7 @@ class CostItemQuery extends BaseQuery {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
-        String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1] // only simply cfg.query
+        def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
@@ -23,31 +22,10 @@ class CostItemQuery extends BaseQuery {
 
             println '--- TODO ---'
         }
-        else if ( suffix in ['type']) {
+        else if ( suffix in ['billingCurrency', 'costItemCategory', 'costItemElement', 'costItemStatus', 'costItemElementConfiguration', 'type']) {
 
-            _processSimpleRefdataQuery(params.query,'type', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
-        else if ( suffix in ['costItemStatus']) {
-
-            _processSimpleRefdataQuery(params.query,'costItemStatus', idList, result)
-        }
-        else if ( suffix in ['costItemCategory']) {
-
-            _processSimpleRefdataQuery(params.query,'costItemCategory', idList, result)
-        }
-        else if ( suffix in ['costItemElement']) {
-
-            _processSimpleRefdataQuery(params.query,'costItemElement', idList, result)
-        }
-        else if ( suffix in ['costItemElementConfiguration']) {
-
-            _processSimpleRefdataQuery(params.query,'costItemElementConfiguration', idList, result)
-        }
-        else if ( suffix in ['billingCurrency']) {
-
-            _processSimpleRefdataQuery(params.query,'billingCurrency', idList, result)
-        }
-
         result
     }
 

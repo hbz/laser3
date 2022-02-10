@@ -11,6 +11,9 @@
     margin-bottom: 1em;
   }
 }
+.ui.segment.la-form {
+  border: none;
+}
 .ui.segment.la-filter-temp {
   background: @laFilterBackground;
   border: none;
@@ -86,4 +89,8 @@
     background: @laFilterChosen!important;
     border: 1px solid @white;
   }
+}
+/* Bottom */
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
 }

@@ -53,7 +53,7 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'org' : [
+                                    org : [
                                             'org-orgType',
                                             'org-customerType',
                                             'org-libraryType',
@@ -66,17 +66,17 @@ class OrganisationConsCfg extends BaseConfig {
                                     ]
                             ],
                             providerAndAgency : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [ 'org-orgType' ]
                             ],
                             provider : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [ 'org-orgType' ]
                             ],
                             agency : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [ 'org-orgType' ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            default : [
                                     'org-x-identifier' : [
                                              detailsTemplate     : 'organisation',
                                              chartTemplate       : '2axis2values_nonMatches',
@@ -84,8 +84,8 @@ class OrganisationConsCfg extends BaseConfig {
                                     ],
                                     'org-x-property' : [
                                             detailsTemplate     : 'organisation',
-                                            chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'base', 'x.properties' ]
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                    ]
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]

@@ -11,7 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
@@ -21,10 +21,9 @@
            }
         },
         legend: {
-            align:  'left',
-            type:   'scroll',
-            orient: 'vertical',
-            left:   'left',
+            bottom: 0,
+            left: 'center',
+            z: 1,
             formatter: function (value) {
                 return value.replace(/\s\(ID:[0-9]*\)/,'')
             }
@@ -33,7 +32,7 @@
             {
                 type: 'pie',
                 radius: '70%',
-                center: ['60%', '45%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -45,6 +44,19 @@
                 label: {
                     formatter: function (obj) {
                         return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.ice
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
                     }
                 }
             }

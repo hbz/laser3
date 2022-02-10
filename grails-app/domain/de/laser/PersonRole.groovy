@@ -5,7 +5,27 @@ import de.laser.titles.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
-
+/**
+ * This class ensures connections between {@link Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.
+ * Possible objects to restrict are:
+ * <ul>
+ *     <li>{@link License}</li>
+ *     <li>{@link Package}</li>
+ *     <li>{@link Subscription}</li>
+ *     <li>{@link TitleInstancePackagePlatform}</li>
+ * </ul>
+ * Unlike in ${@link OrgRole}, the link between the person and the object other than organisation is not typised; it serves rather as a specification for the connection between the person and the organisation, e.g.
+ * person A is a general contact of organisation B about the subscription C.
+ * The relation of the person and the organisation is typised by three distinctive ways which exclude each other. There are several types, using each different sets of reference values:
+ * <ol>
+ *     <li>function type</li>
+ *     <li>position type</li>
+ *     <li>responsibility type</li>
+ * </ol>
+ * 1. uses the reference category {@link RDConstants#PERSON_FUNCTION},
+ * 2. the reference category {@link RDConstants#PERSON_POSITION} and
+ * 3. the reference category {@link RDConstants#PERSON_RESPONSIBILITY}
+ */
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
@@ -13,14 +33,24 @@ class PersonRole implements Comparable<PersonRole>{
     static TYPE_POSITION        = 'positionType'
     static TYPE_RESPONSIBILITY  = 'responsibilityType'
 
+    /**
+     * The person has a certain position at the given organisation. Is exclusive with other types
+     */
     @RefdataAnnotation(cat = RDConstants.PERSON_POSITION)
-    RefdataValue    positionType  //  exclusive with other types
+    RefdataValue    positionType
 
+    /**
+     * The person has a certain function at the given organisation. Is exclusive with other types
+     */
     @RefdataAnnotation(cat = RDConstants.PERSON_FUNCTION)
-    RefdataValue    functionType   // exclusive with other types
+    RefdataValue    functionType
 
+    /**
+     * The person has a certain responsibility at the given organisation, the responsibility concerns usually a certain object. Is exclusive with other types
+     * @see #setReference(java.lang.Object)
+     */
     @RefdataAnnotation(cat = RDConstants.PERSON_RESPONSIBILITY)
-    RefdataValue    responsibilityType  // exclusive other types
+    RefdataValue    responsibilityType
 
     License                        lic
     Package                        pkg
@@ -76,7 +106,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     /**
-     * Generic setter
+     * Generic setter method; indicating the reference objects which may be attached to the {@link Person} to be linked except {@link Org} which is a direct relation
      */
     void setReference(def owner) {
         org     = owner instanceof Org ? owner : org
@@ -86,6 +116,10 @@ class PersonRole implements Comparable<PersonRole>{
         tipp    = owner instanceof TitleInstancePackagePlatform ? owner : tipp
     }
 
+    /**
+     * Gets the reference object which specifies the connection between the {@link Person} and the {@link Org}
+     * @return the reference object; one of {@link License}, {@link Package}, {@link Subscription} or {@link TitleInstancePackagePlatform}
+     */
     String getReference() {
         if (lic)        return 'lic:' + lic.id
         if (pkg)        return 'pkg:' + pkg.id
@@ -93,12 +127,23 @@ class PersonRole implements Comparable<PersonRole>{
         if (tipp)       return 'title:' + tipp.id
     }
 
+    /**
+     * A mirror of {@link RefdataCategory#getAllRefdataValues(java.lang.String)}; gets all reference values of the given reference category string
+     * @param category the reference value category to retrieve
+     * @return a {@link List} of {@link RefdataValue}s matching the given category
+     */
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)//.sort {it.getI10n("value")}
     }
 
+    /**
+     * Gets the first person-org link between the given {@link Person} and {@link Org} matching the given responsibility type
+     * @param prs the {@link Person} from which the link points to
+     * @param org the {@link Org} to which the link points to
+     * @param resp the responsibility type (one of the {@link RDConstants#PERSON_RESPONSIBILITY} reference value strings) which exists between the person and the organisation
+     * @return a {@link PersonRole} matching the given responsibility type and linking the given person with the organisation
+     */
     static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
-
         List<PersonRole> result = PersonRole.findAllWhere(
             prs: prs,
             org: org,
@@ -108,6 +153,11 @@ class PersonRole implements Comparable<PersonRole>{
         result.first()
     }
 
+    /**
+     * Comprator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
+     * @param that the object to compare with
+     * @return the comparison result (-1, 0 or 1)
+     */
     @Override
     int compareTo(PersonRole that) {
         String this_FunctionType = this?.functionType?.value

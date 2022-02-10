@@ -23,19 +23,19 @@
 
         <g:render template="nav" />
 
-        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
-        </sec:ifAnyGranted> --}%
-
         <g:render template="/templates/reporting/helper" />
 
         <g:render template="/subscription/reporting/query/query" />
+
+        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
+            <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+        </sec:ifAnyGranted> --}%
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
 
         <style>
-            #chart-wrapper { height: 360px; width: 98%; margin: 2em auto 1em; }
+            #chart-wrapper { height: 380px; width: 98%; margin: 3em auto 2em; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -75,8 +75,8 @@
                         }
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
-                            if (dsl > 11) {
-                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
+                                $('#chart-wrapper').css('height', 220 + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
                             }

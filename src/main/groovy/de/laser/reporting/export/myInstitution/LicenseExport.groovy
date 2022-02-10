@@ -7,6 +7,8 @@ import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -14,7 +16,7 @@ import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class LicenseExport extends BaseDetailsExport {
 
-    static String KEY = 'license'
+    static String KEY = BaseConfig.KEY_LICENSE
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
@@ -30,11 +32,11 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
@@ -55,22 +57,14 @@ class LicenseExport extends BaseDetailsExport {
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
     ]
 
     LicenseExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -100,7 +94,7 @@ class LicenseExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) + '@' + lic.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(lic, key, License.getDeclaredField(key).getType()) )
@@ -124,7 +118,7 @@ class LicenseExport extends BaseDetailsExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic and i.ns.id in (:idnsList)",
                                 [lic: lic, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-license-subscriptionCount') { // TODO: query
 //                    int count = License.executeQuery(
@@ -160,6 +154,9 @@ class LicenseExport extends BaseDetailsExport {
 
                     content.add( counts )
                 }
+                else {
+                    content.add( '- not implemented -' )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -169,6 +166,9 @@ class LicenseExport extends BaseDetailsExport {
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
+                }
+                else {
+                    content.add( '- not implemented -' )
                 }
             }
             else {

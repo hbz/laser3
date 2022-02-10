@@ -9,6 +9,11 @@ import de.laser.annotations.RefdataAnnotation
 
 import javax.persistence.Transient
 
+/**
+ * This object represents the list price / negotiated price for a title instance.
+ * It may be global (i.e. package-wide, subscription-independent), then it is linked to a {@link TitleInstancePackagePlatform} or local (i.e. linked to a subscription), then, the {@link IssueEntitlement} is the owner of the item.
+ * It thus cannot belong simultaneously to a {@link TitleInstancePackagePlatform} and to an {@link IssueEntitlement}
+ */
 class PriceItem extends AbstractBase {
 
     @RefdataAnnotation(cat = RDConstants.CURRENCY)
@@ -33,6 +38,7 @@ class PriceItem extends AbstractBase {
             'listCurrency'
     ]
 
+    //the two entities exclude each other
     static belongsTo = [tipp: TitleInstancePackagePlatform,
                         issueEntitlement: IssueEntitlement]
 
@@ -78,6 +84,11 @@ class PriceItem extends AbstractBase {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Locates in a parallel {@link Collection} an equivalent item. See {@link #equivalencyProperties} for the fields eligible for an equivalency
+     * @param list the list to be comapred against
+     * @return the equivalent price item of the other list to this one
+     */
     PriceItem findEquivalent(Collection<PriceItem> list) {
         PriceItem equivalent
         for (String k : equivalencyProperties) {

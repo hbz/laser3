@@ -6,6 +6,7 @@ import grails.converters.JSON
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 
+@Deprecated
 @Slf4j
 class ApiKbartConverter {
 
@@ -48,6 +49,7 @@ class ApiKbartConverter {
     /**
      * @return
      */
+    @Deprecated
     static convertIssueEntitlements(JSON json) {
 
         // TODO .. incomplete Mapping
@@ -109,6 +111,7 @@ class ApiKbartConverter {
         output
     }
 
+    @Deprecated
     static getAsDocument(def data) {
         def todo = new Doc(
                 title:          "KBART-EXPORT",
@@ -119,10 +122,12 @@ class ApiKbartConverter {
         todo
     }
 
+    @Deprecated
     static normValue(def value) {
         value ? value : ''
     }
 
+    @Deprecated
     static normDate(def date) {
         // TODO in json
         date

@@ -9,12 +9,27 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This service generates compley subscription queries
+ */
 @Transactional
 class SubscriptionsQueryService {
     def genericOIDService
     def propertyService
     def accessService
 
+    /**
+     *
+     * @param params
+     * @param contextOrg
+     * @param joinQuery an eventual join if further tables need to be accessed by an optional filter
+     * @return the base query data in structure:
+     * <ol start="0">
+     *     <li>base_qry the query string</li>
+     *     <li>qry_params the query parameters</li>
+     *     <li>filterSet the flag for the export whether a filter has been applied</li>
+     * </ol>
+     */
     List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
 
         def date_restriction
@@ -250,15 +265,27 @@ class SubscriptionsQueryService {
 
             if (params.status != 'FETCH_ALL') {
                 if(params.status instanceof List || params.status instanceof String[]){
-                    base_qry += " and s.status.id in (:status) "
+                    base_qry += " and (s.status.id in (:status) "
                     qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
                     filterSet = true
                 }else {
-                    base_qry += " and s.status.id = :status "
+                    base_qry += " and (s.status.id = :status "
                     qry_params.put('status', (params.status as Long))
                     filterSet = true
                 }
             }
+            if(RDStore.SUBSCRIPTION_CURRENT.id in qry_params.status) {
+                /*
+                needs to be dealt separately, must not be and-linked
+                */
+                if (params.hasPerpetualAccess) {
+                    base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
+                    qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+                    filterSet = true
+                }
+                else base_qry += ")" //opened in line 253 or 257
+            }
+            else base_qry += ")" //opened in line 253 or 257
         }
 
 
@@ -277,12 +304,6 @@ class SubscriptionsQueryService {
         if (params.isPublicForApi) {
             base_qry += "and s.isPublicForApi = :isPublicForApi "
             qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-            filterSet = true
-        }
-
-        if (params.hasPerpetualAccess) {
-            base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess "
-            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true
         }
 

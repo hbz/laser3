@@ -36,7 +36,7 @@
 </g:if>
 <g:if test="${entries}">
     <g:set var="start" value="${System.currentTimeMillis()}"/>
-    <table class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+    <table class="ui celled sortable table table-tworow la-js-responsive-table la-table la-ignore-fixed">
         <thead>
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
@@ -117,7 +117,7 @@
 
                     <div class="la-flexbox la-main-object">
 
-                        <i class="icon clipboard outline outline la-list-icon"></i>
+                        <i class="icon clipboard outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons._getCalculatedPrevious()}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
@@ -255,7 +255,7 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tfoot>
             <tr>
-                <th colspan="9">
+                <th class="control-label" colspan="9">
                     ${message(code:'financials.totalCostOnPage')}
                 </th>
             </tr>

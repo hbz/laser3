@@ -14,13 +14,19 @@ import de.laser.finance.Order
 import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j
 
+/**
+ * This class delivers objects which do not need further authentication because they do not need any or authorisation
+ * has already been done elsewhere. It represents the bottommost level of the API output tree
+ */
 @Slf4j
 class ApiUnsecuredMapReader {
 
     // -------------------- STUBS --------------------
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given license for API output
+     * @param lic the {@link License} called for API
+     * @return Map<String, Object> reflecting the license details
      */
     static Map<String, Object> getLicenseStubMap(License lic) {
         if (!lic) {
@@ -42,7 +48,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given access point for API output
+     * @param orgAccessPoint the {@link OrgAccessPoint} called for API
+     * @return Map<String, Object> reflecting the access point details
      */
     static Map<String, Object> getOrgAccessPointStubMap(OrgAccessPoint orgAccessPoint) {
         if (!orgAccessPoint) {
@@ -57,7 +65,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given organisation for API output
+     * @param org the {@link Org} called for API
+     * @return Map<String, Object> reflecting the organisation details
      */
     static Map<String, Object> getOrganisationStubMap(Org org) {
         if (!org) {
@@ -77,7 +87,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given package for API output
+     * @param pkg the {@link Package} called for API
+     * @return Map<String, Object> reflecting the package details
      */
     static Map<String, Object> getPackageStubMap(Package pkg) {
         if (!pkg) {
@@ -96,7 +108,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given platform for API output
+     * @param pform the {@link Platform} called for API
+     * @return Map<String, Object> reflecting the platform details
      */
     static Map<String, Object> getPlatformStubMap(Platform pform) {
         if (!pform) {
@@ -114,7 +128,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given subscription for API output
+     * @param sub the {@link Subscription} called for API
+     * @return Map<String, Object> reflecting the subscription details
      */
     static Map<String, Object> getSubscriptionStubMap(Subscription sub) {
         if (!sub) {
@@ -135,7 +151,9 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * @return Map<String, Object>
+     * Returns the essential information for the given title for API output
+     * @param tipp the {@link TitleInstancePackagePlatform} called for API
+     * @return Map<String, Object> reflecting the title details
      */
     static Map<String, Object> getTitleStubMap(TitleInstancePackagePlatform tipp) {
         if (!tipp) {
@@ -158,6 +176,11 @@ class ApiUnsecuredMapReader {
 
     // -------------------- FULL OBJECTS --------------------
 
+    /**
+     * Returns the given invoice details
+     * @param invoice the {@link Invoice} to be retrieved
+     * @return a {@link Map} reflecting the invoice for API output
+     */
     static Map<String, Object> getInvoiceMap(Invoice invoice) {
         if(! invoice) {
             return null
@@ -179,6 +202,11 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Returns the given issue entitlement coverage details
+     * @param coverage the {@link IssueEntitlementCoverage} to be retrieved
+     * @return a {@link Map} reflecting the issue entitlement coverage for API output
+     */
     static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage) {
         if (!coverage) {
             return null
@@ -199,6 +227,11 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Returns the given order details
+     * @param invoice the {@link Order} to be retrieved
+     * @return a {@link Map} reflecting the order for API output
+     */
     static Map<String, Object> getOrderMap(Order order) {
         if (!order) {
             return null
@@ -215,6 +248,12 @@ class ApiUnsecuredMapReader {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Returns the given platform details including the properties the requesting institution has
+     * @param pform the {@link Platform} to be retrieved
+     * @param context the institution ({@link Org}) requesting the platform and whose properties should be returned
+     * @return a {@link Map} reflecting the platform for API output
+     */
     static Map<String, Object> getPlatformMap(Platform pform, Org context) {
         if (!pform) {
             return null

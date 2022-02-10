@@ -11,11 +11,17 @@
 
 4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
 
+4092    08.02.2022  dev     2.3         David   Feature     Reporting: Basissuche - Einstiegspunkte auslagern
+
+4109    08.02.2022  rc.2-2  2.3         Andreas Bug         Dokumente wurden falsch ausgegeben
+
 4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports
 
 4024    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Aufteilung der Statistiksicht in der Titelumfrage auf zwei Reiter
 
 4103    03.02.2022  rc-2.2  2.2.9       Andreas Bug         Filtercache sorgte für Durcheinander beim Laden der Finanzsicht
+
+4099    02.02.2022  dev     2.3         Ingrid  Feature     Versteckte Funktion im Datepicker deutlicher machen
 
 4098    02.02.2022  rc-2.2  2.2.9       Moe     Bug         Nutzerzahlen bei ClickMeExcel kommen nicht alle mit
 
@@ -51,9 +57,17 @@
 
 4071    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehrjahreslizenzen werden in Umfrage nicht richtig angezeigt und nicht richtig Übertrag mit Umfrage
 
+4063    17.01.2021  dev     2.3         David   Feature     Reporting: Merkmale - Pakete/Plattformen
+
 4031    10.01.2022  rc-2.2  2.2.9       Moe     Bug         Excel Export Gesamttitelliste: "Verlag" fehlt
 
 4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
+
+3903    22.12.2021  dev     2.3         Andreas Feature     Dokumentation des Backend-Codes
+
+4011    20.12.2021  dev     2.3         David   Feature     Reporting: Komfortfunktionen für Export
+
+3994    14.12.2021  dev     2.3         David   Feature     Reporting: Org-Export (Sortiername + Name)
 
 4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
 
@@ -63,13 +77,25 @@
 
 --      08.12.2021  rc-2.2  2.2.8       Andreas Bug         Darstellungen in der Lizenzstatistik korrigiert
 
+--      08.12.2021  dev     2.3         Andreas Feature     Performanzverbesserungen
+
+4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
+
+4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
+
 4034    07.12.2021  rc-2.2  2.2.8       Andreas Bug         costItemStatus wurde verworfen, was zu einem Validierungsfehler geführt hat
+
+4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
 
 4027    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber
 
 4028    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Titelumfrage: Export Gesamttitellist mit Statistik + Bestandsflag
 
 3914    06.12.2021  rc-2.2  2.2.7       Moe     Bug         500er bei manuellem Übertrag eines Teilnehmers
+
+4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
+
+4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
 
 --      02.12.2021  rc-2.2  2.2.6       Andreas Bug         Fallback für Kostenposten ohne Summe eingesetzt
 
@@ -81,7 +107,17 @@
 
 4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
 
+1111    24.11.2021  dev     2.3         Andreas Feature     interne Dokumentation der LAS:eR-API
+
+4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
+
+4005    23.11.2021  dev     2.3         David   Feature     Reporting: Plattform-Export
+
+4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
+
 4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
+3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
 
 4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
 
@@ -91,6 +127,8 @@
 
 3997    17.11.2021  rc-2.2  2.2.5       Moe     Bug         500er bei ClickMe Excel: Meine Einrichtungen
 
+3987    17.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
 3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
 
 3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter
@@ -99,9 +137,17 @@
 
 3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
 
+3993    16.11.2021  dev     2.3         David   Feature     PlatformProperty.isPublic
+
+3987    16.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
+3964    15.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Pakete
+
 --      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
 
 3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
+
+3980    12.11.2021  dev     2.3         David   Feature     Reporting: ES-Schnittstelle laser
 
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
 
@@ -157,6 +203,8 @@
 
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
+3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
+
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
 --      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen
@@ -179,7 +227,11 @@
 
 3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
 
+3833    08.10.2021  dev     2.3         Andreas Feature     Merkmale können durch andere Merkmale ersetzt werden
+
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
+
+3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 

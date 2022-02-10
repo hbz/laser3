@@ -2,12 +2,19 @@ package de.laser
 
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller is for the main index routing
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class HomeController {
 
     def contextService
     def springSecurityService
- 
+
+    /**
+     * The greeting committee in some kind. The webapp index redirected here as well
+     * @return the institution dashboard; if no dashboard is defined, the profile page; null (resp. error page) if the user could not be found
+     */
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]

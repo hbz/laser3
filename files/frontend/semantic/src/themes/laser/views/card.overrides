@@ -52,9 +52,15 @@
   color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
-  padding-left: .9rem;
+  padding-left: .7em;
 }
-
+.ui.table tfoot th.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: .7em;
+  font-weight: 700;
+}
 .la-inline-lists  dl{
   display: table-row;
 }
@@ -162,4 +168,8 @@
 }
 .la-padding-top-1em {
   padding-top:1em;
+}
+.la-padding-left-07em {
+  padding-top:1em;
+  padding-left:.7em;
 }

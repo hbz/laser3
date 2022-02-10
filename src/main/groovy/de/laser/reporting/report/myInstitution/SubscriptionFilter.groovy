@@ -31,8 +31,8 @@ class SubscriptionFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage('subscription.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
+        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -64,7 +64,7 @@ class SubscriptionFilter extends BaseFilter {
 
         //println queryParams
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'subscription_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_SUBSCRIPTION + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
@@ -90,12 +90,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'sub.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'sub.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'sub.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'sub.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -112,7 +109,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
@@ -126,13 +123,13 @@ class SubscriptionFilter extends BaseFilter {
                             }
                             else {
                                 tmpList.add('( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )')
-                                queryParams.put('p' + pCount, pk as Integer)
+                                queryParams.put('p' + pCount, pk as Integer) // integer - hql
                             }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
@@ -176,6 +173,8 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
+        // -- SUB --
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'memberSubscription') {
@@ -196,7 +195,7 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {
@@ -233,12 +232,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'mbr.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'mbr.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'mbr.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'mbr.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -255,7 +251,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
@@ -275,7 +271,7 @@ class SubscriptionFilter extends BaseFilter {
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
@@ -321,7 +317,7 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
@@ -380,12 +376,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'org.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'org.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'org.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'org.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {

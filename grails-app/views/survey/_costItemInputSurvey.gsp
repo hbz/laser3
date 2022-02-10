@@ -15,8 +15,8 @@
     </g:if>
 </g:else>
 
-<div class="fields">
-    <div class="nine wide field">
+<div class="fields la-forms-grid">
+    <div class="eight wide field">
         <div class="field">
             <label>${message(code: 'financials.newCosts.costTitle')}</label>
             <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}"/>
@@ -24,12 +24,12 @@
 
     </div>
 
-    <div class="seven wide field">
+    <div class="eight wide field">
         <div class="two fields la-fields-no-margin-button">
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                    <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -42,7 +42,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label><g:message code="financials.costItemConfiguration"/></label>
-                <laser:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
+                <laser:select name="ciec" id="ciec_${idSuffix}" class="ui fluid  dropdown"
                               from="${costItemSigns}"
                               optionKey="id"
                               optionValue="value"
@@ -65,8 +65,8 @@
     </div> <!-- 2/2 field -->
 </div><!-- two fields -->
 
-<div class="fields">
-    <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+<div class="fields la-forms-grid">
+    <fieldset class="sixteen wide field la-account-currency">
         <label>${g.message(code: 'financials.newCosts.amount')}</label>
 
         <div class="two fields">
@@ -136,26 +136,26 @@
 
 </div><!-- three fields -->
 
+<div class="field ">
+    <div class="two fields la-forms-grid">
+        <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
+                          value="${costItem?.startDate}"/>
 
-<div class="two fields">
-    <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
-                      value="${costItem?.startDate}"/>
+        <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
+                          value="${costItem?.endDate}"/>
+    </div>
 
-    <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
-                      value="${costItem?.endDate}"/>
+
+    <div class="one fields la-forms-grid">
+        <fieldset class="sixteen wide field">
+            <div class="field">
+                <label>${message(code: 'survey.costItemModal.descriptionfor', args: [surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
+                <textarea name="newDescription" id="newDescription"
+                          placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
+            </div><!-- .field -->
+        </fieldset>
+    </div>
 </div>
-
-
-<div class="one fields">
-    <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
-        <div class="field">
-            <label>${message(code: 'survey.costItemModal.descriptionfor', args: [surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
-            <textarea name="newDescription" id="newDescription"
-                      placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
-        </div><!-- .field -->
-    </fieldset>
-</div>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

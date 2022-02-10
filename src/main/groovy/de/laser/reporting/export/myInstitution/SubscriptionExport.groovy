@@ -7,13 +7,15 @@ import de.laser.Subscription
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class SubscriptionExport extends BaseDetailsExport {
 
-    static String KEY = 'subscription'
+    static String KEY = BaseConfig.KEY_SUBSCRIPTION
 
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
@@ -31,14 +33,14 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-memberCount'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-subscription-memberCount' : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'                    : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                                    'x-memberSubscriptionProperty'  : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'x-memberSubscriptionProperty' : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
@@ -60,27 +62,19 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
                             ]
                     ]
             ]
     ]
 
     SubscriptionExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -110,10 +104,10 @@ class SubscriptionExport extends BaseDetailsExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) + '@' + sub.getProperty(key) )
                 }
                 else {
-                    content.add( getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()))
+                    content.add( getPropertyContent(sub, key, Subscription.getDeclaredField(key).getType()) )
                 }
             }
             // --> generic refdata
@@ -134,19 +128,22 @@ class SubscriptionExport extends BaseDetailsExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub and i.ns.id in (:idnsList)",
                                 [sub: sub, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == 'x-provider') {
-                    List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
-                            [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
-                    )
-                    content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
-                }
+//                else if (key == 'x-provider') {
+//                    List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+//                            [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+//                    )
+//                    content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
+//                }
                 else if (key == '@-subscription-memberCount') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )[0]
                     content.add( members )
+                }
+                else {
+                    content.add( '- not implemented -' )
                 }
             }
             // --> custom query depending filter implementation
@@ -164,6 +161,17 @@ class SubscriptionExport extends BaseDetailsExport {
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
+                else {
+                    content.add( '- not implemented -' )
+                }
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+                List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+                        [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                )
+                String prop = key.split('\\+')[1]
+                content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
             }
             else {
                 content.add( '- not implemented -' )

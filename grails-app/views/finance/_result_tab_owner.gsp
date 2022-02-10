@@ -9,7 +9,7 @@
         wideColspan = 9
     }
 %>
-<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled sortable monitor stackable table table-tworow la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">
@@ -142,7 +142,9 @@
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
+                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
+                            <semui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
+                        </span>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}

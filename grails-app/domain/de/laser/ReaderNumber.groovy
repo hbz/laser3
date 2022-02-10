@@ -1,14 +1,17 @@
 package de.laser
 
-
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.
+ * A reference group is linked to a temporal entity and we cannot have both due date and semester set. Only high schools use semesters; the reference groups selectable by them are thus linked to semester. All others go with due date.
+ * See readerNumber.gsp for the groups selectable by each institution type
+ */
 class ReaderNumber {
 
-    /*@RefdataAnnotation(cat = '?')
-    RefdataValue type*/
-    String referenceGroup
+    @RefdataAnnotation(cat = RDConstants.NUMBER_TYPE)
+    RefdataValue referenceGroup
     String dateGroupNote //counts for every number for a given date
 
     BigDecimal value
@@ -21,20 +24,8 @@ class ReaderNumber {
 
     Org org
 
-    final static String READER_NUMBER_USER = 'User'
-    final static String READER_NUMBER_PEOPLE = 'Population'
-    final static String READER_NUMBER_SCIENTIFIC_STAFF = 'Scientific staff'
-    final static String READER_NUMBER_FTE = 'FTE'
-    final static String READER_NUMBER_STUDENTS = 'Students'
-    final static Set<String> CONSTANTS_HIGH_SCHOOL = [READER_NUMBER_STUDENTS, READER_NUMBER_SCIENTIFIC_STAFF, READER_NUMBER_FTE]
-    final static Set<String> CONSTANTS_STATE_LIBRARY = [READER_NUMBER_USER] //for further extension
-    final static Set<String> CONSTANTS_PUBLIC_LIBRARY = [READER_NUMBER_PEOPLE] //for further extension
-    final static Set<String> CONSTANTS_RESEARCH_INSTITUTE = [READER_NUMBER_FTE] //for further extension
-    final static Set<String> CONSTANTS_SCIENTIFIC_LIBRARY = [READER_NUMBER_FTE, READER_NUMBER_USER] //for further extension
-
     static constraints = {
         //type            (blank:false)
-        referenceGroup(blank: false)
         dateGroupNote(nullable: true, blank: false)
         value(nullable: true)
         semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->
@@ -53,8 +44,7 @@ class ReaderNumber {
         id              column:'num_id'
         version         column:'num_version'
 
-        //type            column:'num_typ_rdv_fk'
-        referenceGroup  column:'num_reference_group'
+        referenceGroup  column:'num_reference_group_rv_fk'
         dateGroupNote   column:'num_date_group_note', type: 'text'
         value           column:'num_value'
         semester        column:'num_semester_rv_fk'
@@ -65,7 +55,4 @@ class ReaderNumber {
         org             column:'num_org_fk'
     }
 
-    static List<RefdataValue> getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category)
-    }
 }

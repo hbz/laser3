@@ -97,7 +97,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
@@ -154,7 +154,7 @@
                                     <span data-position="top right"
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack blue icon"></i>
+                                        <i class="grey la-thumbtack-regular icon"></i>
                                     </span>
                                 </g:if>
 

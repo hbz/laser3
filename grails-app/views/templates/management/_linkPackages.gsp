@@ -158,7 +158,7 @@
                 </g:else>
             </h3>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
@@ -184,7 +184,7 @@
                             <i class="map orange icon"></i>
                         </span>
                     </th>
-                    <th></th>
+                    <th>${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>

@@ -7,16 +7,16 @@
 
 
 
-<table class="ui compact la-table-inCard table">
+<table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
-            <col style="width: 129px;">
-            <col style="width: 96px;">
+            <col class="la-prop-col-1">
+            <col class="la-prop-col-2">
             <g:if test="${propDefGroup.ownerType == License.class.name}">
-                <col style="width: 359px;">
+                <col class="la-prop-col-3">
             </g:if>
-            <col style="width: 148px;">
-            <col style="width: 76px;">
+            <col class="la-prop-col-4">
+            <col class="la-prop-col-5">
         </colgroup>
         <thead>
             <tr>

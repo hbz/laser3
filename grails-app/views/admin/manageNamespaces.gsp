@@ -121,7 +121,7 @@
             </g:each>
         </g:if>
         <g:else>
-                <table class="ui celled la-table compact table">
+                <table class="ui celled la-js-responsive-table la-table compact table">
                     <thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>

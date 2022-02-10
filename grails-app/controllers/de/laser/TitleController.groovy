@@ -13,17 +13,28 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller manages calls for title listing
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
     def contextService
     def ESSearchService
 
+    /**
+     * Call to the list of all title instances recorded in the system
+     * @return the result of {@link #list()}
+     */
     @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'title', action: 'list', params: params
     }
 
+    /**
+     * Lists all recorded title in the app; the result may be filtered
+     * @return a list of {@link TitleInstancePackagePlatform}s
+     */
     @Secured(['ROLE_USER'])
     def list() {
         log.debug("titleSearch : ${params}")
@@ -77,6 +88,7 @@ class TitleController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     Map<String,Object> show() {
         Map<String, Object> result = [:]
@@ -95,6 +107,7 @@ class TitleController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
   def batchUpdate() {
@@ -150,6 +163,10 @@ class TitleController  {
     redirect(controller:'title', action:'show', id:params.id);
   }
 
+    /**
+     * Shows the history events related to the given title
+     * @return a list of history events
+     */
   @Secured(['ROLE_USER'])
   def history() {
     Map<String, Object> result = [:]
@@ -219,6 +236,7 @@ class TitleController  {
     result
   }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def dmIndex() {
     log.debug("dmIndex ${params}");

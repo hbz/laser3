@@ -6,6 +6,13 @@ import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A container class to retain Dewey decimal classifications of titles and packages.
+ * The structure is the same as in {@link Language} just as the purpose is
+ * @see TitleInstancePackagePlatform
+ * @see Package
+ * @see Language
+ */
 class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
     def cascadingUpdateService
@@ -44,6 +51,11 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
         lastUpdatedCascading  column: 'ddc_last_updated_cascading'
     }
 
+    /**
+     * Compares two entries against their underlying reference value
+     * @param o the other entry to compare with
+     * @return the comparison result of the {@link RefdataValue}s
+     */
     @Override
     int compareTo(Object o) {
         DeweyDecimalClassification ddc2 = (DeweyDecimalClassification) o
@@ -73,6 +85,11 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
+    /**
+     * Constructor to set up a new DDC entry with the given config parameters
+     * @param configMap the {@link Map} containing the configuration parameters
+     * @return the new DDC instance or null on failure
+     */
     static DeweyDecimalClassification construct(Map<String, Object> configMap) {
         if(configMap.tipp || configMap.pkg) {
             DeweyDecimalClassification ddc = new DeweyDecimalClassification(ddc: configMap.ddc)

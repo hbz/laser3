@@ -113,3 +113,7 @@
 .la-ctrls .ui.dropdown .menu {
   z-index: 101;
 }
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

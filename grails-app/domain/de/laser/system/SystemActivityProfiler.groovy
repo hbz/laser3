@@ -3,6 +3,10 @@ package de.laser.system
 import de.laser.SystemService
 import grails.util.Holders
 
+/**
+ * This class keeps track of the active users for a given time point.
+ * It reflects overall activity of users and permits to record when the system is most used
+ */
 class SystemActivityProfiler {
 
     Integer userCount
@@ -17,6 +21,9 @@ class SystemActivityProfiler {
 
     static constraints = { }
 
+    /**
+     * This is a cronjob-triggered method to record the next sample of users
+     */
     static void update() {
         SystemService systemService = (SystemService) Holders.grailsApplication.mainContext.getBean('systemService')
 

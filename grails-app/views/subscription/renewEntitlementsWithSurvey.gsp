@@ -151,7 +151,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
         <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-        <table class="ui table la-table compact">
+        <table class="ui table la-js-responsive-table la-table compact">
             <tbody>
             <tr>
                 <td>

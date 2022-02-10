@@ -7,14 +7,14 @@
             <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
                                              args="${args.superOrgType}"/></h3>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th></th>
+                    <th>${message(code:'default.actions.label')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -95,7 +95,7 @@
                         total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
             </g:else>
         </h3>
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
@@ -115,7 +115,7 @@
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.isMultiYear.label')}</th>
-                <th></th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -146,7 +146,7 @@
                                 <span data-position="top right"
                                       class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="thumbtack blue icon"></i>
+                                    <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
                             </g:if>
 

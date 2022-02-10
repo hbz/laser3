@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.usermodel.XSSFHyperlink
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -14,7 +15,16 @@ import java.time.Year
 
 class BaseExportHelper {
 
-    static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines) {
+    static final Map<String, List> PDF_OPTIONS = [
+            'auto' : [ 'auto' ],
+            'A4-P' : [ 'A4', 'Portrait' ], 'A4-L' : [ 'A4', 'Landscape' ],
+            'A3-P' : [ 'A3', 'Portrait' ], 'A3-L' : [ 'A3', 'Landscape' ],
+            'A2-P' : [ 'A2', 'Portrait' ], 'A2-L' : [ 'A2', 'Landscape' ],
+            'A1-P' : [ 'A1', 'Portrait' ], 'A1-L' : [ 'A1', 'Landscape' ],
+            'A0-P' : [ 'A0', 'Portrait' ], 'A0-L' : [ 'A0', 'Landscape' ]
+    ]
+
+    static int updateCell(Workbook workbook, Cell cell, def value, boolean inserNewLines, boolean useHyperlinks) {
 
         int lineCount = 1
 
@@ -54,6 +64,21 @@ class BaseExportHelper {
                     value = value.split( BaseDetailsExport.CSV_VALUE_SEPARATOR )
                     lineCount = value.size()
                     value = value.join('\n')
+                }
+                if (value.startsWith('http://') || value.startsWith('https://')) {
+                    List<String> parts = value.split('@') // masking globalUID and gokbId
+                    value = parts[0]
+
+                    if (useHyperlinks) {
+                        XSSFHyperlink link = new XSSFHyperlink( XSSFHyperlink.LINK_URL ) // TODO
+                        link.setAddress(parts[0])
+                        value = parts[0]
+
+                        if (parts.size()>1) {
+                            value = parts[1]
+                        }
+                        cell.setHyperlink(link)
+                    }
                 }
                 cell.setCellValue(value.trim())
             }

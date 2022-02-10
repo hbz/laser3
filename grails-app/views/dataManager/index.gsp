@@ -17,7 +17,7 @@
 
     <g:if test="${pendingChanges?.size() > 0}">
         <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code:'datamanager.pending.label')}</h2>
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
               <th>${message(code:'default.info.label')}</th>

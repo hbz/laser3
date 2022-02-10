@@ -23,7 +23,7 @@
 <div class="ui grid">
     <div class="sixteen wide column">
 
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
                 <tr>
                     <sec:ifAnyGranted roles="ROLE_ADMIN">

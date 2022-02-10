@@ -50,7 +50,7 @@
 
 <g:render template="/organisation/nav"/>
 
-<div class="ui top attached tabular menu">
+<div class="ui top attached stackable tabular menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
         ${message(code: 'org.prsLinks.label')}
     </a>

@@ -20,12 +20,10 @@ form {
   margin: 0em 0em 1em;
 }
 .ui.form .fields .field.la-modal-fieldset-no-margin {
-  background: @laSecondaryBackground;
   padding: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
   .la-exchange-rate {
-
     input {
       vertical-align: middle;
     }
@@ -36,15 +34,18 @@ form {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: @laSecondaryBackground;
   padding: 15px;
 }
 .ui.form .fields .field.la-modal-fieldset-margin-right {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: @laSecondaryBackground;
   padding: 15px;
+}
+.ui.form .fields.la-forms-grid,
+.ui.form .fields .field.la-forms-grid{
+  padding: 25px;
+  background: @laAlternativeBackground;
 }
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field{
@@ -104,7 +105,7 @@ input#spotlightSearch[type="search"] {
   .field {
     margin: 0;
     white-space: nowrap;
-     input {
+     input.la-82Percent {
       width: 82%;
     }
   }
@@ -142,4 +143,7 @@ legend {
   color: rgba(0,0,0,.87);
   font-size: .92857143em;
   font-weight: 700;
+}
+.ui.form .fields .field.la-more-margin {
+  margin: 0 0 2em;
 }

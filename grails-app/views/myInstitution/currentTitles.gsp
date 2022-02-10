@@ -195,7 +195,7 @@
         <div>
             <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
-                <table class="ui sortable celled la-table table ">
+                <table class="ui sortable celled la-js-responsive-table la-table table ">
                     <thead>
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>
@@ -256,7 +256,7 @@
                                 <div class="ui three column grid">
                                     <g:each in="${title_coverage_info}" var="ie">
                                         <div class="sixteen wide column">
-                                            <i class="icon clipboard outline outline la-list-icon"></i>
+                                            <i class="icon clipboard outline la-list-icon"></i>
                                             <g:link controller="subscription" action="index"
                                                     id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
                                             &nbsp;

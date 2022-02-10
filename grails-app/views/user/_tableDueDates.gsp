@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
-<table class="ui celled table la-table">
+<table class="ui celled table la-js-responsive-table la-table">
     <thead>
     <tr>
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
@@ -95,7 +95,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td style="text-align: center">
+                <td class="x" >
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -114,7 +114,7 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon button la-modern-button"
+                        <laser:remoteLink class="ui icon blue button la-modern-button"
                                           controller="ajax"
                                           action="showDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -126,7 +126,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon la-modern-button"></i>
+                            <i class="icon bell slash la-js-editmode-icon "></i>
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
@@ -144,7 +144,7 @@
                         </laser:remoteLink>
                     </g:else>
                 </td>
-                <td style="text-align: center">
+                <td class="x" >
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <laser:remoteLink class="ui green button la-modern-button"
                                       controller="ajax"
@@ -165,7 +165,7 @@
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui icon button la-modern-button"
+                    <laser:remoteLink class="ui icon blue button la-modern-button"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'

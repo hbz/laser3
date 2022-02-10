@@ -279,7 +279,7 @@ ${surveyInfo.name}
                     method="post" class="ui form ">
                 <g:hiddenField name="copyProperty" value="${selectedProperty}"/>
 
-                <table class="ui celled sortable table la-table" id="parentSubscription">
+                <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                     <thead>
                     <tr>
                         <th>

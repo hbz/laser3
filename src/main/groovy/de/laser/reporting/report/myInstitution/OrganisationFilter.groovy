@@ -28,7 +28,7 @@ class OrganisationFilter extends BaseFilter {
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         ContextService contextService  = mainContext.getBean('contextService')
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = getCurrentFilterSource(params, 'org')
         filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.source.' + filterSource)])
 
         switch (filterSource) {
@@ -130,12 +130,9 @@ where (consOr.roleType = :consRoleType)
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'org.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'org.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'org.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'org.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting; de.laser.helper.DateUtils" %>
+<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting; de.laser.helper.DateUtils; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -14,7 +14,11 @@
     <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
 </g:if>
 
-<table id="${tableID ?: ''}" class="ui sortable celled la-table table">
+<g:if test="${['platform', 'altname'].any { String tmplConfig -> tmplConfig in tmplConfigShow }}">
+    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+</g:if>
+
+<table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
     <tr>
@@ -43,6 +47,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
                                   params="${request.getParameterMap()}"/>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
+                <th>${message(code: 'org.altname.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
                 <th>${message(code: 'org.mainContact.label')}</th>
@@ -87,6 +94,9 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
                 <th>ISIL</th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
+                <th>${message(code: 'platform')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <th>${message(code: 'default.type.label')}</th>
@@ -244,6 +254,22 @@
                         </g:else>
                     </div>
                 </th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
+                <td>
+                    <ul>
+                        <g:each in="${org.altnames}" var="altname">
+                            <li>
+                                <g:if test="${org.gokbId}">
+                                    <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname.name}</g:link>
+                                </g:if>
+                                <g:else>
+                                    ${altname.name}
+                                </g:else>
+                            </li>
+                        </g:each>
+                    </ul>
+                </td>
             </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
@@ -438,26 +464,40 @@
                 <td class="center aligned">
                     <div class="la-flexbox">
                         <%
-                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
+                        def subStatus
+                        if(actionName == 'currentProviders') {
+                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                        }
+                        else subStatus = params.subStatus
+                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
                                     params="${[member: org.id, status: params.subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id : null, validOn: params.subValidOn, filterSet: true]}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[consortia: genericOIDService.getOID(org), status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
+                        </g:elseif>
+                        <g:elseif test="${actionName == 'currentProviders'}">
+                            <g:link controller="myInstitution" action="currentSubscriptions"
+                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString(), RDStore.SUBSCRIPTION_EXPIRED.id.toString()], hasPerpetualAccess: RDStore.YN_YES.id.toString(), isSiteReloaded: 'yes']}"
+                                    title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
@@ -466,7 +506,7 @@
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui circular label">
+                                <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
                             </g:link>
@@ -541,6 +581,15 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
                 <td>${org.getIdentifiersByType('isil') && !org.getIdentifiersByType('isil').value.contains('Unknown') ? org.getIdentifiersByType('isil').value.join(', ') : ''}</td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
+                <td>
+                    <ul>
+                        <g:each in="${org.platforms}" var="platform">
+                            <li><g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link></li>
+                        </g:each>
+                    </ul>
+                </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <td>

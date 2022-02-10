@@ -47,7 +47,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'subscription' : [
+                                    subscription : [
                                              'subscription-form',
                                              'subscription-kind',
                                              'subscription-resource',
@@ -58,8 +58,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                     ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            default : [
                                      'subscription-x-identifier' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
@@ -67,8 +67,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                      ],
                                      'subscription-x-property' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'base', 'x.properties' ]
+                                             chartTemplate      : '2axis3values',
+                                             chartLabels        : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                      ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
@@ -120,7 +120,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'consortium' : [
+                                    consortium : [
                                              //'consortium-orgType'
                                              //'consortium-customerType',
                                              'consortium-libraryType',
@@ -153,7 +153,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'provider' : [
+                                    provider : [
                                                'provider-orgType',
                                                'provider-*'
                                               // 'provider-country'
@@ -181,7 +181,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'agency' : [
+                                    agency : [
                                            'agency-orgType',
                                            'agency-*'
                                     ]
