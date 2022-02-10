@@ -328,7 +328,7 @@ class StatsSyncService {
                                                                                 'and c4r_report_from = :reportFrom ' +
                                                                                 'and c4r_report_to = :reportTo', selMap)
                                                                         if(existingKey) {
-                                                                            sql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c4r_id')])
+                                                                            sql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
                                                                         }
                                                                         else
                                                                             stmt.addBatch(configMap)
