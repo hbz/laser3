@@ -394,7 +394,7 @@ class SubscriptionControllerService {
             List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
             if(!params.tab)
                 params.tab = 'total'
-            if(subscribedPlatforms) {
+            if(subscribedPlatforms && refSub) {
                 String sort
                 if(params.sort && !params.exportXLS) {
                     String secondarySort
@@ -544,7 +544,7 @@ class SubscriptionControllerService {
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List c4sums = [], c5sums = [], monthsInRing = []
-            if(subscribedPlatforms) {
+            if(subscribedPlatforms && refSub) {
                 String sort = "title.name asc, r.reportType asc, r.reportFrom desc"
                 result.subscribedPlatforms = subscribedPlatforms
                 ArrayList<Object> filterData = prepareFilter(params, result)
