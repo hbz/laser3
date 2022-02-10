@@ -507,6 +507,7 @@ class FinanceService {
             ProfilerUtils pu = new ProfilerUtils()
             pu.setBenchmark("init")
             Subscription sub = (Subscription) configMap.subscription
+            params.filterKey = sub.id
             Org org = (Org) configMap.institution
             pu.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
@@ -542,7 +543,7 @@ class FinanceService {
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             Set<Long> consCostItems = consCostRows
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
+                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc nulls first',[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -590,6 +591,7 @@ class FinanceService {
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark("load filter params")
+        params.filterKey = "global"
         Map<String,Object> filterQuery = processFilterParams(params)
         Map<String,Object> result = [filterPresets:filterQuery.filterData]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
@@ -610,9 +612,9 @@ class FinanceService {
                     Map<String,Object> ownFilter = [:]
                     ownFilter.putAll(filterQuery.filterData)
                     ownFilter.remove('filterConsMembers')
-                    String queryStringBase = "select ci from CostItem ci ${subJoin}" +
+                    String queryStringBase = "select ci from CostItem ci ${subJoin} left join ci.costItemElement cie " +
                         "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
-                        "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
+                        "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
                     pu.setBenchmark("execute own query")
                     Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     result.own = [count:ownSubscriptionCostItems.size()]
@@ -639,7 +641,7 @@ class FinanceService {
                     if(consortialCostRows) {
                         Set<Long> consortialCostItems = consortialCostRows.toSet()
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc nulls first',[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'oo.org.sortname') {
                             result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
@@ -660,9 +662,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations orgRoles ' +
                         'join ci.owner orgC ' +
+                        'left join ci.costItemElement cie ' +
                         'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
-                        ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
+                        ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc nulls first',
                         [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
@@ -688,8 +691,8 @@ class FinanceService {
         Map<String,Object> result
         String subFilterQuery = "", costItemFilterQuery = ""
         Map<String,Object> queryParams = [:]
-        EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null) {
+        EhcacheWrapper cache = contextService.getCache("/finance/${params.filterKey}/filter/",ContextService.USER_SCOPE)
+        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null && !params.subDetailsPage) {
             Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
             result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
         }

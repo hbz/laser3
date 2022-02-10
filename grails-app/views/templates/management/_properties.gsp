@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
     <g:set var="allProperties"
@@ -168,12 +168,12 @@
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <semui:totalNumber
-                                                    total="${subscription.propertySet.findAll { (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic)) }.size()}"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
                                     <g:set var="customProperties"
-                                           value="${subscription.propertySet.findAll { (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic)) && it.type == propertiesFilterPropDef }}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${customProperties}">
                                         <g:each in="${customProperties}" var="customProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -254,12 +254,12 @@
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <semui:totalNumber
-                                                    total="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.size()}"/>
+                                                    total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
 
                                     <g:set var="privateProperties"
-                                           value="${subscription.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == propertiesFilterPropDef }}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${privateProperties}">
                                         <g:each in="${privateProperties}" var="privateProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -349,7 +349,7 @@
         </div>
     </g:if>
 
-    <g:set var="editableOld" value="${editable}"/>
+    <g:set var="editableOld" value="${false}"/>
 
     <g:if test="${controllerName == "myInstitution"}">
         <g:render template="/templates/subscription/subscriptionFilter"/>
@@ -497,11 +497,11 @@
                         <td>
                             <semui:xEditable owner="${sub}" field="startDate" type="date"
                                              overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'startDate']"/>
+                            %{--<semui:auditButton auditable="[sub, 'startDate']"/>--}%
                         </td>
                         <td><semui:xEditable owner="${sub}" field="endDate" type="date"
                                              overwriteEditable="${editableOld}"/>
-                        <semui:auditButton auditable="[sub, 'endDate']"/>
+                        %{--<semui:auditButton auditable="[sub, 'endDate']"/>--}%
                         </td>
                         <td>
                             ${sub.status.getI10n('value')}
@@ -527,12 +527,12 @@
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <semui:totalNumber
-                                                        total="${sub.propertySet.findAll { (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic)) }.size()}"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 
                                         <g:set var="customProperties"
-                                               value="${sub.propertySet.findAll { (it.tenant?.id == contextOrg.id || it.tenant == null || (it.tenant?.id != contextOrg.id && it.isPublic)) && it.type == propertiesFilterPropDef }}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                         <g:if test="${customProperties}">
                                             <g:each in="${customProperties}" var="customProperty">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -609,12 +609,12 @@
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <semui:totalNumber
-                                                        total="${sub.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.size()}"/>
+                                                        total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
 
                                         <g:set var="privateProperties"
-                                               value="${sub.propertySet.findAll { it.type.tenant?.id == contextOrg.id && it.type == propertiesFilterPropDef }}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef ', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
 
                                         <g:if test="${privateProperties}">
                                             <g:each in="${privateProperties}" var="privateProperty">

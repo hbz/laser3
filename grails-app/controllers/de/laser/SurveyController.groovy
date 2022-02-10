@@ -92,12 +92,20 @@ class SurveyController {
         pu.setBenchmark("before properties")
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
         pu.setBenchmark("after properties")
-        if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = [sdfyear.format(new Date())]
-        }
+
         pu.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+
+        if (params.validOnYear == null || params.validOnYear == '') {
+            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            String newYear = sdfyear.format(new Date())
+
+            if(!(newYear in result.surveyYears)){
+                result.surveyYears << newYear
+            }
+            params.validOnYear = [newYear]
+        }
+
         pu.setBenchmark("after surveyYears and before current org ids of providers and agencies")
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
         pu.setBenchmark("after providers and agencies and before subscriptions")
@@ -162,14 +170,19 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
+
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = [sdfyear.format(new Date())]
+            String newYear = sdfyear.format(new Date())
+
+            if(!(newYear in result.surveyYears)){
+                result.surveyYears << newYear
+            }
+            params.validOnYear = [newYear]
         }
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
-
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )
 
@@ -1010,7 +1023,7 @@ class SurveyController {
                             Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
                             Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyCostItem.surveyOrg.org)
                             CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
-                            surveyCostItem.costInBillingCurrency = costItem ? costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100)) : surveyCostItem.costInBillingCurrency
+                            surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
                         }
                         else {
                             surveyCostItem.costInBillingCurrency = cost_billing_currency ?: surveyCostItem.costInBillingCurrency
@@ -2738,7 +2751,7 @@ class SurveyController {
 
         result.mode = result.costItem ? "edit" : ""
         result.taxKey = result.costItem ? result.costItem.taxKey : null
-        result.idSuffix = "edit_${result.costItem.id}"
+        result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         render(template: "/survey/costItemModal", model: result)
     }
 
@@ -4181,7 +4194,7 @@ class SurveyController {
 
         //MultiYearTerm Subs
         result.parentSubChilds.each { sub ->
-            if (sub.isCurrentMultiYearSubscriptionNew()){
+            if (sub.isCurrentMultiYearSubscriptionToParentSub()){
                 sub.getAllSubscribers().each { org ->
                     if (!(org in result.parentSuccessortParticipantsList)) {
 
@@ -4246,7 +4259,7 @@ class SurveyController {
                 List<License> licensesToProcess = []
 
                 if(params.generateSlavedLics == "all") {
-                    String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+                    String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                     licensesToProcess.addAll(License.executeQuery(query, [subscription:newParentSub, linkType:RDStore.LINKTYPE_LICENSE]))
                 }
                 else if(params.generateSlavedLics == "partial") {

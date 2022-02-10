@@ -14,7 +14,7 @@
 
     <div class="ui segment">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
-            class="ui form newDocument" id="newDocument" enctype="multipart/form-data">
+            class="ui form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
