@@ -10,7 +10,6 @@ class SystemSetting {
 
     String name
     int tp = CONTENT_TYPE_STRING // 0=string, 1=boolean
-    String defvalue
     String value
 
     Date dateCreated
@@ -20,7 +19,6 @@ class SystemSetting {
              id column:'set_id'
            name column:'set_name'
              tp column:'set_type'
-       defvalue column:'set_defvalue'
           value column:'set_value'
 
         dateCreated column: 'set_date_created'
@@ -30,7 +28,6 @@ class SystemSetting {
     static constraints = {
         name        (blank:false)
         tp          (blank:false)
-        defvalue    (nullable:true, blank:true, maxSize:1024)
         value       (nullable:true, blank:true, maxSize:1024)
 
         // Nullable is true, because values are already in the database
