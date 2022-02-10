@@ -268,7 +268,7 @@ class StatsSyncService {
                                                 x.Envelope {
                                                     x.Header {}
                                                     x.Body {
-                                                        cou.ReportRequest(Created: '?', ID: '?') {
+                                                        cou.ReportRequest(Created: calendarConfig.now.format("yyyy-MM-dd'T'HH:mm:ss"), ID: '?') {
                                                             sus.Requestor {
                                                                 sus.ID(keyPair.requestorKey)
                                                                 sus.Name('?')
