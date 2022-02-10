@@ -30,15 +30,11 @@
         if(it.owner.owner?.id == contextOrg.id){
             inOwnerOrg = true
         }
+        if(contextOrg.id == it.targetOrg?.id) {
+            inTargetOrg = true
+        }
 
         if(it.org) {
-
-            //that setting counts only if we view an org's documents
-            if(contextOrg.id == it.targetOrg?.id) {
-                inTargetOrg = true
-            }
-
-
             switch(it.shareConf) {
                 case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
                     break
