@@ -31,7 +31,7 @@ class SemanticUiIconTagLib {
                 out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
                 break
             case 'Subscription':
-                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard outline"></i> '
+                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard"></i> '
                 break
             default:
                 out << '<i aria-hidden="true" class="circular icon la-object"></i> '
