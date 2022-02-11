@@ -563,6 +563,11 @@ class ExportService {
 			reportTypes << params.reportType
 		else reportTypes.addAll(data.reportTypes)
 		Org customer = data.subscription.getSubscriber()
+		if(!params.metricType) {
+			if('ft_total' in data.metricTypes)
+				params.metricType = 'ft_total'
+			else params.metricType = data.metricTypes[0]
+		}
 		//IMMENSELY UGLY WORKAROUND, TODO [ticket=3814]
 		Set<IdentifierNamespace> propIdNamespaces = IdentifierNamespace.findAllByIsFromLaserAndNsNotInList(false, IdentifierNamespace.CORE_TITLE_NS)
 		reportTypes.each { String reportType ->
@@ -628,18 +633,18 @@ class ExportService {
 						cell = row.createCell(7)
 						if(data.total) {
 							int totalCount = 0
-							if(data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == 'ft_total' })
-								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == 'ft_total' }.reportCount
+							if(data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == params.metricType })
+								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == params.metricType }.reportCount
 							else if(data.total.find { Map totalRow -> totalRow.reportType == reportType })
 								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType }.reportCount
 							cell.setCellValue(totalCount)
 						}
 						else cell.setCellValue(0)
-						data.sums.findAll { Map totalRow -> totalRow.metricType == 'ft_total' && totalRow.reportType == reportType }.eachWithIndex { Map totalRow, int i ->
+						data.sums.findAll { Map totalRow -> totalRow.metricType == params.metricType && totalRow.reportType == reportType }.eachWithIndex { Map totalRow, int i ->
 							cell = row.createCell(i+8)
 							cell.setCellValue(totalRow.reportCount ?: 0)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_2:
@@ -667,7 +672,7 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						rowno = 8
 						break
 					case Counter4ApiSource.JOURNAL_REPORT_5:
@@ -695,7 +700,79 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
 						}
-						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData)
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
+						break
+					case Counter4ApiSource.DATABASE_REPORT_1:
+						Map<String, Set<Map>> metricRows = [:]
+						rowno = 8
+						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
+							Set<Map> metricRow = metricRows.get(sumRow.metricType)
+							if(!metricRow)
+								metricRow = []
+							metricRow.add(sumRow)
+							metricRows.put(sumRow.metricType, metricRow)
+						}
+						metricRows.each { String metric, Set<Map> metricRow ->
+							cell = row.createCell(0)
+							cell.setCellValue(metricRow[0].platform.name)
+							cell = row.createCell(1)
+							cell.setCellValue(metricRow[0].publisher ?: '')
+							cell = row.createCell(2)
+							switch(metric) {
+								case 'search_reg': cell.setCellValue('Regular Searches')
+									break
+								case 'search_fed': cell.setCellValue('Searches-federated and automated')
+									break
+								case 'record_view': cell.setCellValue('Record Views')
+									break
+								case 'result_click': cell.setCellValue('Result Clicks')
+									break
+							}
+							cell = row.createCell(3)
+							cell.setCellValue(metricRow.sum { Map sumRow -> sumRow.reportCount })
+							metricRow.eachWithIndex { Map sumRow, int i ->
+								cell = row.createCell(i+4)
+								cell.setCellValue(sumRow.reportCount)
+							}
+							rowno++
+							row = sheet.createRow(rowno)
+						}
+						break
+					case Counter4ApiSource.PLATFORM_REPORT_1:
+						Map<String, Set<Map>> metricRows = [:]
+						rowno = 8
+						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
+							Set<Map> metricRow = metricRows.get(sumRow.metricType)
+							if(!metricRow)
+								metricRow = []
+							metricRow.add(sumRow)
+							metricRows.put(sumRow.metricType, metricRow)
+						}
+						metricRows.each { String metric, Set<Map> metricRow ->
+							cell = row.createCell(0)
+							cell.setCellValue(metricRow[0].platform.name)
+							cell = row.createCell(1)
+							cell.setCellValue(metricRow[0].publisher ?: '')
+							cell = row.createCell(2)
+							switch(metric) {
+								case 'search_reg': cell.setCellValue('Regular Searches')
+									break
+								case 'search_fed': cell.setCellValue('Searches-federated and automated')
+									break
+								case 'record_view': cell.setCellValue('Record Views')
+									break
+								case 'result_click': cell.setCellValue('Result Clicks')
+									break
+							}
+							cell = row.createCell(3)
+							cell.setCellValue(metricRow.sum { Map sumRow -> sumRow.reportCount })
+							metricRow.eachWithIndex { Map sumRow, int i ->
+								cell = row.createCell(i+4)
+								cell.setCellValue(sumRow.reportCount)
+							}
+							rowno++
+							row = sheet.createRow(rowno)
+						}
 						break
 				}
 			}
@@ -835,13 +912,13 @@ class ExportService {
 	 * @param showOtherData should other data being shown as well?
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
-	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
+	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false, String metricType = 'ft_total') {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
 			if((showMetricType) ||
 					!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
-					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {
+					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == metricType)) {
 				Map<String, Map> titleMetrics = titleRows.get(report.title)
 				if(!titleMetrics)
 					titleMetrics = [:]

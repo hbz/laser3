@@ -12,6 +12,7 @@
 //= require modules/jsqtk.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
+//= require modules/sys.js
 
 console.log('+ laser.js')
 
@@ -23,8 +24,9 @@ $(function () {
     tooltip.go();
     a11yMenu.go();
     a11yIcon.go();
-
-    $('main.ui.main').removeClass('hidden');
     verticalNavi.go();
     responsiveTables.go();
+    sys.go();
+
+    $('main.ui.main').removeClass('hidden');
 })

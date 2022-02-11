@@ -1272,7 +1272,7 @@ class SubscriptionController {
                     }
             }else {
 
-                if(params.tab == 'allIEsStats') {
+                if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
                     params.metricType = ctrlResult.result.metricType
                     params.reportType = ctrlResult.result.reportType
                 }

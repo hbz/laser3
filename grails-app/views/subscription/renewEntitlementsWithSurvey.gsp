@@ -85,6 +85,15 @@
                                    tab           : 'allIEsStats',
                                    tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
             </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportXLSStats     : true,
+                                   data             : 'fetchAll',
+                                   tab           : 'holdingIEsStats',
+                                   tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
+            </semui:exportDropdownItem>
         </g:if>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -278,12 +287,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']"
                         text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"/>
+        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                        params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'holdingIEsStats']"
+                        text="${message(code: "renewEntitlementsWithSurvey.holdingIEsStats")}" tab="holdingIEsStats"/>
     </g:if>
 
 </semui:tabs>
 
 
-<g:if test="${params.tab == 'allIEsStats'}">
+<g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
     <semui:tabs>
         <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="${params + [tabStat: 'total']}"
@@ -303,7 +315,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
     <div class="ui segment">
 
-        <g:if test="${params.tab == 'allIEsStats'}">
+        <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
             <g:if test="${usages}">
                 <g:render template="/templates/survey/entitlementTableSurveyWithStats"
                           model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
