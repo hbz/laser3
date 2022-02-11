@@ -22,7 +22,7 @@
         <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <g:render template="nav" />
-
+        <g:render template="message"/>
         <g:render template="/templates/reporting/helper" />
 
         <g:render template="/subscription/reporting/query/query" />
