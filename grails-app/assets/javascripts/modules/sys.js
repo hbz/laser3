@@ -15,7 +15,6 @@ sys = {
         $.ajax({
             url: JSPC.vars.ajaxStatusUrl,
             success: function (data) {
-                /* console.log(data); */
                 if (data.status && data.status == 'ok') {
                     setTimeout(sys.status, data.interval * 1000)
 

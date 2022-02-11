@@ -54,7 +54,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.system.SystemMessage
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflow
