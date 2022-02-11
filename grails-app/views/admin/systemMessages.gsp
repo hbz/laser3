@@ -48,7 +48,7 @@
             </td>
             <td>
                 <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">
-                    <span class="ui label orange">Systemmeldung</span>
+                    <span class="ui label yellow">Systemmeldung</span>
                 </g:if>
                 <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">
                     <span class="ui label blue">Startseite</span>

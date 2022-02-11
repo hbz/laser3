@@ -99,7 +99,7 @@ class AjaxHtmlController {
         result += '</p>'
         render result
     }
-
+    
     @Deprecated
     @Secured(['ROLE_USER'])
     def loadGeneralFilter() {

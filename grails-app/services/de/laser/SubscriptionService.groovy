@@ -786,10 +786,7 @@ class SubscriptionService {
     }
 
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
-        List<Long> ieIDs = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.status = :fixed",
-                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED])
-                : []
+        List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.acceptStatus = :fixed", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]) : []
         ieIDs
     }
 

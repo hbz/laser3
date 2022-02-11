@@ -42,7 +42,7 @@
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie?.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie?.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
-                    <g:if test="${(params.tab == 'allIEsStats') && (editable && !ieInNewSub && allowedToSelect)}">
+                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && (editable && !ieInNewSub && allowedToSelect)}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie?.id.toString()] : ''}>
                     </g:if>
 
@@ -81,7 +81,7 @@
                 <td>${stat.metricType}</td>
                 <td>${stat.reportCount}</td>
                 <td>
-                    <g:if test="${(params.tab == 'allIEsStats') && editable && ieInNewSub && allowedToSelect}">
+                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && allowedToSelect}">
                         <g:link class="ui icon positive check button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
@@ -91,7 +91,7 @@
                     </g:if>
 
 
-                    <g:if test="${(params.tab == 'allIEsStats') && editable && !ieInNewSub && allowedToSelect }">
+                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && !ieInNewSub && allowedToSelect }">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie?.id, surveyConfigID: surveyConfig?.id]}"

@@ -36,6 +36,7 @@ class FinanceControllerService {
                                              subscrSort:'sub.name', subscrOrder:'asc',
                                              ownSort:'ci.costTitle', ownOrder:'asc'
                                      ],
+                                     showVisibilitySettings: false,
                                      yn: RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
                                      institution:contextService.getOrg()]
         List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
