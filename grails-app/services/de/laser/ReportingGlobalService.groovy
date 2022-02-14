@@ -74,6 +74,11 @@ class ReportingGlobalService {
         result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
     }
 
+    /**
+     * Prepares the issue entitlement filter and writes the result to the result map
+     * @param result the result map
+     * @param params the request parameter map
+     */
     void doFilterIssueEntitlement (Map<String, Object> result, GrailsParameterMap params) {
 
         result.filterResult = IssueEntitlementFilter.filter(params)

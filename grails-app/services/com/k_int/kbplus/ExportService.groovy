@@ -910,6 +910,7 @@ class ExportService {
 	 * @param showPriceDate should the list price shown?
 	 * @param showMetricType should the metric types be included in the report?
 	 * @param showOtherData should other data being shown as well?
+	 * @param metricType (for COUNTER 4 exports only) the metric typ which should be exported
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
 	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false, String metricType = 'ft_total') {
