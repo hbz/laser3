@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext
 @Deprecated
 class IssueEntitlementFilter extends BaseFilter {
 
-    static int TMP_QUERY_CONSTRAINT = 2000
+    static int TMP_QUERY_CONSTRAINT = 10000
 
     static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
@@ -46,15 +46,6 @@ class IssueEntitlementFilter extends BaseFilter {
                         [subscriptionIdList: subIdList, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: [
                                 RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED ]
                         ]
-                )
-                break
-            case 'my-ie-deleted':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
-                List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
-
-                queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery(
-                        'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList)',
-                        [subscriptionIdList: subIdList]
                 )
                 break
         }
@@ -150,6 +141,22 @@ class IssueEntitlementFilter extends BaseFilter {
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = Subscription.get(params.long(key)).getLabel()
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS) {
+                        queryParts.add('TitleInstancePackagePlatform tipp')
+                        queryParts.add('Package pkg')
+
+                        whereParts.add('ie.tipp = tipp and tipp.pkg = pkg and pkg.packageStatus.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS) {
+                        queryParts.add('Subscription sub')
+                        whereParts.add('ie.subscription = sub and sub.status.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else {
                         println ' --- ' + pType + ' not implemented --- '

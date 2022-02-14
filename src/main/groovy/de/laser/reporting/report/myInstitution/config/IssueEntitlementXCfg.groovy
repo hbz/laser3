@@ -25,11 +25,14 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'pkg'               : FIELD_TYPE_CUSTOM_IMPL,
                             'platform'          : FIELD_TYPE_CUSTOM_IMPL,
                             'provider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'subscription'      : FIELD_TYPE_CUSTOM_IMPL
+                            'subscription'      : FIELD_TYPE_CUSTOM_IMPL,
+
+                            'iePackageStatus'     : FIELD_TYPE_CUSTOM_IMPL,
+                            'ieSubscriptionStatus' : FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
                             default: [
-                                    [ 'status' ],
+                                    [ 'iePackageStatus', 'ieSubscriptionStatus', 'status' ],
                                     [ 'pkg', 'subscription' ],
                                     [ 'provider', 'platform' ]
                             ]

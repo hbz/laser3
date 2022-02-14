@@ -66,10 +66,10 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
-    //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform' // ? nominalPlatform
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform'
     static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
-    //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
+    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS        = 'iePackageStatus'
+    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS   = 'ieSubscriptionStatus'
     static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
 
@@ -84,7 +84,7 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER      = 'softwareProvider'
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
@@ -321,7 +321,7 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS]) {
+        else if (key in [CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS]) {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
@@ -360,9 +360,9 @@ class BaseConfig {
                 ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS) {
+        else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
             return [
-                    label: messageSource.getMessage('reporting.cfg.package.query.package-packageStatus', null, locale),
+                    label: messageSource.getMessage('reporting.cfg.package.query.package-packageStatus', null, locale), // TODO
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
