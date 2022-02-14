@@ -1384,8 +1384,8 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR", ctrlService = 2)
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR") })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
