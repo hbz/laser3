@@ -17,7 +17,7 @@
     <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
 
     <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
-    <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}" />
+    <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
     <table class="ui celled la-table table">
         <thead>
@@ -32,10 +32,10 @@
             <td>${message(code: 'system.config.mail.label')}</td>
             <td>
                 <g:if test="${mailConfigDisabled}">
-                    <div class="ui red horizontal label"> ${message(code: 'default.deactivated.label')} </div>
+                    <i class="icon square full red"></i>${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <div class="ui green horizontal label"> ${message(code: 'default.activated.label')} </div>
+                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -55,11 +55,10 @@
             <td>${message(code: 'system.setting.maintenanceMode.label')}</td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <div class="ui red horizontal label"> ${message(code: 'default.deactivated.label')} </div>
-
+                    <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <div class="ui green horizontal label"> ${message(code: 'default.activated.label')} </div>
+                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -82,6 +81,12 @@
                     <g:if test="${s.tp == 1}">
                         <g:link controller="yoda" action="toggleBoolSetting" params="${[setting: s.name]}">${s.value}</g:link>
                     </g:if>
+                    <g:else>
+                        <semui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
+                    </g:else>
+                </td>
+                <td>
+                    <g:if test="${s.name == 'StatusUpdateInterval'}">Sekunden</g:if>
                 </td>
             </tr>
         </g:each>

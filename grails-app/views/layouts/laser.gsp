@@ -33,8 +33,7 @@
     <tmpl:/layouts/favicon />
 </head>
 
-<body class="${controllerName}_${actionName} ${severLabel}">
-
+<body class="${controllerName}_${actionName}">
 
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
@@ -45,7 +44,6 @@
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
         <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
-
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
@@ -281,8 +279,8 @@
                                     </div>
                                 </div>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages">${message(code: 'menu.admin.systemMessage')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements">${message(code:'menu.admin.announcements')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon quote left"></i>${message(code: 'menu.admin.systemMessage')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon envelope"></i>${message(code:'menu.admin.announcements')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="serverDifferences">${message(code:'menu.admin.serverDifferences')}</semui:link>
 
                                 <div class="divider"></div>
@@ -360,7 +358,7 @@
 
                                     <div class="menu" role="menu">
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="settings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</semui:link>
@@ -423,7 +421,7 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeDeletedTIPPs">${message(code:'menu.yoda.expungeDeletedTIPPs')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>
+                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>--%>
                                     </div>
                                 </div>
 
@@ -688,28 +686,16 @@
         <div class="pusher">
             <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
 
-            %{-- system messages --}%
+                %{-- system messages --}%
 
-            <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
-            <g:if test="${systemMessages}">
-                <div class="ui segment center aligned inverted orange">
-                    <strong>SYSTEMMELDUNG</strong>
+                <div id="systemMessages" class="ui message warning hidden"></div>
 
-                    <g:each in="${systemMessages}" var="message">
-                        <div style="padding-top:1em">
-                            <% println message.getLocalizedContent() %>
-                        </div>
-                    </g:each>
+                %{-- content --}%
 
-                </div>
-            </g:if>
+                <g:layoutBody/>
 
-            %{-- content --}%
-
-            <g:layoutBody/>
-        </main><!-- .main -->
+            </main><!-- .main -->
         </div>
-
 
         %{-- footer --}%
 
@@ -756,15 +742,13 @@
 
         %{-- maintenance --}%
 
-        <g:if test="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}">
-            <div id="maintenance">
-                <div class="ui segment center aligned inverted orange">
-                    <h3 class="ui header">${message(code:'system.maintenanceMode.header')}</h3>
+        <div id="maintenance" class="${SystemSetting.findByName('MaintenanceMode').value != 'true' ? 'hidden' : ''}">
+            <div class="ui segment center aligned inverted yellow">
+                <h3 class="ui header"><i class="icon cogs"></i> ${message(code:'system.maintenanceMode.header')}</h3>
 
-                    ${message(code:'system.maintenanceMode.message')}
-                <div>
+                ${message(code:'system.maintenanceMode.message')}
             </div>
-        </g:if>
+        </div>
 
         %{-- system info --}%
 
@@ -776,21 +760,6 @@
             <div id="system-profiler" class="ui label hidden">
                 <i class="clock icon"></i>
                 <span></span>
-            </div>
-        </sec:ifAnyGranted>
-
-         %{-- jsqtk --}%
-
-        <sec:ifAnyGranted roles="ROLE_YODA">
-            <div id="yoda-helper">
-                <div id="system-jsqtk" class="ui button">
-                    <i class="terminal icon"></i>
-                    <span>jsqtk.go()</span>
-                </div>
-                <div id="system-jspc" class="ui button">
-                    <i class="info icon"></i>
-                    <span>jspc</span>
-                </div>
             </div>
         </sec:ifAnyGranted>
 
@@ -806,28 +775,15 @@
 
         <laser:scriptBlock/>%{-- dont move --}%
 
-        %{-- profiler --}%
+        %{-- profiler, jsqtk --}%
 
         <script data-type="fix">
             $(document).ready(function() {
-                $('#system-jsqtk').on('click', function(){ jsqtk.go() })
-                $('#system-jspc').on('click',  function(){ console.dir('JSPC:', JSPC) })
+                sys.profiler("${ ProfilerUtils.generateKey( webRequest )}");
 
-                $.ajax({
-                    url: "${g.createLink(controller:'ajax', action:'notifyProfiler')}",
-                    data: {uri: "${ ProfilerUtils.generateKey( webRequest )}"},
-                    success: function (data) {
-                        var $sp = $('#system-profiler')
-                        if ($sp) {
-                            if (data.delta > 0) {
-                                $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')
-                            }
-                        }
-                    }
-                })
                 <g:if test="${ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD}">
-                jsqtk.go()
-                console.log('JSPC:', JSPC);
+                    jsqtk.go();
+                    console.log('[ JSPC ]:', JSPC);
                 </g:if>
             })
         </script>

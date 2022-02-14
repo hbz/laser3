@@ -12,7 +12,6 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -1874,25 +1873,6 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-
-    @Secured(['permitAll'])
-    def notifyProfiler() {
-        Map<String, Object> result = [status: 'failed']
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
-
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
-
-            SystemProfiler.update(delta, params.uri)
-
-            result.uri = params.uri
-            result.delta = delta
-            result.status = 'ok'
-        }
-
-        render result as JSON
-    }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {

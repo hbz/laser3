@@ -64,4 +64,8 @@ class PackageService {
         TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
     }
 
+    Long getCountOfNonDeletedTitles(de.laser.Package pkg) {
+        TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.status != :deleted and tipp.pkg = :pkg',[deleted: RDStore.TIPP_STATUS_DELETED, pkg: pkg])[0]
+    }
+
 }

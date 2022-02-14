@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4118    14.02.2022  rc-2.2  2.2.10      Andreas Feature     Ladezeit des Lizenzdetail-Paketfragments beschleunigt
+
+4112    10.02.2022  rc-2.2  2.2.10      David   Feature     Status-Requester
+
+4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
+
+4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports
+
 4024    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Aufteilung der Statistiksicht in der Titelumfrage auf zwei Reiter
 
 4103    03.02.2022  rc-2.2  2.2.9       Andreas Bug         Filtercache sorgte für Durcheinander beim Laden der Finanzsicht
