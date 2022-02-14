@@ -35,6 +35,12 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     filter : [
                             default: [
+                                    [ 'packageStatus', 'status'],
+                                    [ 'serviceProvider', 'softwareProvider', 'org'],
+                                    [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
+                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
+                            ],
+                            my: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status'],
                                     [ 'serviceProvider', 'softwareProvider', 'org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],

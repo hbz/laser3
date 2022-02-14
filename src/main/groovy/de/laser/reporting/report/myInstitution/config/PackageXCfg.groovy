@@ -33,6 +33,12 @@ class PackageXCfg extends BaseConfig {
                     ],
                     filter : [
                             default: [
+                                    [ 'contentType', 'packageStatus' ],
+                                    [ 'file', 'provider', 'platform' ],
+                                    [ 'breakable', 'scope' ],
+                                    [ 'paymentType', 'openAccess']
+                            ],
+                            my: [
                                     [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
                                     [ 'file', 'provider', 'platform' ],
                                     [ 'breakable', 'scope' ],

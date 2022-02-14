@@ -72,7 +72,6 @@ class PlatformFilter extends BaseFilter {
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
-                String pEsData = BaseConfig.KEY_PLATFORM + '-' + p
 
                 def filterLabelValue
 
@@ -149,6 +148,8 @@ class PlatformFilter extends BaseFilter {
                         queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS) {
                         queryParts.add('Subscription sub')
@@ -166,6 +167,8 @@ class PlatformFilter extends BaseFilter {
                         queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                 }
 
@@ -177,10 +180,10 @@ class PlatformFilter extends BaseFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-        println 'PlatformFilter.filter() -->' // TODO
-        println query
-        println queryParams
-        println whereParts
+//        println 'PlatformFilter.filter() -->' // TODO
+//        println query
+//        println queryParams
+//        println whereParts
 
         List<Long> idList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
         // println 'local matches: ' + idList.size()

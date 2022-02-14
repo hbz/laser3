@@ -63,7 +63,6 @@ class PackageFilter extends BaseFilter {
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p)
-                String pEsData = BaseConfig.KEY_PACKAGE + '-' + p
 
                 def filterLabelValue
 
@@ -138,6 +137,8 @@ class PackageFilter extends BaseFilter {
                         queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else {
                         println ' --- ' + pType + ' not implemented --- '
