@@ -18,20 +18,23 @@ class IssueEntitlementXCfg extends BaseConfig {
                     ],
                     source : [
 //                            'all-ie',
-                            'my-ie',
-                            'my-ie-deleted'
+                            'my-ie'
                     ],
                     fields: [
-                            'status'            : FIELD_TYPE_REFDATA,
+                            'status'            : FIELD_TYPE_CUSTOM_IMPL,
                             'pkg'               : FIELD_TYPE_CUSTOM_IMPL,
                             'platform'          : FIELD_TYPE_CUSTOM_IMPL,
                             'provider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'subscription'      : FIELD_TYPE_CUSTOM_IMPL
+                            'subscription'      : FIELD_TYPE_CUSTOM_IMPL,
+
+                            'iePackageStatus'     : FIELD_TYPE_CUSTOM_IMPL,
+                            'ieSubscriptionStatus' : FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
                             default: [
-                                    [ 'status', 'subscription' ],
-                                    [ 'pkg', 'provider', 'platform' ]
+                                    [ 'iePackageStatus', 'ieSubscriptionStatus', 'status' ],
+                                    [ 'pkg', 'subscription' ],
+                                    [ 'provider', 'platform' ]
                             ]
                     ],
                     query : [

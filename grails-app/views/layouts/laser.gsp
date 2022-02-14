@@ -687,7 +687,7 @@
 
                 %{-- system messages --}%
 
-                <div id="systemMessages" class="ui message yellow hidden"></div>
+                <div id="systemMessages" class="ui message warning hidden"></div>
 
                 %{-- content --}%
 
