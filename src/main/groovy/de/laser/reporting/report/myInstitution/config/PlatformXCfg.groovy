@@ -16,9 +16,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-plt',
-                            'my-plt',
-                            'all-plt-deleted',
-                            'my-plt-deleted'
+                            'my-plt'
                     ],
                     fields: [
                             'org'                       : FIELD_TYPE_CUSTOM_IMPL,
@@ -29,14 +27,16 @@ class PlatformXCfg extends BaseConfig {
                             'shibbolethAuthentication'  : FIELD_TYPE_ELASTICSEARCH,
                             'softwareProvider'          : FIELD_TYPE_CUSTOM_IMPL,
                             'status'                    : FIELD_TYPE_REFDATA,
+                            'packageStatus'             : FIELD_TYPE_CUSTOM_IMPL,
+                            'subscriptionStatus'        : FIELD_TYPE_CUSTOM_IMPL,
                             'counterCertified'          : FIELD_TYPE_ELASTICSEARCH,
                             'statisticsFormat'          : FIELD_TYPE_ELASTICSEARCH
                             //'type'                    : FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default: [
-                                    [ 'org', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider'],
+                                    [ 'packageStatus', 'subscriptionStatus', 'status'],
+                                    [ 'serviceProvider', 'softwareProvider', 'org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]

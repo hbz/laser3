@@ -38,12 +38,14 @@ class IssueEntitlementFilter extends BaseFilter {
             case 'my-ie':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
                 List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
-                subIdList = Subscription.executeQuery( "select s.id from Subscription s where s.status.value != 'Deleted' and s.id in (:subIdList)", [subIdList: subIdList])
+                subIdList = Subscription.executeQuery( "select s.id from Subscription s where s.id in (:subIdList)", [subIdList: subIdList])
 
                 queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery(
                         'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList) ' +
-                                'and ie.status = :ieStatus and ie.acceptStatus = :ieAcceptStatus',
-                        [subscriptionIdList: subIdList, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                                'and ie.status in (:ieStatus) and ie.acceptStatus = :ieAcceptStatus',
+                        [subscriptionIdList: subIdList, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: [
+                                RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED ]
+                        ]
                 )
                 break
             case 'my-ie-deleted':
@@ -135,6 +137,12 @@ class IssueEntitlementFilter extends BaseFilter {
                         queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
 
                         filterLabelValue = Org.get(params.long(key)).name
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_STATUS) {
+                        whereParts.add( 'ie.status.id = :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, params.long(key) )
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
                         whereParts.add('ie.' + p + '.id = :p' + (++pCount))

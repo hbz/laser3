@@ -16,9 +16,7 @@ class PackageXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-pkg',
-                            'my-pkg',
-                            'all-pkg-deleted',
-                            'my-pkg-deleted'
+                            'my-pkg'
                     ],
                     fields: [
                             'breakable'         : FIELD_TYPE_ELASTICSEARCH,
@@ -27,6 +25,7 @@ class PackageXCfg extends BaseConfig {
                             'file'              : FIELD_TYPE_REFDATA,
                             'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
                             'packageStatus'     : FIELD_TYPE_REFDATA,
+                            'subscriptionStatus' : FIELD_TYPE_CUSTOM_IMPL,
                             'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
                             'platform'          : FIELD_TYPE_CUSTOM_IMPL,
                             'provider'          : FIELD_TYPE_CUSTOM_IMPL,
@@ -34,8 +33,8 @@ class PackageXCfg extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'contentType', 'file', 'packageStatus' ],
-                                    [ 'provider', 'platform' ],
+                                    [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
+                                    [ 'file', 'provider', 'platform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
