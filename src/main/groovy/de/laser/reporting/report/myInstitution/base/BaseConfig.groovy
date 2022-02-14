@@ -66,18 +66,22 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
-    //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform' // ? nominalPlatform
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform'
     static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
-    //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
+    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS        = 'iePackageStatus'
+    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS   = 'ieSubscriptionStatus'
+    static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
 
-    static String CUSTOM_IMPL_KEY_PKG_PLATFORM          = 'platform'
-    static String CUSTOM_IMPL_KEY_PKG_PROVIDER          = 'provider'
+    static String CUSTOM_IMPL_KEY_PKG_PLATFORM              = 'platform'
+    static String CUSTOM_IMPL_KEY_PKG_PROVIDER              = 'provider'
+    static String CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
 
-    static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
-    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
-    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
+    static String CUSTOM_IMPL_KEY_PLT_ORG                   = 'org'
+    static String CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS        = 'packageStatus'
+    static String CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
+    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER       = 'serviceProvider'
+    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER      = 'softwareProvider'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
@@ -317,6 +321,23 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
+        else if (key in [CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS]) {
+            return [
+                    label: messageSource.getMessage('subscription.status.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_IE_STATUS) {
+            return [
+                    label: messageSource.getMessage('default.status.label', null, locale),
+                    from: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_DELETED].collect{
+                        [
+                            id: it.id,
+                            value_de: it.getI10n('value', 'de'),
+                            value_en: it.getI10n('value', 'en'),
+                    ]}
+            ]
+        }
         else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
             List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             return [
@@ -337,6 +358,12 @@ class BaseConfig {
                         value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
                         value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
                 ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
+            return [
+                    label: messageSource.getMessage('reporting.cfg.package.query.package-packageStatus', null, locale), // TODO
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {

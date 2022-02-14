@@ -42,14 +42,12 @@
         if (JSPC.helper.contains( ['all-provider', 'all-agency', 'all-providerAndAgency', 'my-provider', 'my-agency', 'my-providerAndAgency'], $(e.target).dropdown('get value') )) {
             $fwDefault.find('*').attr('disabled', 'disabled');
             $fwDefault.hide();
-
             $fwProvider.find('*').removeAttr('disabled');
             $fwProvider.show();
         }
         else {
             $fwProvider.find('*').attr('disabled', 'disabled');
             $fwProvider.hide();
-
             $fwDefault.find('*').removeAttr('disabled');
             $fwDefault.show();
         }

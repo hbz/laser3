@@ -34,24 +34,12 @@ class PackageFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-pkg':
-                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
-                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-                )
+                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
+//                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg where pkg.packageStatus != :pkgStatus',
+//                        [pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+//                )
                 break
             case 'my-pkg':
-                List<Long> subIdList = Subscription.executeQuery(
-                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)) and s.status.value != 'Deleted'",
-                        [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
-
-                queryParams.packageIdList = Package.executeQuery(
-                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
-                        [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-                )
-                break
-            case 'all-pkg-deleted':
-                queryParams.packageIdList = Package.executeQuery( 'select pkg.id from Package pkg' )
-                break
-            case 'my-pkg-deleted':
                 List<Long> subIdList = Subscription.executeQuery(
                         "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx))",
                         [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
@@ -59,6 +47,10 @@ class PackageFilter extends BaseFilter {
                 queryParams.packageIdList = Package.executeQuery(
                         'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList)', [subIdList: subIdList]
                 )
+//                queryParams.packageIdList = Package.executeQuery(
+//                        'select distinct subPkg.pkg.id from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
+//                        [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+//                )
                 break
         }
 
@@ -71,7 +63,6 @@ class PackageFilter extends BaseFilter {
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base, p)
-                String pEsData = BaseConfig.KEY_PACKAGE + '-' + p
 
                 def filterLabelValue
 
@@ -132,6 +123,22 @@ class PackageFilter extends BaseFilter {
                         queryParams.put('p' + pCount, [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER])
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
+                    }
+                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS) {
+                        queryParts.add('Subscription sub')
+                        whereParts.add('sub.status.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        queryParts.add('SubscriptionPackage subPkg')
+                        whereParts.add('subPkg.subscription = sub and subPkg.pkg = pkg')
+
+                        queryParts.add('OrgRole ro')
+                        whereParts.add('ro.roleType in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
+                        whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
+                        queryParams.put('p' + pCount, contextService.getOrg())
+
+                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else {
                         println ' --- ' + pType + ' not implemented --- '
