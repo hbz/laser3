@@ -154,7 +154,7 @@
                                       action="dashboardDueDateSetIsUndone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
                                       id="${dashDueDate.dueDateObject.id}"
-                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termn auf NICHT erledigt sezten? "
+                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
                                       data-confirm-term-how="ok"
                                       data-done=""
                                       data-update="container-table"
