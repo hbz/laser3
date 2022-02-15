@@ -14,7 +14,7 @@
                     <g:link controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]">
-                        <div class="ui circular label">${countParticipants.surveyMembers}</div>
+                        <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
                     </g:link>
                 </div>
             </div>

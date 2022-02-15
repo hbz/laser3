@@ -126,7 +126,7 @@
                 <td class="center aligned">
                         <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                            <div class="ui circular label">
+                            <div class="ui blue circular label">
                                 ${surveyConfig.getCurrentDocs().size() ?: 0}
                             </div>
                         </g:link>
