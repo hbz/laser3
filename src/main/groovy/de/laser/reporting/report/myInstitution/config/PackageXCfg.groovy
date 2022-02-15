@@ -19,17 +19,17 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : FIELD_TYPE_ELASTICSEARCH,
-                            //'consistent'        : FIELD_TYPE_ELASTICSEARCH,
-                            'contentType'       : FIELD_TYPE_REFDATA,
-                            'file'              : FIELD_TYPE_REFDATA,
-                            'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
-                            'packageStatus'     : FIELD_TYPE_REFDATA,
-                            'subscriptionStatus' : FIELD_TYPE_CUSTOM_IMPL,
-                            'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
-                            'platform'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'provider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'scope'             : FIELD_TYPE_ELASTICSEARCH
+                            'breakable'         : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            //'consistent'        : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'contentType'       : [ FIELD_TYPE_REFDATA, '@' ],
+                            'file'              : [ FIELD_TYPE_REFDATA, '@' ],
+                            'openAccess'        : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'packageStatus'     : [ FIELD_TYPE_REFDATA, '@' ],
+                            'subscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'paymentType'       : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'scope'             : [ FIELD_TYPE_ELASTICSEARCH, 'x' ]
                     ],
                     filter : [
                             default: [

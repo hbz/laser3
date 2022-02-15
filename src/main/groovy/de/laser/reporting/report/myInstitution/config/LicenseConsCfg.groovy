@@ -17,14 +17,14 @@ class LicenseConsCfg extends BaseConfig {
                             'consortia-lic'
                     ],
                     fields : [
-                            'annual'                : FIELD_TYPE_CUSTOM_IMPL,
-                            'endDateLimit'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'licenseCategory'       : FIELD_TYPE_REFDATA,
-                            //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
-                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
-                            'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                : FIELD_TYPE_REFDATA,
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'licenseCategory'       : [ FIELD_TYPE_REFDATA, '@' ],
+                            //'openEnded'             : [ FIELD_TYPE_REFDATA, '@' ],
+                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'status'                : [ FIELD_TYPE_REFDATA, '@' ]
                             //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
@@ -75,9 +75,9 @@ class LicenseConsCfg extends BaseConfig {
                             'depending-licensor'
                     ],
                     fields : [
-                            'country'   : FIELD_TYPE_REFDATA,
-                            'region'    : FIELD_TYPE_REFDATA,
-                            'orgType'   : FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'   : [ FIELD_TYPE_REFDATA, '@' ],
+                            'region'    : [ FIELD_TYPE_REFDATA, '@' ],
+                            'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE, 'x' ]
                     ],
                     filter : [
                             default: []

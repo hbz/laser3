@@ -19,19 +19,19 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'                       : FIELD_TYPE_CUSTOM_IMPL,
-                            'ipAuthentication'          : FIELD_TYPE_ELASTICSEARCH,
-                            'passwordAuthentication'    : FIELD_TYPE_ELASTICSEARCH,
-                            'proxySupported'            : FIELD_TYPE_ELASTICSEARCH,
-                            'serviceProvider'           : FIELD_TYPE_CUSTOM_IMPL,
-                            'shibbolethAuthentication'  : FIELD_TYPE_ELASTICSEARCH,
-                            'softwareProvider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                    : FIELD_TYPE_REFDATA,
-                            'packageStatus'             : FIELD_TYPE_CUSTOM_IMPL,
-                            'subscriptionStatus'        : FIELD_TYPE_CUSTOM_IMPL,
-                            'counterCertified'          : FIELD_TYPE_ELASTICSEARCH,
-                            'statisticsFormat'          : FIELD_TYPE_ELASTICSEARCH
-                            //'type'                    : FIELD_TYPE_REFDATA,
+                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'ipAuthentication'          : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'passwordAuthentication'    : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'proxySupported'            : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'serviceProvider'           : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'shibbolethAuthentication'  : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'status'                    : [ FIELD_TYPE_REFDATA, '@' ],
+                            'packageStatus'             : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'subscriptionStatus'        : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'counterCertified'          : [ FIELD_TYPE_ELASTICSEARCH, 'x' ],
+                            'statisticsFormat'          : [ FIELD_TYPE_ELASTICSEARCH, 'x' ]
+                            //'type'                    : [ FIELD_TYPE_REFDATA, '@' ],
                     ],
                     filter : [
                             default: [

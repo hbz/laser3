@@ -16,12 +16,12 @@ class CostItemXCfg extends BaseConfig {
                             'consortia-cost'
                     ],
                     fields: [
-                            'type'                          : FIELD_TYPE_REFDATA,
-                            'costItemStatus'                : FIELD_TYPE_REFDATA,
-                            'costItemCategory'              : FIELD_TYPE_REFDATA,
-                            'costItemElement'               : FIELD_TYPE_REFDATA,
-                            'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
-                            'billingCurrency'               : FIELD_TYPE_REFDATA,
+                            'type'                          : [ FIELD_TYPE_REFDATA, '@' ],
+                            'costItemStatus'                : [ FIELD_TYPE_REFDATA, '@' ],
+                            'costItemCategory'              : [ FIELD_TYPE_REFDATA, '@' ],
+                            'costItemElement'               : [ FIELD_TYPE_REFDATA, '@' ],
+                            'costItemElementConfiguration'  : [ FIELD_TYPE_REFDATA, '@' ],
+                            'billingCurrency'               : [ FIELD_TYPE_REFDATA, '@' ]
                     ],
                     filter : [
                             default: [

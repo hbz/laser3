@@ -24,20 +24,19 @@ class OrganisationConsCfg extends BaseConfig {
                             'my-providerAndAgency'
                     ],
                     fields : [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'region'            : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
-                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
-                            //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'country'           : [ FIELD_TYPE_REFDATA, '@' ],
+                            'region'            : [ FIELD_TYPE_REFDATA, '@' ],
+                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL, 'org.customerType.label' ],
+                            'eInvoice'          : [ FIELD_TYPE_PROPERTY, 'x' ],
+                            'funderHskType'     : [ FIELD_TYPE_REFDATA, '@' ],
+                            'funderType'        : [ FIELD_TYPE_REFDATA, '@' ],
+                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'libraryNetwork'    : [ FIELD_TYPE_REFDATA, '@' ],
+                            'libraryType'       : [ FIELD_TYPE_REFDATA, '@' ],
+                            'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE, 'x' ],
+                            'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ]
                     ],
                     filter : [
                             default : [

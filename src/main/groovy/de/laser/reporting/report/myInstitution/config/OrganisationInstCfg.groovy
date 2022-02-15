@@ -23,18 +23,18 @@ class OrganisationInstCfg extends BaseConfig {
                             'my-providerAndAgency'
                     ],
                     fields : [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'region'            : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                            //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'country'           : [ FIELD_TYPE_REFDATA, '@' ],
+                            'region'            : [ FIELD_TYPE_REFDATA, '@' ],
+                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'eInvoice'          : [ FIELD_TYPE_PROPERTY, 'x' ],
+                            'funderHskType'     : [ FIELD_TYPE_REFDATA, '@' ],
+                            'funderType'        : [ FIELD_TYPE_REFDATA, '@' ],
+                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'libraryNetwork'    : [ FIELD_TYPE_REFDATA, '@' ],
+                            'libraryType'       : [ FIELD_TYPE_REFDATA, '@' ],
+                            'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE, 'x' ],
+                            //'region'            : [ FIELD_TYPE_REFDATA, '@' ],
+                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ]
                     ],
                     filter : [
                             default : [

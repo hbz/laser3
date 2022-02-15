@@ -39,17 +39,20 @@ class GenericHelper {
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
-        objConfig.fields.get(fieldName)
+        def tmp = objConfig.fields.get(fieldName)
+        if (tmp) {
+            tmp[0]
+        }
+        else {
+            println 'GenericHelper.getFieldType() ' + fieldName + ' not found'
+            null
+        }
     }
 
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
 
         String label = '?'
         String type = getFieldType(objConfig, fieldName)
-
-        // println 'objConfig - ' + objConfig
-        // println 'fieldName - ' + fieldName
-        // println 'type - ' + type
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
