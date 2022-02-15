@@ -307,6 +307,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.hasPublishComponent) {
+            base_qry += "and s.hasPublishComponent = :hasPublishComponent"
+            qry_params.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
+            filterSet = true
+        }
+
         if (params.subRunTimeMultiYear || params.subRunTime) {
 
             if (params.subRunTimeMultiYear && !params.subRunTime) {

@@ -88,7 +88,23 @@ class PackageService {
         TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
     }
 
-    def bulkAddHolding(Sql sql, Long subId, List<GroovyRowResult> packageTitles, boolean hasPerpetualAccess) {
+    /**
+     * Gets the count of titles in the package which are not marked as deleted in the given package
+     * @param pkg the package whose titles should be counted
+     * @return a count of non-deleted titles in the package
+     */
+    Long getCountOfNonDeletedTitles(de.laser.Package pkg) {
+        TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.status != :deleted and tipp.pkg = :pkg',[deleted: RDStore.TIPP_STATUS_DELETED, pkg: pkg])[0]
+    }
+
+    /**
+     * Adds the given set of package titles, retrieved by native database query, to the given subscription. Insertion as issue entitlements is being done by native SQL as well as it performs much better than GORM
+     * @param sql the SQL connection, established at latest in the calling method
+     * @param subId the ID of the subscription whose holding should be enriched by the given title set
+     * @param packageTitles the set of titles (retrieved as SQL rows) to add
+     * @param hasPerpetualAccess the flag whether the title access have been purchased perpetually
+     */
+    void bulkAddHolding(Sql sql, Long subId, List<GroovyRowResult> packageTitles, boolean hasPerpetualAccess) {
         Calendar now = GregorianCalendar.getInstance()
         sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) values " +
                 "(:version, :dateCreated, :lastUpdated, :subscription, :tipp, :accessStartDate, :accessEndDate, :reason, :medium, :status, :acceptStatus, :name, :sortname, :perpetualAccess)") { stmt ->
