@@ -76,7 +76,7 @@ class LaserReportingTagLib {
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
         Integer filterValue   = params.int(filterName)
 
-        println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + filterLabel
+        println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
 
         if (prop.getType() in [boolean, Boolean]) {
 
@@ -144,6 +144,8 @@ class LaserReportingTagLib {
     }
 
     def reportFilterRefdataRelTable = { attrs, body ->
+
+        //println 'TMP - reportFilterRefdataRelTable: ' + attrs.refdata
 
         // TODO
         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue

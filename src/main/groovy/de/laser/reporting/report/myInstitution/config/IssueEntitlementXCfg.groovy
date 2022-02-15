@@ -21,14 +21,14 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
-                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
-                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
-                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
-                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL ],
 
-                            'iePackageStatus'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
-                            'ieSubscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ]
+                            'iePackageStatus'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'ieSubscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
                             default: [
@@ -40,12 +40,12 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     issueEntitlement : [
-                                            'issueEntitlement-status',
+                                            'issueEntitlement-status' : [ '@' ],
 //                                            'issueEntitlement-pkg',
 //                                            'issueEntitlement-org',
 //                                            'issueEntitlement-platform',
 //                                            'issueEntitlement-subscription',
-                                            'issueEntitlement-*'
+                                            'issueEntitlement-*' :      [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -97,8 +97,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     subscription : [
-                                            'subscription-status',
-                                            'subscription-*'
+                                            'subscription-status' :  [ '@' ],
+                                            'subscription-*' :       [ 'generic-*' ]
                                     ]
                             ]
                     ]
@@ -113,7 +113,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'filter-restricting-package'
                     ],
                     fields: [
-                            'packageStatus': [ FIELD_TYPE_REFDATA, '@' ]
+                            'packageStatus': [ FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default: [
@@ -123,9 +123,9 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
-                                            'package-x-platform',   // KEY_PACKAGE -> distribution
-                                            'package-packageStatus',
-                                            'package-*'
+                                            'package-x-platform' : [ '@' ],   // KEY_PACKAGE -> distribution
+                                            'package-packageStatus' : [ '@' ],
+                                            'package-*' :       [ 'generic-*' ]
                                     ]
                             ]
                     ]
@@ -146,8 +146,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType',
-                                            'provider-*'
+                                            'provider-orgType' : [ 'generic-orgType' ],
+                                            'provider-*' :       [ 'generic-*' ]
                                     ]
                             ]
                     ]
@@ -168,11 +168,11 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org',       // KEY_PLATFORM -> distribution
-                                            'platform-status',
-                                    //        'nominalPlatform-serviceProvider',
-                                    //        'nominalPlatform-softwareProvider',
-                                            'platform-*'
+                                            'platform-x-org' : [ '@' ],       // KEY_PLATFORM -> distribution
+                                            'platform-status' : [ '@' ],
+                                    //        'nominalPlatform-serviceProvider' : [ '@' ],
+                                    //        'nominalPlatform-softwareProvider' : [ '@' ],
+                                            'platform-*' :       [ 'generic-*' ]
                                     ]
                             ]
                     ]

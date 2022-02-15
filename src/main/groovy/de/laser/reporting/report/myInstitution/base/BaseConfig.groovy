@@ -114,10 +114,9 @@ class BaseConfig {
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG')) {
             config.CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -125,10 +124,9 @@ class BaseConfig {
     static Map<String, Map> getCurrentEsData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('ES_DATA')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DATA')) {
             config.ES_DATA
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -136,10 +134,9 @@ class BaseConfig {
     static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
             config.DETAILS_TABLE_CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -403,11 +400,23 @@ class BaseConfig {
         }
     }
 
-    static String getMessage(String token) {
+    static String getMessage(def token) {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.cfg.' + token
-        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+        //println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
+        // TODO - remove workaround for refactoring
+
+        if (token.contains('[')) { // TMP TODO
+            String genericToken = token.split('\\[')[1].replace(']', '')
+            println token + ' ---> ' + genericToken
+            if (genericToken.startsWith('generic')) {
+                messageSource.getMessage('reporting.' + genericToken, null, locale)
+            } else {
+                messageSource.getMessage('reporting.cfg.' + token.replace('=[@]', ''), null, locale)
+            }
+        } else {
+            messageSource.getMessage('reporting.cfg.' + token, null, locale)
+        }
     }
 }
