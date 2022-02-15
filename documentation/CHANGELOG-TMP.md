@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4120    15.02.2022  rc-2.2  2.2.10      Andreas Feature     Filterfeld Publish-Komponente nachgereicht
+
+4118    14.02.2022  rc-2.2  2.2.10      Andreas Feature     Ladezeit des Lizenzdetail-Paketfragments beschleunigt
+
 4117    14.02.2022  rc-2.2  2.3         Andreas Feature     Performance-Beschleunigung bei Titel-Massenoperationen
 
 4112    10.02.2022  rc-2.2  2.2.10      David   Feature     Status-Requester

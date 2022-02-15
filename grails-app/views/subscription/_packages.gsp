@@ -30,7 +30,7 @@
                             <div class="item">
 
                                 <div class="content">
-                                    <g:if test="${sp.pkg.tipps}">
+                                    <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
                                         <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
                                             <g:if test="${platform}">
                                                 <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
