@@ -301,6 +301,11 @@ class SubscriptionService {
             qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
+        if (params.hasPublishComponent) {
+            query += " and subT.hasPublishComponent = :hasPublishComponent "
+            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
         if (params.subRunTimeMultiYear || params.subRunTime) {
 
             if (params.subRunTimeMultiYear && !params.subRunTime) {
