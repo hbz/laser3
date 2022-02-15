@@ -24,28 +24,28 @@ class CostItemExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    '@-cost-member+sortname+name' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@-cost-member+sortname+name' : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                                    '@-cost-subscription' : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                                    '@-cost-package'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                                    '@-cost-order'        : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                                    '@-cost-invoice'      : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
 
-                                    'costTitle'         : FIELD_TYPE_PROPERTY,
-                                    'costDescription'   : FIELD_TYPE_PROPERTY,
-                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    'costTitle'         : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'costDescription'   : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'reference'         : [ FIELD_TYPE_PROPERTY, 'x' ],
 
-                                    'costInBillingCurrency'         : FIELD_TYPE_PROPERTY,
-                                    'costInBillingCurrencyAfterTax' : FIELD_TYPE_PROPERTY,
-                                    'billingCurrency'               : FIELD_TYPE_REFDATA,
-                                    'costInLocalCurrency'           : FIELD_TYPE_PROPERTY,
-                                    'costInLocalCurrencyAfterTax'   : FIELD_TYPE_PROPERTY,
-                                    '@-cost-taxKey'                 : FIELD_TYPE_CUSTOM_IMPL,
-                                    'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
-                                    'costItemStatus'                : FIELD_TYPE_REFDATA,
-                                    'startDate'                     : FIELD_TYPE_PROPERTY,
-                                    'endDate'                       : FIELD_TYPE_PROPERTY,
-                                    'datePaid'                      : FIELD_TYPE_PROPERTY,
-                                    'financialYear'                 : FIELD_TYPE_PROPERTY
+                                    'costInBillingCurrency'         : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'costInBillingCurrencyAfterTax' : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'billingCurrency'               : [ FIELD_TYPE_REFDATA, '@' ],
+                                    'costInLocalCurrency'           : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'costInLocalCurrencyAfterTax'   : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    '@-cost-taxKey'                 : [ FIELD_TYPE_CUSTOM_IMPL, 'x' ],
+                                    'costItemElementConfiguration'  : [ FIELD_TYPE_REFDATA, '@' ],
+                                    'costItemStatus'                : [ FIELD_TYPE_REFDATA, '@' ],
+                                    'startDate'                     : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'endDate'                       : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'datePaid'                      : [ FIELD_TYPE_PROPERTY, 'x' ],
+                                    'financialYear'                 : [ FIELD_TYPE_PROPERTY, 'x' ]
                             ]
                     ],
             ]
