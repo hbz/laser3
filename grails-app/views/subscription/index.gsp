@@ -163,7 +163,7 @@
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
-                <span class="ui circular label">
+                <span class="ui blue circular label">
                     ${num_ies_rows}
                 </span>
             </g:link>
@@ -173,7 +173,7 @@
                         params="[titleGroup: titleGroup.id]"
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
-                    <span class="ui circular label">
+                    <span class="ui blue circular label">
                         ${titleGroup.items.size()}
                     </span>
                 </g:link>
