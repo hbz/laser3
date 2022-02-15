@@ -50,12 +50,12 @@ class OrganisationInstCfg extends BaseConfig {
                                     org : [
                                            'org-orgType' :          [ 'generic-orgType' ],
                                            'org-customerType' :     [ 'generic-customerType' ],
-                                           'org-libraryType' : [ '@' ],
+                                           'org-libraryType' :      [ 'generic-libraryType' ],
                                            'org-region' :           [ 'generic-region' ],
-                                           'org-subjectGroup' : [ '@' ],
-                                           'org-libraryNetwork' : [ '@' ],
-                                           'org-funderType' : [ '@' ],
-                                           'org-funderHskType' : [ '@' ],
+                                           'org-subjectGroup' :     [ 'generic-subjectGroup' ],
+                                           'org-libraryNetwork' :   [ 'generic-libraryNetwork' ],
+                                           'org-funderType' :       [ 'generic-funderType' ],
+                                           'org-funderHskType' :    [ 'generic-funderHskType' ],
                                            'org-*' :                [ 'generic-*' ]
                                     ]
                             ],

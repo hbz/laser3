@@ -32,13 +32,13 @@ class CostItemXCfg extends BaseConfig {
                     query : [
                             default: [
                                     costItem : [
-                                            'costItem-type' : [ '@' ],
-                                            'costItem-costItemStatus' : [ '@' ],
-                                            'costItem-costItemCategory' : [ '@' ],
-                                            'costItem-costItemElement' : [ '@' ],
-                                            'costItem-costItemElementConfiguration' : [ '@' ],
-                                            'costItem-billingCurrency' : [ '@' ],
-                                            'costItem-*' :       [ 'generic-*' ]
+                                            'costItem-type' :                           [ '@' ],
+                                            'costItem-costItemStatus' :                 [ '@' ],
+                                            'costItem-costItemCategory' :               [ '@' ],
+                                            'costItem-costItemElement' :                [ '@' ],
+                                            'costItem-costItemElementConfiguration' :   [ '@' ],
+                                            'costItem-billingCurrency' :                [ '@' ],
+                                            'costItem-*' :                              [ 'generic-*' ]
                                     ]
                             ]
                     ]

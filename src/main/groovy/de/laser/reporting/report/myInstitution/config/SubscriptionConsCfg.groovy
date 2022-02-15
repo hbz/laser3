@@ -46,13 +46,13 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     subscription : [
-                                            'subscription-form' : [ '@' ],
-                                            'subscription-kind' : [ '@' ],
-                                            'subscription-resource' : [ '@' ],
-                                            'subscription-status' : [ '@' ],
-                                            'subscription-isMultiYear' : [ '@' ],
+                                            'subscription-form' :                   [ '@' ],
+                                            'subscription-kind' :                   [ '@' ],
+                                            'subscription-resource' :               [ '@' ],
+                                            'subscription-status' :                 [ '@' ],
+                                            'subscription-isMultiYear' :            [ '@' ],
                                             'subscription-manualCancellationDate' : [ '@' ],
-                                            'subscription-*' :       [ 'generic-*' ]
+                                            'subscription-*' :                      [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -153,13 +153,13 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default: [
                                     memberSubscription : [
-                                                 'memberSubscription-form' : [ '@' ],
-                                                 'memberSubscription-kind' : [ '@' ],
-                                                 'memberSubscription-resource' : [ '@' ],
-                                                 'memberSubscription-status' : [ '@' ],
-                                                 'memberSubscription-isMultiYear' : [ '@' ],
-                                                 'memberSubscription-manualCancellationDate' : [ '@' ],
-                                                 'memberSubscription-*' :       [ 'generic-*' ]
+                                                 'memberSubscription-form' :                    [ '@' ],
+                                                 'memberSubscription-kind' :                    [ '@' ],
+                                                 'memberSubscription-resource' :                [ '@' ],
+                                                 'memberSubscription-status' :                  [ '@' ],
+                                                 'memberSubscription-isMultiYear' :             [ '@' ],
+                                                 'memberSubscription-manualCancellationDate' :  [ '@' ],
+                                                 'memberSubscription-*' :                       [ 'generic-*' ]
                                     ]
                             ]
                     ]
@@ -201,15 +201,15 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     member : [
-                                            'member-orgType' :      [ 'generic-orgType' ],
-                                            'member-customerType' : [ 'generic-customerType' ],
-                                            'member-libraryType' : [ '@' ],
-                                            'member-region' :       [ 'generic-region' ],
-                                            'member-subjectGroup' : [ '@' ],
-                                            'member-libraryNetwork' : [ '@' ],
-                                            'member-funderType' : [ '@' ],
-                                            'member-funderHskType' : [ '@' ],
-                                            'member-*' :            [ 'generic-*' ]
+                                            'member-orgType' :          [ 'generic-orgType' ],
+                                            'member-customerType' :     [ 'generic-customerType' ],
+                                            'member-libraryType' :      [ 'generic-libraryType' ],
+                                            'member-region' :           [ 'generic-region' ],
+                                            'member-subjectGroup' :     [ 'generic-subjectGroup' ],
+                                            'member-libraryNetwork' :   [ 'generic-libraryNetwork' ],
+                                            'member-funderType' :       [ 'generic-funderType' ],
+                                            'member-funderHskType' :    [ 'generic-funderHskType' ],
+                                            'member-*' :                [ 'generic-*' ]
                                     ]
                             ]
                     ]

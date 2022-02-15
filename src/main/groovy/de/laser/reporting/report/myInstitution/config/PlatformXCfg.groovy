@@ -51,22 +51,22 @@ class PlatformXCfg extends BaseConfig {
                             default: [
                                     platform : [
                                            // 'platform-org',     // TODO - move to query2 !?
-                                            'platform-serviceProvider' : [ '@' ],
-                                            'platform-softwareProvider' : [ '@' ],
-                                            'platform-status' : [ '@' ],
-                                            'platform-ipAuthentication' : [ '@' ],            // ES
-                                            'platform-shibbolethAuthentication' : [ '@' ],    // ES
-                                            'platform-passwordAuthentication' : [ '@' ],      // ES
-                                            'platform-proxySupported' : [ '@' ],              // ES
-                                            'platform-statisticsFormat' : [ '@' ],            // ES
-                                            'platform-statisticsUpdate' : [ '@' ],            // ES
-                                            'platform-counterCertified' : [ '@' ],            // ES
-                                            'platform-counterR3Supported' : [ '@' ],          // ES
-                                            'platform-counterR4Supported' : [ '@' ],          // ES
-                                            'platform-counterR5Supported' : [ '@' ],          // ES
-                                            'platform-counterR4SushiApiSupported' : [ '@' ],  // ES
-                                            'platform-counterR5SushiApiSupported' : [ '@' ],  // ES
-                                            'platform-*' :       [ 'generic-*' ]
+                                            'platform-serviceProvider' :            [ '@' ],
+                                            'platform-softwareProvider' :           [ '@' ],
+                                            'platform-status' :                     [ '@' ],
+                                            'platform-ipAuthentication' :           [ '@' ],    // ES
+                                            'platform-shibbolethAuthentication' :   [ '@' ],    // ES
+                                            'platform-passwordAuthentication' :     [ '@' ],    // ES
+                                            'platform-proxySupported' :             [ '@' ],    // ES
+                                            'platform-statisticsFormat' :           [ '@' ],    // ES
+                                            'platform-statisticsUpdate' :           [ '@' ],    // ES
+                                            'platform-counterCertified' :           [ '@' ],    // ES
+                                            'platform-counterR3Supported' :         [ '@' ],    // ES
+                                            'platform-counterR4Supported' :         [ '@' ],    // ES
+                                            'platform-counterR5Supported' :         [ '@' ],    // ES
+                                            'platform-counterR4SushiApiSupported' : [ '@' ],    // ES
+                                            'platform-counterR5SushiApiSupported' : [ '@' ],    // ES
+                                            'platform-*' :                          [ 'generic-*' ]
                                     ]
                             ]
                     ],

@@ -10,7 +10,7 @@
                     <semui:dropdownWithI18nExplanations name="query-chooser"
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
-                                                        optionKey="${{it}}"
+                                                        optionKey="${{it.key}}"
                                                         optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
                                                         optionExpl="${{esData.keySet().contains(it) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"

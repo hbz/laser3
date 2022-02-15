@@ -64,11 +64,19 @@ class BaseQuery {
             String cfgKey = it.value.get('meta').cfgKey
 
             it.value.get('query')?.default?.each { it2 ->
-                if (it2.value.contains(query)) {
-                    if (cfgKey == 'SubscriptionReport') {
-                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query) ]
-                    } else {
-                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
+                // TODO - refactoring workaround
+                if (cfgKey == 'SubscriptionReport') {
+                    if (it2.value.contains(query)) {
+                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query)]
+                    }
+                } else {
+                    if (it2.value.containsKey(query)) {
+                        if (it2.value.get(query) == ['@']) { // TODO - refactoring workaround
+                            meta = [BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query)]
+                        }
+                        else {
+                            meta = [BaseConfig.getMessage(it2.key), BaseConfig.getMessage(query + '=' + it2.value.get(query))]
+                        }
                     }
                 }
             }

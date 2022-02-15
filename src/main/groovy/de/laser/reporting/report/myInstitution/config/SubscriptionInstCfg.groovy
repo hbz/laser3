@@ -48,13 +48,13 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default: [
                                     subscription : [
-                                             'subscription-form' : [ '@' ],
-                                             'subscription-kind' : [ '@' ],
-                                             'subscription-resource' : [ '@' ],
-                                             'subscription-status' : [ '@' ],
-                                             'subscription-isMultiYear' : [ '@' ],
+                                             'subscription-form' :                   [ '@' ],
+                                             'subscription-kind' :                   [ '@' ],
+                                             'subscription-resource' :               [ '@' ],
+                                             'subscription-status' :                 [ '@' ],
+                                             'subscription-isMultiYear' :            [ '@' ],
                                              'subscription-manualCancellationDate' : [ '@' ],
-                                             'subscription-*' :       [ 'generic-*' ]
+                                             'subscription-*' :                      [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -121,15 +121,15 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     consortium : [
-                                             //'consortium-orgType : [ '@' ],
-                                             //'consortium-customerType' : [ '@' ],
-                                             'consortium-libraryType' : [ '@' ],
-                                             'consortium-region' :      [ 'generic-region' ],
-                                             'consortium-subjectGroup' : [ '@' ],
-                                             'consortium-libraryNetwork' : [ '@' ],
-                                             'consortium-funderType' : [ '@' ],
-                                             'consortium-funderHskType' : [ '@' ],
-                                             'consortium-*' :           [ 'generic-*' ]
+                                             //'consortium-orgType :        [ 'generic-orgType' ],
+                                             //'consortium-customerType' :  [ 'generic-customerType' ],
+                                             'consortium-libraryType' :     [ 'generic-libraryType' ],
+                                             'consortium-region' :          [ 'generic-region' ],
+                                             'consortium-subjectGroup' :    [ 'generic-subjectGroup' ],
+                                             'consortium-libraryNetwork' :  [ 'generic-libraryNetwork' ],
+                                             'consortium-funderType' :      [ 'generic-funderType' ],
+                                             'consortium-funderHskType' :   [ 'generic-funderHskType' ],
+                                             'consortium-*' :               [ 'generic-*' ]
                                     ]
                             ]
                     ]

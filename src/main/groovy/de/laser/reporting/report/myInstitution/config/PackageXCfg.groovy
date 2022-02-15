@@ -48,15 +48,15 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
-                                            'package-contentType' : [ '@' ],
-                                            'package-packageStatus' : [ '@' ],
-                                            'package-file' : [ '@' ],
-                                            'package-breakable' : [ '@' ],        // ES
-                                            'package-paymentType' : [ '@' ],      // ES
-                                            'package-openAccess' : [ '@' ],       // ES
-                                            'package-consistent' : [ '@' ],       // ES
-                                            'package-scope' : [ '@' ],            // ES
-                                            'package-*' :       [ 'generic-*' ]
+                                            'package-contentType' :     [ '@' ],
+                                            'package-packageStatus' :   [ '@' ],
+                                            'package-file' :            [ '@' ],
+                                            'package-breakable' :       [ '@' ],    // ES
+                                            'package-paymentType' :     [ '@' ],    // ES
+                                            'package-openAccess' :      [ '@' ],    // ES
+                                            'package-consistent' :      [ '@' ],    // ES
+                                            'package-scope' :           [ '@' ],    // ES
+                                            'package-*' :               [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -153,10 +153,10 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org' : [ '@' ],               // KEY_PLATFORM -> distribution
-                                            'platform-serviceProvider' : [ '@' ],
-                                            'platform-softwareProvider' : [ '@' ],
-                                            'platform-*' :       [ 'generic-*' ]
+                                            'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
+                                            'platform-serviceProvider' :    [ '@' ],
+                                            'platform-softwareProvider' :   [ '@' ],
+                                            'platform-*' :                  [ 'generic-*' ]
                                     ]
                             ]
                     ]

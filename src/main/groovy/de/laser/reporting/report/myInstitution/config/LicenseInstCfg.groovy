@@ -40,8 +40,8 @@ class LicenseInstCfg extends BaseConfig {
                             default : [
                                     license : [
                                           'license-licenseCategory' :   [ '@' ],
-                                          //'license-type' : [ '@' ],
-                                          //'license-openEnded' : [ '@' ],
+                                          //'license-type' :            [ '@' ],
+                                          //'license-openEnded' :       [ '@' ],
                                           'license-status' :            [ '@' ],
                                           'license-*' :                 [ 'generic-*' ]
                                     ]

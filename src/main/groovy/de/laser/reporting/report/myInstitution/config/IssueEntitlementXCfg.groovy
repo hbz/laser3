@@ -40,12 +40,12 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     issueEntitlement : [
-                                            'issueEntitlement-status' : [ '@' ],
-//                                            'issueEntitlement-pkg',
-//                                            'issueEntitlement-org',
-//                                            'issueEntitlement-platform',
-//                                            'issueEntitlement-subscription',
-                                            'issueEntitlement-*' :      [ 'generic-*' ]
+                                            'issueEntitlement-status' :         [ '@' ],
+//                                            'issueEntitlement-pkg' :          [ '@' ],
+//                                            'issueEntitlement-org' :          [ '@' ],
+//                                            'issueEntitlement-platform' :     [ '@' ],
+//                                            'issueEntitlement-subscription' : [ '@' ],
+                                            'issueEntitlement-*' :              [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -123,9 +123,9 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
-                                            'package-x-platform' : [ '@' ],   // KEY_PACKAGE -> distribution
-                                            'package-packageStatus' : [ '@' ],
-                                            'package-*' :       [ 'generic-*' ]
+                                            'package-x-platform' :      [ '@' ],   // KEY_PACKAGE -> distribution
+                                            'package-packageStatus' :   [ '@' ],
+                                            'package-*' :               [ 'generic-*' ]
                                     ]
                             ]
                     ]
@@ -168,11 +168,11 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org' : [ '@' ],       // KEY_PLATFORM -> distribution
-                                            'platform-status' : [ '@' ],
+                                            'platform-x-org' :      [ '@' ],       // KEY_PLATFORM -> distribution
+                                            'platform-status' :     [ '@' ],
                                     //        'nominalPlatform-serviceProvider' : [ '@' ],
                                     //        'nominalPlatform-softwareProvider' : [ '@' ],
-                                            'platform-*' :       [ 'generic-*' ]
+                                            'platform-*' :          [ 'generic-*' ]
                                     ]
                             ]
                     ]
