@@ -6,8 +6,8 @@
         <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.hide.label')}</th>
-        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.done.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.visibility.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.status.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -114,7 +114,8 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon blue button la-modern-button"
+                        <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                          data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="showDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -130,7 +131,8 @@
                         </laser:remoteLink>
                     </g:if>
                     <g:else>
-                        <laser:remoteLink class="ui icon green button la-modern-button "
+                        <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay"
+                                          data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
                                           params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
@@ -146,12 +148,13 @@
                 </td>
                 <td class="x" >
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <laser:remoteLink class="ui green button la-modern-button"
+                    <laser:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
+                                      data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
                                       id="${dashDueDate.dueDateObject.id}"
-                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
+                                      data-confirm-tokenMsg="Möchten Sie diesen fälligen Termn auf NICHT erledigt sezten? "
                                       data-confirm-term-how="ok"
                                       data-done=""
                                       data-update="container-table"
@@ -165,7 +168,8 @@
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui icon blue button la-modern-button"
+                    <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                      data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
                                       params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
