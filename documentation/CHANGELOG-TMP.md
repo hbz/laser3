@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4117    14.02.2022  rc-2.2  2.3         Andreas Feature     Performance-Beschleunigung bei Titel-Massenoperationen
+
 4112    10.02.2022  rc-2.2  2.2.10      David   Feature     Status-Requester
 
 4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
