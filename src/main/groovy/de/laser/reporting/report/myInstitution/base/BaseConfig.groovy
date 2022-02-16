@@ -403,15 +403,13 @@ class BaseConfig {
     static String getMessage(def token) {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
-
-        println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
+        // println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
         // TODO - remove workaround for refactoring
-
         if (token.contains('[')) { // TMP TODO
             String genericToken = token.split('\\[')[1].replace(']', '')
-            println token + ' ---> ' + genericToken
+            // println token + '            ---> ' + genericToken
             if (genericToken.startsWith('generic')) {
-                messageSource.getMessage('reporting.' + genericToken, null, locale)
+                messageSource.getMessage('reporting.cfg.' + genericToken, null, locale)
             } else {
                 messageSource.getMessage('reporting.cfg.' + token.replace('=[@]', ''), null, locale)
             }
@@ -434,15 +432,15 @@ class BaseConfig {
         messageSource.getMessage('reporting.cfg.source.' + key + '.' + source, null, locale)
     }
 
-    static String getQueryMessage(String key, Map.Entry entry) {
-        //println 'getQueryMessage(): ' + key + ' - ' + entry.key + ' - ' + entry.value
+    static String getQueryMessage(String key, String qKey, List qValues) {
+        //println 'getQueryMessage(): ' + key + ' - ' + qKey + ' - ' + qValues
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        if (entry.value[0].startsWith('generic')) {
-            messageSource.getMessage('reporting.' + entry.value[0], null, locale)
+        if (qValues[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
         } else {
-            messageSource.getMessage('reporting.cfg.query.' + key + '.' + entry.key, null, locale)
+            messageSource.getMessage('reporting.cfg.query.' + key + '.' + qKey, null, locale)
         }
     }
 
@@ -450,6 +448,6 @@ class BaseConfig {
         //println 'getDistributionMessage(): ' + key + ' - ' + dist
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage('reporting.cfg.' + key + '.dist.' + dist, null, locale)
+        messageSource.getMessage('reporting.cfg.dist.' + key + '.' + dist, null, locale)
     }
 }

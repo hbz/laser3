@@ -71,12 +71,7 @@ class BaseQuery {
                     }
                 } else {
                     if (it2.value.containsKey(query)) {
-                        if (it2.value.get(query) == ['@']) { // TODO - refactoring workaround
-                            meta = [BaseConfig.getMessage(it2.key), BaseConfig.getQueryMessage(cfgKey, query)]
-                        }
-                        else {
-                            meta = [BaseConfig.getMessage(it2.key), BaseConfig.getMessage(query + '=' + it2.value.get(query))]
-                        }
+                        meta = [BaseConfig.getMessage(it2.key), BaseConfig.getQueryMessage(cfgKey, query, it2.value.get(query))]
                     }
                 }
             }

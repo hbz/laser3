@@ -173,7 +173,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.dist.chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_ISSUEENTITLEMENT, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -184,7 +184,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.dist.chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_LICENSE, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -195,7 +195,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.dist.chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_ORGANISATION, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -206,7 +206,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PACKAGE + '.dist.chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_PACKAGE, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -217,7 +217,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_PLATFORM + '.dist.chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_PLATFORM + 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -228,7 +228,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_SUBSCRIPTION, 'chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }

@@ -11,7 +11,7 @@
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
-                                                        optionValue="${{BaseConfig.getQueryMessage(cfgKey, it)}}"
+                                                        optionValue="${{BaseConfig.getQueryMessage(cfgKey, it.key, it.value)}}"
                                                         optionExpl="${{esData.keySet().contains(it) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"
                                                         noSelection="${message(code: 'default.select.choose.label')}" />
