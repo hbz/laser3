@@ -404,7 +404,7 @@ class BaseConfig {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        //println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
+        println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
         // TODO - remove workaround for refactoring
 
         if (token.contains('[')) { // TMP TODO
@@ -418,5 +418,38 @@ class BaseConfig {
         } else {
             messageSource.getMessage('reporting.cfg.' + token, null, locale)
         }
+    }
+
+    static String getFilterMessage(String key) {
+        //println 'getFilterMessage(): ' + key
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.filter.' + key, null, locale)
+    }
+
+    static String getSourceMessage(String key, String source) {
+        //println 'getSourceMessage(): ' + key + ' - ' + source
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.source.' + key + '.' + source, null, locale)
+    }
+
+    static String getQueryMessage(String key, Map.Entry entry) {
+        //println 'getQueryMessage(): ' + key + ' - ' + entry.key + ' - ' + entry.value
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        if (entry.value[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.' + entry.value[0], null, locale)
+        } else {
+            messageSource.getMessage('reporting.cfg.query.' + key + '.' + entry.key, null, locale)
+        }
+    }
+
+    static String getDistributionMessage(String key, String dist) {
+        //println 'getDistributionMessage(): ' + key + ' - ' + dist
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.' + key + '.dist.' + dist, null, locale)
     }
 }

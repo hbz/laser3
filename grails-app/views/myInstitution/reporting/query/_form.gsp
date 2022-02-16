@@ -11,7 +11,7 @@
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
-                                                        optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
+                                                        optionValue="${{BaseConfig.getQueryMessage(cfgKey, it)}}"
                                                         optionExpl="${{esData.keySet().contains(it) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"
                                                         noSelection="${message(code: 'default.select.choose.label')}" />
@@ -29,7 +29,7 @@
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"
-                                                             optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
+                                                             optionValue="${{BaseConfig.getDistributionMessage(cfgKey, it.key)}}"
                                                              optionExpl="${{esData.keySet().contains(it.key) ? '(we:kb)' : ''}}"
                                                              class="ui selection dropdown la-not-clearable"
                                                              noSelection="${message(code: 'default.select.choose.label')}" />

@@ -76,7 +76,7 @@ class LaserReportingTagLib {
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
         Integer filterValue   = params.int(filterName)
 
-        println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
+        // println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
 
         if (prop.getType() in [boolean, Boolean]) {
 
@@ -121,7 +121,7 @@ class LaserReportingTagLib {
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
         Integer filterValue   = params.int(filterName)
 
-        println 'TMP - reportFilterRefdata: ' + rdCat + ' : ' + rdI18n + ' > ' + filterLabel
+        // println 'TMP - reportFilterRefdata: ' + rdCat + ' : ' + rdI18n + ' > ' + filterLabel
 
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'

@@ -7,7 +7,6 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -26,7 +25,7 @@ class PlatformFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_PLATFORM + '.source.' + filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceMessage(BaseConfig.KEY_PLATFORM, filterSource)])
 
         switch (filterSource) {
             case 'all-plt':

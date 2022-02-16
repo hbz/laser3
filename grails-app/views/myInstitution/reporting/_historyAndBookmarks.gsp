@@ -42,7 +42,7 @@
                         <td>
                             <div class="content">
                                 <div class="header">
-                                    <strong>${BaseConfig.getMessage('base.filter.' + meta.filter)}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
+                                    <strong>${BaseConfig.getFilterMessage(meta.filter.toString())}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
                                 </div>
                                 <div class="description">
                                     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />

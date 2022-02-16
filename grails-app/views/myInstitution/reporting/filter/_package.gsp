@@ -19,7 +19,7 @@
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base}" />
                 <g:select name="filter:package_source" class="ui selection dropdown la-not-clearable"
                           from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
-                          optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}"
+                          optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}"
                           value="${params.get('filter:package_source')}" />
             </div>
 
@@ -90,7 +90,7 @@
 %{--                <div class="field">--}%
 %{--                    <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>--}%
 
-%{--                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:provider_source')}" />--}%
+%{--                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:provider_source')}" />--}%
 %{--                </div>--}%
 
 %{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%
@@ -109,7 +109,7 @@
 %{--                <div class="field">--}%
 %{--                    <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>--}%
 
-%{--                    <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:platform_source')}" />--}%
+%{--                    <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:platform_source')}" />--}%
 %{--                </div>--}%
 
 %{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%

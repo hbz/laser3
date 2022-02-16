@@ -89,7 +89,7 @@
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
                                   optionKey="${{it}}"
-                                  optionValue="${{BaseConfig.getMessage('base.filter.' + it)}}"
+                                  optionValue="${{BaseConfig.getFilterMessage(it)}}"
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>

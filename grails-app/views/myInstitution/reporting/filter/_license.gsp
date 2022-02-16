@@ -11,7 +11,7 @@
             <div class="field">
                 <label for="filter:license_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base}" />
-                <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:license_source')}" />
+                <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:license_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
@@ -53,7 +53,7 @@
             <div class="field">
                 <label for="filter:licensor_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor}" />
-                <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:licensor_source')}" />
+                <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:licensor_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
