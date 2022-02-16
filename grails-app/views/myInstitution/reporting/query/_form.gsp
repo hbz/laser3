@@ -6,7 +6,7 @@
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qi}">${BaseConfig.getMessage(field.key)}</label>
+                    <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel(field.key)}</label>
                     <semui:dropdownWithI18nExplanations name="query-chooser"
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
@@ -24,7 +24,7 @@
         <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
             <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${di}">${BaseConfig.getMessage('distribution')}</label>
+                    <label for="query-chooser-2-${di}">${BaseConfig.getConfigLabel('distribution')}</label>
                          <semui:dropdownWithI18nExplanations name="query-chooser"
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"
@@ -42,7 +42,7 @@
             <g:select name="chart-chooser"
                       from="${cfgChartsList}"
                       optionKey="${{it}}"
-                      optionValue="${{BaseConfig.getMessage('chart.' + it)}}"
+                      optionValue="${{BaseConfig.getConfigLabel('chart.' + it)}}"
                       class="ui selection dropdown la-not-clearable"
                       noSelection="${['': message(code: 'default.select.choose.label')]}" />
         </div>

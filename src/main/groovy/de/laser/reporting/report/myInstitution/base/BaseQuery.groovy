@@ -71,13 +71,13 @@ class BaseQuery {
                     }
                 } else {
                     if (it2.value.containsKey(query)) {
-                        meta = [BaseConfig.getMessage(it2.key), BaseConfig.getQueryLabel(cfgKey, query, it2.value.get(query))]
+                        meta = [BaseConfig.getConfigLabel(it2.key), BaseConfig.getQueryLabel(cfgKey, query, it2.value.get(query))]
                     }
                 }
             }
             it.value.get('distribution')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    meta = [ BaseConfig.getMessage('distribution'), BaseConfig.getDistributionLabel(cfgKey, query) ]
+                    meta = [BaseConfig.getConfigLabel('distribution'), BaseConfig.getDistributionLabel(cfgKey, query) ]
                 }
             }
             it.value.get('timeline')?.each { it2 ->

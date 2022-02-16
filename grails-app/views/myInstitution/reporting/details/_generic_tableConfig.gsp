@@ -33,7 +33,7 @@
                             label = label + ' (we:kb)'
                         }
                         else if (k == '_?_propertyLocal') {
-                            label = BaseDetailsExport.getMessage('x-property') +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
+                            label = BaseDetailsExport.getExportLabel('x-property') +  ': ' + GlobalExportHelper.getQueryCache( token ).labels.labels[2]
                         }
 
                         println '<div class="field"><div class="ui checkbox">'

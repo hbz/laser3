@@ -120,7 +120,7 @@ class GlobalExportHelper extends BaseExportHelper {
 
         if ( BaseDetailsExport.isFieldMultiple(fieldName) ) {
             //String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
-            String label = BaseDetailsExport.getMessage(fieldName)
+            String label = BaseDetailsExport.getExportLabel(fieldName)
 
             if (fieldName == 'x-identifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
@@ -147,10 +147,10 @@ class GlobalExportHelper extends BaseExportHelper {
             return label
         }
         else if (fieldName in ['x-property', 'x-memberSubscriptionProperty']) {
-            return BaseDetailsExport.getMessage('x-property') + ': ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
+            return BaseDetailsExport.getExportLabel('x-property') + ': ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
         else if (fieldName in ['globalUID', 'x-provider'] || fieldName.startsWith('@')) {
-            return BaseDetailsExport.getMessage(fieldName)
+            return BaseDetailsExport.getExportLabel(fieldName)
         }
 
         // --- adapter - label from config ---

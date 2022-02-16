@@ -89,16 +89,14 @@ abstract class BaseDetailsExport {
         else if (key == LicenseExportGlobal.KEY) {
             if (ctxConsortium()) {
                 LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
-            }
-            else if (ctxInst()) {
+            } else if (ctxInst()) {
                 LicenseExportGlobal.CONFIG_ORG_INST
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
             if (isGlobal(this)) {
                 OrgExportGlobal.CONFIG_X
-            }
-            else if (isLocal(this)) {
+            } else if (isLocal(this)) {
                 OrgExportLocal.CONFIG_X
             }
         }
@@ -112,16 +110,14 @@ abstract class BaseDetailsExport {
             if (isGlobal(this)) {
                 if (ctxConsortium()) {
                     SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
-                }
-                else if (ctxInst()) {
+                } else if (ctxInst()) {
                     SubscriptionExportGlobal.CONFIG_ORG_INST
                 }
             }
             else if (isLocal(this)) {
                 if (ctxConsortium()) {
                     SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
-                }
-                else if (ctxInst()) {
+                } else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
             }
@@ -295,12 +291,12 @@ abstract class BaseDetailsExport {
 
     // -----
 
-    static String getMessage(String token) {
-        String msg = '[reporting.export.base.custom.' + token + ']'
+    static String getExportLabel(String token) {
+        String msg = '[reporting.export.custom.' + token + ']'
         try {
             MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
             Locale locale = LocaleContextHolder.getLocale()
-            msg = messageSource.getMessage('reporting.export.base.custom.' + token, null, locale)
+            msg = messageSource.getMessage('reporting.export.custom.' + token, null, locale)
         }
         catch (Exception e) {
             println e.getMessage()

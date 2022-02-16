@@ -400,22 +400,11 @@ class BaseConfig {
         }
     }
 
-    static String getMessage(def token) {
+    static String getConfigLabel(def token) {
+        //println 'getConfigLabel(): ' + key
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
-        // println ' getMessage() ---> ' + token + ' ' + token.getClass() + ' > ' + 'reporting.cfg.' + token
-        // TODO - remove workaround for refactoring
-        if (token.contains('[')) { // TMP TODO
-            String genericToken = token.split('\\[')[1].replace(']', '')
-            // println token + '            ---> ' + genericToken
-            if (genericToken.startsWith('generic')) {
-                messageSource.getMessage('reporting.cfg.' + genericToken, null, locale)
-            } else {
-                messageSource.getMessage('reporting.cfg.' + token.replace('=[@]', ''), null, locale)
-            }
-        } else {
-            messageSource.getMessage('reporting.cfg.' + token, null, locale)
-        }
+        messageSource.getMessage('reporting.cfg.' + token, null, locale)
     }
 
     static String getFilterLabel(String key) {
