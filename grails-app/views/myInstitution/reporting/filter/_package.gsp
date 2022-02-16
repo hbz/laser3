@@ -15,11 +15,11 @@
 
         <div class="ui bottom attached active tab segment" data-tab="package-filter-tab-1">
             <div class="field">
-                <label for="filter:package_source">${message(code:'reporting.filter.selection')}</label>
+                <label for="filter:package_source">${message(code:'reporting.ui.global.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base}" />
                 <g:select name="filter:package_source" class="ui selection dropdown la-not-clearable"
                           from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
-                          optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}"
+                          optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}"
                           value="${params.get('filter:package_source')}" />
             </div>
 
@@ -88,7 +88,7 @@
 %{--        <g:if test="${config}">--}%
 %{--            <div class="ui bottom attached tab segment" data-tab="package-filter-tab-2">--}%
 %{--                <div class="field">--}%
-%{--                    <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>--}%
+%{--                    <label for="filter:provider_source">${message(code:'reporting.ui.global.filter.selection')}</label>--}%
 
 %{--                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:provider_source')}" />--}%
 %{--                </div>--}%
@@ -107,7 +107,7 @@
 %{--        <g:if test="${config}">--}%
 %{--            <div class="ui bottom attached tab segment" data-tab="package-filter-tab-3">--}%
 %{--                <div class="field">--}%
-%{--                    <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>--}%
+%{--                    <label for="filter:platform_source">${message(code:'reporting.ui.global.filter.selection')}</label>--}%
 
 %{--                    <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:platform_source')}" />--}%
 %{--                </div>--}%

@@ -22,11 +22,11 @@
 
         <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
-                    data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
+                    data-content="${message(code:'reporting.ui.global.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
             </div>
             <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
-                    data-content="${message(code:'reporting.filter.history')}" data-position="top right">
+                    data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
@@ -40,56 +40,56 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="icon question large"></i>${message(code:'reporting.filter.help')}
+                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
-                        <strong>${message(code:'reporting.macro.step1')}</strong> <br />
-                        ${message(code:'reporting.macro.info1')}
+                        <strong>${message(code:'reporting.ui.global.step1')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info1')}
                     </p>
                     <p>
-                        <strong>${message(code:'reporting.macro.step2')}</strong> <br />
-                        ${message(code:'reporting.macro.info2')}
+                        <strong>${message(code:'reporting.ui.global.step2')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info2')}
                     </p>
                     <p>
-                        <strong>${message(code:'reporting.macro.step3')}</strong> <br />
-                        ${message(code:'reporting.macro.info3')}
+                        <strong>${message(code:'reporting.ui.global.step3')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info3')}
                     </p>
                     <p>
-                        <i class="icon history blue"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
-                        ${message(code:'reporting.macro.infoHistory')}
+                        <i class="icon history blue"></i><strong>${message(code:'reporting.ui.global.history')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoHistory')}
                     </p>
                     <p>
-                        <i class="icon bookmark teal"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
-                        ${message(code:'reporting.macro.infoBookmarks')}
+                        <i class="icon bookmark teal"></i><strong>${message(code:'reporting.ui.global.bookmarks')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="icon question blue"></i><strong>${message(code:'reporting.filter.help')}</strong> <br />
-                        ${message(code:'reporting.macro.infoHelp')}
+                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>
                         <strong>we:kb</strong> <br />
-                        ${message(code:'reporting.macro.infoWekb')}
+                        ${message(code:'reporting.ui.global.infoWekb')}
                     </p>
                     <p>
                         <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
-                        ${message(code:'reporting.macro.infoUnmatched')}
+                        ${message(code:'reporting.ui.global.infoUnmatched')}
                     </p>
                 </div>
             </div>
         </div>
 
-        <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
+        <h3 class="ui header">${message(code:'reporting.ui.global.step1')}</h3>
 
         <g:if test="${! filter}">
             <div class="ui segment form">
                 <div class="fields two">
                     <div class="field">
-                        <label for="filter-chooser">${message(code:'reporting.filter.base')}</label>
+                        <label for="filter-chooser">${message(code:'reporting.ui.global.filter.base')}</label>
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
                                   optionKey="${{it}}"
-                                  optionValue="${{BaseConfig.getFilterMessage(it)}}"
+                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>
@@ -108,7 +108,7 @@
                 <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
             </g:if>
 
-            <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
+            <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>
 
             <g:render template="/myInstitution/reporting/query/${filter}" />
 

@@ -30,7 +30,7 @@ class PackageFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PACKAGE)
-        filterResult.labels.put('base', [source: BaseConfig.getSourceMessage(BaseConfig.KEY_PACKAGE, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PACKAGE, filterSource)])
 
         switch (filterSource) {
             case 'all-pkg':

@@ -25,7 +25,7 @@ class CostItemFilter extends BaseFilter {
         Map<String, Object> queryParams = [ costItemIdList: [] ]
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_COSTITEM)
-        filterResult.labels.put('base', [source: BaseConfig.getSourceMessage(BaseConfig.KEY_COSTITEM, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_COSTITEM, filterSource)])
 
         switch (filterSource) {
             case 'consortia-cost':

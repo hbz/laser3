@@ -25,7 +25,7 @@ class PlatformFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
-        filterResult.labels.put('base', [source: BaseConfig.getSourceMessage(BaseConfig.KEY_PLATFORM, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PLATFORM, filterSource)])
 
         switch (filterSource) {
             case 'all-plt':

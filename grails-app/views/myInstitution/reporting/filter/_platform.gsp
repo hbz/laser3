@@ -8,11 +8,11 @@
 
     <div class="ui bottom attached active tab segment" data-tab="platform-filter-tab-1">
         <div class="field">
-            <label for="filter:platform_source">${message(code:'reporting.filter.selection')}</label>
+            <label for="filter:platform_source">${message(code:'reporting.ui.global.filter.selection')}</label>
             <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base}" />
             <g:select name="filter:platform_source" class="ui selection dropdown la-not-clearable"
                       from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
-                      optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}"
+                      optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}"
                       value="${params.get('filter:platform_source')}" />
         </div>
 

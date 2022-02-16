@@ -1,4 +1,4 @@
-<h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
+<h3 class="ui header">${message(code:'reporting.ui.global.step3')}</h3>
 
 <div style="text-align:right; margin-right:0.5em">
     <g:if test="${query.split('-')[0] != 'issueEntitlement'}">

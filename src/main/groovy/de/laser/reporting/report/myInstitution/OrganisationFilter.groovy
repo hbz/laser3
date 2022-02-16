@@ -29,7 +29,7 @@ class OrganisationFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
 
         String filterSource = getCurrentFilterSource(params, 'org')
-        filterResult.labels.put('base', [source: BaseConfig.getSourceMessage(BaseConfig.KEY_ORGANISATION, filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ORGANISATION, filterSource)])
 
         switch (filterSource) {
             case 'all-org':

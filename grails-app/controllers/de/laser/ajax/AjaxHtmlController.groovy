@@ -528,7 +528,7 @@ class AjaxHtmlController {
                     ReportingFilter rf = ReportingFilter.construct(
                             rc,
                             contextService.getUser(),
-                            BaseConfig.getFilterMessage(rc.readMeta().filter.toString()) + ' - ' + DateUtils.getSDF_NoTime().format(System.currentTimeMillis()),
+                            BaseConfig.getFilterLabel(rc.readMeta().filter.toString()) + ' - ' + DateUtils.getSDF_NoTime().format(System.currentTimeMillis()),
                             rc.readFilterCache().result.replaceAll('<strong>', '').replaceAll('</strong>', '') as String
                     )
                     result.lastAddedBookmarkId = rf.id

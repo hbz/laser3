@@ -11,7 +11,7 @@
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
-                                                        optionValue="${{BaseConfig.getQueryMessage(cfgKey, it.key, it.value)}}"
+                                                        optionValue="${{BaseConfig.getQueryLabel(cfgKey, it.key, it.value)}}"
                                                         optionExpl="${{esData.keySet().contains(it) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"
                                                         noSelection="${message(code: 'default.select.choose.label')}" />
@@ -29,7 +29,7 @@
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"
-                                                             optionValue="${{BaseConfig.getDistributionMessage(cfgKey, it.key)}}"
+                                                             optionValue="${{BaseConfig.getDistributionLabel(cfgKey, it.key)}}"
                                                              optionExpl="${{esData.keySet().contains(it.key) ? '(we:kb)' : ''}}"
                                                              class="ui selection dropdown la-not-clearable"
                                                              noSelection="${message(code: 'default.select.choose.label')}" />
@@ -38,11 +38,11 @@
         </g:each>
 
         <div class="field">
-            <label for="query-chooser">${message(code: 'reporting.query.chart')}</label>
+            <label for="query-chooser">${message(code: 'reporting.cfg.chart')}</label>
             <g:select name="chart-chooser"
                       from="${cfgChartsList}"
                       optionKey="${{it}}"
-                      optionValue="${{BaseConfig.getMessage('base.chart.' + it)}}"
+                      optionValue="${{BaseConfig.getMessage('chart.' + it)}}"
                       class="ui selection dropdown la-not-clearable"
                       noSelection="${['': message(code: 'default.select.choose.label')]}" />
         </div>

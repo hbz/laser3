@@ -13,7 +13,7 @@
     </g:if>
     <g:else>
         <div class="ui message negative">
-            <p><g:message code="reporting.filter.no.matches" /></p>
+            <p><g:message code="reporting.filter.result.x.empty" /></p>
         </div>
     </g:else>
 

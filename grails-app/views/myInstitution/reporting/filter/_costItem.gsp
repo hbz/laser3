@@ -7,9 +7,9 @@
 
         <div class="ui bottom attached active tab segment" data-tab="costItem-filter-tab-1">
             <div class="field">
-                <label for="filter:costItem_source">${message(code:'reporting.filter.selection')}</label>
+                <label for="filter:costItem_source">${message(code:'reporting.ui.global.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base}" />
-                <g:select name="filter:costItem_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:costItem_source')}" />
+                <g:select name="filter:costItem_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:costItem_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">

@@ -7,9 +7,9 @@
 
         <div class="ui bottom attached active tab segment" data-tab="org-filter-tab-1">
             <div class="field">
-                <label for="filter:org_source">${message(code:'reporting.filter.selection')}</label>
+                <label for="filter:org_source">${message(code:'reporting.ui.global.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base}" />
-                <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceMessage(config.meta.cfgKey, it)}}" value="${params.get('filter:org_source')}" />
+                <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:org_source')}" />
             </div>
 
             <div class="filter-wrapper-default">

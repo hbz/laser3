@@ -19,10 +19,10 @@ import java.time.Year
 
 class BaseQuery {
 
-    static String NO_DATA_LABEL         = 'noData.label'
-    static String NO_MATCH_LABEL        = 'noMatch.label'
-    static String NO_COUNTERPART_LABEL  = 'noCounterpart.label'
-    static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
+    static String NO_DATA_LABEL              = 'noData.label'
+    static String NO_MATCH_LABEL             = 'noMatch.label'
+    static String NO_COUNTERPART_LABEL       = 'noCounterpart.label'
+    static String NO_IDENTIFIER_LABEL        = 'noIdentifier.label'
     static String NO_PLATFORM_LABEL          = 'noPlatform.label'
     static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
     static String NO_PROVIDER_LABEL          = 'noProvider.label'
@@ -71,13 +71,13 @@ class BaseQuery {
                     }
                 } else {
                     if (it2.value.containsKey(query)) {
-                        meta = [BaseConfig.getMessage(it2.key), BaseConfig.getQueryMessage(cfgKey, query, it2.value.get(query))]
+                        meta = [BaseConfig.getMessage(it2.key), BaseConfig.getQueryLabel(cfgKey, query, it2.value.get(query))]
                     }
                 }
             }
             it.value.get('distribution')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    meta = [ BaseConfig.getMessage('distribution'), BaseConfig.getDistributionMessage(cfgKey, query) ]
+                    meta = [ BaseConfig.getMessage('distribution'), BaseConfig.getDistributionLabel(cfgKey, query) ]
                 }
             }
             it.value.get('timeline')?.each { it2 ->
@@ -178,12 +178,12 @@ class BaseQuery {
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
 
         if (noDataList) {
-            result.data.add([NO_DATA_ID, getMessage(label), noDataList.size()])
+            result.data.add([NO_DATA_ID, getChartLabel(label), noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : NO_DATA_ID,
-                    label : getMessage(label),
+                    label : getChartLabel(label),
                     idList: noDataList,
             ])
         }
@@ -192,12 +192,12 @@ class BaseQuery {
     static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
 
         if (noDataIdList) {
-            result.data.add([NO_DATA_ID, getMessage(label), noDataIdList.size()])
+            result.data.add([NO_DATA_ID, getChartLabel(label), noDataIdList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : NO_DATA_ID,
-                    label : getMessage(label),
+                    label : getChartLabel(label),
                     idList: noDataIdList,
                     value1: 0,
                     value2: noDataIdList.size()
@@ -333,24 +333,24 @@ class BaseQuery {
 
         List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
         if (sp1DataList) {
-            result.data.add([FAKE_DATA_ID_1, getMessage(NO_ENDDATE_LABEL), sp1DataList.size()])
+            result.data.add([FAKE_DATA_ID_1, getChartLabel(NO_ENDDATE_LABEL), sp1DataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : FAKE_DATA_ID_1,
-                    label : getMessage(NO_ENDDATE_LABEL),
+                    label : getChartLabel(NO_ENDDATE_LABEL),
                     idList: sp1DataList
             ])
         }
 
         List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
         if (sp2DataList) {
-            result.data.add([FAKE_DATA_ID_2, getMessage(NO_STARTDATE_LABEL), sp2DataList.size()])
+            result.data.add([FAKE_DATA_ID_2, getChartLabel(NO_STARTDATE_LABEL), sp2DataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : FAKE_DATA_ID_2,
-                    label : getMessage(NO_STARTDATE_LABEL),
+                    label : getChartLabel(NO_STARTDATE_LABEL),
                     idList: sp2DataList
             ])
         }
@@ -360,11 +360,11 @@ class BaseQuery {
         handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
-    static String getMessage(String token) {
+    static String getChartLabel(String token) {
+        //println 'getChartLabel(): ' + token
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.query.base.' + token
-        messageSource.getMessage('reporting.query.base.' + token, null, locale)
+        messageSource.getMessage('reporting.chart.result.' + token, null, locale)
     }
 }

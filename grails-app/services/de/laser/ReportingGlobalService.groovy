@@ -1,12 +1,10 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.*
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import de.laser.reporting.report.myInstitution.config.IssueEntitlementXCfg
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
@@ -173,7 +171,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_ISSUEENTITLEMENT, 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_ISSUEENTITLEMENT, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -184,7 +182,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_LICENSE, 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_LICENSE, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -195,7 +193,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_ORGANISATION, 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_ORGANISATION, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -206,7 +204,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_PACKAGE, 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PACKAGE, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -217,7 +215,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_PLATFORM + 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM + 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
@@ -228,7 +226,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionMessage(BaseConfig.KEY_SUBSCRIPTION, 'chartLabel.' + it)  }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_SUBSCRIPTION, 'chartLabel.' + it)  }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
