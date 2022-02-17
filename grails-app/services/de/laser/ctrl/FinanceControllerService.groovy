@@ -180,8 +180,12 @@ class FinanceControllerService {
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){
             result.showView = params.showView
-            if (params.offset && !params.forExport)
-                result.offsets["${params.showView}Offset"] = Integer.parseInt(params.offset)
+            if (params.offset && !params.forExport) {
+                if(params.showView == 'consAtSubscr')
+                    result.offsets["consOffset"] = Integer.parseInt(params.offset)
+                else
+                    result.offsets["${params.showView}Offset"] = Integer.parseInt(params.offset)
+            }
         }
         result.putAll(getAdditionalGenericEditResults(result))
         result

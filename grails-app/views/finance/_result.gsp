@@ -105,7 +105,12 @@
 
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
-                JSPC.app.tab = "${showView}";
+                <g:if test="${showView == 'consAtSubscr'}">
+                    JSPC.app.tab = "cons";
+                </g:if>
+                <g:else>
+                    JSPC.app.tab = "${showView}";
+                </g:else>
                 JSPC.app.rawHref = $(".exportCSV").attr("href");
                 JSPC.app.isClicked = false;
 

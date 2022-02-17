@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4130    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Alle Verträge entknüpfen blieb ohne Wirkung
+
 4124    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Teilnehmervertragsverknüpfungen wiederhergestellt, Beschriftungen angepasst
+
+4014    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Tab wurde bei Konsortialstellen in Teilnehmerlizenz nicht angewählt
 
 4120    15.02.2022  rc-2.2  2.2.10      Andreas Feature     Filterfeld Publish-Komponente nachgereicht
 
