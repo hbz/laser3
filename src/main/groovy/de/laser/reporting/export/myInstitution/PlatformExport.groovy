@@ -24,28 +24,28 @@ class PlatformExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    'gokbId'                : FIELD_TYPE_PROPERTY,
-                                    'name'                  : FIELD_TYPE_PROPERTY,
-                                    'altname'               : FIELD_TYPE_ELASTICSEARCH,
-                                    'org+sortname+name'     : FIELD_TYPE_COMBINATION,
-                                    'primaryUrl'            : FIELD_TYPE_PROPERTY,
-                                    'serviceProvider'       : FIELD_TYPE_CUSTOM_IMPL,
-                                    'softwareProvider'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'status'                : FIELD_TYPE_REFDATA,
-                                    'ipAuthentication'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'shibbolethAuthentication'     : FIELD_TYPE_ELASTICSEARCH,
-                                    'passwordAuthentication'       : FIELD_TYPE_ELASTICSEARCH,
-                                    'proxySupported'               : FIELD_TYPE_ELASTICSEARCH,
-                                    'statisticsFormat'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'statisticsUpdate'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterCertified'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterR3Supported'           : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterR4Supported'           : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterR4SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterR5Supported'           : FIELD_TYPE_ELASTICSEARCH,
-                                    'counterR5SushiApiSupported'   : FIELD_TYPE_ELASTICSEARCH,
-                                    'x-property'                   : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                : [ FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
+                                    'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ],
+                                    'primaryUrl'            : [ FIELD_TYPE_PROPERTY ],
+                                    'serviceProvider'       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'softwareProvider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'status'                : [ FIELD_TYPE_REFDATA ],
+                                    'ipAuthentication'             : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'shibbolethAuthentication'     : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'passwordAuthentication'       : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'proxySupported'               : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsFormat'             : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsUpdate'             : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterCertified'             : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR3Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-property'                   : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
@@ -76,7 +76,7 @@ class PlatformExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

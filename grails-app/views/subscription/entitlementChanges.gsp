@@ -28,7 +28,7 @@
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
-        <span class="ui circular label">
+        <span class="ui blue circular label">
             ${countPendingChanges}
         </span>
     </g:link>
@@ -37,7 +37,7 @@
             params="[tab: 'acceptedChanges', eventType: params.eventType]"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
         <g:message code="myinst.menu.acceptedChanges.label"/>
-        <span class="ui circular label">
+        <span class="ui blue circular label">
             ${countAcceptedChanges}
         </span>
     </g:link>

@@ -23,18 +23,17 @@ class OrganisationInstCfg extends BaseConfig {
                             'my-providerAndAgency'
                     ],
                     fields : [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'region'            : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                            //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'country'           : [ FIELD_TYPE_REFDATA ],
+                            'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
+                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
+                            'funderHskType'     : [ FIELD_TYPE_REFDATA ],
+                            'funderType'        : [ FIELD_TYPE_REFDATA ],
+                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
+                            'libraryType'       : [ FIELD_TYPE_REFDATA ],
+                            'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
                             default : [
@@ -48,25 +47,31 @@ class OrganisationInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     org : [
-                                           'org-orgType',
-                                           'org-customerType',
-                                           'org-libraryType',
-                                           'org-region',
-                                           'org-subjectGroup',
-                                           'org-libraryNetwork',
-                                           'org-funderType',
-                                           'org-funderHskType',
-                                           'org-*'
+                                           'org-orgType' :          [ 'generic-orgType' ],
+                                           'org-customerType' :     [ 'generic-customerType' ],
+                                           'org-libraryType' :      [ 'generic-libraryType' ],
+                                           'org-region' :           [ 'generic-region' ],
+                                           'org-subjectGroup' :     [ 'generic-subjectGroup' ],
+                                           'org-libraryNetwork' :   [ 'generic-libraryNetwork' ],
+                                           'org-funderType' :       [ 'generic-funderType' ],
+                                           'org-funderHskType' :    [ 'generic-funderHskType' ],
+                                           'org-*' :                [ 'generic-*' ]
                                     ]
                             ],
                             providerAndAgency : [
-                                    org : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic-orgType' ]
+                                    ]
                             ],
                             provider : [
-                                    org : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic-orgType' ]
+                                    ]
                             ],
                             agency : [
-                                    org : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic-orgType' ]
+                                    ]
                             ]
                     ],
                     distribution : [

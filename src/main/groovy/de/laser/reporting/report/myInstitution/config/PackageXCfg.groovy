@@ -16,26 +16,31 @@ class PackageXCfg extends BaseConfig {
                     ],
                     source : [
                             'all-pkg',
-                            'my-pkg',
-                            'all-pkg-deleted',
-                            'my-pkg-deleted'
+                            'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : FIELD_TYPE_ELASTICSEARCH,
-                            //'consistent'        : FIELD_TYPE_ELASTICSEARCH,
-                            'contentType'       : FIELD_TYPE_REFDATA,
-                            'file'              : FIELD_TYPE_REFDATA,
-                            'openAccess'        : FIELD_TYPE_ELASTICSEARCH,
-                            'packageStatus'     : FIELD_TYPE_REFDATA,
-                            'paymentType'       : FIELD_TYPE_ELASTICSEARCH,
-                            'platform'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'provider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'scope'             : FIELD_TYPE_ELASTICSEARCH
+                            'breakable'         : [ FIELD_TYPE_ELASTICSEARCH ],
+                            //'consistent'        : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'contentType'       : [ FIELD_TYPE_REFDATA ],
+                            'file'              : [ FIELD_TYPE_REFDATA ],
+                            'openAccess'        : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'packageStatus'     : [ FIELD_TYPE_REFDATA ],
+                            'subscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'paymentType'       : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'scope'             : [ FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
-                                    [ 'contentType', 'file', 'packageStatus' ],
-                                    [ 'provider', 'platform' ],
+                                    [ 'contentType', 'packageStatus' ],
+                                    [ 'file', 'provider', 'platform' ],
+                                    [ 'breakable', 'scope' ],
+                                    [ 'paymentType', 'openAccess']
+                            ],
+                            my: [
+                                    [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
+                                    [ 'file', 'provider', 'platform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -43,15 +48,15 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
-                                            'package-contentType',
-                                            'package-packageStatus',
-                                            'package-file',
-                                            'package-breakable',        // ES
-                                            'package-paymentType',      // ES
-                                            'package-openAccess',       // ES
-                                            'package-consistent',       // ES
-                                            'package-scope',            // ES
-                                            'package-*'
+                                            'package-contentType' :     [ '@' ],
+                                            'package-packageStatus' :   [ '@' ],
+                                            'package-file' :            [ '@' ],
+                                            'package-breakable' :       [ '@' ],    // ES
+                                            'package-paymentType' :     [ '@' ],    // ES
+                                            'package-openAccess' :      [ '@' ],    // ES
+                                            'package-consistent' :      [ '@' ],    // ES
+                                            'package-scope' :           [ '@' ],    // ES
+                                            'package-*' :               [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -126,8 +131,8 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType',
-                                            'provider-*'
+                                            'provider-orgType' : [ 'generic-orgType' ],
+                                            'provider-*' :       [ 'generic-*' ],
                                     ]
                             ]
                     ]
@@ -148,10 +153,10 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org',               // KEY_PLATFORM -> distribution
-                                            'platform-serviceProvider',
-                                            'platform-softwareProvider',
-                                            'platform-*'
+                                            'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
+                                            'platform-serviceProvider' :    [ '@' ],
+                                            'platform-softwareProvider' :   [ '@' ],
+                                            'platform-*' :                  [ 'generic-*' ]
                                     ]
                             ]
                     ]

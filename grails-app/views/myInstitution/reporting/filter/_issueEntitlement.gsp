@@ -8,11 +8,11 @@
 
         <div class="ui bottom attached active tab segment" data-tab="issueEntitlement-filter-tab-1">
             <div class="field">
-                <label for="filter:issueEntitlement_source">${message(code:'reporting.filter.selection')}</label>
+                <label for="filter:issueEntitlement_source">${message(code:'reporting.ui.global.filter.selection')}</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).base}" />
                 <g:select name="filter:issueEntitlement_source" class="ui selection dropdown la-not-clearable"
                           from="${BaseFilter.getRestrictedConfigSources(config as Map)}"
-                          optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}"
+                          optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}"
                           value="${params.get('filter:issueEntitlement_source')}" />
             </div>
 

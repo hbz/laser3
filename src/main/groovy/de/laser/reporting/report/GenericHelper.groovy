@@ -11,45 +11,37 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
-    // TODO
-    static boolean isFieldMultiple(String object, String fieldName) {
-        boolean bool = false
-
-        if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
-            bool = true
-        }
-        else if (object in [ 'platform' ] && fieldName in [ 'org' ]) {
-            bool = true
-        }
-        else if (fieldName in [ 'annual' ]) {
-            bool = true
-        }
-        // if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
-        bool
+    static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
+        //println 'isFieldMultiple ' + cfg?.meta + ' ' + fieldName
+        List<String> field = cfg?.fields?.get(fieldName) ?: []
+        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_MULTIPLE
     }
 
-    static boolean isFieldVirtual(String object, String fieldName) {
-        boolean bool = false
+    static boolean isCollection(def obj) {
+        obj instanceof Collection
+    }
 
-        if (fieldName in [ 'region' ]) {
-            bool = true
-        }
-        // if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
-        bool
+    static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
+        //println 'isFieldVirtual ' + cfg?.meta + ' ' + fieldName
+        List<String> field = cfg?.fields?.get(fieldName) ?: []
+        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_VIRTUAL
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
-        objConfig.fields.get(fieldName)
+        def tmp = objConfig.fields.get(fieldName)
+        if (tmp) {
+            tmp[0]
+        }
+        else {
+            println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
+            null
+        }
     }
 
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
 
         String label = '?'
         String type = getFieldType(objConfig, fieldName)
-
-        // println 'objConfig - ' + objConfig
-        // println 'fieldName - ' + fieldName
-        // println 'type - ' + type
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
@@ -60,12 +52,7 @@ class GenericHelper {
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
-//            try {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
-//            } catch(Exception e) {
-//                println " -----------> No message found under code '${csn}.${prop.getName()}.label'"
-//                label = messageSource.getMessage(csn + '.' + prop.getName(), null, locale)
-//            }
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata

@@ -135,6 +135,73 @@
 
         <div class="four fields">
             <% /* 3-1 */ %>
+            <div class="field">
+                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${subKind.id}" ">
+                        ${subKind.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+            <% /* 3-2 */ %>
+            <div class="field">
+                <label>${message(code:'subscription.isPublicForApi.label')}</label>
+                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.isPublicForApi}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <% /* 3-3 */ %>
+            <div class="field">
+                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPerpetualAccess}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <% /* 3-4 */ %>
+            <div class="field">
+                <label>${message(code:'subscription.hasPublishComponent.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPublishComponent"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPublishComponent}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field">
+                <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
+                            <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
+                            <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
             <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
@@ -162,90 +229,28 @@
                     </fieldset>
                 </div>
             </g:if>
-            <% /* 3-2 */ %>
-            <div class="field">
-                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
-                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
+            <g:else>
+                <div class="field"></div>
+            </g:else>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}" ">
-                        ${subKind.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
+            <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                <div class="field">
+                    <fieldset>
+                        <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
-            </div>
-            <% /* 3-3 */ %>
-            <div class="field">
-                <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <laser:select class="ui fluid dropdown" name="isPublicForApi"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.isPublicForApi}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <% /* 3-4 */ %>
-            <div class="field">
-                <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.hasPerpetualAccess}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-
-
-
-        </div>
-
-        <g:if test="${accessService.checkPerm("ORG_INST")}">
-            <div class="three fields">
-        </g:if>
-        <g:else>
-            <div class="two fields">
-        </g:else>
-        <div class="field">
-            <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
-            <div class="inline fields la-filter-inline">
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <label for="checkSubRunTimeMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.multiYear')}</label>
-                        <input id="checkSubRunTimeMultiYear" name="subRunTimeMultiYear" type="checkbox" <g:if test="${params.subRunTimeMultiYear}">checked=""</g:if>
-                               tabindex="0">
-                    </div>
+                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                                  optionKey="${{ Org.class.name + ':' + it.id }}"
+                                  optionValue="${{ it.getName() }}"
+                                  name="consortia"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                  value="${params.consortia}"/>
+                    </fieldset>
                 </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <label for="checkSubRunTimeNoMultiYear">${message(code: 'myinst.currentSubscriptions.subscription.runTime.NoMultiYear')}</label>
-                        <input id="checkSubRunTimeNoMultiYear" name="subRunTime" type="checkbox" <g:if test="${params.subRunTime}">checked=""</g:if>
-                               tabindex="0">
-                    </div>
-                </div>
+            </g:if>
+            <div class="field la-field-right-aligned">
+                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
             </div>
-        </div>
-
-        <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
-            <div class="field">
-                <fieldset>
-                    <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
-
-                    <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                              optionKey="${{ Org.class.name + ':' + it.id }}"
-                              optionValue="${{ it.getName() }}"
-                              name="consortia"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              value="${params.consortia}"/>
-                </fieldset>
-            </div>
-        </g:if>
-        <div class="field la-field-right-aligned">
-            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
-        </div>
 
         </div>
 

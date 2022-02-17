@@ -46,14 +46,17 @@ class BaseConfig {
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
 
-    static String CHART_BAR                     = 'bar'
-    static String CHART_PIE                     = 'pie'
+    static String FIELD_IS_MULTIPLE             = 'isMultiple'
+    static String FIELD_IS_VIRTUAL              = 'isVirtual'
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
     static String FIELD_TYPE_ELASTICSEARCH      = 'elasticSearch'
+
+    static String CHART_BAR                     = 'bar'
+    static String CHART_PIE                     = 'pie'
 
     static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
     static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
@@ -66,18 +69,22 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
-    //static String CUSTOM_IMPL_KEY_IE_PLATFORM           = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform' // ? nominalPlatform
+    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform'
     static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
-    //static String CUSTOM_IMPL_KEY_IE_TIPP_PLT_ORG       = 'org'
+    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS        = 'iePackageStatus'
+    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS   = 'ieSubscriptionStatus'
+    static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
 
-    static String CUSTOM_IMPL_KEY_PKG_PLATFORM          = 'platform'
-    static String CUSTOM_IMPL_KEY_PKG_PROVIDER          = 'provider'
+    static String CUSTOM_IMPL_KEY_PKG_PLATFORM              = 'platform'
+    static String CUSTOM_IMPL_KEY_PKG_PROVIDER              = 'provider'
+    static String CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
 
-    static String CUSTOM_IMPL_KEY_PLT_ORG               = 'org'
-    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER   = 'serviceProvider'
-    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER  = 'softwareProvider'
+    static String CUSTOM_IMPL_KEY_PLT_ORG                   = 'org'
+    static String CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS        = 'packageStatus'
+    static String CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
+    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER       = 'serviceProvider'
+    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER      = 'softwareProvider'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
@@ -110,10 +117,9 @@ class BaseConfig {
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG')) {
             config.CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -121,10 +127,9 @@ class BaseConfig {
     static Map<String, Map> getCurrentEsData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('ES_DATA')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DATA')) {
             config.ES_DATA
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -132,10 +137,9 @@ class BaseConfig {
     static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
             config.DETAILS_TABLE_CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -179,7 +183,7 @@ class BaseConfig {
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
         Locale locale = LocaleContextHolder.getLocale()
-        String ck = 'reporting.cfg.base.custom'
+        String ck = 'reporting.customImpl.'
 
         if (key == CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
             return [
@@ -208,44 +212,44 @@ class BaseConfig {
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
             return [
-                    label: messageSource.getMessage(ck + '.legalInfo.label', null, locale),
+                    label: messageSource.getMessage(ck + 'legalInfo.label', null, locale),
                     from: [
                         [   id: 0,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.0', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.0', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.0', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.0', null, localeEn),
                         ],
                         [   id: 1,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.1', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.1', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
                         ],  // ui icon green check circle
                         [   id: 2,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.2', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.2', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
                         ],  // ui icon grey outline circle
                         [   id: 3,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.3', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.3', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
                         ]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.annual.label', null, locale),
+                    label: messageSource.getMessage(ck + 'annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + 'startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + 'endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
@@ -317,6 +321,23 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
+        else if (key in [CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS]) {
+            return [
+                    label: messageSource.getMessage('subscription.status.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_IE_STATUS) {
+            return [
+                    label: messageSource.getMessage('default.status.label', null, locale),
+                    from: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_DELETED].collect{
+                        [
+                            id: it.id,
+                            value_de: it.getI10n('value', 'de'),
+                            value_en: it.getI10n('value', 'en'),
+                    ]}
+            ]
+        }
         else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
             List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             return [
@@ -337,6 +358,12 @@ class BaseConfig {
                         value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
                         value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
                 ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
+            return [
+                    label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
@@ -376,11 +403,43 @@ class BaseConfig {
         }
     }
 
-    static String getMessage(String token) {
+    static String getConfigLabel(def token) {
+        //println 'getConfigLabel(): ' + key
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+    }
+
+    static String getFilterLabel(String key) {
+        //println 'getFilterLabel(): ' + key
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.filter.' + key, null, locale)
+    }
+
+    static String getSourceLabel(String key, String source) {
+        //println 'getSourceLabel(): ' + key + ' - ' + source
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.source.' + key + '.' + source, null, locale)
+    }
+
+    static String getQueryLabel(String key, String qKey, List qValues) {
+        //println 'getQueryLabel(): ' + key + ' - ' + qKey + ' - ' + qValues
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.cfg.' + token
-        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+        if (qValues[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
+        } else {
+            messageSource.getMessage('reporting.cfg.query.' + key + '.' + qKey, null, locale)
+        }
+    }
+
+    static String getDistributionLabel(String key, String dist) {
+        //println 'getDistributionLabel(): ' + key + ' - ' + dist
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.dist.' + key + '.' + dist, null, locale)
     }
 }

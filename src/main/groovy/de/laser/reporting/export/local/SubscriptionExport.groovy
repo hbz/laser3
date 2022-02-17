@@ -26,22 +26,22 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    'name'                  : FIELD_TYPE_PROPERTY,
-                                    'startDate'             : FIELD_TYPE_PROPERTY,
-                                    'endDate'               : FIELD_TYPE_PROPERTY,
-                                    'status'                : FIELD_TYPE_REFDATA,
-                                    'kind'                  : FIELD_TYPE_REFDATA,
-                                    'form'                  : FIELD_TYPE_REFDATA,
-                                    'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-member+sortname+name' : FIELD_TYPE_COMBINATION,
-                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
-                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
-                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
+                                    'startDate'             : [ FIELD_TYPE_PROPERTY ],
+                                    'endDate'               : [ FIELD_TYPE_PROPERTY ],
+                                    'status'                : [ FIELD_TYPE_REFDATA ],
+                                    'kind'                  : [ FIELD_TYPE_REFDATA ],
+                                    'form'                  : [ FIELD_TYPE_REFDATA ],
+                                    'resource'              : [ FIELD_TYPE_REFDATA ],
+                                    '@-subscription-member+sortname+name' : [ FIELD_TYPE_COMBINATION ],
+                                    '@-subscription-prevNext'             : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-provider+sortname+name'            : [ FIELD_TYPE_COMBINATION ],
+                                    'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
+                                    'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
+                                    'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
+                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
                             ]
                     ]
             ]
@@ -55,21 +55,21 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    'name'                  : FIELD_TYPE_PROPERTY,
-                                    'startDate'             : FIELD_TYPE_PROPERTY,
-                                    'endDate'               : FIELD_TYPE_PROPERTY,
-                                    'status'                : FIELD_TYPE_REFDATA,
-                                    'kind'                  : FIELD_TYPE_REFDATA,
-                                    'form'                  : FIELD_TYPE_REFDATA,
-                                    'resource'              : FIELD_TYPE_REFDATA,
-                                    '@-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-provider+sortname+name' : FIELD_TYPE_COMBINATION,
-                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
-                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
+                                    'startDate'             : [ FIELD_TYPE_PROPERTY ],
+                                    'endDate'               : [ FIELD_TYPE_PROPERTY ],
+                                    'status'                : [ FIELD_TYPE_REFDATA ],
+                                    'kind'                  : [ FIELD_TYPE_REFDATA ],
+                                    'form'                  : [ FIELD_TYPE_REFDATA ],
+                                    'resource'              : [ FIELD_TYPE_REFDATA ],
+                                    '@-subscription-prevNext'  : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-provider+sortname+name' : [ FIELD_TYPE_COMBINATION ],
+                                    'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
+                                    'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
+                                    'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
+                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
@@ -111,7 +111,7 @@ class SubscriptionExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

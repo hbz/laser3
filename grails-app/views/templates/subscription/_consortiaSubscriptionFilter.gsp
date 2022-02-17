@@ -7,7 +7,7 @@
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
-        <div class="three fields">
+        <div class="four fields">
             <div class="field">
                 <%--
                <label>${message(code: 'default.search.text')}
@@ -41,6 +41,14 @@
                     </div>
                 </div>
             </g:if>
+            <div class="field">
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
             <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
@@ -81,37 +89,6 @@
             </div>
         </div>
         <div class="four fields">
-            <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
-                <div class="field">
-                    <fieldset id="subscritionType">
-                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
-                        <div class="inline fields la-filter-inline">
-                            <%
-                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            %>
-                            <g:each in="${subTypes}" var="subType">
-                                <div class="inline field">
-                                    <div class="ui checkbox">
-                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
-                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
-                                               tabindex="0">
-                                    </div>
-                                </div>
-                            </g:each>
-                        </div>
-                    </fieldset>
-                </div>
-            </g:if>
-            <div class="field">
-                <label for="identifier">${message(code: 'default.search.identifier')}</label>
-                <div class="ui input">
-                    <input type="text" id="identifier" name="identifier"
-                           placeholder="${message(code: 'default.search.identifier.ph')}"
-                           value="${params.identifier}"/>
-                </div>
-            </div>
             <div class="field">
                 <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
@@ -143,11 +120,18 @@
                               value="${params.hasPerpetualAccess}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-
-
+            <div class="field">
+                <label>${message(code:'subscription.hasPublishComponent.label')}</label>
+                <laser:select class="ui fluid dropdown" name="hasPublishComponent"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.hasPublishComponent}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -167,6 +151,29 @@
                     </div>
                 </div>
             </div>
+            <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+                <div class="field">
+                    <fieldset id="subscritionType">
+                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <div class="inline fields la-filter-inline">
+                            <%
+                                List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
+                            %>
+                            <g:each in="${subTypes}" var="subType">
+                                <div class="inline field">
+                                    <div class="ui checkbox">
+                                        <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                        <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                               tabindex="0">
+                                    </div>
+                                </div>
+                            </g:each>
+                        </div>
+                    </fieldset>
+                </div>
+            </g:if>
             <div class="field la-field-right-aligned">
                 <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
                     <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>

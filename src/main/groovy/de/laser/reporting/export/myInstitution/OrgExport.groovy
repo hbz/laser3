@@ -41,41 +41,41 @@ class OrgExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
-                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'libraryType'       : FIELD_TYPE_REFDATA,
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderHskType'     : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-org-accessPoint' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-org-readerNumber': FIELD_TYPE_CUSTOM_IMPL,
-                                    'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
+                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
+                                    'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'libraryType'       : [ FIELD_TYPE_REFDATA ],
+                                    'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
+                                    'funderHskType'     : [ FIELD_TYPE_REFDATA ],
+                                    'funderType'        : [ FIELD_TYPE_REFDATA ],
+                                    'country'           : [ FIELD_TYPE_REFDATA ],
+                                    'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
+                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-accessPoint' : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-readerNumber': [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                             ],
                             provider: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             ],
                             agency: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    '+sortname+name'     : FIELD_TYPE_COMBINATION,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'     : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             ]
                     ]
             ]
@@ -107,7 +107,7 @@ class OrgExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

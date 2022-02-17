@@ -65,11 +65,11 @@ class SubscriptionPackage implements Comparable {
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)
     dateCreated (nullable: true)
-    //oapls   batchSize: 10
+    subscription(unique: ['pkg'])
   }
 
   /**
-   * Comapres this subscription package to another on the base of the package's name
+   * Compares this subscription package to another on the base of the package's name
    * @param o the other instance to compare with
    * @return the comparison result (-1, 0, 1)
    */

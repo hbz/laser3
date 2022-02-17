@@ -26,17 +26,17 @@ class LicenseExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'reference'         : FIELD_TYPE_PROPERTY,
-                                    'startDate'         : FIELD_TYPE_PROPERTY,
-                                    'endDate'           : FIELD_TYPE_PROPERTY,
-                                    'status'            : FIELD_TYPE_REFDATA,
-                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@-license-subscriptionCount'       : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-license-memberCount'             : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-license-memberSubscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
+                                    'reference'         : [ FIELD_TYPE_PROPERTY ],
+                                    'startDate'         : [ FIELD_TYPE_PROPERTY ],
+                                    'endDate'           : [ FIELD_TYPE_PROPERTY ],
+                                    'status'            : [ FIELD_TYPE_REFDATA ],
+                                    'licenseCategory'   : [ FIELD_TYPE_REFDATA ],
+                                    '@-license-subscriptionCount'       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-license-memberCount'             : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-license-memberSubscriptionCount' : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
@@ -50,14 +50,14 @@ class LicenseExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'reference'         : FIELD_TYPE_PROPERTY,
-                                    'startDate'         : FIELD_TYPE_PROPERTY,
-                                    'endDate'           : FIELD_TYPE_PROPERTY,
-                                    'status'            : FIELD_TYPE_REFDATA,
-                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,
+                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
+                                    'reference'         : [ FIELD_TYPE_PROPERTY ],
+                                    'startDate'         : [ FIELD_TYPE_PROPERTY ],
+                                    'endDate'           : [ FIELD_TYPE_PROPERTY ],
+                                    'status'            : [ FIELD_TYPE_REFDATA ],
+                                    'licenseCategory'   : [ FIELD_TYPE_REFDATA ],
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
@@ -88,7 +88,7 @@ class LicenseExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

@@ -2,6 +2,7 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PackageService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -16,7 +17,9 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import groovyx.gpars.GParsPool
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -40,6 +43,7 @@ class SubscriptionService {
     GenericOIDService genericOIDService
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
+    PackageService packageService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -315,6 +319,11 @@ class SubscriptionService {
         if (params.isPublicForApi) {
             query += " and subT.isPublicForApi = :isPublicForApi "
             qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+
+        if (params.hasPublishComponent) {
+            query += " and subT.hasPublishComponent = :hasPublishComponent "
+            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -958,17 +967,20 @@ class SubscriptionService {
      * @param createEntitlements should entitlements be created as well?
      */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
-        // Add this package to the specified subscription
-        // Step 1 - Make sure this package is not already attached to the sub
-        // Step 2 - Connect
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
+        /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: pkg])
 
         if (!dupe){
-            new SubscriptionPackage(subscription:subscription, pkg:pkg).save()
             // Step 3 - If createEntitlements ...
-
-            if ( createEntitlements ) {
+        */
+        if ( createEntitlements ) {
+            List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+            packageService.bulkAddHolding(sql, subscription.id, packageTitles, subscription.hasPerpetualAccess)
+                /*
                 //explicit loading needed because of refreshing - after sync, GORM may be a bit behind
                 TitleInstancePackagePlatform.findAllByPkg(pkg).each { TitleInstancePackagePlatform tipp ->
                     IssueEntitlement new_ie = new IssueEntitlement(
@@ -1010,8 +1022,9 @@ class SubscriptionService {
                         }
                     }
                 }
-            }
+                */
         }
+        //}
     }
 
     /**
@@ -1022,7 +1035,12 @@ class SubscriptionService {
      * @param pkg the package to be linked
      */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
-
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
+        List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+        packageService.bulkAddHolding(sql, target.id, consortiumHolding, target.hasPerpetualAccess)
+        /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
 
@@ -1080,6 +1098,7 @@ class SubscriptionService {
                 }
             }
         }
+         */
     }
 
     /**
