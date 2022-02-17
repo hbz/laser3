@@ -19,19 +19,19 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'                       : FIELD_TYPE_CUSTOM_IMPL,
-                            'ipAuthentication'          : FIELD_TYPE_ELASTICSEARCH,
-                            'passwordAuthentication'    : FIELD_TYPE_ELASTICSEARCH,
-                            'proxySupported'            : FIELD_TYPE_ELASTICSEARCH,
-                            'serviceProvider'           : FIELD_TYPE_CUSTOM_IMPL,
-                            'shibbolethAuthentication'  : FIELD_TYPE_ELASTICSEARCH,
-                            'softwareProvider'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                    : FIELD_TYPE_REFDATA,
-                            'packageStatus'             : FIELD_TYPE_CUSTOM_IMPL,
-                            'subscriptionStatus'        : FIELD_TYPE_CUSTOM_IMPL,
-                            'counterCertified'          : FIELD_TYPE_ELASTICSEARCH,
-                            'statisticsFormat'          : FIELD_TYPE_ELASTICSEARCH
-                            //'type'                    : FIELD_TYPE_REFDATA,
+                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'ipAuthentication'          : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'passwordAuthentication'    : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'proxySupported'            : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'serviceProvider'           : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'shibbolethAuthentication'  : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'status'                    : [ FIELD_TYPE_REFDATA ],
+                            'packageStatus'             : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'subscriptionStatus'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'counterCertified'          : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'statisticsFormat'          : [ FIELD_TYPE_ELASTICSEARCH ]
+                            //'type'                    : [ FIELD_TYPE_REFDATA ],
                     ],
                     filter : [
                             default: [
@@ -51,22 +51,22 @@ class PlatformXCfg extends BaseConfig {
                             default: [
                                     platform : [
                                            // 'platform-org',     // TODO - move to query2 !?
-                                            'platform-serviceProvider',
-                                            'platform-softwareProvider',
-                                            'platform-status',
-                                            'platform-ipAuthentication',            // ES
-                                            'platform-shibbolethAuthentication',    // ES
-                                            'platform-passwordAuthentication',      // ES
-                                            'platform-proxySupported',              // ES
-                                            'platform-statisticsFormat',            // ES
-                                            'platform-statisticsUpdate',            // ES
-                                            'platform-counterCertified',            // ES
-                                            'platform-counterR3Supported',          // ES
-                                            'platform-counterR4Supported',          // ES
-                                            'platform-counterR5Supported',          // ES
-                                            'platform-counterR4SushiApiSupported',  // ES
-                                            'platform-counterR5SushiApiSupported',  // ES
-                                            'platform-*'
+                                            'platform-serviceProvider' :            [ '@' ],
+                                            'platform-softwareProvider' :           [ '@' ],
+                                            'platform-status' :                     [ '@' ],
+                                            'platform-ipAuthentication' :           [ '@' ],    // ES
+                                            'platform-shibbolethAuthentication' :   [ '@' ],    // ES
+                                            'platform-passwordAuthentication' :     [ '@' ],    // ES
+                                            'platform-proxySupported' :             [ '@' ],    // ES
+                                            'platform-statisticsFormat' :           [ '@' ],    // ES
+                                            'platform-statisticsUpdate' :           [ '@' ],    // ES
+                                            'platform-counterCertified' :           [ '@' ],    // ES
+                                            'platform-counterR3Supported' :         [ '@' ],    // ES
+                                            'platform-counterR4Supported' :         [ '@' ],    // ES
+                                            'platform-counterR5Supported' :         [ '@' ],    // ES
+                                            'platform-counterR4SushiApiSupported' : [ '@' ],    // ES
+                                            'platform-counterR5SushiApiSupported' : [ '@' ],    // ES
+                                            'platform-*' :                          [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -119,8 +119,8 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platformOrg : [ // label
-                                            'provider-orgType',
-                                            'provider-*'
+                                            'provider-orgType' : [ 'generic-orgType' ],
+                                            'provider-*' :       [ 'generic-*' ]
                                     ]
                             ]
                     ]

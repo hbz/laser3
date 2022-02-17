@@ -4,7 +4,7 @@
 <g:if test="${filterHistory}">
     <div id="history-content" class="ui segment <g:if test="${! params.get('cmd').equals('addBookmark')}">hidden</g:if>">
         <span class="ui top attached label" style="border-radius: 0; text-align: center">
-            <i class="icon history large"></i>${message(code:'reporting.filter.history')}
+            <i class="icon history large"></i>${message(code:'reporting.ui.global.history')}
         </span>
         <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">
@@ -42,7 +42,7 @@
                         <td>
                             <div class="content">
                                 <div class="header">
-                                    <strong>${BaseConfig.getMessage('base.filter.' + meta.filter)}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
+                                    <strong>${BaseConfig.getFilterLabel(meta.filter.toString())}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
                                 </div>
                                 <div class="description">
                                     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
@@ -70,14 +70,14 @@
         </div>
         <div style="margin-top: 1em">
             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteHistory']}"
-                    elementId="history-delete" class="ui button">${message(code:'reporting.filter.history.delete')}</g:link>
+                    elementId="history-delete" class="ui button">${message(code:'reporting.ui.global.history.delete')}</g:link>
         </div>
     </div>
 </g:if>
 <g:if test="${bookmarks}">
     <div id="bookmark-content" class="ui segment <g:if test="${! params.get('cmd').equals('deleteBookmark')}">hidden</g:if>">
         <span class="ui top attached label" style="border-radius: 0; text-align: center">
-            <i class="icon teal bookmark large"></i>${message(code:'reporting.filter.bookmarks')}
+            <i class="icon teal bookmark large"></i>${message(code:'reporting.ui.global.bookmarks')}
         </span>
         <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">

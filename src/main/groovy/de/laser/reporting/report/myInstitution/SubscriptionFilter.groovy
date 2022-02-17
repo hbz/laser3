@@ -32,7 +32,7 @@ class SubscriptionFilter extends BaseFilter {
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -196,7 +196,7 @@ class SubscriptionFilter extends BaseFilter {
     static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
@@ -318,9 +318,8 @@ class SubscriptionFilter extends BaseFilter {
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
-        //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
         }
@@ -348,7 +347,6 @@ class SubscriptionFilter extends BaseFilter {
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
-            //println key + " >> " + params.get(key)
             List<String> validPartKeys = ['member', 'consortium', 'provider', 'agency']
 
             if (params.get(key)) {
