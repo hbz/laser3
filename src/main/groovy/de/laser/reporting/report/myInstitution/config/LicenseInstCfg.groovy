@@ -19,14 +19,14 @@ class LicenseInstCfg extends BaseConfig {
                             'inst-lic-local'
                     ],
                     fields : [
-                            'annual'                : FIELD_TYPE_CUSTOM_IMPL,
-                            'endDateLimit'          : FIELD_TYPE_CUSTOM_IMPL,
-                            'licenseCategory'       : FIELD_TYPE_REFDATA,
-                            //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
-                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
-                            'startDateLimit'        : FIELD_TYPE_CUSTOM_IMPL,
-                            'status'                : FIELD_TYPE_REFDATA,
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'licenseCategory'       : [ FIELD_TYPE_REFDATA ],
+                            //'openEnded'             : [ FIELD_TYPE_REFDATA ],
+                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'status'                : [ FIELD_TYPE_REFDATA ]
                             //'type'                  : FIELD_TYPE_REFDATA
                     ],
                     filter : [
@@ -39,11 +39,11 @@ class LicenseInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     license : [
-                                          'license-licenseCategory',
-                                          //'license-type',
-                                          //'license-openEnded',
-                                          'license-status',
-                                          'license-*'
+                                          'license-licenseCategory' :   [ '@' ],
+                                          //'license-type' :            [ '@' ],
+                                          //'license-openEnded' :       [ '@' ],
+                                          'license-status' :            [ '@' ],
+                                          'license-*' :                 [ 'generic-*' ]
                                     ]
                             ]
                     ],
@@ -77,9 +77,9 @@ class LicenseInstCfg extends BaseConfig {
                             'depending-licensor'
                     ],
                     fields : [
-                            'country'   : FIELD_TYPE_REFDATA,
-                            'region'    : FIELD_TYPE_REFDATA,
-                            'orgType'   : FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'   : [ FIELD_TYPE_REFDATA ],
+                            'region'    : [ FIELD_TYPE_REFDATA ],
+                            'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
                             default : []
@@ -87,10 +87,10 @@ class LicenseInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     licensor : [
-                                            'licensor-orgType',
-                                            'licensor-country',
-                                            'licensor-region',
-                                            'licensor-*'
+                                            'licensor-orgType' :    [ 'generic-orgType' ],
+                                            'licensor-country' :    [ 'generic-country' ],
+                                            'licensor-region' :     [ 'generic-region' ],
+                                            'licensor-*' :          [ 'generic-*' ]
                                     ]
                             ]
                     ]

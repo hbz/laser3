@@ -29,7 +29,7 @@ class IssueEntitlementFilter extends BaseFilter {
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_ISSUEENTITLEMENT)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_ISSUEENTITLEMENT + '.source.' + filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ISSUEENTITLEMENT, filterSource)])
 
         switch (filterSource) {
 //            case 'all-ie':

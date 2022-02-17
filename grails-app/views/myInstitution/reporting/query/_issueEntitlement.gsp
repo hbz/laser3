@@ -13,13 +13,13 @@
     </g:if>
     <g:else>
         <div class="ui message negative">
-            <p><g:message code="reporting.filter.no.matches" /></p>
+            <p><g:message code="reporting.filter.result.x.empty" /></p>
         </div>
     </g:else>
 
     <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
         <div class="ui message negative">
-            <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filterResult.elasticSearchIsNotReachable')}</p>
+            <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
         </div>
     </g:if>
 

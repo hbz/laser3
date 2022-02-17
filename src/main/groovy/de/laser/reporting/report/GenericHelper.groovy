@@ -39,17 +39,20 @@ class GenericHelper {
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
-        objConfig.fields.get(fieldName)
+        def tmp = objConfig.fields.get(fieldName)
+        if (tmp) {
+            tmp[0]
+        }
+        else {
+            println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
+            null
+        }
     }
 
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
 
         String label = '?'
         String type = getFieldType(objConfig, fieldName)
-
-        // println 'objConfig - ' + objConfig
-        // println 'fieldName - ' + fieldName
-        // println 'type - ' + type
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
@@ -60,12 +63,7 @@ class GenericHelper {
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
-//            try {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
-//            } catch(Exception e) {
-//                println " -----------> No message found under code '${csn}.${prop.getName()}.label'"
-//                label = messageSource.getMessage(csn + '.' + prop.getName(), null, locale)
-//            }
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata

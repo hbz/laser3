@@ -31,26 +31,26 @@ class PackageExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    'gokbId'                : FIELD_TYPE_PROPERTY,
-                                    'name'                  : FIELD_TYPE_PROPERTY,
-                                    'altname'               : FIELD_TYPE_ELASTICSEARCH,
-                                    'x-id'                  : FIELD_TYPE_ELASTICSEARCH,
-                                    'x-provider+sortname+name'      : FIELD_TYPE_COMBINATION,
-                                    'x-platform+name+primaryUrl'    : FIELD_TYPE_COMBINATION,
-                                    'contentType'           : FIELD_TYPE_REFDATA,
-                                    'file'                  : FIELD_TYPE_REFDATA,
-                                    'packageStatus'         : FIELD_TYPE_REFDATA,
-                                    '@-package-titleCount'  : FIELD_TYPE_CUSTOM_IMPL,
-                                    'scope'                 : FIELD_TYPE_ELASTICSEARCH,
-                                    'consistent'            : FIELD_TYPE_ELASTICSEARCH,
-                                    'paymentType'           : FIELD_TYPE_ELASTICSEARCH,
-                                    'openAccess'            : FIELD_TYPE_ELASTICSEARCH,
-                                    'breakable'             : FIELD_TYPE_ELASTICSEARCH,
-                                    'x-ddc'                 : FIELD_TYPE_ELASTICSEARCH,
-                                    'x-curatoryGroup'       : FIELD_TYPE_ELASTICSEARCH,
-                                    'description'           : FIELD_TYPE_ELASTICSEARCH,
-                                    'descriptionURL'        : FIELD_TYPE_ELASTICSEARCH
+                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                : [ FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
+                                    'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-id'                  : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-provider+sortname+name'      : [ FIELD_TYPE_COMBINATION ],
+                                    'x-platform+name+primaryUrl'    : [ FIELD_TYPE_COMBINATION ],
+                                    'contentType'           : [ FIELD_TYPE_REFDATA ],
+                                    'file'                  : [ FIELD_TYPE_REFDATA ],
+                                    'packageStatus'         : [ FIELD_TYPE_REFDATA ],
+                                    '@-package-titleCount'  : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'scope'                 : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'consistent'            : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'paymentType'           : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'openAccess'            : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'breakable'             : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-ddc'                 : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-curatoryGroup'       : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'description'           : [ FIELD_TYPE_ELASTICSEARCH ],
+                                    'descriptionURL'        : [ FIELD_TYPE_ELASTICSEARCH ]
                             ]
                     ]
             ]
@@ -81,7 +81,7 @@ class PackageExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

@@ -91,12 +91,12 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> nonList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (nonList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL), nonList.size()])
+                    result.data.add([null, BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL), nonList.size()])
 
                     result.dataDetails.add([
                             query : params.query,
                             id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL),
+                            label : BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL),
                             idList: nonList
                     ])
                 }

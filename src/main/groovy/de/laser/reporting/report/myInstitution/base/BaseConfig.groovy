@@ -114,10 +114,9 @@ class BaseConfig {
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG')) {
             config.CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -125,10 +124,9 @@ class BaseConfig {
     static Map<String, Map> getCurrentEsData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('ES_DATA')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DATA')) {
             config.ES_DATA
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -136,10 +134,9 @@ class BaseConfig {
     static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect{ it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
             config.DETAILS_TABLE_CONFIG
-        }
-        else {
+        } else {
             [:]
         }
     }
@@ -183,7 +180,7 @@ class BaseConfig {
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
         Locale locale = LocaleContextHolder.getLocale()
-        String ck = 'reporting.cfg.base.custom'
+        String ck = 'reporting.customImpl.'
 
         if (key == CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
             return [
@@ -212,44 +209,44 @@ class BaseConfig {
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
             return [
-                    label: messageSource.getMessage(ck + '.legalInfo.label', null, locale),
+                    label: messageSource.getMessage(ck + 'legalInfo.label', null, locale),
                     from: [
                         [   id: 0,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.0', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.0', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.0', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.0', null, localeEn),
                         ],
                         [   id: 1,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.1', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.1', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
                         ],  // ui icon green check circle
                         [   id: 2,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.2', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.2', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
                         ],  // ui icon grey outline circle
                         [   id: 3,
-                            value_de: messageSource.getMessage(ck + '.legalInfo.3', null, localeDe),
-                            value_en: messageSource.getMessage(ck + '.legalInfo.3', null, localeEn),
+                            value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
+                            value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
                         ]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.annual.label', null, locale),
+                    label: messageSource.getMessage(ck + 'annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + 'startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
-                    label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + 'endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
@@ -362,7 +359,7 @@ class BaseConfig {
         }
         else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
             return [
-                    label: messageSource.getMessage('reporting.cfg.package.query.package-packageStatus', null, locale), // TODO
+                    label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
@@ -403,11 +400,43 @@ class BaseConfig {
         }
     }
 
-    static String getMessage(String token) {
+    static String getConfigLabel(def token) {
+        //println 'getConfigLabel(): ' + key
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+    }
+
+    static String getFilterLabel(String key) {
+        //println 'getFilterLabel(): ' + key
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.filter.' + key, null, locale)
+    }
+
+    static String getSourceLabel(String key, String source) {
+        //println 'getSourceLabel(): ' + key + ' - ' + source
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.source.' + key + '.' + source, null, locale)
+    }
+
+    static String getQueryLabel(String key, String qKey, List qValues) {
+        //println 'getQueryLabel(): ' + key + ' - ' + qKey + ' - ' + qValues
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.cfg.' + token
-        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+        if (qValues[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
+        } else {
+            messageSource.getMessage('reporting.cfg.query.' + key + '.' + qKey, null, locale)
+        }
+    }
+
+    static String getDistributionLabel(String key, String dist) {
+        //println 'getDistributionLabel(): ' + key + ' - ' + dist
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+        messageSource.getMessage('reporting.cfg.dist.' + key + '.' + dist, null, locale)
     }
 }

@@ -30,7 +30,7 @@ class LicenseFilter extends BaseFilter {
         LicenseService licenseService = mainContext.getBean('licenseService')
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_LICENSE)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.source.' + filterSource)])
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])
 
         switch (filterSource) {
             case 'all-lic':
@@ -187,9 +187,8 @@ class LicenseFilter extends BaseFilter {
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.source.' + filterSource)])
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])
 
-        //println 'handleInternalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
         }

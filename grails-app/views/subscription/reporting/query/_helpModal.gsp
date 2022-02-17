@@ -60,7 +60,7 @@
     </div>
 
     <div class="help-section" data-help-section="default">
-        ${message(code:'reporting.help.infoMissing')}
+        ${message(code:'reporting.ui.global.help.missing')}
     </div>
 </semui:infoModal>
 
