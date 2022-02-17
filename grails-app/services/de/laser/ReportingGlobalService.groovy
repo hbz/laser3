@@ -215,7 +215,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM + 'chartLabel.' + it) }
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM, 'chartLabel.' + it) }
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }

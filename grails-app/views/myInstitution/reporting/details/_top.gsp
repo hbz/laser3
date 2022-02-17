@@ -22,4 +22,4 @@
 
 <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: labels]}" />
 
-<g:render template="/myInstitution/reporting/details/generic_tableConfig" model="${[tableConfig: tableConfig]}" />
+<g:render template="/myInstitution/reporting/details/generic_tableConfig" />

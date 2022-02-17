@@ -189,7 +189,6 @@ class LicenseFilter extends BaseFilter {
         String filterSource = getCurrentFilterSource(params, partKey)
         filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])
 
-        //println 'handleInternalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
         }

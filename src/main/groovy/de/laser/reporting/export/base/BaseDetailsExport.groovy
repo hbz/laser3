@@ -138,13 +138,18 @@ abstract class BaseDetailsExport {
         }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
-        // println 'BaseDetails.getAllFields() ---> ' + cfg + ' : ' + field + ' : ' + base.fields.keySet()
+
+//        println '----------- BaseDetailsExport.getAllFields() ' + KEY
+//        println '- base      ' + base
+//        println '- cfg       ' + cfg
+//        println '- field     ' + field
+//        println '- keySet    ' + base.fields.keySet()
 
         if (! base.fields.keySet().contains(cfg)) {
             cfg = 'default'
         }
         base.fields.get(cfg).findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
+            (it.value[0] != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
 

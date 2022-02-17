@@ -44,7 +44,7 @@ class GenericHelper {
             tmp[0]
         }
         else {
-            println 'GenericHelper.getFieldType() ' + fieldName + ' not found'
+            println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
             null
         }
     }
@@ -63,12 +63,7 @@ class GenericHelper {
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
-//            try {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
-//            } catch(Exception e) {
-//                println " -----------> No message found under code '${csn}.${prop.getName()}.label'"
-//                label = messageSource.getMessage(csn + '.' + prop.getName(), null, locale)
-//            }
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
             // LaserReportingTagLib:reportFilterRefdata

@@ -359,7 +359,7 @@ class BaseConfig {
         }
         else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
             return [
-                    label: messageSource.getMessage('reporting.cfg.package.query.package-packageStatus', null, locale), // TODO
+                    label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
