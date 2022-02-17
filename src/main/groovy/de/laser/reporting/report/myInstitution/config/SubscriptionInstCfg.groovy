@@ -19,7 +19,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'inst-sub-local'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'form'                  : [ FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
@@ -99,7 +99,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : [ FIELD_TYPE_REFDATA ],
-                            'region'            : [ FIELD_TYPE_REFDATA ],
+                            'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             //'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ FIELD_TYPE_REFDATA ],
@@ -108,7 +108,6 @@ class SubscriptionInstCfg extends BaseConfig {
                             'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ FIELD_TYPE_REFDATA ],
                             //'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                            //'region'            : [ FIELD_TYPE_REFDATA ],
                             'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
@@ -145,7 +144,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA ],
+                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
@@ -173,7 +172,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA ],
+                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [

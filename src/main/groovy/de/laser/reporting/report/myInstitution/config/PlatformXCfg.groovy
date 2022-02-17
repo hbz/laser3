@@ -19,7 +19,7 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ FIELD_TYPE_ELASTICSEARCH ],
