@@ -129,6 +129,7 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             /*-- hab --*/
+
             JSPC.app.reporting.updateHabMenu = function (current) {
                 var base = ['info', 'bookmark', 'history']
                 var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
@@ -155,6 +156,7 @@
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
             /*-- filter --*/
+
             $('#filter-chooser').on( 'change', function(e) {
                 $.ajax({
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
@@ -166,11 +168,16 @@
                     $('#filter-wrapper').html(data);
                     r2d2.initDynamicSemuiStuff('#filter-wrapper');
                     r2d2.initDynamicXEditableStuff('#filter-wrapper');
+
+                    JSPC.app.reporting.initFilterEvents();
                     $('#filter-wrapper > div').removeClass('hidden');
                 })
                 .fail( function() { $("#reporting-modal-error").modal('show'); })
                 .always( function() { $('#loadingIndicator').hide(); });
             })
+
+            /*-- charts --*/
+
             $('*[id^=query-chooser').on( 'change', function(e) {
                 var value = $(e.target).val();
                 if (value) {
@@ -184,7 +191,6 @@
                 JSPC.app.reporting.requestChartJsonData();
             })
 
-            /*-- charts --*/
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
@@ -247,6 +253,32 @@
 
             $('#chart-chooser').dropdown('set selected', 'bar');
 
+            /* -- helper -- */
+
+            JSPC.app.reporting.initFilterEvents = function() {
+                $("select[name=filter\\:member_country]").on( 'change', function() {
+                    JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
+                }).trigger( 'change' );
+
+                $("select[name=filter\\:org_country]").on( 'change', function() {
+                    JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
+                }).trigger( 'change' );
+
+                $("select[name=filter\\:member_region_virtualFF]").dropdown(
+                    'setting', 'onChange', function(value, text, $choice) {
+                        $("input[name=filter\\:member_region]").attr('value', value);
+                });
+
+                $("select[name=filter\\:org_region_virtualFF]").dropdown(
+                    'setting', 'onChange', function(value, text, $choice) {
+                        $("input[name=filter\\:org_region]").attr('value', value);
+                });
+
+                $("*[name$='_propertyKey']").on( 'change', function() {
+                    JSPC.app.reporting.propertyUpdate( this );
+                }).trigger( 'change' );
+            }
+
             JSPC.app.reporting.countryRegionUpdate = function( selectorPart ) {
                 var $country     = $('select[name=' + selectorPart + '_country]');
                 var $region      = $('select[name=' + selectorPart + '_region_virtualFF]');
@@ -269,32 +301,14 @@
                 });
             }
 
-            $("select[name=filter\\:member_country]").on( 'change', function() {
-                JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
-            }).trigger( 'change' );
-
-            $("select[name=filter\\:org_country]").on( 'change', function() {
-                JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
-            }).trigger( 'change' );
-
-            $("select[name=filter\\:member_region_virtualFF]").dropdown(
-                'setting', 'onChange', function(value, text, $choice) {
-                    $("input[name=filter\\:member_region]").attr('value', value);
-            });
-
-            $("select[name=filter\\:org_region_virtualFF]").dropdown(
-                'setting', 'onChange', function(value, text, $choice) {
-                    $("input[name=filter\\:org_region]").attr('value', value);
-            });
-
-            $("*[name$='_propertyKey']").on('change', function(){
+            JSPC.app.reporting.propertyUpdate = function( elem ) {
                 var defaults = {}
                 <%
                     params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->
                         println "defaults['${it.key}'] = '${it.value}';"
                     }
                 %>
-                var $key = $(this);
+                var $key = $(elem);
                 var $value = $("*[name='" + $key.attr('name').replace('_propertyKey', '_propertyValue') + "']");
                 $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
 
@@ -322,14 +336,14 @@
                             if (pdv) {
                                 $value.dropdown('set selected', defaults[$value.attr('name')]);
                             }
-                        },
-                        async: false
+                        }
                     });
                 } else {
                     $value.dropdown('restore defaults');
                 }
-            });
-            $("*[name$='_propertyKey']").trigger('change');
+            }
+
+            JSPC.app.reporting.initFilterEvents();
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

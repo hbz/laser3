@@ -31,13 +31,8 @@
                         </g:if>
                         <g:else>
                             ${label.value.label}:
-                            <g:if test="${GenericHelper.isFieldMultiple(null, label.key)}">
-                                <g:if test="${label.value.value instanceof String}">
-                                    ${label.value.value}
-                                </g:if>
-                                <g:else>
-                                    ${label.value.value.join(', ')}
-                                </g:else>
+                            <g:if test="${GenericHelper.isCollection(label.value.value)}">
+                                ${label.value.value.join(', ')}
                             </g:if>
                             <g:else>
                                 ${label.value.value}

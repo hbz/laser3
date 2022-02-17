@@ -17,7 +17,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'consortia-sub'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'form'                  : [ FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
@@ -127,7 +127,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'depending-memberSubscription'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'form'                  : [ FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
@@ -175,7 +175,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : [ FIELD_TYPE_REFDATA ],
-                            'region'            : [ FIELD_TYPE_REFDATA ],
+                            'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ FIELD_TYPE_REFDATA ],
@@ -186,7 +186,6 @@ class SubscriptionConsCfg extends BaseConfig {
                             'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
                             'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            //'region'            : [ FIELD_TYPE_REFDATA ],
                             'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
@@ -225,7 +224,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA ],
+                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
@@ -253,7 +252,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA ],
+                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
