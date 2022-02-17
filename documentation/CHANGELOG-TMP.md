@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4124    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Teilnehmervertragsverknüpfungen wiederhergestellt, Beschriftungen angepasst
+
 4120    15.02.2022  rc-2.2  2.2.10      Andreas Feature     Filterfeld Publish-Komponente nachgereicht
 
 4118    14.02.2022  rc-2.2  2.2.10      Andreas Feature     Ladezeit des Lizenzdetail-Paketfragments beschleunigt
