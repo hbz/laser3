@@ -135,7 +135,7 @@
                         </p>
                         <p>
                             <span class="ui checkbox">
-                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" />
+                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" checked="checked" />
                                 <label for="useLineNumbers-pdf">${message(code: 'reporting.modal.export.cfg.pdf.useLineNumbers')}</label>
                             </span>
                             <br />

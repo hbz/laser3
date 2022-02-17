@@ -25,7 +25,7 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : [ FIELD_TYPE_REFDATA ],
-                            'region'            : [ FIELD_TYPE_REFDATA ],
+                            'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
                             'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ FIELD_TYPE_REFDATA ],

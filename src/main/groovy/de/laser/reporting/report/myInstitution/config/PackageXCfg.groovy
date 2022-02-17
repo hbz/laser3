@@ -27,8 +27,8 @@ class PackageXCfg extends BaseConfig {
                             'packageStatus'     : [ FIELD_TYPE_REFDATA ],
                             'subscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'paymentType'       : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'scope'             : [ FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [

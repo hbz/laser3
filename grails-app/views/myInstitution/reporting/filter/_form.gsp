@@ -1,3 +1,4 @@
+%{-- template or XHR --}%
 <div id="filter-${filter}" class="${xhr ? 'hidden' : ''}">
     <g:form action="reporting" method="POST" class="ui form">
         <g:render template="/myInstitution/reporting/filter/${filter}" />

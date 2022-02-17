@@ -11,31 +11,20 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
-    // TODO
-    static boolean isFieldMultiple(String object, String fieldName) {
-        boolean bool = false
-
-        if (object in [ 'package', null ] && fieldName in [ 'provider', 'platform' ]) {
-            bool = true
-        }
-        else if (object in [ 'platform' ] && fieldName in [ 'org' ]) {
-            bool = true
-        }
-        else if (fieldName in [ 'annual' ]) {
-            bool = true
-        }
-        // if (bool) { println 'isFieldMultiple() ' + object + ' / ' + fieldName }
-        bool
+    static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
+        //println 'isFieldMultiple ' + cfg?.meta + ' ' + fieldName
+        List<String> field = cfg?.fields?.get(fieldName) ?: []
+        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_MULTIPLE
     }
 
-    static boolean isFieldVirtual(String object, String fieldName) {
-        boolean bool = false
+    static boolean isCollection(def obj) {
+        obj instanceof Collection
+    }
 
-        if (fieldName in [ 'region' ]) {
-            bool = true
-        }
-        // if (bool) { println 'isFieldVirtual() ' + object + ' / ' + fieldName }
-        bool
+    static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
+        //println 'isFieldVirtual ' + cfg?.meta + ' ' + fieldName
+        List<String> field = cfg?.fields?.get(fieldName) ?: []
+        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_VIRTUAL
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {

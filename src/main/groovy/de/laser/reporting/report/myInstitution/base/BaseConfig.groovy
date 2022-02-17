@@ -46,14 +46,17 @@ class BaseConfig {
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
 
-    static String CHART_BAR                     = 'bar'
-    static String CHART_PIE                     = 'pie'
+    static String FIELD_IS_MULTIPLE             = 'isMultiple'
+    static String FIELD_IS_VIRTUAL              = 'isVirtual'
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
     static String FIELD_TYPE_ELASTICSEARCH      = 'elasticSearch'
+
+    static String CHART_BAR                     = 'bar'
+    static String CHART_PIE                     = 'pie'
 
     static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
     static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
