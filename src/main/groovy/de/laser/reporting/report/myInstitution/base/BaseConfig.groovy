@@ -70,34 +70,20 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
 
     static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM = 'platform'
-    static String CUSTOM_IMPL_KEY_IE_PROVIDER           = 'provider'
-    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS        = 'iePackageStatus'
-    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS   = 'ieSubscriptionStatus'
     static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
 
-// TMP
-//    static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE           = 'ie.tipp.pkg'
-//    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM      = 'ie.tipp.pkg.platform'
-//    static String CUSTOM_IMPL_KEY_IE_PROVIDER               = 'ie.tipp.pkg.orgRole.provider'
-//    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS         = 'ie.tipp.pkg.packageStatus'
-//    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS    = 'ie.subscription.status'
-//    static String CUSTOM_IMPL_KEY_IE_STATUS                 = 'status'
-//    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION           = 'subscription'
-
-    static String CUSTOM_IMPL_KEY_PKG_PLATFORM              = 'platform'
-    static String CUSTOM_IMPL_KEY_PKG_PROVIDER              = 'provider'
-    static String CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
-
     static String CUSTOM_IMPL_KEY_PLT_ORG                   = 'org'
-    static String CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS        = 'packageStatus'
-    static String CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS   = 'subscriptionStatus'
     static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER       = 'serviceProvider'
     static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER      = 'softwareProvider'
 
+    static String CI_GENERIC_PACKAGE_OR_PROVIDER    = 'package/orgRole/provider'
+    static String CI_GENERIC_PACKAGE_PLATFORM       = 'package/platform'
+    static String CI_GENERIC_PACKAGE_STATUS         = 'package/packageStatus'
+    static String CI_GENERIC_SUBSCRIPTION_STATUS    = 'subscription/status'
+
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
@@ -290,7 +276,7 @@ class BaseConfig {
                     from: []
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE]) {
+        else if (key == CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE) {
 
             List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
@@ -309,7 +295,7 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM, CUSTOM_IMPL_KEY_PKG_PLATFORM]) {
+        else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),
                     //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[ // ?
@@ -320,7 +306,7 @@ class BaseConfig {
                     ]}
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_IE_PROVIDER, CUSTOM_IMPL_KEY_PKG_PROVIDER]) {
+        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
             return [
                     label: messageSource.getMessage('default.provider.label', null, locale),
                     from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
@@ -331,7 +317,7 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_PKG_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS, CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS]) {
+        else if (key == CI_GENERIC_SUBSCRIPTION_STATUS) {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
@@ -370,7 +356,7 @@ class BaseConfig {
                 ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key in [CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS, CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS]) {
+        else if (key == CI_GENERIC_PACKAGE_STATUS) {
             return [
                     label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)

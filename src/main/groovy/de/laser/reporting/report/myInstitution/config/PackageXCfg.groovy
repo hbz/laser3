@@ -24,23 +24,23 @@ class PackageXCfg extends BaseConfig {
                             'contentType'       : [ FIELD_TYPE_REFDATA ],
                             'file'              : [ FIELD_TYPE_REFDATA ],
                             'openAccess'        : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'packageStatus'     : [ FIELD_TYPE_REFDATA ],
-                            'subscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'paymentType'       : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'scope'             : [ FIELD_TYPE_ELASTICSEARCH ]
+                            'packageStatus'             : [ FIELD_TYPE_REFDATA ],
+                            'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'paymentType'               : [ FIELD_TYPE_ELASTICSEARCH ],
+                            'package/platform'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'package/orgRole/provider'  : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'scope'                     : [ FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'packageStatus' ],
-                                    [ 'file', 'provider', 'platform' ],
+                                    [ 'file', 'package/orgRole/provider', 'package/platform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ],
                             my: [
-                                    [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
-                                    [ 'file', 'provider', 'platform' ],
+                                    [ 'contentType',  'subscription/status', 'packageStatus' ],
+                                    [ 'file', 'package/orgRole/provider', 'package/platform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -190,8 +190,8 @@ class PackageXCfg extends BaseConfig {
             'package-x-id' : false, // ES
             'contentType' : false,
             'packageStatus' : false,
-            'provider' : true,
-            'platform' : true,
+            'package/orgRole/provider' : true,
+            'package/platform' : true,
             'file' : false,
             '_+_currentTitles' : true, // virtual
             'package-breakable' : false, // ES

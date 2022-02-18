@@ -27,21 +27,21 @@ class PlatformXCfg extends BaseConfig {
                             'shibbolethAuthentication'  : [ FIELD_TYPE_ELASTICSEARCH ],
                             'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'status'                    : [ FIELD_TYPE_REFDATA ],
-                            'packageStatus'             : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subscriptionStatus'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package/packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'counterCertified'          : [ FIELD_TYPE_ELASTICSEARCH ],
                             'statisticsFormat'          : [ FIELD_TYPE_ELASTICSEARCH ]
                             //'type'                    : [ FIELD_TYPE_REFDATA ],
                     ],
                     filter : [
                             default: [
-                                    [ 'packageStatus', 'status'],
+                                    [ 'package/packageStatus', 'status'],
                                     [ 'serviceProvider', 'softwareProvider', 'org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ],
                             my: [
-                                    [ 'packageStatus', 'subscriptionStatus', 'status'],
+                                    [ 'package/packageStatus', 'subscription/status', 'status'],
                                     [ 'serviceProvider', 'softwareProvider', 'org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]

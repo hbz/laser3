@@ -114,24 +114,24 @@ class PlatformFilter extends BaseFilter {
                     if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_ORG) {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
-                        whereParts.add( 'plt.' + p + '.id in (:p' + (++pCount) + ')')
+                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
                         queryParams.put( 'p' + pCount, pList )
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
-                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                        whereParts.add( 'plt.serviceProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
-                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                        whereParts.add( 'plt.softwareProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS) {
+                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
                         queryParts.add('Subscription sub')
 
                         queryParts.add('Package pkg')
@@ -150,7 +150,7 @@ class PlatformFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS) {
+                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))

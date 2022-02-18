@@ -101,22 +101,20 @@ class IssueEntitlementFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
                     if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE) {
                         queryParts.add('TitleInstancePackagePlatform tipp')
-                        whereParts.add('ie.tipp = tipp and tipp.' + p + '.id = :p' + (++pCount))
-                        //whereParts.add( 'ie.' + p + '.id in (:p' + (++pCount) + ')')
+                        whereParts.add('ie.tipp = tipp and tipp.pkg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = de.laser.Package.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM) {
+                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_PLATFORM) {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         whereParts.add('ie.tipp = tipp and tipp.pkg = pkg and pkg.nominalPlatform.id = :p' + (++pCount))
-                        //whereParts.add( 'ie.' + p + '.id in (:p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = Platform.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_PROVIDER) {
+                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER) {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         queryParts.add('OrgRole ro')
@@ -136,13 +134,12 @@ class IssueEntitlementFilter extends BaseFilter {
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
-                        whereParts.add('ie.' + p + '.id = :p' + (++pCount))
-                        //whereParts.add( 'ie.' + p + '.id in (:p' + (++pCount) + ')')
+                        whereParts.add('ie.subscription.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = Subscription.get(params.long(key)).getLabel()
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS) {
+                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')
 
@@ -151,7 +148,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS) {
+                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
                         queryParts.add('Subscription sub')
                         whereParts.add('ie.subscription = sub and sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))

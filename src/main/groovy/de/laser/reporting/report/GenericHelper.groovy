@@ -30,6 +30,7 @@ class GenericHelper {
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
         def tmp = objConfig.fields.get(fieldName)
         if (tmp) {
+            //println '- GenericHelper.getFieldType() ' + objConfig.meta + ' . ' + fieldName + ' > ' + tmp[0]
             tmp[0]
         }
         else {
