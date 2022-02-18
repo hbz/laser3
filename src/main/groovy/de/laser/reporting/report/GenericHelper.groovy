@@ -33,7 +33,8 @@ class GenericHelper {
             tmp[0]
         }
         else {
-            println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
+            //println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
+            //println '                               ' + objConfig.meta
             null
         }
     }
