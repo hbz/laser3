@@ -14026,7 +14026,7 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   transition: all 1s ease;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 992px) {
   i.orange.icon.la-subscriptionIsChild.fixed {
     display: none;
   }

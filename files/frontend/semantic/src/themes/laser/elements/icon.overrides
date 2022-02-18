@@ -1981,7 +1981,7 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   box-shadow: none!important;
   transition: all 1s ease;
 }
-@media only screen and (max-width: @largeMonitorBreakpoint) {
+@media only screen and (max-width: @computerBreakpoint  ) {
   i.orange.icon.la-subscriptionIsChild.fixed {
     display: none;
   }
