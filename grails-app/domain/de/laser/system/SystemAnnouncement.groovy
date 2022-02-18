@@ -133,7 +133,7 @@ class SystemAnnouncement {
                 }
                 catch (Exception e) {
                     log.error(e.getMessage())
-                    log.error(e.getStackTrace())
+                    e.printStackTrace()
                     failedUserIds << u.id
                 }
             }
