@@ -549,7 +549,18 @@ class SubscriptionReport {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.local.subscription.' + token
         messageSource.getMessage('reporting.local.subscription.' + token, null, locale)
+    }
+
+    static String getQueryLabel(String qKey, List qValues) {
+        //println 'getQueryLabel(): ' + qKey + ' - ' + qValues
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        if (qValues[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
+        } else {
+            messageSource.getMessage('reporting.local.subscription.query.' + qKey, null, locale) // TODO
+        }
     }
 }

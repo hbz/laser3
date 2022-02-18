@@ -53,30 +53,30 @@ class OrganisationConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     org : [
-                                            'org-orgType' :         [ 'generic-orgType' ],
-                                            'org-customerType' :    [ 'generic-customerType' ],
-                                            'org-libraryType' :     [ 'generic-libraryType' ],
-                                            'org-region' :          [ 'generic-region' ],
-                                            'org-subjectGroup' :    [ 'generic-subjectGroup' ],
-                                            'org-libraryNetwork' :  [ 'generic-libraryNetwork' ],
-                                            'org-funderType' :      [ 'generic-funderType' ],
-                                            'org-funderHskType' :   [ 'generic-funderHskType' ],
-                                            'org-*' :               [ 'generic-*' ]
+                                            'org-orgType' :         [ 'generic.org.orgType' ],
+                                            'org-customerType' :    [ 'generic.org.customerType' ],
+                                            'org-libraryType' :     [ 'generic.org.libraryType' ],
+                                            'org-region' :          [ 'generic.org.region' ],
+                                            'org-subjectGroup' :    [ 'generic.org.subjectGroup' ],
+                                            'org-libraryNetwork' :  [ 'generic.org.libraryNetwork' ],
+                                            'org-funderType' :      [ 'generic.org.funderType' ],
+                                            'org-funderHskType' :   [ 'generic.org.funderHskType' ],
+                                            'org-*' :               [ 'generic.all' ]
                                     ]
                             ],
                             providerAndAgency : [
                                     org : [
-                                            'org-orgType': [ 'generic-orgType' ]
+                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ],
                             provider : [
                                     org : [
-                                            'org-orgType': [ 'generic-orgType' ]
+                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ],
                             agency : [
                                     org : [
-                                            'org-orgType': [ 'generic-orgType' ]
+                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ]
                     ],

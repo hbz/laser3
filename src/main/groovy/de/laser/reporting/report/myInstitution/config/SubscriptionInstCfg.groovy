@@ -48,13 +48,13 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default: [
                                     subscription : [
-                                             'subscription-form' :                   [ '@' ],
-                                             'subscription-kind' :                   [ '@' ],
-                                             'subscription-resource' :               [ '@' ],
-                                             'subscription-status' :                 [ '@' ],
-                                             'subscription-isMultiYear' :            [ '@' ],
-                                             'subscription-manualCancellationDate' : [ '@' ],
-                                             'subscription-*' :                      [ 'generic-*' ]
+                                             'subscription-form' :                   [ 'generic.sub.form' ],
+                                             'subscription-kind' :                   [ 'generic.sub.kind' ],
+                                             'subscription-resource' :               [ 'generic.sub.resource' ],
+                                             'subscription-status' :                 [ 'generic.sub.status' ],
+                                             'subscription-isMultiYear' :            [ 'generic.sub.isMultiYear' ],
+                                             'subscription-manualCancellationDate' : [ 'generic.sub.manualCancellationDate' ],
+                                             'subscription-*' :                      [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -120,15 +120,15 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     consortium : [
-                                             //'consortium-orgType :        [ 'generic-orgType' ],
-                                             //'consortium-customerType' :  [ 'generic-customerType' ],
-                                             'consortium-libraryType' :     [ 'generic-libraryType' ],
-                                             'consortium-region' :          [ 'generic-region' ],
-                                             'consortium-subjectGroup' :    [ 'generic-subjectGroup' ],
-                                             'consortium-libraryNetwork' :  [ 'generic-libraryNetwork' ],
-                                             'consortium-funderType' :      [ 'generic-funderType' ],
-                                             'consortium-funderHskType' :   [ 'generic-funderHskType' ],
-                                             'consortium-*' :               [ 'generic-*' ]
+                                             //'consortium-orgType :        [ 'generic.org.orgType' ],
+                                             //'consortium-customerType' :  [ 'generic.org.customerType' ],
+                                             'consortium-libraryType' :     [ 'generic.org.libraryType' ],
+                                             'consortium-region' :          [ 'generic.org.region' ],
+                                             'consortium-subjectGroup' :    [ 'generic.org.subjectGroup' ],
+                                             'consortium-libraryNetwork' :  [ 'generic.org.libraryNetwork' ],
+                                             'consortium-funderType' :      [ 'generic.org.funderType' ],
+                                             'consortium-funderHskType' :   [ 'generic.org.funderHskType' ],
+                                             'consortium-*' :               [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -153,8 +153,8 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                               'provider-orgType' : [ 'generic-orgType'],
-                                               'provider-*' :       [ 'generic-*']
+                                               'provider-orgType' : [ 'generic.org.orgType'],
+                                               'provider-*' :       [ 'generic.all']
                                               // 'provider-country'
                                               // 'provider-region'
                                     ]
@@ -181,8 +181,8 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     agency : [
-                                           'agency-orgType' : [ 'generic-orgType' ],
-                                           'agency-*' :       [ 'generic-*' ]
+                                           'agency-orgType' : [ 'generic.org.orgType' ],
+                                           'agency-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]

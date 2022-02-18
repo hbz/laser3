@@ -24,8 +24,8 @@
                     <g:select name="query-chooser-1"
                               id="query-chooser-1-${qi}"
                               from="${field.value}"
-                              optionKey="${{it}}"
-                              optionValue="${{SubscriptionReport.getMessage('query.' + it)}}"
+                              optionKey="${{it.key}}"
+                              optionValue="${{SubscriptionReport.getQueryLabel(it.key, it.value)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>

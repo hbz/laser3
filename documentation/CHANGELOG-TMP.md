@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen
+
 3833    17.02.2022  dev     2.3         Andreas Feature     Bezeichner im Tooltip umbenannt
 
 4130    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Alle Verträge entknüpfen blieb ohne Wirkung

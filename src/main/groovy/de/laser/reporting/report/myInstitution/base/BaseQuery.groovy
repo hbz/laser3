@@ -64,13 +64,10 @@ class BaseQuery {
             String cfgKey = it.value.get('meta').cfgKey
 
             it.value.get('query')?.default?.each { it2 ->
-                // TODO - refactoring workaround
-                if (cfgKey == 'SubscriptionReport') {
-                    if (it2.value.contains(query)) {
-                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query)]
-                    }
-                } else {
-                    if (it2.value.containsKey(query)) {
+                if (it2.value.containsKey(query)) {
+                    if (cfgKey == BaseConfig.KEY_LOCAL_SUBSCRIPTION) {
+                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getQueryLabel(query, it2.value.get(query))]
+                    } else {
                         meta = [BaseConfig.getConfigLabel(it2.key), BaseConfig.getQueryLabel(cfgKey, query, it2.value.get(query))]
                     }
                 }

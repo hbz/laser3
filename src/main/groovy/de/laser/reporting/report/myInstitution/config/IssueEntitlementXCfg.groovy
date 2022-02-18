@@ -29,12 +29,25 @@ class IssueEntitlementXCfg extends BaseConfig {
 
                             'iePackageStatus'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'ieSubscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ]
+// TMP
+//                            'status'                        : [ FIELD_TYPE_CUSTOM_IMPL ],
+//                            'ie.tipp.pkg'                   : [ FIELD_TYPE_CUSTOM_IMPL ],
+//                            'ie.tipp.pkg.platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+//                            'ie.tipp.pkg.orgRole.provider'  : [ FIELD_TYPE_CUSTOM_IMPL ],
+//                            'subscription'                  : [ FIELD_TYPE_CUSTOM_IMPL ],
+//
+//                            'ie.tipp.pkg.packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+//                            'ie.subscription.status'        : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
                             default: [
                                     [ 'iePackageStatus', 'ieSubscriptionStatus', 'status' ],
                                     [ 'pkg', 'subscription' ],
                                     [ 'provider', 'platform' ]
+// TMP
+//                                    [ 'ie.tipp.pkg.packageStatus', 'ie.subscription.status', 'status' ],
+//                                    [ 'ie.tipp.pkg', 'subscription' ],
+//                                    [ 'ie.tipp.pkg.orgRole.provider', 'ie.tipp.pkg.platform' ]
                             ]
                     ],
                     query : [
@@ -45,7 +58,7 @@ class IssueEntitlementXCfg extends BaseConfig {
 //                                            'issueEntitlement-org' :          [ '@' ],
 //                                            'issueEntitlement-platform' :     [ '@' ],
 //                                            'issueEntitlement-subscription' : [ '@' ],
-                                            'issueEntitlement-*' :              [ 'generic-*' ]
+                                            'issueEntitlement-*' :              [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -98,7 +111,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             default: [
                                     subscription : [
                                             'subscription-status' :  [ '@' ],
-                                            'subscription-*' :       [ 'generic-*' ]
+                                            'subscription-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -125,7 +138,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                                     package : [
                                             'package-x-platform' :      [ '@' ],   // KEY_PACKAGE -> distribution
                                             'package-packageStatus' :   [ '@' ],
-                                            'package-*' :               [ 'generic-*' ]
+                                            'package-*' :               [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -146,8 +159,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType' : [ 'generic-orgType' ],
-                                            'provider-*' :       [ 'generic-*' ]
+                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -172,7 +185,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                                             'platform-status' :     [ '@' ],
                                     //        'nominalPlatform-serviceProvider' : [ '@' ],
                                     //        'nominalPlatform-softwareProvider' : [ '@' ],
-                                            'platform-*' :          [ 'generic-*' ]
+                                            'platform-*' :          [ 'generic.all' ]
                                     ]
                             ]
                     ]

@@ -34,13 +34,14 @@ import java.time.Year
 class BaseConfig {
 
     static String KEY_MYINST                    = 'myInstitution'
+    static String KEY_LOCAL_SUBSCRIPTION        = 'localSubscription'
 
     static String KEY_COSTITEM                  = 'costItem'
     static String KEY_ISSUEENTITLEMENT          = 'issueEntitlement'
-    static String KEY_PACKAGE                   = 'package'
-    static String KEY_PLATFORM                  = 'platform'
     static String KEY_LICENSE                   = 'license'
     static String KEY_ORGANISATION              = 'organisation'
+    static String KEY_PACKAGE                   = 'package'
+    static String KEY_PLATFORM                  = 'platform'
     static String KEY_SUBSCRIPTION              = 'subscription'
 
     static String FILTER_PREFIX                 = 'filter:'
@@ -75,6 +76,15 @@ class BaseConfig {
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS   = 'ieSubscriptionStatus'
     static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
     static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
+
+// TMP
+//    static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE           = 'ie.tipp.pkg'
+//    static String CUSTOM_IMPL_KEY_IE_TIPP_PKG_PLATFORM      = 'ie.tipp.pkg.platform'
+//    static String CUSTOM_IMPL_KEY_IE_PROVIDER               = 'ie.tipp.pkg.orgRole.provider'
+//    static String CUSTOM_IMPL_KEY_IE_PACKAGE_STATUS         = 'ie.tipp.pkg.packageStatus'
+//    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION_STATUS    = 'ie.subscription.status'
+//    static String CUSTOM_IMPL_KEY_IE_STATUS                 = 'status'
+//    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION           = 'subscription'
 
     static String CUSTOM_IMPL_KEY_PKG_PLATFORM              = 'platform'
     static String CUSTOM_IMPL_KEY_PKG_PROVIDER              = 'provider'
