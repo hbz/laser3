@@ -38,6 +38,9 @@ class SemanticUiIconTagLib {
                 break
         }
     }
+    def childSubscriptionIcon = { attrs, body ->
+        out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
+    }
 
     def subHeaderTitleIcon = { attrs, body ->
 

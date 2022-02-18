@@ -15,6 +15,7 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+        <g:render template="iconSubscriptionIsChild"/>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
