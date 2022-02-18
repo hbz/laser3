@@ -43,7 +43,7 @@ class LicenseInstCfg extends BaseConfig {
                                           //'license-type' :            [ '@' ],
                                           //'license-openEnded' :       [ '@' ],
                                           'license-status' :            [ '@' ],
-                                          'license-*' :                 [ 'generic-*' ]
+                                          'license-*' :                 [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -87,10 +87,10 @@ class LicenseInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     licensor : [
-                                            'licensor-orgType' :    [ 'generic-orgType' ],
-                                            'licensor-country' :    [ 'generic-country' ],
-                                            'licensor-region' :     [ 'generic-region' ],
-                                            'licensor-*' :          [ 'generic-*' ]
+                                            'licensor-orgType' :    [ 'generic.org.orgType' ],
+                                            'licensor-country' :    [ 'generic.org.country' ],
+                                            'licensor-region' :     [ 'generic.org.region' ],
+                                            'licensor-*' :          [ 'generic.all' ]
                                     ]
                             ]
                     ]

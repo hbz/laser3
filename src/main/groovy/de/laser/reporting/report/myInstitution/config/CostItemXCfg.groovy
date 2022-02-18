@@ -38,7 +38,7 @@ class CostItemXCfg extends BaseConfig {
                                             'costItem-costItemElement' :                [ '@' ],
                                             'costItem-costItemElementConfiguration' :   [ '@' ],
                                             'costItem-billingCurrency' :                [ '@' ],
-                                            'costItem-*' :                              [ 'generic-*' ]
+                                            'costItem-*' :                              [ 'generic.all' ]
                                     ]
                             ]
                     ]

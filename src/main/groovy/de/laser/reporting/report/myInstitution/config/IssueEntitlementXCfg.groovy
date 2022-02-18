@@ -45,7 +45,7 @@ class IssueEntitlementXCfg extends BaseConfig {
 //                                            'issueEntitlement-org' :          [ '@' ],
 //                                            'issueEntitlement-platform' :     [ '@' ],
 //                                            'issueEntitlement-subscription' : [ '@' ],
-                                            'issueEntitlement-*' :              [ 'generic-*' ]
+                                            'issueEntitlement-*' :              [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -98,7 +98,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             default: [
                                     subscription : [
                                             'subscription-status' :  [ '@' ],
-                                            'subscription-*' :       [ 'generic-*' ]
+                                            'subscription-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -125,7 +125,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                                     package : [
                                             'package-x-platform' :      [ '@' ],   // KEY_PACKAGE -> distribution
                                             'package-packageStatus' :   [ '@' ],
-                                            'package-*' :               [ 'generic-*' ]
+                                            'package-*' :               [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -146,8 +146,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType' : [ 'generic-orgType' ],
-                                            'provider-*' :       [ 'generic-*' ]
+                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -172,7 +172,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                                             'platform-status' :     [ '@' ],
                                     //        'nominalPlatform-serviceProvider' : [ '@' ],
                                     //        'nominalPlatform-softwareProvider' : [ '@' ],
-                                            'platform-*' :          [ 'generic-*' ]
+                                            'platform-*' :          [ 'generic.all' ]
                                     ]
                             ]
                     ]

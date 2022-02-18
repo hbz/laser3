@@ -34,13 +34,14 @@ import java.time.Year
 class BaseConfig {
 
     static String KEY_MYINST                    = 'myInstitution'
+    static String KEY_LOCAL_SUBSCRIPTION        = 'localSubscription'
 
     static String KEY_COSTITEM                  = 'costItem'
     static String KEY_ISSUEENTITLEMENT          = 'issueEntitlement'
-    static String KEY_PACKAGE                   = 'package'
-    static String KEY_PLATFORM                  = 'platform'
     static String KEY_LICENSE                   = 'license'
     static String KEY_ORGANISATION              = 'organisation'
+    static String KEY_PACKAGE                   = 'package'
+    static String KEY_PLATFORM                  = 'platform'
     static String KEY_SUBSCRIPTION              = 'subscription'
 
     static String FILTER_PREFIX                 = 'filter:'
