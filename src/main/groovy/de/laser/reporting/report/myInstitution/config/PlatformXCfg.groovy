@@ -19,13 +19,13 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
+                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
                             'ipAuthentication'          : [ FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'serviceProvider'           : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'serviceProvider'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'shibbolethAuthentication'  : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                    : [ FIELD_TYPE_REFDATA ],
                             'package/packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ],

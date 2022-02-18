@@ -17,18 +17,18 @@ class SubscriptionConsCfg extends BaseConfig {
                             'consortia-sub'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'form'                  : [ FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
                             'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
                             'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
                             'isMultiYear'           : [ FIELD_TYPE_PROPERTY ],
                             'kind'                  : [ FIELD_TYPE_REFDATA ],
-                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'resource'              : [ FIELD_TYPE_REFDATA ],
-                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ FIELD_TYPE_REFDATA ]
                             //'type'                : [ FIELD_TYPE_REFDATA ],
                             //'manualRenewalDate'       : [ FIELD_TYPE_PROPERTY ],
@@ -127,18 +127,18 @@ class SubscriptionConsCfg extends BaseConfig {
                             'depending-memberSubscription'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'form'                  : [ FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
                             'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
                             'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
                             'isMultiYear'           : [ FIELD_TYPE_PROPERTY ],
                             'kind'                  : [ FIELD_TYPE_REFDATA ],
-                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'resource'              : [ FIELD_TYPE_REFDATA ],
-                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
@@ -176,17 +176,17 @@ class SubscriptionConsCfg extends BaseConfig {
                     fields : [
                             'country'           : [ FIELD_TYPE_REFDATA ],
                             'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ FIELD_TYPE_REFDATA ],
                             'funderType'        : [ FIELD_TYPE_REFDATA ],
-                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ FIELD_TYPE_REFDATA ],
                             'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                            'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                            'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
                             default : [

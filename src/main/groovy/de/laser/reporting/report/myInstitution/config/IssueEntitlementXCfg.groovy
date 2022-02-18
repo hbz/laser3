@@ -21,11 +21,11 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'package/platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'package/orgRole/provider'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
 
                             'package/packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ]

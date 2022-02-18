@@ -38,7 +38,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
                                     'x-memberSubscriptionProperty' : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ],
@@ -55,7 +55,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
                             ]
                     ]
@@ -82,7 +82,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
                             ]
                     ]

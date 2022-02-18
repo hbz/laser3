@@ -30,8 +30,8 @@ class PlatformExport extends BaseDetailsExport {
                                     'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
                                     'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ],
                                     'primaryUrl'            : [ FIELD_TYPE_PROPERTY ],
-                                    'serviceProvider'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'softwareProvider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'serviceProvider'       : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'softwareProvider'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'status'                : [ FIELD_TYPE_REFDATA ],
                                     'ipAuthentication'             : [ FIELD_TYPE_ELASTICSEARCH ],
                                     'shibbolethAuthentication'     : [ FIELD_TYPE_ELASTICSEARCH ],
