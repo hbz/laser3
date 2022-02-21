@@ -24,28 +24,28 @@ class PlatformExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'gokbId'                : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
-                                    'primaryUrl'            : [ FIELD_TYPE_PROPERTY ],
-                                    'serviceProvider'       : [ FIELD_TYPE_REFDATA ],
-                                    'softwareProvider'      : [ FIELD_TYPE_REFDATA ],
-                                    'status'                : [ FIELD_TYPE_REFDATA ],
-                                    'ipAuthentication'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'shibbolethAuthentication'     : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'passwordAuthentication'       : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'proxySupported'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsFormat'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsUpdate'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterCertified'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR3Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-property'                   : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'altname'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'org+sortname+name'     : [ type: FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
+                                    'primaryUrl'            : [ type: FIELD_TYPE_PROPERTY ],
+                                    'serviceProvider'       : [ type: FIELD_TYPE_REFDATA ],
+                                    'softwareProvider'      : [ type: FIELD_TYPE_REFDATA ],
+                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'ipAuthentication'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'shibbolethAuthentication'     : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'passwordAuthentication'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'proxySupported'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsFormat'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsUpdate'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterCertified'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR3Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-property'                   : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
