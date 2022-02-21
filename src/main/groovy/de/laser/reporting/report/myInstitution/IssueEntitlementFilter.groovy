@@ -99,7 +99,7 @@ class IssueEntitlementFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_PACKAGE) {
+                    if (p == BaseConfig.CI_CTX_IE_PACKAGE) {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         whereParts.add('ie.tipp = tipp and tipp.pkg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
@@ -133,7 +133,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
+                    else if (p == BaseConfig.CI_CTX_IE_SUBSCRIPTION) {
                         whereParts.add('ie.subscription.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 

@@ -110,7 +110,7 @@ class LicenseFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_KEY_ANNUAL) {
+                    if (p == BaseConfig.CI_GENERIC_ANNUAL) {
                         List tmpList = []
 
                         params.list(key).each { pk ->
@@ -128,19 +128,19 @@ class LicenseFilter extends BaseFilter {
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
-                    else if (p == BaseConfig.CI_KEY_STARTDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(lic.startDate) >= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CI_KEY_ENDDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_ENDDATE_LIMIT) {
                         whereParts.add( '(YEAR(lic.endDate) <= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CI_KEY_PROPERTY_KEY) {
+                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
                         Long pValue = params.long('filter:license_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(
@@ -267,21 +267,21 @@ class LicenseFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CI_GENERIC_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_KEY_LEGAL_INFO) {
+                    else if (p == BaseConfig.CI_GENERIC_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == BaseConfig.CI_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CI_GENERIC_CUSTOMER_TYPE) {
                         queryBase = queryBase + ' , OrgSetting oss'
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))

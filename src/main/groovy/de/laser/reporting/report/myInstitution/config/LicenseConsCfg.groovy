@@ -17,7 +17,7 @@ class LicenseConsCfg extends BaseConfig {
                             'consortia-lic'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],   // TODO custom_impl
                             'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'licenseCategory'       : [ FIELD_TYPE_REFDATA ],
                             //'openEnded'             : [ FIELD_TYPE_REFDATA ],

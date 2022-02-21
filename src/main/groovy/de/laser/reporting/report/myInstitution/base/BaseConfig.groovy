@@ -59,28 +59,28 @@ class BaseConfig {
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
 
-    static String REFDATA_JOINTABLE_KEY_ORG_TYPE    = 'orgType'
+    static String RDJT_GENERIC_ORG_TYPE         = 'orgType'
 
-    static String CI_KEY_CUSTOMER_TYPE          = 'customerType'
-    static String CI_KEY_LEGAL_INFO             = 'legalInfo'
-    static String CI_KEY_ANNUAL                 = 'annual'
-    static String CI_KEY_ENDDATE_LIMIT          = 'endDateLimit'
-    static String CI_KEY_STARTDATE_LIMIT        = 'startDateLimit'
-    static String CI_KEY_PROPERTY_KEY           = 'propertyKey'
-    static String CI_KEY_PROPERTY_VALUE         = 'propertyValue'
-    static String CI_KEY_SUBJECT_GROUP          = 'subjectGroup'
+    static String CI_GENERIC_CUSTOMER_TYPE      = 'customerType'
+    static String CI_GENERIC_LEGAL_INFO         = 'legalInfo'
+    static String CI_GENERIC_ANNUAL             = 'annual'
+    static String CI_GENERIC_ENDDATE_LIMIT      = 'endDateLimit'
+    static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
+    static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
 
-    static String CUSTOM_IMPL_KEY_IE_PACKAGE        = 'issueEntitlement/pkg'
-    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION   = 'issueEntitlement/subscription'
+    static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'
+    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'
+    static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'
+    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'
+    static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'
+    static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'
+    static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'
+    static String CI_GENERIC_SUBSCRIPTION_STATUS        = 'subscription$status'
 
-    static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement/status'
-    static String CI_GENERIC_PACKAGE_OR_PROVIDER    = 'package/orgRole/provider'
-    static String CI_GENERIC_PACKAGE_PLATFORM       = 'package/platform'
-    static String CI_GENERIC_PACKAGE_STATUS         = 'package/packageStatus'
-    static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform/serviceProvider'
-    static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform/softwareProvider'
-    static String CI_GENERIC_PLATFORM_ORG               = 'platform/org'
-    static String CI_GENERIC_SUBSCRIPTION_STATUS    = 'subscription/status'
+    static String CI_CTX_PROPERTY_KEY           = 'propertyKey'
+    static String CI_CTX_PROPERTY_VALUE         = 'propertyValue'
+    static String CI_CTX_IE_PACKAGE             = 'issueEntitlement$pkg'
+    static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
@@ -181,14 +181,13 @@ class BaseConfig {
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.customImpl.'
 
-
-        if (key == REFDATA_JOINTABLE_KEY_ORG_TYPE) {
+        if (key == RDJT_GENERIC_ORG_TYPE) {
             return [
                     label: messageSource.getMessage('org.orgType.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
             ]
         }
-        else if (key == CI_KEY_CUSTOMER_TYPE) {
+        else if (key == CI_GENERIC_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
@@ -198,7 +197,7 @@ class BaseConfig {
                     ] }
             ]
         }
-        else if (key == CI_KEY_LEGAL_INFO) {
+        else if (key == CI_GENERIC_LEGAL_INFO) {
             Locale localeDe = new Locale.Builder().setLanguage("de").build()
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
@@ -223,90 +222,31 @@ class BaseConfig {
                             ]   // ui icon red question mark
                     ]]
         }
-        else if (key == CI_KEY_ANNUAL) {
+        else if (key == CI_GENERIC_ANNUAL) {
             Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + 'annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
-        else if (key == CI_KEY_ENDDATE_LIMIT) {
+        else if (key == CI_GENERIC_ENDDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + 'endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
-        else if (key == CI_KEY_STARTDATE_LIMIT) {
+        else if (key == CI_GENERIC_STARTDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + 'startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
-        else if (key == CI_KEY_PROPERTY_KEY) {
-            String descr = ''
-
-            if (clazz == License) { descr = PropertyDefinition.LIC_PROP }
-            else if (clazz == Org) { descr = PropertyDefinition.ORG_PROP }
-            else if (clazz == Subscription) { descr = PropertyDefinition.SUB_PROP }
-
-            List<PropertyDefinition> propList = descr ? PropertyDefinition.executeQuery(
-                    'select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant is null or pd.tenant = :ctx) order by pd.name_de',
-                    [descr: descr, ctx: contextService.getOrg()]
-            ) : []
-
-            return [
-                    label: 'Merkmal',
-                    from: propList.collect{[
-                            id: it.id,
-                            value_de: it.name_de,
-                            value_en: it.name_en,
-                    ]}
-            ]
-        }
-        else if (key == CI_KEY_PROPERTY_VALUE) {
-            return [
-                    label: 'Merkmalswert (nur Referenzwerte)',
-                    from: []
-            ]
-        }
-        if (key == CI_KEY_SUBJECT_GROUP) {
+        else if (key == CI_GENERIC_SUBJECT_GROUP) {
             return [
                     label: messageSource.getMessage('org.subjectGroup.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_IE_PACKAGE) {
-
-            List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
-            List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
-
-            List<Long> pkgList = Package.executeQuery(
-                    'select distinct subPkg.pkg from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
-                    [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
-            )
-
-            return [
-                    label: messageSource.getMessage('package.label', null, locale),
-                    from: pkgList.collect{[
-                            id: it.id,
-                            value_de: it.getLabel(),
-                            value_en: it.getLabel(),
-                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
-            ]
-        }
-
-        else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
-            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
-            return [
-                    label: messageSource.getMessage('subscription.label', null, locale),
-                    from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
-                        [
-                            id: it.id,
-                            value_de: it.getLabel(),
-                            value_en: it.getLabel(),
-                    ]}
             ]
         }
         else if (key == CI_GENERIC_IE_STATUS) {
@@ -374,6 +314,64 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CI_CTX_PROPERTY_KEY) {
+            String descr = ''
+
+            if (clazz == License) { descr = PropertyDefinition.LIC_PROP }
+            else if (clazz == Org) { descr = PropertyDefinition.ORG_PROP }
+            else if (clazz == Subscription) { descr = PropertyDefinition.SUB_PROP }
+
+            List<PropertyDefinition> propList = descr ? PropertyDefinition.executeQuery(
+                    'select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant is null or pd.tenant = :ctx) order by pd.name_de',
+                    [descr: descr, ctx: contextService.getOrg()]
+            ) : []
+
+            return [
+                    label: 'Merkmal',
+                    from: propList.collect{[
+                            id: it.id,
+                            value_de: it.name_de,
+                            value_en: it.name_en,
+                    ]}
+            ]
+        }
+        else if (key == CI_CTX_PROPERTY_VALUE) {
+            return [
+                    label: 'Merkmalswert (nur Referenzwerte)',
+                    from: []
+            ]
+        }
+        else if (key == CI_CTX_IE_PACKAGE) {
+
+            List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+
+            List<Long> pkgList = Package.executeQuery(
+                    'select distinct subPkg.pkg from SubscriptionPackage subPkg where subPkg.subscription.id in (:subIdList) and subPkg.pkg.packageStatus != :pkgStatus',
+                    [subIdList: subIdList, pkgStatus: RDStore.PACKAGE_STATUS_DELETED]
+            )
+
+            return [
+                    label: messageSource.getMessage('package.label', null, locale),
+                    from: pkgList.collect{[
+                            id: it.id,
+                            value_de: it.getLabel(),
+                            value_en: it.getLabel(),
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CI_CTX_IE_SUBSCRIPTION) {
+            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            return [
+                    label: messageSource.getMessage('subscription.label', null, locale),
+                    from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
+                        [
+                                id: it.id,
+                                value_de: it.getLabel(),
+                                value_en: it.getLabel(),
+                        ]}
             ]
         }
     }
