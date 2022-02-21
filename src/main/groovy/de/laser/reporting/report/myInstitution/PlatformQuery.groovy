@@ -29,6 +29,8 @@ class PlatformQuery extends BaseQuery {
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
         List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
+        println 'PlatformQuery.query() -> ' + params.query + ' : ' + suffix
+
         Closure sharedQuery_platform_org = {
             // println 'sharedQuery_platform_org()'
             handleGenericAllQuery(
