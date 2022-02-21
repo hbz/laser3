@@ -83,7 +83,7 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
     ]
 
     static List<String> CHARTS = [
