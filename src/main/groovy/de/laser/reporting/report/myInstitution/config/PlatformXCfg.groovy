@@ -66,7 +66,7 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-counterR5Supported' :         [ '@' ],    // ES
                                             'platform-counterR4SushiApiSupported' : [ '@' ],    // ES
                                             'platform-counterR5SushiApiSupported' : [ '@' ],    // ES
-                                            'platform-*' :                          [ 'generic-*' ]
+                                            'platform-*' :                          [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -119,8 +119,8 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platformOrg : [ // label
-                                            'provider-orgType' : [ 'generic-orgType' ],
-                                            'provider-*' :       [ 'generic-*' ]
+                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
                     ]

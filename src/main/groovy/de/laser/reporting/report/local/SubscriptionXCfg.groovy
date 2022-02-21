@@ -1,25 +1,27 @@
 package de.laser.reporting.report.local
 
+import de.laser.reporting.report.myInstitution.base.BaseConfig
+
 class SubscriptionXCfg {
 
     static Map<String, Object> CONFIG = [
 
             base : [
                     meta : [
-                            cfgKey: 'SubscriptionReport'
+                            cfgKey: BaseConfig.KEY_LOCAL_SUBSCRIPTION
                     ],
                     query: [
                             default: [
                                     tipp : [
-                                            'tipp-publisherName',
-                                            'tipp-seriesName',
-                                            'tipp-subjectReference',
-                                            'tipp-titleType',
-                                            'tipp-medium',
-                                            'tipp-ddcs',
-                                            'tipp-languages'
-                                            //  'tipp-package',
-                                            //  'tipp-platform'
+                                            'tipp-publisherName' :      [ 'generic.tipp.publisherName' ],
+                                            'tipp-seriesName' :         [ 'generic.tipp.seriesName' ],
+                                            'tipp-subjectReference' :   [ 'generic.tipp.subjectReference' ],
+                                            'tipp-titleType' :          [ 'generic.tipp.titleType' ],
+                                            'tipp-medium' :             [ 'generic.tipp.medium' ],
+                                            'tipp-ddcs' :               [ 'generic.tipp.ddcs' ],
+                                            'tipp-languages' :          [ 'generic.tipp.languages' ],
+                                            //  'tipp-package' :        [ 'generic.tipp.package' ],
+                                            //  'tipp-platform' :       [ 'generic.tipp.platform' ]
                                     ]
                             ]
                     ],
@@ -40,33 +42,33 @@ class SubscriptionXCfg {
 
             base : [
                     meta : [
-                            cfgKey: 'SubscriptionReport'
+                            cfgKey: BaseConfig.KEY_LOCAL_SUBSCRIPTION
                     ],
                     query: [
                             default: [
                                     member : [
-                                            'member-customerType',
-                                            'member-orgType',
-                                            //'member-legalInfo',
-                                            'member-libraryNetwork',
-                                            'member-libraryType',
-                                            'member-subjectGroup',
-                                            'member-country',
-                                            'member-region',
-                                            'member-eInvoicePortal',
-                                            'member-funderHskType',
-                                            'member-funderType'
+                                            'member-customerType' :     [ 'generic.org.customerType' ],
+                                            'member-orgType' :          [ 'generic.org.orgType' ],
+                                            //'member-legalInfo' : [ '@' ],
+                                            'member-libraryNetwork' :   [ 'generic.org.libraryNetwork' ],
+                                            'member-libraryType' :      [ 'generic.org.libraryType' ],
+                                            'member-subjectGroup' :     [ 'generic.org.subjectGroup' ],
+                                            'member-country' :          [ 'generic.org.country' ],
+                                            'member-region' :           [ 'generic.org.region' ],
+                                            'member-eInvoicePortal' :   [ '@' ],
+                                            'member-funderHskType' :    [ 'generic.org.funderHskType' ],
+                                            'member-funderType' :       [ 'generic.org.funderType' ]
                                     ],
                                     tipp : [
-                                            'tipp-publisherName',
-                                            'tipp-seriesName',
-                                            'tipp-subjectReference',
-                                            'tipp-titleType',
-                                            'tipp-medium',
-                                            'tipp-ddcs',
-                                            'tipp-languages'
-                                            //  'tipp-package',
-                                            //  'tipp-platform'
+                                            'tipp-publisherName' :      [ 'generic.tipp.publisherName' ],
+                                            'tipp-seriesName' :         [ 'generic.tipp.seriesName' ],
+                                            'tipp-subjectReference' :   [ 'generic.tipp.subjectReference' ],
+                                            'tipp-titleType' :          [ 'generic.tipp.titleType' ],
+                                            'tipp-medium' :             [ 'generic.tipp.medium' ],
+                                            'tipp-ddcs' :               [ 'generic.tipp.ddcs' ],
+                                            'tipp-languages' :          [ 'generic.tipp.languages' ],
+                                            //  'tipp-package' :        [ 'generic.tipp.package' ],
+                                            //  'tipp-platform' :       [ 'generic.tipp.platform' ]
                                     ]
                             ]
                     ],

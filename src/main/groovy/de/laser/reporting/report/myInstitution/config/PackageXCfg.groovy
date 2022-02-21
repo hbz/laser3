@@ -56,7 +56,7 @@ class PackageXCfg extends BaseConfig {
                                             'package-openAccess' :      [ '@' ],    // ES
                                             'package-consistent' :      [ '@' ],    // ES
                                             'package-scope' :           [ '@' ],    // ES
-                                            'package-*' :               [ 'generic-*' ]
+                                            'package-*' :               [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -131,8 +131,8 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType' : [ 'generic-orgType' ],
-                                            'provider-*' :       [ 'generic-*' ],
+                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-*' :       [ 'generic.all' ],
                                     ]
                             ]
                     ]
@@ -156,7 +156,7 @@ class PackageXCfg extends BaseConfig {
                                             'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-serviceProvider' :    [ '@' ],
                                             'platform-softwareProvider' :   [ '@' ],
-                                            'platform-*' :                  [ 'generic-*' ]
+                                            'platform-*' :                  [ 'generic.all' ]
                                     ]
                             ]
                     ]

@@ -46,13 +46,13 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     subscription : [
-                                            'subscription-form' :                   [ '@' ],
-                                            'subscription-kind' :                   [ '@' ],
-                                            'subscription-resource' :               [ '@' ],
-                                            'subscription-status' :                 [ '@' ],
-                                            'subscription-isMultiYear' :            [ '@' ],
-                                            'subscription-manualCancellationDate' : [ '@' ],
-                                            'subscription-*' :                      [ 'generic-*' ]
+                                            'subscription-form' :                   [ 'generic.sub.form' ],
+                                            'subscription-kind' :                   [ 'generic.sub.kind' ],
+                                            'subscription-resource' :               [ 'generic.sub.resource' ],
+                                            'subscription-status' :                 [ 'generic.sub.status' ],
+                                            'subscription-isMultiYear' :            [ 'generic.sub.isMultiYear' ],
+                                            'subscription-manualCancellationDate' : [ 'generic.sub.manualCancellationDate' ],
+                                            'subscription-*' :                      [ 'generic.all' ]
                                     ]
                             ]
                     ],
@@ -153,13 +153,13 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default: [
                                     memberSubscription : [
-                                                 'memberSubscription-form' :                    [ '@' ],
-                                                 'memberSubscription-kind' :                    [ '@' ],
-                                                 'memberSubscription-resource' :                [ '@' ],
-                                                 'memberSubscription-status' :                  [ '@' ],
-                                                 'memberSubscription-isMultiYear' :             [ '@' ],
-                                                 'memberSubscription-manualCancellationDate' :  [ '@' ],
-                                                 'memberSubscription-*' :                       [ 'generic-*' ]
+                                                 'memberSubscription-form' :                    [ 'generic.sub.form' ],
+                                                 'memberSubscription-kind' :                    [ 'generic.sub.kind' ],
+                                                 'memberSubscription-resource' :                [ 'generic.sub.resource' ],
+                                                 'memberSubscription-status' :                  [ 'generic.sub.status' ],
+                                                 'memberSubscription-isMultiYear' :             [ 'generic.sub.isMultiYear' ],
+                                                 'memberSubscription-manualCancellationDate' :  [ 'generic.sub.manualCancellationDate' ],
+                                                 'memberSubscription-*' :                       [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -200,15 +200,15 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     member : [
-                                            'member-orgType' :          [ 'generic-orgType' ],
-                                            'member-customerType' :     [ 'generic-customerType' ],
-                                            'member-libraryType' :      [ 'generic-libraryType' ],
-                                            'member-region' :           [ 'generic-region' ],
-                                            'member-subjectGroup' :     [ 'generic-subjectGroup' ],
-                                            'member-libraryNetwork' :   [ 'generic-libraryNetwork' ],
-                                            'member-funderType' :       [ 'generic-funderType' ],
-                                            'member-funderHskType' :    [ 'generic-funderHskType' ],
-                                            'member-*' :                [ 'generic-*' ]
+                                            'member-orgType' :          [ 'generic.org.orgType' ],
+                                            'member-customerType' :     [ 'generic.org.customerType' ],
+                                            'member-libraryType' :      [ 'generic.org.libraryType' ],
+                                            'member-region' :           [ 'generic.org.region' ],
+                                            'member-subjectGroup' :     [ 'generic.org.subjectGroup' ],
+                                            'member-libraryNetwork' :   [ 'generic.org.libraryNetwork' ],
+                                            'member-funderType' :       [ 'generic.org.funderType' ],
+                                            'member-funderHskType' :    [ 'generic.org.funderHskType' ],
+                                            'member-*' :                [ 'generic.all' ]
                                     ]
                             ]
                     ]
@@ -233,8 +233,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     provider : [
-                                            'provider-orgType' : [ 'generic-orgType' ],
-                                            'provider-*' :       [ 'generic-*' ]
+                                            'provider-orgType' : [ 'generic.org.orgType' ],
+                                            'provider-*' :       [ 'generic.all' ]
                                             //'provider-country',
                                             //'provider-region'
                                     ]
@@ -261,8 +261,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     agency : [
-                                            'agency-orgType' : [ 'generic-orgType' ],
-                                            'agency-*' :       [ 'generic-*' ],
+                                            'agency-orgType' : [ 'generic.org.orgType' ],
+                                            'agency-*' :       [ 'generic.all' ],
                                     ]
                             ]
                     ]
