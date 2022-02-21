@@ -75,14 +75,14 @@
                         ${pkg.packageStatus?.getI10n('value')}
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="provider">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER}">
 
                         <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
                             <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
                         </g:each>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="platform">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PACKAGE_PLATFORM}">
 
                         <g:if test="${pkg.nominalPlatform}">
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>

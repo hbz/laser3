@@ -28,10 +28,10 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                : [ FIELD_TYPE_PROPERTY ],
                                     'name'                  : [ FIELD_TYPE_PROPERTY ],
                                     'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ],
+                                    'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
                                     'primaryUrl'            : [ FIELD_TYPE_PROPERTY ],
-                                    'serviceProvider'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'softwareProvider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    'serviceProvider'       : [ FIELD_TYPE_REFDATA ],
+                                    'softwareProvider'      : [ FIELD_TYPE_REFDATA ],
                                     'status'                : [ FIELD_TYPE_REFDATA ],
                                     'ipAuthentication'             : [ FIELD_TYPE_ELASTICSEARCH ],
                                     'shibbolethAuthentication'     : [ FIELD_TYPE_ELASTICSEARCH ],
@@ -114,24 +114,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-//                if (key == 'org') {
-//                    if (plt.org) {
-//                        content.add( plt.org.name )
-//                    }
-//                    else {
-//                        content.add('')
-//                    }
-//                }
-//                else
-                if (key == 'serviceProvider') {
-                    content.add( getRefdataContent(plt, key) )
-                }
-                else if (key == 'softwareProvider') {
-                    content.add( getRefdataContent(plt, key) )
-                }
-                else {
-                    content.add( '- not implemented -' )
-                }
+                content.add( '- not implemented -' )
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {

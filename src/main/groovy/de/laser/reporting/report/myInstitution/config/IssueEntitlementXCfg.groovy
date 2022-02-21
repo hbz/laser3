@@ -21,33 +21,19 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'provider'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL ],
-
-                            'iePackageStatus'      : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'ieSubscriptionStatus' : [ FIELD_TYPE_CUSTOM_IMPL ]
-// TMP
-//                            'status'                        : [ FIELD_TYPE_CUSTOM_IMPL ],
-//                            'ie.tipp.pkg'                   : [ FIELD_TYPE_CUSTOM_IMPL ],
-//                            'ie.tipp.pkg.platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-//                            'ie.tipp.pkg.orgRole.provider'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-//                            'subscription'                  : [ FIELD_TYPE_CUSTOM_IMPL ],
-//
-//                            'ie.tipp.pkg.packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-//                            'ie.subscription.status'        : [ FIELD_TYPE_CUSTOM_IMPL ]
+                            'issueEntitlement$status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'issueEntitlement$pkg'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package$platform'              : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package$orgRole$provider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'issueEntitlement$subscription' : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package$packageStatus'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'subscription$status'           : [ FIELD_TYPE_CUSTOM_IMPL ]
                     ],
                     filter : [
                             default: [
-                                    [ 'iePackageStatus', 'ieSubscriptionStatus', 'status' ],
-                                    [ 'pkg', 'subscription' ],
-                                    [ 'provider', 'platform' ]
-// TMP
-//                                    [ 'ie.tipp.pkg.packageStatus', 'ie.subscription.status', 'status' ],
-//                                    [ 'ie.tipp.pkg', 'subscription' ],
-//                                    [ 'ie.tipp.pkg.orgRole.provider', 'ie.tipp.pkg.platform' ]
+                                    [ 'package$packageStatus', 'subscription$status', 'issueEntitlement$status' ],
+                                    [ 'issueEntitlement$pkg', 'issueEntitlement$subscription' ],
+                                    [ 'package$orgRole$provider', 'package$platform' ]
                             ]
                     ],
                     query : [
