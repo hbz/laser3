@@ -54,10 +54,10 @@ class OrgExport extends BaseDetailsExport {
                                     'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                                     '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-org-accessPoint' : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-org-readerNumber': [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
                             provider: [
                                     'globalUID'         : [ FIELD_TYPE_PROPERTY ],
@@ -66,7 +66,7 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : [ FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             ],
                             agency: [
                                     'globalUID'         : [ FIELD_TYPE_PROPERTY ],
@@ -75,7 +75,7 @@ class OrgExport extends BaseDetailsExport {
                                     'country'           : [ FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                             ]
                     ]
             ]

@@ -36,10 +36,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
 
-  @RefdataAnnotation(cat = RDConstants.Y_N)
+  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.serviceProvider')
   RefdataValue serviceProvider
 
-  @RefdataAnnotation(cat = RDConstants.Y_N)
+  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.softwareProvider')
   RefdataValue softwareProvider
 
   Date dateCreated

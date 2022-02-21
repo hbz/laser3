@@ -69,6 +69,8 @@ class GenericHelper {
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
             // LaserReportingTagLib:reportFilterRefdataRelTable
 
+            //println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ---> BaseConfig.getCustomImplRefdata()'
+
             Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             label = customRdv.get('label')
         }

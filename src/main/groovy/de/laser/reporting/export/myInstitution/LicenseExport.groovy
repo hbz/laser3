@@ -35,7 +35,7 @@ class LicenseExport extends BaseDetailsExport {
                                     '@-license-subscriptionCount'       : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberCount'             : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberSubscriptionCount' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
@@ -56,7 +56,7 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : [ FIELD_TYPE_PROPERTY ],
                                     'status'            : [ FIELD_TYPE_REFDATA ],
                                     'licenseCategory'   : [ FIELD_TYPE_REFDATA ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]

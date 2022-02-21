@@ -36,17 +36,17 @@ class OrgExport extends BaseDetailsExport {
                                     'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                                     '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-org-accessPoint' : [ FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-org-readerNumber': [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
                             provider: [
                                     'globalUID'         : [ FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
                                     'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'country'           : [ FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                             ],
                             agency: [
@@ -54,7 +54,7 @@ class OrgExport extends BaseDetailsExport {
                                     '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
                                     'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'country'           : [ FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ]
                             ]
                     ]
