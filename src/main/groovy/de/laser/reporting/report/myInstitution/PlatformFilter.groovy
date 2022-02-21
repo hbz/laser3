@@ -111,32 +111,34 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_ORG) {
+                    if (p == BaseConfig.CI_GENERIC_PLATFORM_ORG) {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
-                        whereParts.add( 'plt.' + p + '.id in (:p' + (++pCount) + ')')
+                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
                         queryParams.put( 'p' + pCount, pList )
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
-                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                    else if (p == BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER) {
+                        whereParts.add( 'plt.serviceProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
-                        whereParts.add( 'plt.' + p + '.id = :p' + (++pCount) )
+                    else if (p == BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER) {
+                        whereParts.add( 'plt.softwareProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_PACKAGE_STATUS) {
+                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
+                        queryParts.add('Subscription sub')
+
                         queryParts.add('Package pkg')
-                        whereParts.add('pkg.nominalPlatform = plt and pkg.packageStatus.id = :p' + (++pCount))
+                        whereParts.add('pkg.nominalPlatform = plt')
+                        whereParts.add('pkg.packageStatus.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
-                        queryParts.add('Subscription sub')
                         queryParts.add('SubscriptionPackage subPkg')
                         whereParts.add('subPkg.subscription = sub and subPkg.pkg = pkg')
 
@@ -148,13 +150,13 @@ class PlatformFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PLT_SUBSCRIPTION_STATUS) {
-                        queryParts.add('Package pkg')
-                        whereParts.add('pkg.nominalPlatform = plt')
-
+                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
+
+                        queryParts.add('Package pkg')
+                        whereParts.add('pkg.nominalPlatform = plt')
 
                         queryParts.add('SubscriptionPackage subPkg')
                         whereParts.add('subPkg.subscription = sub and subPkg.pkg = pkg')

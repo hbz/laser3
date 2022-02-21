@@ -26,17 +26,17 @@ class OrganisationConsCfg extends BaseConfig {
                     fields : [
                             'country'           : [ FIELD_TYPE_REFDATA ],
                             'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ FIELD_TYPE_REFDATA ],
                             'funderType'        : [ FIELD_TYPE_REFDATA ],
-                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ FIELD_TYPE_REFDATA ],
                             'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                            'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                            'propertyKey'       : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
                             default : [
