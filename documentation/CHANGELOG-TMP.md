@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
+
 4130    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Alle Verträge entknüpfen blieb ohne Wirkung
 
 4124    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Teilnehmervertragsverknüpfungen wiederhergestellt, Beschriftungen angepasst

@@ -7,8 +7,10 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
+import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -215,10 +217,12 @@ class StatsSyncService {
                                         currentYearEnd.setTime(calendarConfig.endNextRun)
                                         if(onlyNewest) {
                                             GroovyRowResult row = laserStatsCursor.find { GroovyRowResult rr -> rr.get("lsc_report_id") == reportID }
-                                            startTime.setTimeInMillis(row.get("lsc_latest_from_date").getTime())
-                                            startTime.add(Calendar.MONTH, 1)
-                                            currentYearEnd.setTimeInMillis(row.get("lsc_latest_to_date").getTime())
-                                            currentYearEnd.add(Calendar.MONTH, 1)
+                                            if(row) {
+                                                startTime.setTimeInMillis(row.get("lsc_latest_from_date").getTime())
+                                                startTime.add(Calendar.MONTH, 1)
+                                                currentYearEnd.setTimeInMillis(row.get("lsc_latest_to_date").getTime())
+                                                currentYearEnd.add(Calendar.MONTH, 1)
+                                            }
                                         }
                                         log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
                                         //LaserStatsCursor.withTransaction {
@@ -262,8 +266,10 @@ class StatsSyncService {
                                                 }
                                             }
                                             //log.debug(requestBody.toString())
-                                            GPathResult xml = fetchXMLData(statsUrl, requestBody)
-                                            if (xml) {
+                                            //def because on success, I return the GPathResult, a map otherwise
+                                            def result = fetchXMLData(statsUrl, requestBody)
+                                            if (result && result instanceof GPathResult) {
+                                                GPathResult xml = result
                                                 xml.declareNamespace(["SOAP-ENV": "http://schemas.xmlsoap.org/soap/envelope/",
                                                                       ns1       : "http://www.niso.org/schemas/sushi",
                                                                       ns2       : "http://www.niso.org/schemas/counter",
@@ -410,6 +416,9 @@ class StatsSyncService {
                                                     }
                                                 }
                                             }
+                                            else {
+                                                notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
+                                            }
                                             /*
                                             if(incremental) {
                                                 lsc.missingPeriods.each { StatsMissingPeriod period ->
@@ -501,10 +510,12 @@ class StatsSyncService {
                                             currentYearEnd.setTime(calendarConfig.endNextRun)
                                             if(onlyNewest) {
                                                 GroovyRowResult row = laserStatsCursor.find { GroovyRowResult rr -> rr.get("lsc_report_id") == reportId }
-                                                startTime.setTimeInMillis(row.get("lsc_latest_from_date").getTime())
-                                                startTime.add(Calendar.MONTH, 1)
-                                                currentYearEnd.setTimeInMillis(row.get("lsc_latest_to_date").getTime())
-                                                currentYearEnd.add(Calendar.MONTH, 1)
+                                                if(row) {
+                                                    startTime.setTimeInMillis(row.get("lsc_latest_from_date").getTime())
+                                                    startTime.add(Calendar.MONTH, 1)
+                                                    currentYearEnd.setTimeInMillis(row.get("lsc_latest_to_date").getTime())
+                                                    currentYearEnd.add(Calendar.MONTH, 1)
+                                                }
                                             }
                                             //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c5asPlatform, customer: keyPair.customer, reportID: reportId, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                             boolean more = true
@@ -642,6 +653,7 @@ class StatsSyncService {
                                                 }
                                                 else {
                                                     log.error("report header is missing for some reason??? request data: ${url}, response data: ${report.toMapString()}")
+                                                    notifyError(sql, [platform: c5asPlatform.name, uuid: c5asPlatform.gokbId, url: statsUrl ,error: report.error, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
                                                 }
                                                 /*if(incremental) {
                                                     lsc.missingPeriods.each { StatsMissingPeriod period ->
@@ -676,6 +688,9 @@ class StatsSyncService {
                                              */
                                         }
                                     }
+                                    else {
+                                        notifyError(sql, [platform: c5asPlatform.name, uuid: c5asPlatform.gokbId ,url: statsUrl ,error: availableReports.error, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
+                                    }
                                 }
                             }
                         }
@@ -690,6 +705,11 @@ class StatsSyncService {
             }
             running = false
             log.debug("fetch stats finished")
+    }
+
+    void notifyError(Sql sql, Map result) {
+        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
+        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
     }
 
     boolean createSushiSource(Map<String, Object> configMap) {
@@ -751,28 +771,28 @@ class StatsSyncService {
                             result.items = json["Report_Items"]
                         }
                         else {
-                            log.error(json["Exception"]["Message"])
+                            result.error = json["Exception"]["Message"]
                         }
                     }
                     else {
-                        log.error("server response: ${resp.statusLine}")
+                        result.error = "server response: ${resp.statusLine}"
                     }
                 }
                 response.failure = { resp, reader ->
-                    log.error("server response: ${resp.statusLine} - ${reader}")
+                    result.error = "server response: ${resp.statusLine} - ${reader}"
                 }
             }
             http.shutdown()
         }
         catch (Exception e) {
-            log.error("invalid response returned for ${url}!")
+            result.error = "invalid response returned for ${url} - ${e.getMessage()}!"
             log.error("stack trace: ", e)
         }
         result
     }
 
-    GPathResult fetchXMLData(String url, requestBody) {
-        GPathResult result = null
+    def fetchXMLData(String url, requestBody) {
+        def result = null
         try  {
             HTTPBuilder http = new HTTPBuilder(url)
             http.request(Method.POST, ContentType.XML) { req ->
@@ -784,17 +804,17 @@ class StatsSyncService {
                         result = xml
                     }
                     else {
-                        log.error("server response: ${resp.statusLine}")
+                        result = [error: "server response: ${resp.statusLine}"]
                     }
                 }
                 response.failure = { resp, reader ->
-                    log.error("server response: ${resp.statusLine} - ${reader}")
+                    result = [error: "server response: ${resp.statusLine} - ${reader}"]
                 }
             }
             http.shutdown()
         }
         catch (Exception e) {
-            log.error("invalid response returned for ${url}!")
+            result = [error: "invalid response returned for ${url} - ${e.getMessage()}!"]
             log.error("stack trace: ", e)
             log.error("Request body was: ${requestBody}")
         }
