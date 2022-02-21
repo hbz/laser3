@@ -17,13 +17,13 @@ class LicenseConsCfg extends BaseConfig {
                             'consortia-lic'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],   // TODO custom_impl
+                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'licenseCategory'       : [ FIELD_TYPE_REFDATA ],
                             //'openEnded'             : [ FIELD_TYPE_REFDATA ],
-                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ FIELD_TYPE_REFDATA ]
                             //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],

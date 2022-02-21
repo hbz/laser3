@@ -30,6 +30,7 @@ class GenericHelper {
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
         def tmp = objConfig.fields.get(fieldName)
         if (tmp) {
+            //println '- GenericHelper.getFieldType() ' + objConfig.meta + ' . ' + fieldName + ' > ' + tmp[0]
             tmp[0]
         }
         else {
@@ -67,6 +68,8 @@ class GenericHelper {
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
             // LaserReportingTagLib:reportFilterRefdataRelTable
+
+            //println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ---> BaseConfig.getCustomImplRefdata()'
 
             Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
             label = customRdv.get('label')
