@@ -59,27 +59,27 @@ class BaseConfig {
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
 
-    static String CUSTOM_IMPL_KEY_SUBJECT_GROUP     = 'subjectGroup'
-    static String CUSTOM_IMPL_KEY_ORG_TYPE          = 'orgType'
-    static String CUSTOM_IMPL_KEY_CUSTOMER_TYPE     = 'customerType'
-    static String CUSTOM_IMPL_KEY_LEGAL_INFO        = 'legalInfo'
-    static String CUSTOM_IMPL_KEY_ANNUAL            = 'annual'
-    static String CUSTOM_IMPL_KEY_STARTDATE_LIMIT   = 'startDateLimit'
-    static String CUSTOM_IMPL_KEY_ENDDATE_LIMIT     = 'endDateLimit'
-    static String CUSTOM_IMPL_KEY_PROPERTY_KEY      = 'propertyKey'
-    static String CUSTOM_IMPL_KEY_PROPERTY_VALUE    = 'propertyValue'
+    static String REFDATA_JOINTABLE_KEY_ORG_TYPE    = 'orgType'
 
-    static String CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE       = 'pkg'
-    static String CUSTOM_IMPL_KEY_IE_STATUS             = 'status'
-    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION       = 'subscription'
+    static String CI_KEY_CUSTOMER_TYPE          = 'customerType'
+    static String CI_KEY_LEGAL_INFO             = 'legalInfo'
+    static String CI_KEY_ANNUAL                 = 'annual'
+    static String CI_KEY_ENDDATE_LIMIT          = 'endDateLimit'
+    static String CI_KEY_STARTDATE_LIMIT        = 'startDateLimit'
+    static String CI_KEY_PROPERTY_KEY           = 'propertyKey'
+    static String CI_KEY_PROPERTY_VALUE         = 'propertyValue'
+    static String CI_KEY_SUBJECT_GROUP          = 'subjectGroup'
 
-    static String CUSTOM_IMPL_KEY_PLT_ORG                   = 'org'
-    static String CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER       = 'serviceProvider'
-    static String CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER      = 'softwareProvider'
+    static String CUSTOM_IMPL_KEY_IE_PACKAGE        = 'issueEntitlement/pkg'
+    static String CUSTOM_IMPL_KEY_IE_SUBSCRIPTION   = 'issueEntitlement/subscription'
 
+    static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement/status'
     static String CI_GENERIC_PACKAGE_OR_PROVIDER    = 'package/orgRole/provider'
     static String CI_GENERIC_PACKAGE_PLATFORM       = 'package/platform'
     static String CI_GENERIC_PACKAGE_STATUS         = 'package/packageStatus'
+    static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform/serviceProvider'
+    static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform/softwareProvider'
+    static String CI_GENERIC_PLATFORM_ORG               = 'platform/org'
     static String CI_GENERIC_SUBSCRIPTION_STATUS    = 'subscription/status'
 
     static List<String> FILTER = [
@@ -181,19 +181,14 @@ class BaseConfig {
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.customImpl.'
 
-        if (key == CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
-            return [
-                    label: messageSource.getMessage('org.subjectGroup.label', null, locale),
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_ORG_TYPE) {
+
+        if (key == REFDATA_JOINTABLE_KEY_ORG_TYPE) {
             return [
                     label: messageSource.getMessage('org.orgType.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
+        else if (key == CI_KEY_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
@@ -203,53 +198,53 @@ class BaseConfig {
                     ] }
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_LEGAL_INFO) {
+        else if (key == CI_KEY_LEGAL_INFO) {
             Locale localeDe = new Locale.Builder().setLanguage("de").build()
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
             return [
                     label: messageSource.getMessage(ck + 'legalInfo.label', null, locale),
                     from: [
-                        [   id: 0,
-                            value_de: messageSource.getMessage(ck + 'legalInfo.0', null, localeDe),
-                            value_en: messageSource.getMessage(ck + 'legalInfo.0', null, localeEn),
-                        ],
-                        [   id: 1,
-                            value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
-                            value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
-                        ],  // ui icon green check circle
-                        [   id: 2,
-                            value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
-                            value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
-                        ],  // ui icon grey outline circle
-                        [   id: 3,
-                            value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
-                            value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
-                        ]   // ui icon red question mark
-            ]]
+                            [   id: 0,
+                                value_de: messageSource.getMessage(ck + 'legalInfo.0', null, localeDe),
+                                value_en: messageSource.getMessage(ck + 'legalInfo.0', null, localeEn),
+                            ],
+                            [   id: 1,
+                                value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
+                                value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
+                            ],  // ui icon green check circle
+                            [   id: 2,
+                                value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
+                                value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
+                            ],  // ui icon grey outline circle
+                            [   id: 3,
+                                value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
+                                value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
+                            ]   // ui icon red question mark
+                    ]]
         }
-        else if (key == CUSTOM_IMPL_KEY_ANNUAL) {
+        else if (key == CI_KEY_ANNUAL) {
             Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + 'annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0 as Long, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
-            Long y = Year.now().value // frontend
-            return [
-                    label: messageSource.getMessage(ck + 'startDateLimit.label', null, locale),
-                    from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
+        else if (key == CI_KEY_ENDDATE_LIMIT) {
             Long y = Year.now().value // frontend
             return [
                     label: messageSource.getMessage(ck + 'endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+        else if (key == CI_KEY_STARTDATE_LIMIT) {
+            Long y = Year.now().value // frontend
+            return [
+                    label: messageSource.getMessage(ck + 'startDateLimit.label', null, locale),
+                    from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
+            ]
+        }
+        else if (key == CI_KEY_PROPERTY_KEY) {
             String descr = ''
 
             if (clazz == License) { descr = PropertyDefinition.LIC_PROP }
@@ -270,13 +265,19 @@ class BaseConfig {
                     ]}
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PROPERTY_VALUE) {
+        else if (key == CI_KEY_PROPERTY_VALUE) {
             return [
                     label: 'Merkmalswert (nur Referenzwerte)',
                     from: []
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_IE_TIPP_PACKAGE) {
+        if (key == CI_KEY_SUBJECT_GROUP) {
+            return [
+                    label: messageSource.getMessage('org.subjectGroup.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+            ]
+        }
+        else if (key == CUSTOM_IMPL_KEY_IE_PACKAGE) {
 
             List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
@@ -295,15 +296,28 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
+
+        else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
+            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
             return [
-                    label: messageSource.getMessage('platform.label', null, locale),
-                    //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[ // ?
-                    from: Platform.executeQuery('select plt from Platform plt order by plt.name').collect{[
+                    label: messageSource.getMessage('subscription.label', null, locale),
+                    from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
+                        [
                             id: it.id,
-                            value_de: it.name,
-                            value_en: it.name,
+                            value_de: it.getLabel(),
+                            value_en: it.getLabel(),
                     ]}
+            ]
+        }
+        else if (key == CI_GENERIC_IE_STATUS) {
+            return [
+                    label: messageSource.getMessage('default.status.label', null, locale),
+                    from: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_DELETED].collect{
+                        [
+                                id: it.id,
+                                value_de: it.getI10n('value', 'de'),
+                                value_en: it.getI10n('value', 'en'),
+                        ]}
             ]
         }
         else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
@@ -317,43 +331,15 @@ class BaseConfig {
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
-        else if (key == CI_GENERIC_SUBSCRIPTION_STATUS) {
+        else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
-                    label: messageSource.getMessage('subscription.status.label', null, locale),
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_IE_STATUS) {
-            return [
-                    label: messageSource.getMessage('default.status.label', null, locale),
-                    from: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_DELETED].collect{
-                        [
+                    label: messageSource.getMessage('platform.label', null, locale),
+                    //from: Platform.executeQuery('select distinct(plt) from Package pkg join pkg.nominalPlatform plt order by plt.name').collect{[ // ?
+                    from: Platform.executeQuery('select plt from Platform plt order by plt.name').collect{[
                             id: it.id,
-                            value_de: it.getI10n('value', 'de'),
-                            value_en: it.getI10n('value', 'en'),
+                            value_de: it.name,
+                            value_en: it.name,
                     ]}
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_IE_SUBSCRIPTION) {
-            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
-            return [
-                    label: messageSource.getMessage('subscription.label', null, locale),
-                    from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
-                        [
-                            id: it.id,
-                            value_de: it.getLabel(),
-                            value_en: it.getLabel(),
-                    ]}
-            ]
-        }
-        else if (key == CUSTOM_IMPL_KEY_PLT_ORG) {
-            return [
-                    label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
-                        id: it.id,
-                        value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
-                        value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
-                ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
         else if (key == CI_GENERIC_PACKAGE_STATUS) {
@@ -362,16 +348,32 @@ class BaseConfig {
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_SERVICEPROVIDER) {
+        else if (key == CI_GENERIC_PLATFORM_ORG) {
+            return [
+                    label: messageSource.getMessage('platform.provider', null, locale),
+                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
+                            id: it.id,
+                            value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                            value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CI_GENERIC_PLATFORM_SERVICEPROVIDER) {
             return [
                     label: messageSource.getMessage('platform.serviceProvider', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
             ]
         }
-        else if (key == CUSTOM_IMPL_KEY_PLT_SOFTWAREPROVIDER) {
+        else if (key == CI_GENERIC_PLATFORM_SOFTWAREPROVIDER) {
             return [
                     label: messageSource.getMessage('platform.softwareProvider', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.Y_N)
+            ]
+        }
+        else if (key == CI_GENERIC_SUBSCRIPTION_STATUS) {
+            return [
+                    label: messageSource.getMessage('subscription.status.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
             ]
         }
     }

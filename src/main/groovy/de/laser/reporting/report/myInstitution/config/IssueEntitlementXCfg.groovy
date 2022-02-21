@@ -21,11 +21,11 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'status'            : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'pkg'               : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'package/platform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'package/orgRole/provider'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subscription'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'issueEntitlement/status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'issueEntitlement/pkg'          : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package/platform'              : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'package/orgRole/provider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
+                            'issueEntitlement/subscription' : [ FIELD_TYPE_CUSTOM_IMPL ],
 
                             'package/packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ]
@@ -35,8 +35,8 @@ class IssueEntitlementXCfg extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'package/packageStatus', 'subscription/status', 'status' ],
-                                    [ 'pkg', 'subscription' ],
+                                    [ 'package/packageStatus', 'subscription/status', 'issueEntitlement/status' ],
+                                    [ 'issueEntitlement/pkg', 'issueEntitlement/subscription' ],
                                     [ 'package/orgRole/provider', 'package/platform' ]
                             ]
                     ],

@@ -150,7 +150,7 @@ where (consOr.roleType = :consRoleType)
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ORG_TYPE) {
+                    if (p == BaseConfig.REFDATA_JOINTABLE_KEY_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
@@ -160,21 +160,21 @@ where (consOr.roleType = :consRoleType)
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CI_KEY_SUBJECT_GROUP) {
                         queryParts.add('OrgSubjectGroup osg')
                         whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_LEGAL_INFO) {
+                    else if (p == BaseConfig.CI_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CI_KEY_CUSTOMER_TYPE) {
                         queryParts.add('OrgSetting oss')
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
@@ -186,7 +186,7 @@ where (consOr.roleType = :consRoleType)
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                    else if (p == BaseConfig.CI_KEY_PROPERTY_KEY) {
                         Long pValue = params.long('filter:org_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(

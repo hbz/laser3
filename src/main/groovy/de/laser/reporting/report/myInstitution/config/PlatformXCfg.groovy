@@ -19,13 +19,13 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
-                            'org'                       : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'platform/org'              : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ FIELD_TYPE_ELASTICSEARCH ],
                             'proxySupported'            : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'serviceProvider'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'platform/serviceProvider'  : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'shibbolethAuthentication'  : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'softwareProvider'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'platform/softwareProvider' : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'status'                    : [ FIELD_TYPE_REFDATA ],
                             'package/packageStatus'     : [ FIELD_TYPE_CUSTOM_IMPL ],
                             'subscription/status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
@@ -36,13 +36,13 @@ class PlatformXCfg extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'package/packageStatus', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'org'],
+                                    [ 'platform/serviceProvider', 'platform/softwareProvider', 'platform/org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ],
                             my: [
                                     [ 'package/packageStatus', 'subscription/status', 'status'],
-                                    [ 'serviceProvider', 'softwareProvider', 'org'],
+                                    [ 'platform/serviceProvider', 'platform/softwareProvider', 'platform/org'],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
                                     [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
                             ]
@@ -149,10 +149,10 @@ class PlatformXCfg extends BaseConfig {
     static Map<String, Boolean> DETAILS_TABLE_CONFIG = [
 
             'name' : true,
-            'org' : true,     // TODO - move to query2 !?
+            'platform/org' : true,     // TODO - move to query2 !?
             'primaryUrl' : true,
-            'serviceProvider' : false,
-            'softwareProvider' : false,
+            'platform/serviceProvider' : false,
+            'platform/softwareProvider' : false,
             'status' : false,
             'platform-ipAuthentication' : false, // ES
             'platform-shibbolethAuthentication' : false, // ES

@@ -52,7 +52,7 @@
                         <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="org">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_ORG}">
 
                         <g:if test="${plt.org}">
                             <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
@@ -66,12 +66,12 @@
                         </g:if>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="serviceProvider">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER}">
 
                         ${plt.serviceProvider?.getI10n('value')}
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="softwareProvider">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER}">
 
                         ${plt.softwareProvider?.getI10n('value')}
                     </laser:reportDetailsTableTD>
