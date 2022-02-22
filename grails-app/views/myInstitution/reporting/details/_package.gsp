@@ -157,7 +157,7 @@
                         </g:if>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="language">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-language">
 
                         <g:each in="${pkg.languages}" var="lang">
                             ${lang.language.getI10n('value')} <br />

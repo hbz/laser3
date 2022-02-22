@@ -19,6 +19,8 @@ class PlatformXCfg extends BaseConfig {
                             'my-plt'
                     ],
                     fields: [
+                            'name'                      : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
+                            'primaryUrl'                : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
                             'org'                       : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_ORG, spec: FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: FIELD_TYPE_ELASTICSEARCH ],

@@ -19,6 +19,8 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
+                            'name'                      : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
+                            'sortname'                  : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
                             'breakable'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                 //'consistent'        : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'contentType'               : [ type: FIELD_TYPE_REFDATA ],
@@ -179,6 +181,7 @@ class PackageXCfg extends BaseConfig {
             'package-x-id'              : [                 export: true,   mapping: 'identifiers',     label: 'identifier.label'],
             'package-x-nationalRange'   : [                                 mapping: 'nationalRanges',  label: 'package.nationalRange.label'],
             'package-x-regionalRange'   : [                                 mapping: 'regionalRanges',  label: 'package.regionalRange.label'],
+            'package-x-language'        : [                 export: true,   mapping: 'languages',       label: 'package.language.label', rdc: RDConstants.LANGUAGE],
             'package-x-ddc'             : [                 export: true,   mapping: 'ddcs',            label: 'package.ddc.label', rdc: RDConstants.DDC]
     ]
 
@@ -202,7 +205,7 @@ class PackageXCfg extends BaseConfig {
             'package-x-ddc' : false, // ES
             'package-x-nationalRange' : false, // ES
             'package-x-regionalRange' : false, // ES
-            'language' : false,
+            'package-x-language' : false, // ES
             'package-description' : false, // ES
             'package-descriptionURL' : false, // ES
             'package-x-curatoryGroup' : false, // ES
