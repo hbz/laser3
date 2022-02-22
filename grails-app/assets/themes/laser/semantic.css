@@ -7323,6 +7323,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 .ui.header.la-noMargin-top {
   margin-top: 1rem;
   text-align: left;
+  position: relative;
 }
 /*!
  * # Semantic UI 2.4.2 - Icon
@@ -13819,6 +13820,38 @@ i.inverted.circular.icon.la-filter-icon {
 .la-rotate {
   -webkit-transform: translateY(3px) rotate(90deg);
   transform: translateY(3px) rotate(90deg);
+}
+
+.la-subscriptionIsChild {
+  position: absolute;
+  left: 24px;
+  top: -15px;
+  background-color: white;
+  font-size: 0.6em !important;
+  -webkit-box-shadow: 0 0 0 0.1em #fa820a inset !important;
+  box-shadow: 0 0 0 0.1em #fa820a inset !important;
+  padding: 0em;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+/* change style when page scrolled down*/
+
+i.orange.icon.la-subscriptionIsChild.fixed {
+  position: fixed;
+  margin-left: 150px!important;
+  background-color: transparent!important;
+  color: gray!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+  -webkit-transition: all 1s ease;
+  transition: all 1s ease;
+}
+
+@media only screen and (max-width: 992px) {
+  i.orange.icon.la-subscriptionIsChild.fixed {
+    display: none;
+  }
 }
 /*!
  * # Semantic UI 2.4.2 - Image
