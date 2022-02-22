@@ -99,14 +99,14 @@ class IssueEntitlementFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CI_CTX_IE_PACKAGE) {
+                    if (p == 'package') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         whereParts.add('ie.tipp = tipp and tipp.pkg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = de.laser.Package.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_PLATFORM) {
+                    else if (p == 'packageNominalPlatform') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         whereParts.add('ie.tipp = tipp and tipp.pkg = pkg and pkg.nominalPlatform.id = :p' + (++pCount))
@@ -114,7 +114,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = Platform.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER) {
+                    else if (p == 'orProvider') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         queryParts.add('OrgRole ro')
@@ -127,19 +127,19 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = Org.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_IE_STATUS) {
+                    else if (p == 'status') {
                         whereParts.add( 'ie.status.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_CTX_IE_SUBSCRIPTION) {
+                    else if (p == 'subscription') {
                         whereParts.add('ie.subscription.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = Subscription.get(params.long(key)).getLabel()
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
+                    else if (p == 'packageStatus') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')
 
@@ -148,7 +148,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
+                    else if (p == 'subscriptionStatus') {
                         queryParts.add('Subscription sub')
                         whereParts.add('ie.subscription = sub and sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
@@ -180,9 +180,9 @@ class IssueEntitlementFilter extends BaseFilter {
             tmp = tmp.drop(TMP_QUERY_CONSTRAINT) as List<Long>
             tmpIdSet.addAll( IssueEntitlement.executeQuery( query, queryParams ))
         }
-        List<Long> idList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
+        List<Long> issueEntitlementIdList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
 
-        filterResult.data.put( BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', idList) // postgresql: out-of-range
+        filterResult.data.put(BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', issueEntitlementIdList) // postgresql: out-of-range
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
@@ -203,18 +203,16 @@ class IssueEntitlementFilter extends BaseFilter {
 
         // -- ES --
 
-        List<Long> pkgIdList = filterResult.data.getAt( BaseConfig.KEY_PACKAGE + 'IdList') as List
+        List<Long> pkgIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PACKAGE )
         ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, pkgIdList, cmbKey, filterResult, params )
 
-        List<Long> pltIdList = filterResult.data.getAt( BaseConfig.KEY_PLATFORM + 'IdList') as List
+        List<Long> pltIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PLATFORM )
         ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, pltIdList, cmbKey, filterResult, params )
 
         filterResult
     }
 
     static void _handleInternalSubscriptionFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct(ie.subscription.id) from IssueEntitlement ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -225,8 +223,6 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalPackageFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct (pkg.id) from SubscriptionPackage subPkg join subPkg.pkg pkg join subPkg.subscription sub join sub.issueEntitlements ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -237,8 +233,7 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
+        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 
@@ -249,8 +244,7 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
+        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 

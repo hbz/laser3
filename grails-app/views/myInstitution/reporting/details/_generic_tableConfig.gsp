@@ -30,7 +30,7 @@
                 BaseDetails.reorderFieldsInColumnsForUI( dtCfg, 3 ).each { col ->
                     println '<div class="field grouped fields">'
                     col.each { k, b ->
-                        String label = BaseDetails.getFieldLabelforColumns( key, k )
+                        String label = BaseDetails.getFieldLabelforColumn( key, k )
                         if (esData.containsKey(k)) {
                             label = label + ' (we:kb)'
                         }

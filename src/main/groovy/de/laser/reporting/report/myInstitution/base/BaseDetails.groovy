@@ -78,14 +78,12 @@ class BaseDetails {
         result
     }
 
-    static String getFieldLabelforColumns(String key, String field) {
+    static String getFieldLabelforColumn(String key, String field) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         Map<String, Object> esDataConfig = BaseConfig.getCurrentEsData(key)
 
-//        println ' ... ' + key + ' ------ ' + field
-//        println esDataConfig
-
+        // println ' > BaseDetails.getFieldLabelforColumn() ' + key + ' + ' + field
         String label = field
 
         if (field.startsWith( key + '-' )) {

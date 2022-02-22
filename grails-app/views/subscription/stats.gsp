@@ -26,7 +26,9 @@
             <g:render template="actions" />
         </semui:controlButtons>
         <h1 class="ui icon header la-noMargin-top">
-            <semui:headerIcon />${subscription.name}
+            <semui:headerIcon />
+            <g:render template="iconSubscriptionIsChild"/>
+            ${subscription.name}
         </h1>
         <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

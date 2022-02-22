@@ -19,14 +19,14 @@ class LicenseInstCfg extends BaseConfig {
                             'inst-lic-local'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
-                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'licenseCategory'       : [ FIELD_TYPE_REFDATA ],
-                            //'openEnded'             : [ FIELD_TYPE_REFDATA ],
-                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'status'                : [ FIELD_TYPE_REFDATA ]
+                            'annual'                : [ type: FIELD_TYPE_CUSTOM_IMPL, spec: FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'endDateLimit'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'licenseCategory'       : [ type: FIELD_TYPE_REFDATA ],
+                            //'openEnded'             : [ type: FIELD_TYPE_REFDATA ],
+                            'propertyKey'           : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'startDateLimit'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'status'                : [ type: FIELD_TYPE_REFDATA ]
                             //'type'                  : FIELD_TYPE_REFDATA
                     ],
                     filter : [
@@ -77,9 +77,9 @@ class LicenseInstCfg extends BaseConfig {
                             'depending-licensor'
                     ],
                     fields : [
-                            'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'country'   : [ type: FIELD_TYPE_REFDATA ],
+                            'region'    : [ type: FIELD_TYPE_REFDATA, spec: FIELD_IS_VIRTUAL ],
+                            'orgType'   : [ type: FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
                             default : []

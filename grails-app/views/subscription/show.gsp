@@ -34,6 +34,7 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<g:render template="iconSubscriptionIsChild"/>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <g:if test="${editable}">

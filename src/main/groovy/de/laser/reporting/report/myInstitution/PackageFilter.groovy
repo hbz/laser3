@@ -104,7 +104,7 @@ class PackageFilter extends BaseFilter {
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_GENERIC_PACKAGE_PLATFORM) {
+                    if (p == 'nominalPlatform') {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
                         queryParts.add('Platform plt')
@@ -113,7 +113,7 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER) {
+                    else if (p == 'orProvider') {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
                         queryParts.add('OrgRole ro')
@@ -124,7 +124,7 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
+                    else if (p == 'subscriptionStatus') {
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
@@ -158,14 +158,12 @@ class PackageFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        List<Long> idList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
-        // println 'local matches: ' + idList.size()
-
-        // -- ES --
-
-        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, idList, cmbKey, filterResult, params )
+        List<Long> packageIdList = queryParams.packageIdList ? Package.executeQuery( query, queryParams ) : []
+        filterResult.data.put(BaseConfig.KEY_PACKAGE + 'IdList', packageIdList)
 
         // -- SUB --
+
+        // println filterResult.data.get('packageIdList')
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).keySet().each{ pk ->
             if (pk != 'base') {
@@ -178,12 +176,17 @@ class PackageFilter extends BaseFilter {
             }
         }
 
+        // -- ES --
+
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, packageIdList, cmbKey, filterResult, params )
+
+        List<Long> pltIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PLATFORM )
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, pltIdList, cmbKey, filterResult, params )
+
         filterResult
     }
 
     static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 
@@ -194,8 +197,6 @@ class PackageFilter extends BaseFilter {
     }
 
     static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 

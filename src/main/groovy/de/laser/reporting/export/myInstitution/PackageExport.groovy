@@ -12,6 +12,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
@@ -31,26 +32,26 @@ class PackageExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'gokbId'                : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-id'                  : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-provider+sortname+name'      : [ FIELD_TYPE_COMBINATION ],
-                                    'x-platform+name+primaryUrl'    : [ FIELD_TYPE_COMBINATION ],
-                                    'contentType'           : [ FIELD_TYPE_REFDATA ],
-                                    'file'                  : [ FIELD_TYPE_REFDATA ],
-                                    'packageStatus'         : [ FIELD_TYPE_REFDATA ],
-                                    '@-package-titleCount'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'scope'                 : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'consistent'            : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'paymentType'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'openAccess'            : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'breakable'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-ddc'                 : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-curatoryGroup'       : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'description'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'descriptionURL'        : [ FIELD_TYPE_ELASTICSEARCH ]
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'altname'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-id'                  : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-provider+sortname+name'      : [ type: FIELD_TYPE_COMBINATION ],
+                                    'x-platform+name+primaryUrl'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'contentType'           : [ type: FIELD_TYPE_REFDATA ],
+                                    'file'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'packageStatus'         : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-package-titleCount'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'scope'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'consistent'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'paymentType'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'openAccess'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'breakable'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-ddc'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-curatoryGroup'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'description'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'descriptionURL'        : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             ]
                     ]
             ]
@@ -81,7 +82,7 @@ class PackageExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -96,7 +97,7 @@ class PackageExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(pkg.id)) {
-                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
                             }
@@ -136,7 +137,7 @@ class PackageExport extends BaseDetailsExport {
                     content.add( titles )
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> custom query depending filter implementation
@@ -149,7 +150,7 @@ class PackageExport extends BaseDetailsExport {
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> elastic search
@@ -211,7 +212,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> combined properties : TODO
@@ -234,7 +235,7 @@ class PackageExport extends BaseDetailsExport {
 
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

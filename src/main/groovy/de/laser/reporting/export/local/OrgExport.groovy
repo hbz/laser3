@@ -24,38 +24,38 @@ class OrgExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
-                                    'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                                    'libraryType'       : [ FIELD_TYPE_REFDATA ],
-                                    'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
-                                    'funderHskType'     : [ FIELD_TYPE_REFDATA ],
-                                    'funderType'        : [ FIELD_TYPE_REFDATA ],
-                                    'country'           : [ FIELD_TYPE_REFDATA ],
-                                    'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
-                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-org-accessPoint' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-org-readerNumber': [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'customerType'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'libraryType'       : [ type: FIELD_TYPE_REFDATA ],
+                                    'libraryNetwork'    : [ type: FIELD_TYPE_REFDATA ],
+                                    'funderHskType'     : [ type: FIELD_TYPE_REFDATA ],
+                                    'funderType'        : [ type: FIELD_TYPE_REFDATA ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    'legalInfo'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'eInvoice'          : [ type: FIELD_TYPE_PROPERTY ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-accessPoint' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-readerNumber': [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'subjectGroup'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
                             provider: [
-                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                                    'country'           : [ FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]
                             ],
                             agency: [
-                                    'globalUID'         : [ FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                                    'country'           : [ FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'x-identifier'      : [ FIELD_TYPE_CUSTOM_IMPL ]
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]
                             ]
                     ]
             ]
@@ -86,7 +86,7 @@ class OrgExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -283,7 +283,7 @@ class OrgExport extends BaseDetailsExport {
                 content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

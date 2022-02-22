@@ -11,7 +11,10 @@
 
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Subscription"/>
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:render template="iconSubscriptionIsChild"/>
+</g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <semui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"

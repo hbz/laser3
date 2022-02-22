@@ -6,6 +6,7 @@ import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
@@ -24,28 +25,28 @@ class PlatformExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'gokbId'                : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'altname'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'org+sortname+name'     : [ FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
-                                    'primaryUrl'            : [ FIELD_TYPE_PROPERTY ],
-                                    'serviceProvider'       : [ FIELD_TYPE_REFDATA ],
-                                    'softwareProvider'      : [ FIELD_TYPE_REFDATA ],
-                                    'status'                : [ FIELD_TYPE_REFDATA ],
-                                    'ipAuthentication'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'shibbolethAuthentication'     : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'passwordAuthentication'       : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'proxySupported'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsFormat'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsUpdate'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterCertified'             : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR3Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5Supported'           : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5SushiApiSupported'   : [ FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-property'                   : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'altname'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'org+sortname+name'     : [ type: FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
+                                    'primaryUrl'            : [ type: FIELD_TYPE_PROPERTY ],
+                                    'serviceProvider'       : [ type: FIELD_TYPE_REFDATA ],
+                                    'softwareProvider'      : [ type: FIELD_TYPE_REFDATA ],
+                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'ipAuthentication'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'shibbolethAuthentication'     : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'passwordAuthentication'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'proxySupported'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsFormat'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsUpdate'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterCertified'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR3Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-property'                   : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
@@ -76,7 +77,7 @@ class PlatformExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -91,7 +92,7 @@ class PlatformExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(plt.id)) {
-                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }
@@ -114,7 +115,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -126,7 +127,7 @@ class PlatformExport extends BaseDetailsExport {
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> elastic search
@@ -163,7 +164,7 @@ class PlatformExport extends BaseDetailsExport {
                     }
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> combined properties : TODO
@@ -172,7 +173,7 @@ class PlatformExport extends BaseDetailsExport {
                 content.add( plt.org?.getProperty(prop) ?: '' )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

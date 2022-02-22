@@ -19,28 +19,28 @@ class PackageXCfg extends BaseConfig {
                             'my-pkg'
                     ],
                     fields: [
-                            'breakable'         : [ FIELD_TYPE_ELASTICSEARCH ],
-                            //'consistent'        : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'contentType'       : [ FIELD_TYPE_REFDATA ],
-                            'file'              : [ FIELD_TYPE_REFDATA ],
-                            'openAccess'        : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'packageStatus'             : [ FIELD_TYPE_REFDATA ],
-                            'subscription$status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'paymentType'               : [ FIELD_TYPE_ELASTICSEARCH ],
-                            'package$platform'          : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'package$orgRole$provider'  : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],
-                            'scope'                     : [ FIELD_TYPE_ELASTICSEARCH ]
+                            'breakable'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                //'consistent'        : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                            'contentType'               : [ type: FIELD_TYPE_REFDATA ],
+                            'file'                      : [ type: FIELD_TYPE_REFDATA ],
+                            'openAccess'                : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                            'packageStatus'             : [ type: FIELD_TYPE_REFDATA ],
+                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'paymentType'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                            'nominalPlatform'           : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_PLATFORM, spec: FIELD_IS_MULTIPLE ],
+                            'orProvider'                : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_OR_PROVIDER, spec: FIELD_IS_MULTIPLE ],
+                            'scope'                     : [ type: FIELD_TYPE_ELASTICSEARCH ]
                     ],
                     filter : [
                             default: [
                                     [ 'contentType', 'packageStatus' ],
-                                    [ 'file', 'package$orgRole$provider', 'package$platform' ],
+                                    [ 'file', 'orProvider', 'nominalPlatform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ],
                             my: [
-                                    [ 'contentType',  'subscription$status', 'packageStatus' ],
-                                    [ 'file', 'package$orgRole$provider', 'package$platform' ],
+                                    [ 'contentType',  'subscriptionStatus', 'packageStatus' ],
+                                    [ 'file', 'orProvider', 'nominalPlatform' ],
                                     [ 'breakable', 'scope' ],
                                     [ 'paymentType', 'openAccess']
                             ]
@@ -190,8 +190,8 @@ class PackageXCfg extends BaseConfig {
             'package-x-id' : false, // ES
             'contentType' : false,
             'packageStatus' : false,
-            'package$orgRole$provider' : true,
-            'package$platform' : true,
+            'orProvider' : true,
+            'nominalPlatform' : true,
             'file' : false,
             '_+_currentTitles' : true, // virtual
             'package-breakable' : false, // ES
