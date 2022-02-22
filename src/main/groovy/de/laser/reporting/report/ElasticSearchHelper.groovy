@@ -42,6 +42,7 @@ class ElasticSearchHelper {
         BaseFilter.getCurrentFilterKeys(params, cmbKey).each { key ->
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
+                // println 'ElasticSearchHelper - ' + cfgKey
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( cfgKey ).base, p)
                 String pEsData = cfgKey + '-' + p
 

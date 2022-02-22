@@ -104,7 +104,7 @@ class PackageFilter extends BaseFilter {
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CI_GENERIC_PACKAGE_PLATFORM) {
+                    if (p == 'nominalPlatform') {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
                         queryParts.add('Platform plt')
@@ -113,7 +113,7 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = Platform.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER) {
+                    else if (p == 'orProvider') {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
                         queryParts.add('OrgRole ro')
@@ -124,7 +124,7 @@ class PackageFilter extends BaseFilter {
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
+                    else if (p == 'subscriptionStatus') {
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))

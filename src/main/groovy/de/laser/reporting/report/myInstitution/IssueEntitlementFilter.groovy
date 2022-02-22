@@ -99,14 +99,14 @@ class IssueEntitlementFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CI_CTX_IE_PACKAGE) {
+                    if (p == 'package') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         whereParts.add('ie.tipp = tipp and tipp.pkg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = de.laser.Package.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_PLATFORM) {
+                    else if (p == 'packageNominalPlatform') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         whereParts.add('ie.tipp = tipp and tipp.pkg = pkg and pkg.nominalPlatform.id = :p' + (++pCount))
@@ -114,7 +114,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = Platform.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER) {
+                    else if (p == 'orProvider') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')  // status !!
                         queryParts.add('OrgRole ro')
@@ -127,19 +127,19 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = Org.get(params.long(key)).name
                     }
-                    else if (p == BaseConfig.CI_GENERIC_IE_STATUS) {
+                    else if (p == 'status') {
                         whereParts.add( 'ie.status.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_CTX_IE_SUBSCRIPTION) {
+                    else if (p == 'subscription') {
                         whereParts.add('ie.subscription.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
                         filterLabelValue = Subscription.get(params.long(key)).getLabel()
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
+                    else if (p == 'packageStatus') {
                         queryParts.add('TitleInstancePackagePlatform tipp')
                         queryParts.add('Package pkg')
 
@@ -148,7 +148,7 @@ class IssueEntitlementFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
+                    else if (p == 'subscriptionStatus') {
                         queryParts.add('Subscription sub')
                         whereParts.add('ie.subscription = sub and sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))

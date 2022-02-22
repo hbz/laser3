@@ -13,8 +13,8 @@ class GenericHelper {
 
     static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
         //println 'isFieldMultiple ' + cfg?.meta + ' ' + fieldName
-        List<String> field = cfg?.fields?.get(fieldName) ?: []
-        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_MULTIPLE
+        Map field = cfg?.fields?.get(fieldName) ?: [:]
+        field.size() > 1 && field.spec == BaseConfig.FIELD_IS_MULTIPLE
     }
 
     static boolean isCollection(def obj) {
@@ -23,27 +23,31 @@ class GenericHelper {
 
     static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
         //println 'isFieldVirtual ' + cfg?.meta + ' ' + fieldName
-        List<String> field = cfg?.fields?.get(fieldName) ?: []
-        field.size() > 1 && field[1] == BaseConfig.FIELD_IS_VIRTUAL
+        Map field = cfg?.fields?.get(fieldName) ?: [:]
+        field.size() > 1 && field.spec == BaseConfig.FIELD_IS_VIRTUAL
     }
 
-    static String getFieldType(Map<String, Object> objConfig, String fieldName) {
-        def tmp = objConfig.fields.get(fieldName)
-        if (tmp) {
-            //println '- GenericHelper.getFieldType() ' + objConfig.meta + ' . ' + fieldName + ' > ' + tmp[0]
-            tmp[0]
+    static Map<String, Object> getField(Map<String, Object> objConfig, String fieldName) {
+        Map field = objConfig.fields.get(fieldName)
+        if (field) {
+            field
         }
         else {
-            //println '- GenericHelper.getFieldType() ' + fieldName + ' not found'
-            //println '                               ' + objConfig.meta
+            println '- GenericHelper.getField() ' + fieldName + ' for ' + objConfig.meta + ' not found'
             null
         }
     }
 
-    static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
+    static String getFieldType(Map<String, Object> objConfig, String fieldName) {
+        // println '- GenericHelper.getFieldType() : ' + fieldName
+        getField(objConfig, fieldName)?.type
+    }
 
+    static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
+        // println '- GenericHelper.getFieldLabel() : ' + fieldName
         String label = '?'
-        String type = getFieldType(objConfig, fieldName)
+        Map<String, Object> field = getField(objConfig, fieldName)
+        String type = field?.type
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
@@ -71,13 +75,16 @@ class GenericHelper {
 
             //println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ---> BaseConfig.getCustomImplRefdata()'
 
-            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(fieldName)
+            Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(field.customImplRdv ?: fieldName)
             label = customRdv.get('label')
         }
         else if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
             // LaserReportingTagLib:reportFilterRefdataRelTable
 
-            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(fieldName)
+            // println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_CUSTOM_IMPL ---> BaseConfig.getCustomImplRefdata( ' + fieldName + ') ' + field
+            // println objConfig
+
+            Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(field.customImplRdv ?: fieldName)
             if (!rdv) {
                 println '>> ' + fieldName + ' : ' + type + ' not found!'
             }

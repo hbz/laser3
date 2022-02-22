@@ -70,6 +70,7 @@ class PlatformFilter extends BaseFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
+                // println '* PlatformFilter.filter() ' + p
                 String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base, p)
 
                 def filterLabelValue
@@ -111,7 +112,7 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == BaseConfig.CI_GENERIC_PLATFORM_ORG) {
+                    if (p == 'org') {
                         Long[] pList = params.list(key).collect{ Long.parseLong(it) }
 
                         whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
@@ -119,19 +120,19 @@ class PlatformFilter extends BaseFilter {
 
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER) {
+                    else if (p == 'serviceProvider') {
                         whereParts.add( 'plt.serviceProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER) {
+                    else if (p == 'softwareProvider') {
                         whereParts.add( 'plt.softwareProvider.id = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.long(key) )
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_GENERIC_PACKAGE_STATUS) {
+                    else if (p == 'packageStatus') {
                         queryParts.add('Subscription sub')
 
                         queryParts.add('Package pkg')
@@ -150,7 +151,7 @@ class PlatformFilter extends BaseFilter {
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS) {
+                    else if (p == 'subscriptionStatus') {
                         queryParts.add('Subscription sub')
                         whereParts.add('sub.status.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))

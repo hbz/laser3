@@ -47,23 +47,32 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = GenericHelper.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        println '<laser:reportFilterField>   ' + attrs.key + ' ' + attrs.field
+        Map<String, Object> field = GenericHelper.getField(attrs.config, attrs.field)
         //boolean fieldIsMultiple = GenericHelper.isFieldMultiple(attrs.config, attrs.field)
 
-        if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
-            out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
+        if (! field) {
+            out << '[[ ' + attrs.field + ' ]]'
+            return
         }
-        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
-            out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_PROPERTY) {
+            out << laser.reportFilterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
         }
-        else if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-            out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_REFDATA) {
+            out << laser.reportFilterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
-        else if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-            out << laser.reportFilterCustomImpl(config: attrs.config, field: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
-        else if (fieldType == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
-            out << laser.reportFilterElasticSearch(config: attrs.config, field: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+            if (field.customImplRdv) {
+                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
+            } else {
+                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            }
+        }
+        else if (field.type == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
+            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
     }
 
@@ -143,14 +152,19 @@ class LaserReportingTagLib {
         out << '</div>'
     }
 
-    def reportFilterRefdataRelTable = { attrs, body ->
+    def reportFilterCustomImpl = { attrs, body ->
 
-        //println 'TMP - reportFilterRefdataRelTable: ' + attrs.refdata
+        println '<laser:reportFilterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
 
         // TODO
-        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
-        if (!customRdv) {
-            customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata)
+        Map<String, Object> customRdv
+        if (attrs.customImplRdv) {
+            customRdv = BaseConfig.getCustomImplRefdata(attrs.customImplRdv, attrs.config.meta.class)
+        } else {
+            customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class)
+        }
+        if (! customRdv) {
+            customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata) // TODO !!!!!!!!!!!!!
         }
 
         //println '||->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
@@ -181,16 +195,6 @@ class LaserReportingTagLib {
         }
         out << laser.select( map )
         out << '</div>'
-    }
-
-    def reportFilterCustomImpl = { attrs, body ->
-        //println '> reportFilterCustomImpl: ' + attrs.field
-        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
-    }
-
-    def reportFilterElasticSearch = { attrs, body ->
-        //println '> reportFilterElasticSearch: ' + attrs.field
-        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key) // TODO
     }
 
     def reportObjectProperties = { attrs, body ->
@@ -230,6 +234,7 @@ class LaserReportingTagLib {
 
     def reportDetailsTableTD = { attrs, body ->
 
+        println ' ! reportDetailsTableTD ' + attrs
         Map<String, Boolean> config = attrs.config as Map
 
         if ( config.containsKey( attrs.field )) {

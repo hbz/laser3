@@ -31,7 +31,7 @@
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">
-                    <g:set var="label" value="${ BaseDetails.getFieldLabelforColumns( key, k ) }" />
+                    <g:set var="label" value="${ BaseDetails.getFieldLabelforColumn( key, k ) }" />
 
                     <g:if test="${b}">
                         <th data-column="dtc:${k}">${label}</th>
@@ -52,7 +52,7 @@
                         <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_ORG}">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="org">
 
                         <g:if test="${plt.org}">
                             <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
@@ -66,12 +66,12 @@
                         </g:if>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER}">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="serviceProvider">
 
                         ${plt.serviceProvider?.getI10n('value')}
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER}">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="softwareProvider">
 
                         ${plt.softwareProvider?.getI10n('value')}
                     </laser:reportDetailsTableTD>
