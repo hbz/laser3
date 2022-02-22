@@ -11,24 +11,8 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
-    static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
-        //println 'isFieldMultiple ' + cfg?.meta + ' ' + fieldName
-        Map field = cfg?.fields?.get(fieldName) ?: [:]
-        field.size() > 1 && field.spec == BaseConfig.FIELD_IS_MULTIPLE
-    }
-
-    static boolean isCollection(def obj) {
-        obj instanceof Collection
-    }
-
-    static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
-        //println 'isFieldVirtual ' + cfg?.meta + ' ' + fieldName
-        Map field = cfg?.fields?.get(fieldName) ?: [:]
-        field.size() > 1 && field.spec == BaseConfig.FIELD_IS_VIRTUAL
-    }
-
     static Map<String, Object> getField(Map<String, Object> objConfig, String fieldName) {
-        Map field = objConfig.fields.get(fieldName)
+        Map<String, Object> field = objConfig.fields.get(fieldName)
         if (field) {
             field
         }
@@ -36,6 +20,20 @@ class GenericHelper {
             println '- GenericHelper.getField() ' + fieldName + ' for ' + objConfig.meta + ' not found'
             null
         }
+    }
+
+    static boolean isFieldMultiple(Map<String, Object> cfg, String fieldName) {
+        Map field = getField(cfg, fieldName) ?: [:]
+        field.spec == BaseConfig.FIELD_IS_MULTIPLE
+    }
+
+    static boolean isCollection(def obj) {
+        obj instanceof Collection
+    }
+
+    static boolean isFieldVirtual(Map<String, Object> cfg, String fieldName) {
+        Map field = getField(cfg, fieldName) ?: [:]
+        field.spec == BaseConfig.FIELD_IS_VIRTUAL
     }
 
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
