@@ -403,7 +403,7 @@ class SemanticUiTagLib {
             }
         }
         // for WCAG
-        out << '<section aria-label="filter">'
+        out << '<section class="la-clearfix" aria-label="filter">'
             if (showFilterButton) {
                 out << '<button aria-expanded="' + (extended ?'true':'false')  + '"  class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
                 out << '    Filter'
