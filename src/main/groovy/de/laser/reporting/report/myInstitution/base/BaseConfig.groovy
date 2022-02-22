@@ -71,7 +71,7 @@ class BaseConfig {
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
     static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
-    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG
+    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
     static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
     static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
     static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
@@ -79,7 +79,7 @@ class BaseConfig {
 
     static String CI_CTX_PROPERTY_KEY           = 'propertyKey'
     static String CI_CTX_PROPERTY_VALUE         = 'propertyValue'
-    static String CI_CTX_IE_PACKAGE             = 'issueEntitlement$pkg'                // IE
+    static String CI_CTX_IE_PACKAGE             = 'issueEntitlement$pkg'                // IE -- TODO
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
@@ -177,6 +177,8 @@ class BaseConfig {
         ContextService contextService  = mainContext.getBean('contextService')
         MessageSource messageSource    = mainContext.getBean('messageSource')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+
+        // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
 
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.customImpl.'
@@ -378,6 +380,7 @@ class BaseConfig {
 
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
+        // println 'BaseConfig.getElasticSearchRefdata() ' + key
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         MessageSource messageSource = mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
