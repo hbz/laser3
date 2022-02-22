@@ -46,10 +46,8 @@ class LaserReportingTagLib {
     }
 
     def reportFilterField = { attrs, body ->
-
-        println '<laser:reportFilterField>   ' + attrs.key + ' ' + attrs.field
+        //println '<laser:reportFilterField>   ' + attrs.key + ' ' + attrs.field
         Map<String, Object> field = GenericHelper.getField(attrs.config, attrs.field)
-        //boolean fieldIsMultiple = GenericHelper.isFieldMultiple(attrs.config, attrs.field)
 
         if (! field) {
             out << '[[ ' + attrs.field + ' ]]'
@@ -153,8 +151,7 @@ class LaserReportingTagLib {
     }
 
     def reportFilterCustomImpl = { attrs, body ->
-
-        println '<laser:reportFilterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
+        //println '<laser:reportFilterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
 
         // TODO
         Map<String, Object> customRdv
@@ -233,8 +230,7 @@ class LaserReportingTagLib {
     }
 
     def reportDetailsTableTD = { attrs, body ->
-
-        println ' ! reportDetailsTableTD ' + attrs
+        //println '<laser:reportDetailsTableTD> ' + attrs
         Map<String, Boolean> config = attrs.config as Map
 
         if ( config.containsKey( attrs.field )) {

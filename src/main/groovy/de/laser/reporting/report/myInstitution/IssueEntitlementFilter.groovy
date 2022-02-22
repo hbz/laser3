@@ -180,9 +180,9 @@ class IssueEntitlementFilter extends BaseFilter {
             tmp = tmp.drop(TMP_QUERY_CONSTRAINT) as List<Long>
             tmpIdSet.addAll( IssueEntitlement.executeQuery( query, queryParams ))
         }
-        List<Long> idList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
+        List<Long> issueEntitlementIdList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
 
-        filterResult.data.put( BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', idList) // postgresql: out-of-range
+        filterResult.data.put(BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', issueEntitlementIdList) // postgresql: out-of-range
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
@@ -213,8 +213,6 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalSubscriptionFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct(ie.subscription.id) from IssueEntitlement ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -225,8 +223,6 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalPackageFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('issueEntitlementIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String queryBase = 'select distinct (pkg.id) from SubscriptionPackage subPkg join subPkg.pkg pkg join subPkg.subscription sub join sub.issueEntitlements ie'
         List<String> whereParts = [ 'ie.id in (:issueEntitlementIdList)' ]
 
@@ -237,8 +233,7 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
+        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 
@@ -249,8 +244,7 @@ class IssueEntitlementFilter extends BaseFilter {
     }
 
     static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
+        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 

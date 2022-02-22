@@ -73,7 +73,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -186,7 +186,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

@@ -76,7 +76,7 @@ class PlatformExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -114,7 +114,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -126,7 +126,7 @@ class PlatformExport extends BaseDetailsExport {
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> elastic search
@@ -163,7 +163,7 @@ class PlatformExport extends BaseDetailsExport {
                     }
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> combined properties : TODO
@@ -172,7 +172,7 @@ class PlatformExport extends BaseDetailsExport {
                 content.add( plt.org?.getProperty(prop) ?: '' )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

@@ -81,7 +81,7 @@ class PackageExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -136,7 +136,7 @@ class PackageExport extends BaseDetailsExport {
                     content.add( titles )
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> custom query depending filter implementation
@@ -149,7 +149,7 @@ class PackageExport extends BaseDetailsExport {
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> elastic search
@@ -211,7 +211,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> combined properties : TODO
@@ -234,7 +234,7 @@ class PackageExport extends BaseDetailsExport {
 
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

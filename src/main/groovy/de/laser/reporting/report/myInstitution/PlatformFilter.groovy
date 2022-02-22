@@ -185,12 +185,8 @@ class PlatformFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        List<Long> idList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
-        // println 'local matches: ' + idList.size()
-
-        // -- ES --
-
-        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, idList, cmbKey, filterResult, params )
+        List<Long> platformIdList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
+        filterResult.data.put(BaseConfig.KEY_PLATFORM + 'IdList', platformIdList)
 
         // -- SUB --
 
@@ -200,12 +196,14 @@ class PlatformFilter extends BaseFilter {
             }
         }
 
+        // -- ES --
+
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, platformIdList, cmbKey, filterResult, params )
+
         filterResult
     }
 
     static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        if (! filterResult.data.get('platformIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
-
         String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
         Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
 

@@ -75,7 +75,7 @@ class CostItemExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -151,7 +151,7 @@ class CostItemExport extends BaseDetailsExport {
                 content.add( subscrOr.collect{  it.org.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ) )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

@@ -86,7 +86,7 @@ class OrgExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -283,7 +283,7 @@ class OrgExport extends BaseDetailsExport {
                 content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 
