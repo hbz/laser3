@@ -23,27 +23,27 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'                           : [ FIELD_TYPE_PROPERTY ],
-                                    '@-entitlement-tippName'              : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippTitleType'         : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'medium'                              : [ FIELD_TYPE_REFDATA ],
-                                    'acceptStatus'                        : [ FIELD_TYPE_REFDATA ],
-                                    'status'                              : [ FIELD_TYPE_REFDATA ],
-                                    '@-entitlement-tippFirstAuthor'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippEditionStatement'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippPublisherName'     : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippSeriesName'        : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippFirstEditor'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippOpenAccessX'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippDeweyDecimalClassification' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippLanguage'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippSubjectReference'  : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippProvider+sortname+name' : [ FIELD_TYPE_COMBINATION ],
-                                    '@-entitlement-tippPackage'           : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippPlatform'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippHostPlatformURL'   : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-tippIdentifier'        : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    '@-entitlement-priceItem'             : [ FIELD_TYPE_CUSTOM_IMPL ]
+                                    'globalUID'                           : [ type: FIELD_TYPE_PROPERTY ],
+                                    '@-entitlement-tippName'              : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippTitleType'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'medium'                              : [ type: FIELD_TYPE_REFDATA ],
+                                    'acceptStatus'                        : [ type: FIELD_TYPE_REFDATA ],
+                                    'status'                              : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-entitlement-tippFirstAuthor'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippEditionStatement'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippPublisherName'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippSeriesName'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippFirstEditor'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippOpenAccessX'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippDeweyDecimalClassification' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippLanguage'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippSubjectReference'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippProvider+sortname+name' : [ type: FIELD_TYPE_COMBINATION ],
+                                    '@-entitlement-tippPackage'           : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippPlatform'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippHostPlatformURL'   : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippIdentifier'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-priceItem'             : [ type: FIELD_TYPE_CUSTOM_IMPL ]
                             ]
                     ]
             ]
@@ -73,7 +73,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -186,7 +186,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

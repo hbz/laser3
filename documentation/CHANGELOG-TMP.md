@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
+
 3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen
 
 3833    17.02.2022  dev     2.3         Andreas Feature     Bezeichner im Tooltip umbenannt
