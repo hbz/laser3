@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -94,6 +94,15 @@
                     <g:each in="${grailsApplication.config.reporting.elasticSearch.indicies}" var="k, v">
                         <a href="${grailsApplication.config.reporting.elasticSearch.url + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
                     </g:each>
+                </td>
+            </tr>
+            <tr>
+                <td>ElasticSearch apiSource</td>
+                <td>
+                    <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
+                    <g:if test="${eshApiSource}">
+                        <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a> (${eshApiSource.name})
+                    </g:if>
                 </td>
             </tr>
             </tbody>

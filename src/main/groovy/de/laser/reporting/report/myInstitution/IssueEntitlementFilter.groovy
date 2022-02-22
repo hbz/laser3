@@ -203,10 +203,10 @@ class IssueEntitlementFilter extends BaseFilter {
 
         // -- ES --
 
-        List<Long> pkgIdList = filterResult.data.getAt( BaseConfig.KEY_PACKAGE + 'IdList') as List
+        List<Long> pkgIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PACKAGE )
         ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, pkgIdList, cmbKey, filterResult, params )
 
-        List<Long> pltIdList = filterResult.data.getAt( BaseConfig.KEY_PLATFORM + 'IdList') as List
+        List<Long> pltIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PLATFORM )
         ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, pltIdList, cmbKey, filterResult, params )
 
         filterResult

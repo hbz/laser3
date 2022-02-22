@@ -6,6 +6,7 @@ import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
@@ -91,7 +92,7 @@ class PlatformExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(plt.id)) {
-                            ApiSource wekb = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }

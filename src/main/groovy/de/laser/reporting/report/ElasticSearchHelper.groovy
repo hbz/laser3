@@ -1,5 +1,6 @@
 package de.laser.reporting.report
 
+import de.laser.ApiSource
 import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
@@ -201,5 +202,9 @@ class ElasticSearchHelper {
         list.sort{ a, b ->
             if (a[1].startsWith('*')) { return 1 } else if (b[1].startsWith('*')) { return -1 } else { (a[1] as String).toLowerCase() <=> (b[1] as String).toLowerCase() }
         }
+    }
+
+    static getCurrentApiSource() {
+        ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
     }
 }

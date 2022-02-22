@@ -160,4 +160,8 @@ class GenericHelper {
     static String flagUnmatched(String value) {
         '(' + value + ' *)'
     }
+
+    static List<Long> getFilterResultDataIdList(Map<String, Object> filterResult, String key) {
+        filterResult.data.getAt( key + 'IdList') as List ?: []
+    }
 }
