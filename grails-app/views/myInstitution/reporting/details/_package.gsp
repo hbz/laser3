@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.helper.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />
@@ -6,7 +6,7 @@
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)}}"/>
-<g:set var="wekb" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <div class="ui segment" id="reporting-detailsTable">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -18,7 +18,7 @@
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">
-                    <g:set var="label" value="${ BaseDetails.getFieldLabelforColumns( key, k ) }" />
+                    <g:set var="label" value="${ BaseDetails.getFieldLabelforColumn( key, k ) }" />
                     <g:if test="${b}">
                         <th data-column="dtc:${k}">${label}</th>
                     </g:if>
@@ -75,14 +75,14 @@
                         ${pkg.packageStatus?.getI10n('value')}
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PACKAGE_OR_PROVIDER}">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="orProvider">
 
                         <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
                             <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
                         </g:each>
                     </laser:reportDetailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="${BaseConfig.CI_GENERIC_PACKAGE_PLATFORM}">
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="nominalPlatform">
 
                         <g:if test="${pkg.nominalPlatform}">
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>

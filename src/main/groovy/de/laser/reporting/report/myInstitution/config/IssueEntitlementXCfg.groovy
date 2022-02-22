@@ -21,19 +21,19 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'my-ie'
                     ],
                     fields: [
-                            'issueEntitlement$status'       : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'issueEntitlement$pkg'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'package$platform'              : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'package$orgRole$provider'      : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'issueEntitlement$subscription' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'package$packageStatus'         : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'subscription$status'           : [ FIELD_TYPE_CUSTOM_IMPL ]
+                            'status'                        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_IE_STATUS ],
+                            'package'                       : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_CTX_IE_PACKAGE ],
+                            'subscription'                  : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_CTX_IE_SUBSCRIPTION ],
+                            'packageStatus'                 : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_STATUS ],
+                            'packageNominalPlatform'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_PLATFORM ],
+                            'orProvider'                    : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_OR_PROVIDER ],
+                            'subscriptionStatus'            : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
                     ],
                     filter : [
                             default: [
-                                    [ 'package$packageStatus', 'subscription$status', 'issueEntitlement$status' ],
-                                    [ 'issueEntitlement$pkg', 'issueEntitlement$subscription' ],
-                                    [ 'package$orgRole$provider', 'package$platform' ]
+                                    [ 'packageStatus', 'subscriptionStatus', 'status' ],
+                                    [ 'package', 'subscription' ],
+                                    [ 'orProvider', 'packageNominalPlatform' ]
                             ]
                     ],
                     query : [
@@ -112,7 +112,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             'filter-restricting-package'
                     ],
                     fields: [
-                            'packageStatus': [ FIELD_TYPE_REFDATA ]
+                            'packageStatus': [ type: FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default: [

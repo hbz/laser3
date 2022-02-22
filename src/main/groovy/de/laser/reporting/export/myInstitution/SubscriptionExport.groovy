@@ -25,38 +25,38 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'startDate'             : [ FIELD_TYPE_PROPERTY ],
-                                    'endDate'               : [ FIELD_TYPE_PROPERTY ],
-                                    'status'                : [ FIELD_TYPE_REFDATA ],
-                                    'kind'                  : [ FIELD_TYPE_REFDATA ],
-                                    'form'                  : [ FIELD_TYPE_REFDATA ],
-                                    'resource'              : [ FIELD_TYPE_REFDATA ],
-                                    '@-subscription-memberCount' : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-provider+sortname+name'   : [ FIELD_TYPE_COMBINATION ],
-                                    'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
-                                    'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
-                                    'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-memberSubscriptionProperty' : [ FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'startDate'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'endDate'               : [ type: FIELD_TYPE_PROPERTY ],
+                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'kind'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'form'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'resource'              : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-subscription-memberCount' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-provider+sortname+name'   : [ type: FIELD_TYPE_COMBINATION ],
+                                    'hasPerpetualAccess'    : [ type: FIELD_TYPE_PROPERTY ],
+                                    'hasPublishComponent'   : [ type: FIELD_TYPE_PROPERTY ],
+                                    'isPublicForApi'        : [ type: FIELD_TYPE_PROPERTY ],
+                                    'x-identifier'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'            : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-memberSubscriptionProperty' : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ],
                             memberSubscription: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'startDate'             : [ FIELD_TYPE_PROPERTY ],
-                                    'endDate'               : [ FIELD_TYPE_PROPERTY ],
-                                    'status'                : [ FIELD_TYPE_REFDATA ],
-                                    'kind'                  : [ FIELD_TYPE_REFDATA ],
-                                    'form'                  : [ FIELD_TYPE_REFDATA ],
-                                    'resource'              : [ FIELD_TYPE_REFDATA ],
-                                    'x-provider+sortname+name' : [ FIELD_TYPE_COMBINATION ],
-                                    'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
-                                    'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
-                                    'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'startDate'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'endDate'               : [ type: FIELD_TYPE_PROPERTY ],
+                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'kind'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'form'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'resource'              : [ type: FIELD_TYPE_REFDATA ],
+                                    'x-provider+sortname+name' : [ type: FIELD_TYPE_COMBINATION ],
+                                    'hasPerpetualAccess'    : [ type: FIELD_TYPE_PROPERTY ],
+                                    'hasPublishComponent'   : [ type: FIELD_TYPE_PROPERTY ],
+                                    'isPublicForApi'        : [ type: FIELD_TYPE_PROPERTY ],
+                                    'x-identifier'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'            : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
                             ]
                     ]
             ]
@@ -70,20 +70,20 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ FIELD_TYPE_PROPERTY ],
-                                    'startDate'             : [ FIELD_TYPE_PROPERTY ],
-                                    'endDate'               : [ FIELD_TYPE_PROPERTY ],
-                                    'status'                : [ FIELD_TYPE_REFDATA ],
-                                    'kind'                  : [ FIELD_TYPE_REFDATA ],
-                                    'form'                  : [ FIELD_TYPE_REFDATA ],
-                                    'resource'              : [ FIELD_TYPE_REFDATA ],
-                                    'x-provider+sortname+name' : [ FIELD_TYPE_COMBINATION ],
-                                    'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
-                                    'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
-                                    'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                                    'x-identifier'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'x-property'            : [ FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
+                                    'startDate'             : [ type: FIELD_TYPE_PROPERTY ],
+                                    'endDate'               : [ type: FIELD_TYPE_PROPERTY ],
+                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'kind'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'form'                  : [ type: FIELD_TYPE_REFDATA ],
+                                    'resource'              : [ type: FIELD_TYPE_REFDATA ],
+                                    'x-provider+sortname+name' : [ type: FIELD_TYPE_COMBINATION ],
+                                    'hasPerpetualAccess'    : [ type: FIELD_TYPE_PROPERTY ],
+                                    'hasPublishComponent'   : [ type: FIELD_TYPE_PROPERTY ],
+                                    'isPublicForApi'        : [ type: FIELD_TYPE_PROPERTY ],
+                                    'x-identifier'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'x-property'            : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
                             ]
                     ]
             ]
@@ -114,7 +114,7 @@ class SubscriptionExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key) ? getAllFields().get(f.key)[0] : null // TODO - accessor
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -159,7 +159,7 @@ class SubscriptionExport extends BaseDetailsExport {
                     content.add( members )
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> custom query depending filter implementation
@@ -178,7 +178,7 @@ class SubscriptionExport extends BaseDetailsExport {
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
                 else {
-                    content.add( '- not implemented -' )
+                    content.add( '- ' + key + ' not implemented -' )
                 }
             }
             // --> combined properties : TODO
@@ -190,7 +190,7 @@ class SubscriptionExport extends BaseDetailsExport {
                 content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ))
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

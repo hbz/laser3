@@ -68,19 +68,19 @@ class BaseConfig {
     static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
     static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
 
-    static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'
-    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'
-    static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'
-    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'
-    static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'
-    static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'
-    static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'
-    static String CI_GENERIC_SUBSCRIPTION_STATUS        = 'subscription$status'
+    static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
+    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
+    static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
+    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
+    static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
+    static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
+    static String CI_GENERIC_SUBSCRIPTION_STATUS        = 'subscription$status'         // PKG, PLT, IE
 
     static String CI_CTX_PROPERTY_KEY           = 'propertyKey'
     static String CI_CTX_PROPERTY_VALUE         = 'propertyValue'
-    static String CI_CTX_IE_PACKAGE             = 'issueEntitlement$pkg'
-    static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'
+    static String CI_CTX_IE_PACKAGE             = 'issueEntitlement$pkg'                // IE -- TODO
+    static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
             KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
@@ -177,6 +177,8 @@ class BaseConfig {
         ContextService contextService  = mainContext.getBean('contextService')
         MessageSource messageSource    = mainContext.getBean('messageSource')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+
+        // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
 
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.customImpl.'
@@ -378,6 +380,7 @@ class BaseConfig {
 
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
+        // println 'BaseConfig.getElasticSearchRefdata() ' + key
         ApplicationContext mainContext = Holders.grailsApplication.mainContext
         MessageSource messageSource = mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()

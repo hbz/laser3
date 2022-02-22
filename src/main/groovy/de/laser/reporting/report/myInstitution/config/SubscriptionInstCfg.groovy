@@ -19,21 +19,21 @@ class SubscriptionInstCfg extends BaseConfig {
                             'inst-sub-local'
                     ],
                     fields : [
-                            'annual'                : [ FIELD_TYPE_CUSTOM_IMPL, FIELD_IS_MULTIPLE ],    // TODO custom_impl
-                            'endDateLimit'          : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'form'                  : [ FIELD_TYPE_REFDATA ],
-                            'hasPerpetualAccess'    : [ FIELD_TYPE_PROPERTY ],
-                            'hasPublishComponent'   : [ FIELD_TYPE_PROPERTY ],
-                            'isPublicForApi'        : [ FIELD_TYPE_PROPERTY ],
-                            'isMultiYear'           : [ FIELD_TYPE_PROPERTY ],
-                            'kind'                  : [ FIELD_TYPE_REFDATA ],
-                            'propertyKey'           : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'propertyValue'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'resource'              : [ FIELD_TYPE_REFDATA ],
-                            'startDateLimit'        : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'status'                : [ FIELD_TYPE_REFDATA ],
-                            //'type'                : [ FIELD_TYPE_REFDATA ],
-                            //'manualRenewalDate'       : [ FIELD_TYPE_PROPERTY ],
+                            'annual'                : [ type: FIELD_TYPE_CUSTOM_IMPL, spec: FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'endDateLimit'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'form'                  : [ type: FIELD_TYPE_REFDATA ],
+                            'hasPerpetualAccess'    : [ type: FIELD_TYPE_PROPERTY ],
+                            'hasPublishComponent'   : [ type: FIELD_TYPE_PROPERTY ],
+                            'isPublicForApi'        : [ type: FIELD_TYPE_PROPERTY ],
+                            'isMultiYear'           : [ type: FIELD_TYPE_PROPERTY ],
+                            'kind'                  : [ type: FIELD_TYPE_REFDATA ],
+                            'propertyKey'           : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'resource'              : [ type: FIELD_TYPE_REFDATA ],
+                            'startDateLimit'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'status'                : [ type: FIELD_TYPE_REFDATA ],
+                            //'type'                : [ type: FIELD_TYPE_REFDATA ],
+                            //'manualRenewalDate'       : [ type: FIELD_TYPE_PROPERTY ],
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
@@ -98,17 +98,17 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-consortium'
                     ],
                     fields : [
-                            'country'           : [ FIELD_TYPE_REFDATA ],
-                            'region'            : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            //'customerType'      : [ FIELD_TYPE_CUSTOM_IMPL ],
-                            'eInvoice'          : [ FIELD_TYPE_PROPERTY ],
-                            'funderHskType'     : [ FIELD_TYPE_REFDATA ],
-                            'funderType'        : [ FIELD_TYPE_REFDATA ],
-                            'legalInfo'         : [ FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                            'libraryNetwork'    : [ FIELD_TYPE_REFDATA ],
-                            'libraryType'       : [ FIELD_TYPE_REFDATA ],
-                            //'orgType'           : [ FIELD_TYPE_REFDATA_JOINTABLE ],
-                            'subjectGroup'      : [ FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
+                            'country'           : [ type: FIELD_TYPE_REFDATA ],
+                            'region'            : [ type: FIELD_TYPE_REFDATA, spec: FIELD_IS_VIRTUAL ],
+                            //'customerType'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                            'eInvoice'          : [ type: FIELD_TYPE_PROPERTY ],
+                            'funderHskType'     : [ type: FIELD_TYPE_REFDATA ],
+                            'funderType'        : [ type: FIELD_TYPE_REFDATA ],
+                            'legalInfo'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'libraryNetwork'    : [ type: FIELD_TYPE_REFDATA ],
+                            'libraryType'       : [ type: FIELD_TYPE_REFDATA ],
+                            //'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'subjectGroup'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
                             default : [
@@ -143,9 +143,9 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-provider'
                     ],
                     fields : [
-                            'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'country'   : [ type: FIELD_TYPE_REFDATA ],
+                            'region'    : [ type: FIELD_TYPE_REFDATA, spec: FIELD_IS_VIRTUAL ],
+                            'orgType'   : [ type: FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
                             default : []
@@ -171,9 +171,9 @@ class SubscriptionInstCfg extends BaseConfig {
                             'depending-agency'
                     ],
                     fields : [
-                            'country'   : [ FIELD_TYPE_REFDATA ],
-                            'region'    : [ FIELD_TYPE_REFDATA, FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'country'   : [ type: FIELD_TYPE_REFDATA ],
+                            'region'    : [ type: FIELD_TYPE_REFDATA, spec: FIELD_IS_VIRTUAL ],
+                            'orgType'   : [ type: FIELD_TYPE_REFDATA_JOINTABLE ]
                     ],
                     filter : [
                             default : []
