@@ -165,26 +165,6 @@ class PackageXCfg extends BaseConfig {
             ]
     ]
 
-    static Map<String, Map> ES_DATA = [
-
-            'package-altname'           : [                 export: true,   label: 'package.show.altname'],
-
-            'package-breakable'         : [filter: true,    export: true,   label: 'package.breakable',          rdc: RDConstants.PACKAGE_BREAKABLE],
-            'package-consistent'        : [filter: true,    export: true,   label: 'package.consistent',         rdc: RDConstants.PACKAGE_CONSISTENT],
-            'package-description'       : [                 export: true,   label: 'package.description.label'],
-            'package-descriptionURL'    : [                 export: true,   label: 'package.descriptionURL.label'],
-            'package-openAccess'        : [filter: true,    export: true,   label: 'package.openAccess.label',   rdc: RDConstants.LICENSE_OA_TYPE],
-            'package-paymentType'       : [filter: true,    export: true,   label: 'package.paymentType.label',  rdc: RDConstants.PAYMENT_TYPE],
-            'package-scope'             : [filter: true,    export: true,   label: 'package.scope.label',        rdc: RDConstants.PACKAGE_SCOPE],
-
-            'package-x-curatoryGroup'   : [                 export: true,   mapping: 'curatoryGroups',  label: 'package.curatoryGroup.label'],
-            'package-x-id'              : [                 export: true,   mapping: 'identifiers',     label: 'identifier.label'],
-            'package-x-nationalRange'   : [                                 mapping: 'nationalRanges',  label: 'package.nationalRange.label'],
-            'package-x-regionalRange'   : [                                 mapping: 'regionalRanges',  label: 'package.regionalRange.label'],
-            'package-x-language'        : [                 export: true,   mapping: 'languages',       label: 'package.language.label', rdc: RDConstants.LANGUAGE],
-            'package-x-ddc'             : [                 export: true,   mapping: 'ddcs',            label: 'package.ddc.label', rdc: RDConstants.DDC]
-    ]
-
     static Map<String, Map> ES_DT_CONFIG = [
 
             'name'                      : [ dtc: true  ],

@@ -11,7 +11,7 @@
             <%
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
-                Map<String, Object> esData = BaseConfig.getCurrentEsData( key )
+                Map<String, Map> esdConfig = BaseConfig.getCurrentElasticsearchDataConfig( key )
                 Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
 
                 if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
@@ -30,7 +30,7 @@
                     col.each { k, b ->
                         String label = BaseDetails.getFieldLabelforColumn( key, k )
 
-                        if (esData.containsKey(k)) {
+                        if (esdConfig.containsKey(k)) {
                             label = label + ' (we:kb)'
                         }
                         else if (k == '_?_propertyLocal') {

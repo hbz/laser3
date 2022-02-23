@@ -258,22 +258,22 @@ class LaserReportingTagLib {
         String field = attrs.field
 
         Map<String, Object> esRecords = attrs.records as Map
-        Map<String, Object> esConfig  = BaseConfig.getCurrentEsData(key).get( key + '-' + field )
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig(key).get( key + '-' + field )
 
         Map<String, Object> record = esRecords.getAt(id as String) as Map
         if (record) {
             String value = record.get( field )
             // workaround - nested values
-            if (esConfig.mapping) {
+            if (esdConfig.mapping) {
                 def tmp = record
-                esConfig.mapping.split('\\.').each{ m ->
+                esdConfig.mapping.split('\\.').each{ m ->
                     if (tmp) { tmp = tmp.get(m) }
                 }
                 value = tmp
             }
             //String value = record.get( record.mapping ?: field )
             if (value) {
-                RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esConfig.rdc as String)
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esdConfig.rdc as String)
                 if (rdv) {
                     out << rdv.getI10n('value')
                 }

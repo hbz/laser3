@@ -7,8 +7,6 @@ import de.laser.RefdataValue
 import de.laser.helper.ConfigUtils
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import de.laser.reporting.report.myInstitution.config.PackageXCfg
-import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
@@ -46,6 +44,8 @@ class ElasticSearchHelper {
 
         if (cmbKey != ElasticSearchHelper.IGNORE_FILTER) {
 
+            Map<String, Map> esDataMap = BaseConfig.getCurrentElasticsearchDataConfig( cfgKey )
+
             BaseFilter.getCurrentFilterKeys(params, cmbKey).each { key ->
                 if (params.get(key)) {
                     String p = key.replaceFirst(cmbKey,'')
@@ -54,10 +54,6 @@ class ElasticSearchHelper {
                     String pEsData = cfgKey + '-' + p
 
                     String filterLabelValue
-                    Map<String, Map> esDataMap = [:]
-
-                    if (cfgKey == BaseConfig.KEY_PACKAGE)       { esDataMap = PackageXCfg.ES_DATA }
-                    else if (cfgKey == BaseConfig.KEY_PLATFORM) { esDataMap = PlatformXCfg.ES_DATA }
 
                     if (pType == BaseConfig.FIELD_TYPE_ELASTICSEARCH && esDataMap.get( pEsData )?.filter) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
@@ -65,7 +61,6 @@ class ElasticSearchHelper {
                         esRecords = esRecords.findAll{ it.value.get( p ) == rdv.value }
                         filterLabelValue = rdv.getI10n('value')
                     }
-
                     if (filterLabelValue) {
                         filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( cfgKey ).base, p), value: filterLabelValue])
                         esFilterUsed = true

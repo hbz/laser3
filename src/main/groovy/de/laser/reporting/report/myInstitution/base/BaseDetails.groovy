@@ -81,13 +81,13 @@ class BaseDetails {
     static String getFieldLabelforColumn(String key, String field) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        Map<String, Object> esDataConfig = BaseConfig.getCurrentEsData(key)
+        Map<String, Map> esdConfig = BaseConfig.getCurrentElasticsearchDataConfig(key)
 
         // println ' > BaseDetails.getFieldLabelforColumn() ' + key + ' + ' + field
         String label = field
 
         if (field.startsWith( key + '-' )) {
-            label = g.message(code: esDataConfig.get(field).get('label')) ?: ( field + ' *' )
+            label = g.message(code: esdConfig.get(field).get('label')) ?: ( field + ' *' )
         }
         else {
             label = GenericHelper.getFieldLabel( BaseConfig.getCurrentConfig( key ).base as Map, field)

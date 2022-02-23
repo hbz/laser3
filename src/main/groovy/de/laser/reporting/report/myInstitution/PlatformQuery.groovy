@@ -7,7 +7,6 @@ import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -22,6 +21,8 @@ class PlatformQuery extends BaseQuery {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( BaseConfig.KEY_PLATFORM )
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
@@ -102,7 +103,7 @@ class PlatformQuery extends BaseQuery {
                 Set<Long> positiveIdSet = []
 
                 esProperties.each { String esProp ->
-                    Map<String, Object> prop = PlatformXCfg.ES_DATA.getAt(esProp)
+                    Map<String, Map> prop = esdConfig.getAt(esProp)
                     Map<String, Object> tmp = [data: [], dataDetails: []]
                     _processESRefdataQuery(esProp, prop.rdc as String, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, tmp)
 
