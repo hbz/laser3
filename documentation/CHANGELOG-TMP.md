@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
+
 4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
 
 3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen

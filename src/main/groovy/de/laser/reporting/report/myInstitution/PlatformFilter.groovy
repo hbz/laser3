@@ -198,7 +198,7 @@ class PlatformFilter extends BaseFilter {
 
         // -- ES --
 
-        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, platformIdList, cmbKey, filterResult, params )
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, cmbKey, platformIdList, filterResult, params )
 
         filterResult
     }
