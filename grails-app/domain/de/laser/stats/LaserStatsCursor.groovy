@@ -11,7 +11,6 @@ class LaserStatsCursor {
     String reportID
     Date latestFrom
     Date latestTo
-    SortedSet<StatsMissingPeriod> missingPeriods
 
     static hasMany = {
         missingPeriods:     StatsMissingPeriod
