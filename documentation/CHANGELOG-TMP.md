@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert
+
 4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
+
+4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
 
 3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen
 
