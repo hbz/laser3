@@ -185,31 +185,35 @@ class PackageXCfg extends BaseConfig {
             'package-x-ddc'             : [                 export: true,   mapping: 'ddcs',            label: 'package.ddc.label', rdc: RDConstants.DDC]
     ]
 
-    static Map<String, Boolean> DETAILS_TABLE_CONFIG = [
+    static Map<String, Map> ES_DT_CONFIG = [
 
-            'name' : true,
-            'sortname' : false,
-            'package-altname' : false, // ES
-            'package-x-id' : false, // ES
-            'contentType' : false,
-            'packageStatus' : false,
-            'orProvider' : true,
-            'nominalPlatform' : true,
-            'file' : false,
-            '_+_currentTitles' : true, // virtual
-            'package-breakable' : false, // ES
-            'package-paymentType' : false, // ES
-            'package-openAccess' : false, // ES
-            'package-consistent' : false, // ES
-            'package-scope' : false, // ES
-            'package-x-ddc' : false, // ES
-            'package-x-nationalRange' : false, // ES
-            'package-x-regionalRange' : false, // ES
-            'package-x-language' : false, // ES
-            'package-description' : false, // ES
-            'package-descriptionURL' : false, // ES
-            'package-x-curatoryGroup' : false, // ES
-            '_+_lastUpdated' : true, // virtual
-            '_+_wekb' : true // virtual
+            'name'                      : [ dtc: true  ],
+            'sortname'                  : [ dtc: false ],
+            'package-altname'           : [ dtc: false, es: true,                export: true, label: 'package.show.altname' ],
+            'package-x-id'              : [ dtc: false, es: true,                export: true, label: 'identifier.label',              mapping: 'identifiers' ],
+            'contentType'               : [ dtc: false ],
+
+            'packageStatus'             : [ dtc: false ],
+            'orProvider'                : [ dtc: true  ],
+            'nominalPlatform'           : [ dtc: true  ],
+            'file'                      : [ dtc: false ],
+            '_+_currentTitles'          : [ dtc: true  ],    // virtual
+
+            'package-breakable'         : [ dtc: false, es: true, filter: true, export: true, label: 'package.breakable',             rdc: RDConstants.PACKAGE_BREAKABLE ],
+            'package-paymentType'       : [ dtc: false, es: true, filter: true, export: true, label: 'package.paymentType.label',     rdc: RDConstants.PAYMENT_TYPE ],
+            'package-openAccess'        : [ dtc: false, es: true, filter: true, export: true, label: 'package.openAccess.label',      rdc: RDConstants.LICENSE_OA_TYPE ],
+            'package-consistent'        : [ dtc: false, es: true, filter: true, export: true, label: 'package.consistent',            rdc: RDConstants.PACKAGE_CONSISTENT ],
+            'package-scope'             : [ dtc: false, es: true, filter: true, export: true, label: 'package.scope.label',           rdc: RDConstants.PACKAGE_SCOPE ],
+
+            'package-x-ddc'             : [ dtc: false, es: true,               export: true, label: 'package.ddc.label',             mapping: 'ddcs',        rdc: RDConstants.DDC ],
+            'package-x-nationalRange'   : [ dtc: false, es: true,                             label: 'package.nationalRange.label',   mapping: 'nationalRanges' ],
+            'package-x-regionalRange'   : [ dtc: false, es: true,                             label: 'package.regionalRange.label',   mapping: 'regionalRanges' ],
+            'package-x-language'        : [ dtc: false, es: true,               export: true, label: 'package.language.label',        mapping: 'languages',   rdc: RDConstants.LANGUAGE ],
+            'package-description'       : [ dtc: false, es: true,               export: true, label: 'package.description.label' ],
+
+            'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'package.descriptionURL.label' ],
+            'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
+            '_+_lastUpdated'            : [ dtc: true  ],    // virtual
+            '_+_wekb'                   : [ dtc: true  ],    // virtual
     ]
 }

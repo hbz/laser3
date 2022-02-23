@@ -233,10 +233,10 @@ class LaserReportingTagLib {
         //println '<laser:reportDetailsTableTD> ' + attrs
         Map<String, Boolean> config = attrs.config as Map
 
-        if ( config.containsKey( attrs.field )) {
+        if ( config.get( attrs.field )?.containsKey('dtc') ) {
             String markup = '<td data-column="dtc:' + attrs.field + '"'
 
-            if (config.get( attrs.field ) != true) {
+            if (! config.get( attrs.field ).dtc) {
                 markup = markup + ' class="hidden"'
             }
             out << markup + '>'

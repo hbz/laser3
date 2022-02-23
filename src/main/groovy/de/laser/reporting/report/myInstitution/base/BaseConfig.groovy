@@ -130,11 +130,20 @@ class BaseConfig {
         }
     }
 
-    static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
+    static Map<String, Map> getCurrentDetailsTableConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
-            config.DETAILS_TABLE_CONFIG
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
+            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        } else {
+            [:]
+        }
+    }
+    static Map<String, Map> getCurrentEsDataConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
+            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
         } else {
             [:]
         }

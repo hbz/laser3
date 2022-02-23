@@ -14,12 +14,13 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Boolean> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key )
+                    Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key )
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">
                     <g:set var="label" value="${ BaseDetails.getFieldLabelforColumn( key, k ) }" />
-                    <g:if test="${b}">
+
+                    <g:if test="${b.dtc}">
                         <th data-column="dtc:${k}">${label}</th>
                     </g:if>
                     <g:else>

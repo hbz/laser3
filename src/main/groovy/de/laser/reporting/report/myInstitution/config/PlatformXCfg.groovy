@@ -148,28 +148,34 @@ class PlatformXCfg extends BaseConfig {
             'platform-statisticsUpdate'             : [                 export: true,   label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY]
     ]
 
-    static Map<String, Boolean> DETAILS_TABLE_CONFIG = [
+    static Map<String, Map> ES_DT_CONFIG = [
 
-            'name' : true,
-            'org' : true,     // TODO - move to query2 !?
-            'primaryUrl' : true,
-            'serviceProvider' : false,
-            'softwareProvider' : false,
-            'status' : false,
-            'platform-ipAuthentication' : false, // ES
-            'platform-shibbolethAuthentication' : false, // ES
-            'platform-passwordAuthentication' : false, // ES
-            'platform-proxySupported' : false, // ES
-            'platform-statisticsFormat' : false, // ES
-            'platform-statisticsUpdate' : false, // ES
-            'platform-counterCertified' : false, // ES
-            'platform-counterR3Supported' : false, // ES
-            'platform-counterR4Supported' : false, // ES
-            'platform-counterR5Supported' : false, // ES
-            'platform-counterR4SushiApiSupported' : false, // ES
-            'platform-counterR5SushiApiSupported' : false, // ES
-            '_?_propertyLocal' : true, // virtual, optional, fixed position
-            '_+_lastUpdated' : true, // virtual
-            '_+_wekb' : true // virtual
+            'name'                                  : [ dtc: true   ],
+            'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
+            'primaryUrl'                            : [ dtc: true   ],
+            'serviceProvider'                       : [ dtc: false  ],
+            'softwareProvider'                      : [ dtc: false  ],
+
+            'status'                                : [ dtc: false  ],
+            'platform-altname'                      : [             es: true,               export: true,   label: 'package.show.altname'],
+            'platform-x-propertyWekb'               : [             es: true  ],
+            'platform-ipAuthentication'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION ],
+            'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],
+
+            'platform-passwordAuthentication'       : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N ],
+            'platform-proxySupported'               : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N ],
+            'platform-statisticsFormat'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT ],
+            'platform-statisticsUpdate'             : [ dtc: false, es: true,               export: true, label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY ],
+            'platform-counterCertified'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N ],
+
+            'platform-counterR3Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N ],
+            'platform-counterR4Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N ],
+            'platform-counterR5Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N ],
+            'platform-counterR4SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N ],
+            'platform-counterR5SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N ],
+
+            '_?_propertyLocal'                      : [ dtc: true   ],  // virtual, optional, fixed position
+            '_+_lastUpdated'                        : [ dtc: true   ],  // virtual
+            '_+_wekb'                               : [ dtc: true   ],  // virtual
     ]
 }
