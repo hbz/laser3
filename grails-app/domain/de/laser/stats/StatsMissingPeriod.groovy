@@ -1,33 +1,28 @@
 package de.laser.stats
 
-import de.laser.exceptions.CreationException
+import de.laser.Org
+import de.laser.Platform
 
 class StatsMissingPeriod implements Comparable {
 
+    Platform platform
+    Org customer
+    String reportID
     Date from
     Date to
-
-    static belongsTo = [cursor: LaserStatsCursor]
 
     static mapping = {
         id              column: 'smp_id'
         version         column: 'smp_version'
-        cursor          column: 'smp_cursor_fk'
+        customer        column: 'smp_customer_fk'
+        platform        column: 'smp_platform_fk'
+        reportID        column: 'smp_report_id', index: 'smp_report_idx'
         from            column: 'smp_from_date', index: 'smp_from_idx'
         to              column: 'smp_to_date', index: 'smp_to_idx'
     }
 
     static constraints = {
-
-    }
-
-    static StatsMissingPeriod construct(Map<String, Object> configMap) throws CreationException {
-        StatsMissingPeriod result = StatsMissingPeriod.findByFromAndToAndCursor(configMap.from, configMap.to, configMap.cursor)
-        if(!result)
-            result = new StatsMissingPeriod(configMap)
-        if(!result.save())
-            throw new CreationException(result.getErrors().getAllErrors().toListString())
-        result
+        reportID(unique: ['from', 'to', 'customer', 'platform'])
     }
 
     @Override
