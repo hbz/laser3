@@ -178,10 +178,10 @@ class PackageFilter extends BaseFilter {
 
         // -- ES --
 
-        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, packageIdList, cmbKey, filterResult, params )
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PACKAGE, cmbKey, packageIdList, filterResult, params )
 
-        List<Long> pltIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PLATFORM )
-        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, pltIdList, cmbKey, filterResult, params )
+        List<Long> platformIdList = GenericHelper.getFilterResultDataIdList( filterResult, BaseConfig.KEY_PLATFORM )
+        ElasticSearchHelper.handleEsRecords( BaseConfig.KEY_PLATFORM, ElasticSearchHelper.IGNORE_FILTER, platformIdList, filterResult, params )
 
         filterResult
     }

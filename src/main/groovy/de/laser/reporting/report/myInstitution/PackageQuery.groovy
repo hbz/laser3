@@ -27,7 +27,7 @@ class PackageQuery extends BaseQuery {
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
         List<Long> orphanedIdList = BaseFilter.getCachedFilterIdList(prefix + 'Orphaned', params)
 
-        println 'PackageQuery.query() -> ' + params.query + ' : ' + suffix
+        //println 'PackageQuery.query() -> ' + params.query + ' : ' + suffix
 
         Closure sharedQuery_package_platform = {
             // println 'sharedQuery_package_platform()'
