@@ -1,4 +1,5 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
+<g:if test="${data}">
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'value', 'plus', 'minus', 'annual', 'isCurrent'],
@@ -95,3 +96,7 @@ JSPC.app.reporting.current.chart.option = {
         }
     ]
 };
+</g:if>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:else>

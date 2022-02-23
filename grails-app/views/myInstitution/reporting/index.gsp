@@ -112,6 +112,8 @@
 
             <g:render template="/myInstitution/reporting/query/${filter}" />
 
+            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
         </g:if>
@@ -121,6 +123,7 @@
             #history-content table .description ,
             #bookmark-content table .description { margin: 0.3em 0; }
             #last-added-bookmark { margin-left: 1em; }
+            #reporting-chart-nodata { display: none; }
             #chart-wrapper { height: 400px; width: 98%; margin: 3em auto 2em; }
             h3.ui.header { margin-top: 3em !important; }
             .ui.form .fields .field { margin-bottom: 0 !important; }
@@ -207,9 +210,13 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
 
-                        if (! JSPC.app.reporting.current.chart.option) {
-                            $("#reporting-modal-nodata").modal('show');
+                        if (! JSPC.app.reporting.current.chart.option && ! JSPC.app.reporting.current.chart.statusCode) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 204) {
+                            $('#reporting-chart-nodata').show();
                         }
                         else {
                             if (JSPC.app.reporting.current.request.chart == 'bar') {
@@ -245,6 +252,8 @@
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
+                        $("#reporting-modal-error").modal('show');
                     })
                     .always(function() { $('#loadingIndicator').hide(); });
                 }
@@ -347,9 +356,6 @@
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p>${message(code:'reporting.modal.error')}</p>
-        </semui:modal>
-        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodata')}</p>
         </semui:modal>
     </body>
 </html>

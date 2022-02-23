@@ -66,3 +66,6 @@
         ]
     };
 </g:if>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:else>
