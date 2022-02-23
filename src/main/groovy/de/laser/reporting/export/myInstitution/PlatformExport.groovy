@@ -9,7 +9,6 @@ import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
-import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -75,6 +74,8 @@ class PlatformExport extends BaseDetailsExport {
         Platform plt = obj as Platform
         List content = []
 
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( KEY )
+
         fields.each{ f ->
             String key = f.key
             String type = getAllFields().get(f.key)?.type
@@ -133,7 +134,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
                 String esDataKey = BaseConfig.KEY_PLATFORM + '-' + key
-                Map<String, Object> esData = PlatformXCfg.ES_DATA.get( esDataKey )
+                Map<String, Object> esData = esdConfig.get( esDataKey )
 
                 if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.platformESRecords.get(obj.id.toString())

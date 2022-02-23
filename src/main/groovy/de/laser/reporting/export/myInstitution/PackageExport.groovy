@@ -16,7 +16,6 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
-import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -79,6 +78,8 @@ class PackageExport extends BaseDetailsExport {
 
         Package pkg = obj as Package
         List content = []
+
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( KEY )
 
         fields.each{ f ->
             String key = f.key
@@ -156,7 +157,7 @@ class PackageExport extends BaseDetailsExport {
             // --> elastic search
             else if (type == FIELD_TYPE_ELASTICSEARCH) {
                 String esDataKey = BaseConfig.KEY_PACKAGE + '-' + key
-                Map<String, Object> esData = PackageXCfg.ES_DATA.get( esDataKey )
+                Map<String, Object> esData = esdConfig.get( esDataKey )
 
                 if (esData?.export) {
                     Map<String, Object> record = GlobalExportHelper.getFilterCache(token).data.packageESRecords.get(obj.id.toString())
