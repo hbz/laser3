@@ -106,7 +106,7 @@
                             <g:message code="property.manageProperties.markForAdd"/><br />
                             <g:checkBox name="membersAddListToggler" id="membersAddListToggler" checked="false"/>
                         </th>
-                        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && auditable}">
+                        <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
                                 <span data-tooltip="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
@@ -124,7 +124,7 @@
                     <g:each in="${objectsWithoutProp}" var="objWithoutProp">
                         <tr>
                             <td><g:checkBox name="newObjects" value="${objWithoutProp.id}" checked="false"/></td>
-                            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && auditable}">
+                            <g:if test="${showConsortiaFunctions && auditable}">
                                 <td><g:checkBox name="withAudit" value="${objWithoutProp.id}" checked="false"/></td>
                             </g:if>
                             <g:if test="${sortname}">
@@ -201,7 +201,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${institution}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -275,6 +275,11 @@
                 </tbody>
             </table>
         </g:form>
+        <semui:paginate params="${params+[setWithout: true, setWith: false]}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
+                        max="${max}" offset="${withoutPropOffset}"
+                        total="${countObjWithoutProp}"/>
     </div>
 
     <div class="ui segment">
@@ -520,7 +525,11 @@
                 </tbody>
             </table>
         </g:form>
-
+        <semui:paginate params="${params+[setWith: true, setWithout: false]}"
+                        next="${message(code: 'default.paginate.next')}"
+                        prev="${message(code: 'default.paginate.prev')}"
+                        max="${max}" offset="${withPropOffset}"
+                        total="${countObjWithProp}"/>
     </div>
 </g:if>
 
@@ -537,26 +546,57 @@
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', true);
+            JSPC.app.updateSelectionCache("all", "with" ,true);
         }
         else {
             $("tr[class!=disabled] input[name=selectedObjects]:visible").prop('checked', false);
+            JSPC.app.updateSelectionCache("all", "with" ,false);
         }
     });
     $('#membersAddListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=newObjects]:visible").prop('checked', true);
+            JSPC.app.updateSelectionCache("all", "without" ,true);
         }
         else {
             $("tr[class!=disabled] input[name=newObjects]:visible").prop('checked', false);
+            JSPC.app.updateSelectionCache("all", "without" ,false);
         }
     });
     $('#membersAuditListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=withAudit]:visible").prop('checked', true);
+            JSPC.app.updateSelectionCache("all", "audit" ,true);
         }
         else {
             $("tr[class!=disabled] input[name=withAudit]:visible").prop('checked', false);
+            JSPC.app.updateSelectionCache("all", "audit" ,false);
         }
+    });
+
+    JSPC.app.updateSelectionCache = function (index, table, checked) {
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="updatePropertiesSelection" />",
+                data: {
+                    key: index,
+                    propDef: "${params.filterPropDef}",
+                    status: "${params.objStatus}",
+                    table: table,
+                    checked: checked
+                }
+            }).done(function(result){
+
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+    }
+
+    $("[name=newObjects]").change(function() {
+        console.log($(this));
+        JSPC.app.updateSelectionCache($(this).val(), "with", $(this).prop('checked'));
+    });
+    $("[name=selectedObjects], [name=withAudit]").change(function() {
+        JSPC.app.updateSelectionCache($(this).val(), "without", $(this).prop('checked'));
     });
     $('#filterTableWithoutProp').keyup(function() {
         $("#withoutPropTable tbody tr:icontains('"+$(this).val()+"')").show();

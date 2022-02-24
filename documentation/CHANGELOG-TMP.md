@@ -7,12 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
+
+4143    23.02.2022  rc-2.2  2.2.10      Andreas Bug         Identifier und URL wurden bei Anbietern nicht mit synchronisiert
 
 4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
+
+4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert
 
 4099    22.02.2022  dev     2.3         Ingrid  Feature     Datepicker: versteckte Funktion (Jahr ist auswählbar) deutlicher machen
 
 4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
+
+4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
 
 4116    21.02.2022  dev     2.3         Ingrid  Feature     Kindlizenz: deutlicher machen
 

@@ -1,40 +1,33 @@
 package de.laser.stats
 
-import de.laser.exceptions.CreationException
+import de.laser.Org
+import de.laser.Platform
 
 /**
- * This is an unused class to mark when data could not be fetched for a given customer, platform, report for a given month.
- * It is unprobable that this class should get in use as according to the COUNTER revisions, data should not be updated after one month of reporting period, i.e. no one will update usage data dating months or years ago
+ * This class was originally designed for retain missing periods of data and is now used
+ * as temporary entity to mark periods which could not be retrieved due to a server fault and whose
+ * request should be retried later
  */
 class StatsMissingPeriod implements Comparable {
 
+    Platform platform
+    Org customer
+    String reportID
     Date from
     Date to
-
-    static belongsTo = [cursor: LaserStatsCursor]
 
     static mapping = {
         id              column: 'smp_id'
         version         column: 'smp_version'
-        cursor          column: 'smp_cursor_fk'
+        customer        column: 'smp_customer_fk'
+        platform        column: 'smp_platform_fk'
+        reportID        column: 'smp_report_id', index: 'smp_report_idx'
         from            column: 'smp_from_date', index: 'smp_from_idx'
         to              column: 'smp_to_date', index: 'smp_to_idx'
     }
 
     static constraints = {
-
-    }
-
-    /**
-     * Was used to set up a missing period; generally unused and if ever, it should be done by native SQL
-     */
-    static StatsMissingPeriod construct(Map<String, Object> configMap) throws CreationException {
-        StatsMissingPeriod result = StatsMissingPeriod.findByFromAndToAndCursor(configMap.from, configMap.to, configMap.cursor)
-        if(!result)
-            result = new StatsMissingPeriod(configMap)
-        if(!result.save())
-            throw new CreationException(result.getErrors().getAllErrors().toListString())
-        result
+        reportID(unique: ['from', 'to', 'customer', 'platform'])
     }
 
     @Override

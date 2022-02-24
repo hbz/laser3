@@ -152,6 +152,7 @@ class MyInstitutionControllerService {
         result.user = user
         result.institution = org
         result.contextCustomerType = org.getCustomerType()
+        result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
         switch (params.action) {
             case 'processEmptyLicense': //to be moved to LicenseController
             case 'currentLicenses':
