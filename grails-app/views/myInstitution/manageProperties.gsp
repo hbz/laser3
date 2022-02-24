@@ -123,9 +123,9 @@
                 <tbody>
                     <g:each in="${objectsWithoutProp}" var="objWithoutProp">
                         <tr>
-                            <td><g:checkBox name="newObjects" value="${objWithoutProp.id}" checked="false"/></td>
+                            <td><g:checkBox name="newObjects" value="${objWithoutProp.id}" checked="${objWithoutProp.id.toString() in selectedWithout ? 'true' : 'false'}"/></td>
                             <g:if test="${showConsortiaFunctions && auditable}">
-                                <td><g:checkBox name="withAudit" value="${objWithoutProp.id}" checked="false"/></td>
+                                <td><g:checkBox name="withAudit" value="${objWithoutProp.id}" checked="${objWithoutProp.id.toString() in selectedAudit ? 'true' : 'false'}"/></td>
                             </g:if>
                             <g:if test="${sortname}">
                                 <td>${objWithoutProp.sortname}</td>
@@ -365,7 +365,7 @@
                     <g:each in="${filteredObjs}" status="i" var="row">
                         <tr>
                             <td>
-                                <g:checkBox name="selectedObjects" value="${row.id}" checked="false"/>
+                                <g:checkBox name="selectedObjects" value="${row.id}" checked="${row.id.toString() in selectedWith ? 'true' : 'false'}"/>
                             </td>
                             <td>${i + 1}</td>
                             <td>
@@ -591,11 +591,11 @@
             });
     }
 
-    $("[name=newObjects]").change(function() {
+    $("[name=selectedObjects]").change(function() {
         console.log($(this));
         JSPC.app.updateSelectionCache($(this).val(), "with", $(this).prop('checked'));
     });
-    $("[name=selectedObjects], [name=withAudit]").change(function() {
+    $("[name=newObjects], [name=withAudit]").change(function() {
         JSPC.app.updateSelectionCache($(this).val(), "without", $(this).prop('checked'));
     });
     $('#filterTableWithoutProp').keyup(function() {
