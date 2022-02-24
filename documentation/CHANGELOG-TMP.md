@@ -7,11 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
+
 4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert
+
+4099    22.02.2022  dev     2.3         Ingrid  Feature     Datepicker: versteckte Funktion (Jahr ist auswählbar) deutlicher machen
 
 4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
 
 4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
+
+4116    21.02.2022  dev     2.3         Ingrid  Feature     Kindlizenz: deutlicher machen
 
 3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen
 
@@ -48,6 +54,10 @@
 4098    02.02.2022  rc-2.2  2.2.9       Moe     Bug         Nutzerzahlen bei ClickMeExcel kommen nicht alle mit
 
 4095    02.02.2022  rc-2.2  2.2.9       Andreas Bug         Nachladeroutine für verpasste Titel implementiert
+
+4051    01.02.2022  dev     2.3         Ingrid  Feature     Verbesserung der Nutzbarkeit aller relevanten responsiver Tabellen
+
+4087    01.02.2022  dev     2.3         Ingrid  Feature     Identifikatoren-Box: Aufklappbox ist besser vom Hintergrund abgegrenzt
 
 4093    01.02.2022  rc-2.2  2.2.9       Andreas Bug         Cronjob brach zu früh ab
 
@@ -254,6 +264,8 @@
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
 
 3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
+
+3777    06.10.2022  dev     2.3         Ingrid  Feature     Anzeige Paket verknüpfen optimieren
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 

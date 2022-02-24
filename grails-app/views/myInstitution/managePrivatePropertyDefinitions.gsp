@@ -108,18 +108,28 @@
                                             </g:if>
                                         </td>
                                         <td>
-                                            <span class="ui circular label">
+
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
-                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">
+                                                        <div class="ui blue circular label">
+                                                            ${pd.countOwnUsages()}
+                                                        </div>
+                                                    </g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
-                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">
+                                                        <div class="ui blue circular label">
+                                                            ${pd.countOwnUsages()}
+                                                        </div>
+                                                    </g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
                                                 <g:else>
-                                                    ${pd.countOwnUsages()}
+                                                    <div class="ui circular label">
+                                                        ${pd.countOwnUsages()}
+                                                    </div>
                                                 </g:else>
-                                            </span>
+
                                         </td>
                                         <td class="x">
                                             <g:if test="${editable}">

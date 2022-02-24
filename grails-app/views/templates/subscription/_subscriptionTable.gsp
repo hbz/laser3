@@ -203,16 +203,24 @@
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
                             <td>
                                 <g:if test="${childSubIds.size() > 0}">
-                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">${childSubIds.size()}</g:link>
+                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">
+                                        <div class="ui blue circular label">${childSubIds.size()}</div>
+                                    </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">${childSubIds.size()}</g:link>
+                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">
+                                        <div class="ui blue circular label">
+                                            ${childSubIds.size()}#
+                                        </div>
+                                    </g:link>
                                 </g:else>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        <div class="ui blue circular label">
+                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        </div>
                                     </g:if>
                                 </g:link>
                             </td>

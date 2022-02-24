@@ -16,7 +16,7 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Boolean> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+                    Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
 
                     if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
 
@@ -24,7 +24,7 @@
                     if (query == 'platform-x-propertyWekb') {
                         if (params.id != null && params.id != 0) {
                             wekbProperty = GlobalExportHelper.getQueryCache(token).dataDetails.find { it.id == params.long('id') }.esProperty
-                            dtConfig[wekbProperty] = true
+                            dtConfig[wekbProperty].dtc = true
                         }
                     }
                     dtConfig.remove(null) // ?????
@@ -33,7 +33,7 @@
                 <g:each in="${dtConfig}" var="k,b">
                     <g:set var="label" value="${ BaseDetails.getFieldLabelforColumn( key, k ) }" />
 
-                    <g:if test="${b}">
+                    <g:if test="${b.dtc}">
                         <th data-column="dtc:${k}">${label}</th>
                     </g:if>
                     <g:else>

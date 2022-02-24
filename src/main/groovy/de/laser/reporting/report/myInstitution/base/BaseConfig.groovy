@@ -110,31 +110,30 @@ class BaseConfig {
         }
     }
 
+    static Map<String, Map> getCurrentDetailsTableConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
+            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        } else {
+            [:]
+        }
+    }
+    static Map<String, Map> getCurrentElasticsearchDataConfig(String key) {
+        Class config = getCurrentConfigClass(key)
+
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
+            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
+        } else {
+            [:]
+        }
+    }
+
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
         if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG')) {
             config.CONFIG
-        } else {
-            [:]
-        }
-    }
-
-    static Map<String, Map> getCurrentEsData(String key) {
-        Class config = getCurrentConfigClass(key)
-
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DATA')) {
-            config.ES_DATA
-        } else {
-            [:]
-        }
-    }
-
-    static Map<String, Boolean> getCurrentDetailsTableConfig(String key) {
-        Class config = getCurrentConfigClass(key)
-
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('DETAILS_TABLE_CONFIG')) {
-            config.DETAILS_TABLE_CONFIG
         } else {
             [:]
         }
@@ -385,19 +384,19 @@ class BaseConfig {
         MessageSource messageSource = mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        Map pkgMap = PackageXCfg.ES_DATA.get(KEY_PACKAGE + '-' + key) as Map<String, String>
-        Map pltMap = PlatformXCfg.ES_DATA.get(KEY_PLATFORM + '-' + key)  as Map<String, String>
+        Map pkgMap = getCurrentElasticsearchDataConfig(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
+        Map pltMap = getCurrentElasticsearchDataConfig(KEY_PLATFORM).get( KEY_PLATFORM + '-' + key )  as Map<String, Object>
 
         if (pkgMap) {
             return [
-                    label: messageSource.getMessage(pkgMap.label, null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pkgMap.rdc )
+                    label: messageSource.getMessage( pkgMap.label as String, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pkgMap.rdc as String)
             ]
         }
         else if (pltMap) {
             return [
-                    label: messageSource.getMessage(pltMap.label, null, locale) + ' (we:kb)',
-                    from: RefdataCategory.getAllRefdataValues( pltMap.rdc )
+                    label: messageSource.getMessage( pltMap.label as String, null, locale) + ' (we:kb)',
+                    from: RefdataCategory.getAllRefdataValues( pltMap.rdc as String)
             ]
         }
     }

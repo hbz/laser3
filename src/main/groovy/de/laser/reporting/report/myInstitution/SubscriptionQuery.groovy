@@ -24,7 +24,7 @@ class SubscriptionQuery extends BaseQuery {
         def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
 
-        println 'SubscriptionQuery.query() -> ' + params.query + ' : ' + suffix
+        //println 'SubscriptionQuery.query() -> ' + params.query + ' : ' + suffix
 
         if (! idList) {
         }

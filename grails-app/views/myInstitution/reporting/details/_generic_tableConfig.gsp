@@ -13,25 +13,26 @@
                 // TODO : localDB-Merkmal anzeigen, falls Verteilung -> Merkmal
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
-                Map<String, Object> esData = BaseConfig.getCurrentEsData( key )
-                Map<String, Object> dtCfg = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+                Map<String, Map> esdConfig = BaseConfig.getCurrentElasticsearchDataConfig( key )
+                Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
 
-                if (query != 'platform-x-property') { dtCfg.remove('_?_propertyLocal') }
+                if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
 
                 String wekbProperty
                 if (query == 'platform-x-propertyWekb') {
                     if (params.id != null && params.id != 0) {
                         wekbProperty = GlobalExportHelper.getQueryCache(token).dataDetails.find { it.id == params.long('id') }.esProperty
-                        dtCfg[wekbProperty] = true
+                        dtConfig[wekbProperty].dtc = true
                     }
                 }
-                dtCfg.remove(null) // ?????
+                dtConfig.remove(null) // ?????
 
-                BaseDetails.reorderFieldsInColumnsForUI( dtCfg, 3 ).each { col ->
+                BaseDetails.reorderFieldsInColumnsForUI( dtConfig, 3 ).each { col ->
                     println '<div class="field grouped fields">'
                     col.each { k, b ->
                         String label = BaseDetails.getFieldLabelforColumn( key, k )
-                        if (esData.containsKey(k)) {
+
+                        if (esdConfig.containsKey(k)) {
                             label = label + ' (we:kb)'
                         }
                         else if (k == '_?_propertyLocal') {
@@ -39,7 +40,7 @@
                         }
 
                         println '<div class="field"><div class="ui checkbox">'
-                        println '<input type="checkbox" name="dtc:' + k + '" id="dtc:' + k + '"' + ( b ? ' checked="checked" ': ' ' ) + '/>'
+                        println '<input type="checkbox" name="dtc:' + k + '" id="dtc:' + k + '"' + ( b.dtc ? ' checked="checked" ': ' ' ) + '/>'
                         println '<label for="dtc:' + k + '">' + label + '</label>'
                         println '</div></div>'
                     }
