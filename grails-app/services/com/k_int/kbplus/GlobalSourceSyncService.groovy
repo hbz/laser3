@@ -1004,6 +1004,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     gokbId: providerRecord.uuid
             )
         }
+        provider.url = providerRecord.homepage
         if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
             //value is not implemented in we:kb yet
             if(providerRecord.retirementDate) {
@@ -1052,6 +1053,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     plat = createOrUpdatePlatformJSON(platformData.uuid)
                 plat.org = provider
                 plat.save()
+            }
+            if(providerRecord.identifiers) {
+                if(provider.ids) {
+                    Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
+                }
+                providerRecord.identifiers.each { id ->
+                    if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                        Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                    }
+                }
             }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
             if(lastUpdatedTime.getTime() > maxTimestamp) {

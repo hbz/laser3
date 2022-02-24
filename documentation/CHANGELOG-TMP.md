@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
+
+4143    23.02.2022  rc-2.2  2.2.10      Andreas Bug         Identifier und URL wurden bei Anbietern nicht mit synchronisiert
+
 4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
 
 4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert

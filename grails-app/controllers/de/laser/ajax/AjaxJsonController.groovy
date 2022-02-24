@@ -436,6 +436,32 @@ class AjaxJsonController {
 
         render result as JSON
     }
+    @Secured(['ROLE_USER'])
+    def getOwnerStatus() {
+        List<Map<String, Object>> result = []
+
+        if (params.oid != "undefined") {
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if (propDef) {
+                List<RefdataValue> statusList = []
+                switch(propDef.descr) {
+                    case PropertyDefinition.SUB_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                        break
+                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_DELETED)
+                        break
+                    case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_DELETED)
+                        break
+                    case PropertyDefinition.LIC_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
+                        break
+                }
+                //excepted structure: [[value:,text:],[value:,text:]]
+                statusList.each { RefdataValue status ->
+                    result << [value: status.id, text: status.getI10n("value")]
+                }
+            }
+        }
+        render result as JSON
+    }
 
     /**
      * Retrieves provider {@link Org}s with their private contacts; the result may be filtered by name
