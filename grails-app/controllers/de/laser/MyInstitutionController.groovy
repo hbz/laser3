@@ -3252,6 +3252,10 @@ join sub.orgRelations or_sub where
             redirect(url: request.getHeader('referer'))
         }
         SwissKnife.setPaginationParams(result, params, result.user)
+        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        result.selectedWithout = cache.get('without') ?: []
+        result.selectedWith = cache.get('with') ?: []
+        result.selectedAudit = cache.get('audit') ?: []
         if(params.offset && params.setWithout == 'true')
             result.withoutPropOffset = Integer.parseInt(params.offset.toString())
         else if(params.withoutPropOffset)
