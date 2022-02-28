@@ -208,7 +208,7 @@ class RDStore {
     public static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_SERVICE_SUPPORT     = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
-    public static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
+    public static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_METADATA     = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_CUSTOMER_SERVICE     = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_SALES_MARKETING     = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
@@ -227,7 +227,7 @@ class RDStore {
     public static final PRS_POS_RB    = getRefdataValue('Rechnungsbearbeitung', RDConstants.PERSON_POSITION)
     public static final PRS_POS_SD     = getRefdataValue('Sales Director', RDConstants.PERSON_POSITION)
     public static final PRS_POS_SS     = getRefdataValue('Sales Support', RDConstants.PERSON_POSITION)
-    public static final PRS_POS_TS     = getRefdataValue('Technichal Support', RDConstants.PERSON_POSITION)
+    public static final PRS_POS_TS     = getRefdataValue('Technical Support', RDConstants.PERSON_POSITION)
     public static final PRS_POS_ZA     = getRefdataValue('Zeitschriftenabteilung', RDConstants.PERSON_POSITION)
 
     public static final ADRESS_TYPE_POSTAL             = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)

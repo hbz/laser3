@@ -12,7 +12,6 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.system.SystemProfiler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -42,6 +41,7 @@ class AjaxController {
     IdentifierService identifierService
     FilterService filterService
     PendingChangeService pendingChangeService
+    PropertyService propertyService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -434,6 +434,38 @@ class AjaxController {
                 render result as JSON
             }
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def updatePropertiesSelection() {
+        Map success = [success: false]
+        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        List<String> checkedProperties = cache.get(params.table) ?: []
+        boolean check = Boolean.valueOf(params.checked)
+        if(params.key == "all") {
+            if(check) {
+                PropertyDefinition propDef = genericOIDService.resolveOID(params.propDef)
+                Map<String, Object> propertyData = propertyService.getAvailableProperties(propDef, contextService.getOrg(), params)
+                switch (params.table) {
+                    case "with": checkedProperties.addAll(propertyData.withProp.collect { o -> o.id })
+                        break
+                    case "without":
+                    case "audit": checkedProperties.addAll(propertyData.withoutProp.collect { o -> o.id })
+                        break
+                }
+            }
+            else {
+                checkedProperties.clear()
+            }
+        }
+        else {
+            if(check)
+                checkedProperties << params.key
+            else checkedProperties.remove(params.key)
+        }
+        if(cache.put(params.table,checkedProperties))
+            success.success = true
+        render success as JSON
     }
 
   @Secured(['ROLE_USER'])
@@ -1874,25 +1906,6 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-
-    @Secured(['permitAll'])
-    def notifyProfiler() {
-        Map<String, Object> result = [status: 'failed']
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
-
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
-
-            SystemProfiler.update(delta, params.uri)
-
-            result.uri = params.uri
-            result.delta = delta
-            result.status = 'ok'
-        }
-
-        render result as JSON
-    }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {

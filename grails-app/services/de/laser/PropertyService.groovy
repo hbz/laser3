@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.*
@@ -21,6 +22,7 @@ class PropertyService {
     GenericOIDService genericOIDService
     ContextService contextService
     MessageSource messageSource
+    AccessService accessService
 
     private List<String> splitQueryFromOrderBy(String sql) {
         String order_by
@@ -483,5 +485,60 @@ class PropertyService {
 
         result
     }
+
+     Map<String, Object> getAvailableProperties(PropertyDefinition propDef, Org contextOrg, GrailsParameterMap params) {
+         Set filteredObjs = [], objectsWithoutProp = []
+         Map<String,Object> parameterMap = [type:propDef,ctx:contextOrg], orgFilterParams = [:], result = [:]
+         if(params.objStatus)
+             parameterMap.status = RefdataValue.get(params.objStatus)
+         String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
+
+         if(accessService.checkPerm('ORG_CONSORTIUM')) {
+             subFilterClause += 'and oo.sub.instanceOf = null'
+             spOwnerFilterClause += 'and sp.owner.instanceOf = null'
+             licFilterClause += 'and oo.lic.instanceOf = null'
+             lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
+         }
+         else if(accessService.checkPerm('ORG_BASIC_MEMBER')) {
+             orgFilterClause += 'and ot in (:providerAgency)'
+             orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
+         }
+         switch(propDef.descr) {
+             case PropertyDefinition.SUB_PROP:
+                 if(!params.objStatus)
+                     parameterMap.status = RDStore.SUBSCRIPTION_CURRENT
+                 objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) and oo.sub.status = :status order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
+                 filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx '+spOwnerFilterClause+' and sp.owner.status = :status order by sp.owner.name asc',parameterMap))
+                 result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                 result.manageChildren = true
+                 break
+             case PropertyDefinition.LIC_PROP:
+                 if(!params.objStatus)
+                     parameterMap.status = RDStore.LICENSE_CURRENT
+                 objectsWithoutProp.addAll(License.executeQuery('select oo.lic from OrgRole oo where oo.org = :ctx '+licFilterClause+' and oo.roleType in (:roleTypes) and not exists (select lp from LicenseProperty lp where lp.owner = oo.lic and lp.tenant = :ctx and lp.type = :type) and oo.lic.status = :status order by oo.lic.reference asc, oo.lic.startDate asc, oo.lic.endDate asc',parameterMap+[roleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]]))
+                 filteredObjs.addAll(LicenseProperty.executeQuery('select lp.owner from LicenseProperty lp where lp.type = :type and lp.tenant = :ctx '+lpOwnerFilterClause+' and lp.owner.status = :status order by lp.owner.reference asc',parameterMap))
+                 result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
+                 break
+             case PropertyDefinition.PRS_PROP: objectsWithoutProp.addAll(Person.executeQuery('select p from Person p where (p.tenant = :ctx or p.tenant = null) and not exists (select pp from PersonProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) order by p.last_name asc, p.first_name asc',parameterMap))
+                 filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
+                 break
+             case PropertyDefinition.ORG_PROP:
+                 if(!params.objStatus)
+                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
+                 objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) '+orgFilterClause+' and o.status = :status order by o.sortname asc, o.name asc',parameterMap+orgFilterParams+[deleted:RDStore.ORG_STATUS_DELETED]))
+                 filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc',parameterMap))
+                 result.sortname = true
+                 break
+             case PropertyDefinition.PLA_PROP:
+                 if(!params.objStatus)
+                     parameterMap.status = RDStore.PLATFORM_STATUS_CURRENT
+                 objectsWithoutProp.addAll(Platform.executeQuery('select pl from Platform pl where pl.status != :deleted and not exists (select plp from PlatformProperty plp where plp.owner = plp and plp.tenant = :ctx and plp.type = :type) and pl.status = :status order by pl.name asc',parameterMap+[deleted:RDStore.PLATFORM_STATUS_DELETED]))
+                 filteredObjs.addAll(PlatformProperty.executeQuery('select plp.owner from PlatformProperty plp where plp.type = :type and plp.tenant = :ctx and plp.owner.status = :status order by plp.owner.name asc',parameterMap))
+                 break
+         }
+         result.withoutProp = objectsWithoutProp
+         result.withProp = filteredObjs
+         result
+     }
 }
 

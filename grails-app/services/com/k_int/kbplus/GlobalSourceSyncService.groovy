@@ -966,6 +966,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     gokbId: providerRecord.uuid
             )
         }
+        provider.url = providerRecord.homepage
         if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
             //value is not implemented in we:kb yet
             if(providerRecord.retirementDate) {
@@ -981,9 +982,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 provider.addToOrgType(RDStore.OT_PROVIDER)
             //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
             if(providerRecord.contacts) {
-                List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }])
-                if(oldPersons)
-                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons) and c.type = :type',[oldPersons: oldPersons, type: RDStore.CONTACT_TYPE_JOBRELATED])
+                List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
+                typeNames.addAll(contactTypes.keySet())
+                List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
+                if(oldPersons) {
+                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs in (:oldPersons) and pr.functionType.id in (:funcTypes)', [provider: provider, oldPersons: oldPersons, funcTypes: contactTypes.values().collect { RefdataValue cct -> cct.id }])
+                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons)', [oldPersons: oldPersons])
+                    Person.executeUpdate('delete from Person p where p in (:oldPersons)', [oldPersons: oldPersons])
+                }
                 providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
                         case "Technical Support":
@@ -995,8 +1001,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
                             break
                     }
-                    if(contact.rdType)
+                    if(contact.rdType && contact.contentType != null) {
                         createOrUpdateSupport(provider, contact)
+                    }
+                    else log.warn("contact submitted without content type, rejecting contact")
                 }
             }
             if(providerRecord.altname) {
@@ -1014,6 +1022,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     plat = createOrUpdatePlatformJSON(platformData.uuid)
                 plat.org = provider
                 plat.save()
+            }
+            if(providerRecord.identifiers) {
+                if(provider.ids) {
+                    Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
+                }
+                providerRecord.identifiers.each { id ->
+                    if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                        Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                    }
+                }
             }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
             if(lastUpdatedTime.getTime() > maxTimestamp) {
@@ -1103,9 +1121,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(supportProps.language)
             contact.language = RefdataValue.getByValueAndCategory(supportProps.language, RDConstants.LANGUAGE_ISO) ?: null
         if(!contentType) {
-            throw new SyncException("Invalid contact type submitted: ${supportProps.contentType}")
+            log.error("Invalid contact type submitted: ${supportProps.contentType}")
         }
-        contact.contentType = contentType
+        else
+            contact.contentType = contentType
         contact.content = supportProps.content
         if(!contact.save()) {
             throw new SyncException("Error on setting technical support for ${provider}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")

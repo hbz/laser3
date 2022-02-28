@@ -3241,6 +3241,8 @@ join sub.orgRelations or_sub where
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        result.objectsWithoutProp = []
+        result.filteredObjs = []
         if (!result) {
             response.sendError(401); return
         }
@@ -3249,7 +3251,21 @@ join sub.orgRelations or_sub where
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-
+        SwissKnife.setPaginationParams(result, params, result.user)
+        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        result.selectedWithout = cache.get('without') ?: []
+        result.selectedWith = cache.get('with') ?: []
+        result.selectedAudit = cache.get('audit') ?: []
+        if(params.offset && params.setWithout == 'true')
+            result.withoutPropOffset = Integer.parseInt(params.offset.toString())
+        else if(params.withoutPropOffset)
+            result.withoutPropOffset = params.withoutPropOffset as int
+        else result.withoutPropOffset = 0
+        if(params.offset && params.setWith == 'true')
+            result.withPropOffset = Integer.parseInt(params.offset.toString())
+        else if(params.withPropOffset)
+            result.withPropOffset = params.withPropOffset as int
+        else result.withPropOffset = 0
         PropertyDefinition propDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
         //params.remove('filterPropDef')
@@ -3275,49 +3291,18 @@ join sub.orgRelations or_sub where
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
         result.propList = propList
-        result.filteredObjs = []
-        result.objectsWithoutProp = []
 
         if(propDef) {
-            Set filteredObjs = [], objectsWithoutProp = []
-            Map<String,Object> parameterMap = [type:propDef,ctx:result.institution], orgFilterParams = [:]
-            String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
-            if(accessService.checkPerm('ORG_CONSORTIUM')) {
-                subFilterClause += 'and oo.sub.instanceOf = null'
-                spOwnerFilterClause += 'and sp.owner.instanceOf = null'
-                licFilterClause += 'and oo.lic.instanceOf = null'
-                lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
+            result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
+            result.countObjWithoutProp = result.withoutProp.size()
+            result.countObjWithProp = result.withProp.size()
+            result.withoutProp.eachWithIndex { obj, int i ->
+                if(i >= result.withoutPropOffset && i < result.withoutPropOffset+result.max)
+                    result.objectsWithoutProp << propertyService.processObjects(obj,result.institution,propDef)
             }
-            else if(accessService.checkPerm('ORG_BASIC_MEMBER')) {
-                orgFilterClause += 'and ot in (:providerAgency)'
-                orgFilterParams.providerAgency = [RDStore.OT_AGENCY,RDStore.OT_PROVIDER,RefdataValue.getByValueAndCategory('Broker',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE),RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
-            }
-            switch(propDef.descr) {
-                case PropertyDefinition.SUB_PROP: objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
-                    filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx '+spOwnerFilterClause+' order by sp.owner.name asc',parameterMap))
-                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
-                    result.manageChildren = true
-                    break
-                case PropertyDefinition.LIC_PROP: objectsWithoutProp.addAll(License.executeQuery('select oo.lic from OrgRole oo where oo.org = :ctx '+licFilterClause+' and oo.roleType in (:roleTypes) and not exists (select lp from LicenseProperty lp where lp.owner = oo.lic and lp.tenant = :ctx and lp.type = :type) order by oo.lic.reference asc, oo.lic.startDate asc, oo.lic.endDate asc',parameterMap+[roleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]]))
-                    filteredObjs.addAll(LicenseProperty.executeQuery('select lp.owner from LicenseProperty lp where lp.type = :type and lp.tenant = :ctx '+lpOwnerFilterClause+' order by lp.owner.reference asc',parameterMap))
-                    result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
-                    break
-                case PropertyDefinition.PRS_PROP: objectsWithoutProp.addAll(Person.executeQuery('select p from Person p where (p.tenant = :ctx or p.tenant = null) and not exists (select pp from PersonProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) order by p.last_name asc, p.first_name asc',parameterMap))
-                    filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
-                    break
-                case PropertyDefinition.ORG_PROP: objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) '+orgFilterClause+' order by o.sortname asc, o.name asc',parameterMap+orgFilterParams+[deleted:RDStore.ORG_STATUS_DELETED]))
-                    filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc',parameterMap))
-                    result.sortname = true
-                    break
-                case PropertyDefinition.PLA_PROP: objectsWithoutProp.addAll(Platform.executeQuery('select pl from Platform pl where pl.status != :deleted and not exists (select plp from PlatformProperty plp where plp.owner = plp and plp.tenant = :ctx and plp.type = :type) order by pl.name asc',parameterMap+[deleted:RDStore.PLATFORM_STATUS_DELETED]))
-                    filteredObjs.addAll(PlatformProperty.executeQuery('select plp.owner from PlatformProperty plp where plp.type = :type and plp.tenant = :ctx order by plp.owner.name asc',parameterMap))
-                    break
-            }
-            objectsWithoutProp.each { obj ->
-                result.objectsWithoutProp << propertyService.processObjects(obj,result.institution,propDef)
-            }
-            filteredObjs.each { obj ->
-                result.filteredObjs << propertyService.processObjects(obj,result.institution,propDef)
+            result.withProp.eachWithIndex { obj, int i ->
+                if(i >= result.withPropOffset && i < result.withPropOffset+result.max)
+                    result.filteredObjs << propertyService.processObjects(obj,result.institution,propDef)
             }
             result.filterPropDef = propDef
         }
@@ -3342,6 +3327,9 @@ join sub.orgRelations or_sub where
         }
 
         params.id = oldID*/
+        //prepare next pagination
+        params.withoutPropOffset = result.withoutPropOffset
+        params.withPropOffset = result.withPropOffset
 
         result
     }

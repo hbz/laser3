@@ -7,6 +7,26 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
+
+4143    23.02.2022  rc-2.2  2.2.10      Andreas Bug         Identifier und URL wurden bei Anbietern nicht mit synchronisiert
+
+4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert
+
+4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
+
+4130    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Alle Verträge entknüpfen blieb ohne Wirkung
+
+4124    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Teilnehmervertragsverknüpfungen wiederhergestellt, Beschriftungen angepasst
+
+4014    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Tab wurde bei Konsortialstellen in Teilnehmerlizenz nicht angewählt
+
+4120    15.02.2022  rc-2.2  2.2.10      Andreas Feature     Filterfeld Publish-Komponente nachgereicht
+
+4118    14.02.2022  rc-2.2  2.2.10      Andreas Feature     Ladezeit des Lizenzdetail-Paketfragments beschleunigt
+
+4112    10.02.2022  rc-2.2  2.2.10      David   Feature     Status-Requester
+
 4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
 
 4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports

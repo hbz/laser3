@@ -31,6 +31,13 @@
            placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>
 </div>
 </g:if>
+<g:elseif test="${actionName == 'manageProperties'}">
+    <div class="field">
+        <label for="objStatus"><g:message code="default.status.label"/></label>
+
+        <input type="hidden" id="objStatus" name="objStatus">
+    </div>
+</g:elseif>
 
 
 
@@ -149,6 +156,40 @@
                         '<input id="filterProp" type="text" name="filterProp" placeholder="${message(code:'license.search.property.ph')}" />'
                     )*/
                 }
+                <g:if test="${actionName == 'manageProperties'}">
+                    $.ajax({
+                        url: '<g:createLink controller="ajaxJson" action="getOwnerStatus"/>' + '?oid=' + selOpt.attr('data-value'),
+                            success: function (data) {
+                                var select = '';
+                                for (var index = 0; index < data.length; index++) {
+                                    var option = data[index];
+                                    var optionText = option.text;
+
+                                    select += '<div class="item" data-value="' + option.value + '">' + optionText + '</div>';
+                                }
+
+                                select = ' <div id="objStatusWrapper" class="ui fluid search selection dropdown">' +
+                                '   <input type="hidden" id="objStatus" name="objStatus">' +
+                                '   <i class="dropdown icon"></i>' +
+                                '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
+                                '   <div class="menu">'
+                                + select +
+                                '   </div>' +
+                                '</div>';
+                            $('label[for=objStatus]').next().replaceWith(select);
+                            $('#objStatusWrapper').dropdown({
+                                duration: 150,
+                                transition: 'fade',
+                                clearable: true,
+                                forceSelection: false,
+                                selectOnKeydown: false,
+                                onChange: function (value, text, $selectedItem) {
+                                    value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                                }
+                            })<g:if test="${params.objStatus}">.dropdown("set selected","${params.objStatus}")</g:if>;
+                        }
+                    });
+                </g:if>
             },
 
             init: function () {

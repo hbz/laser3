@@ -211,19 +211,21 @@ class ManagementService {
             FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs")
             License newLicense = License.get(params.selectedLicense)
-            if(selectedSubs && newLicense) {
-                if (result.subscription && (params.processOption == 'unlinkAll')) {
-                    Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                    List<GString> changeAccepted = []
-                    validSubChilds.each { Subscription subChild ->
-                        if (subscriptionService.setOrgLicRole(subChild, newLicense, params.processOption == 'unlinkAll'))
+            if (result.subscription && params.processOption == 'unlinkAll') {
+                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
+                List<GString> changeAccepted = []
+                validSubChilds.each { Subscription subChild ->
+                    subChild.getLicenses().each { License currentLicense ->
+                        if (subscriptionService.setOrgLicRole(subChild, currentLicense, params.processOption == 'unlinkAll'))
                             changeAccepted << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subChild.getSubscriber().sortname})"
                     }
-                    if (changeAccepted) {
-                        flash.message = changeAccepted.join('<br>')
-                    }
                 }
-                else if (params.processOption == 'linkLicense' || params.processOption == 'unlinkLicense') {
+                if (changeAccepted) {
+                    flash.message = changeAccepted.join('<br>')
+                }
+            }
+            else if(selectedSubs && newLicense) {
+                if (params.processOption == 'linkLicense' || params.processOption == 'unlinkLicense') {
                     Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     List<GString> changeAccepted = []
                     subscriptions.each { Subscription subscription ->
