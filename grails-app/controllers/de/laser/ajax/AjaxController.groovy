@@ -44,6 +44,7 @@ class AjaxController {
     IdentifierService identifierService
     FilterService filterService
     PendingChangeService pendingChangeService
+    PropertyService propertyService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -458,6 +459,43 @@ class AjaxController {
                 render result as JSON
             }
         }
+    }
+
+    /**
+     * This method is used for the property distribution view at manageProperties and controls which objects have been selected for later processing.
+     * The caching ensures that the selections remain also when the page of results is being changed; this method updates a respective cache entry or (de-)selects the whole selection
+     * @return a {@link Map} reflecting the success status
+     */
+    @Secured(['ROLE_USER'])
+    def updatePropertiesSelection() {
+        Map success = [success: false]
+        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        List<String> checkedProperties = cache.get(params.table) ?: []
+        boolean check = Boolean.valueOf(params.checked)
+        if(params.key == "all") {
+            if(check) {
+                PropertyDefinition propDef = genericOIDService.resolveOID(params.propDef)
+                Map<String, Object> propertyData = propertyService.getAvailableProperties(propDef, contextService.getOrg(), params)
+                switch (params.table) {
+                    case "with": checkedProperties.addAll(propertyData.withProp.collect { o -> o.id })
+                        break
+                    case "without":
+                    case "audit": checkedProperties.addAll(propertyData.withoutProp.collect { o -> o.id })
+                        break
+                }
+            }
+            else {
+                checkedProperties.clear()
+            }
+        }
+        else {
+            if(check)
+                checkedProperties << params.key
+            else checkedProperties.remove(params.key)
+        }
+        if(cache.put(params.table,checkedProperties))
+            success.success = true
+        render success as JSON
     }
 
     /**

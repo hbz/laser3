@@ -20,7 +20,7 @@
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
                     <label for="orgNameContains">
-                        <g:if test="actionName == 'listProvider'">
+                        <g:if test="${actionName in ['listProvider', 'currentProviders']}">
                             <g:message code="org.search.provider.contains"/>
                             <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
                                 <i class="question circle icon"></i>

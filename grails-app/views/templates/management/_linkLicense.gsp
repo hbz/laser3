@@ -5,8 +5,7 @@
 
     <g:if test="${controllerName == 'subscription'}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"
-                                             args="${args.superOrgType}"/>
+            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"/>
             </h3>
 
             <g:if test="${validLicenses}">
