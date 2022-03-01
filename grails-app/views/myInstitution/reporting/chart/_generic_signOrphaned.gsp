@@ -1,0 +1,155 @@
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.myInstitution.base.BaseQuery" %>
+<g:if test="${data && chart == BaseConfig.CHART_PIE}">
+    JSPC.app.reporting.current.chart.option = {
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        dataset: {
+            source: [
+                ['id', 'name', 'value', 'isOrphaned'],
+                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}, ${it[3]}]," } %>
+            ]
+        },
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
+        tooltip: {
+            trigger: 'item',
+            formatter (params) {
+                var str = params.name
+                console.log( params )
+                if (! params.data[3]) {
+                    str += '<br/>' + params.marker + ' ${labels.chart[0]}'
+                } else {
+                    str += '<br/>' + params.marker + ' ${labels.chart[1]}'
+                }
+                return str
+           }
+        },
+        legend: {
+            bottom: 0,
+            left: 'center',
+            z: 1
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: '70%',
+                center: ['50%', '40%'],
+                minAngle: 1,
+                minShowLabelAngle: 1,
+                encode: {
+                    itemName: 'name',
+                    value: 'value',
+                    id: 'id'
+                },
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.ice
+                        }
+                        else {
+                            if (params.data[3] == true) {
+                                return JSPC.app.reporting.helper.series._color.ice
+                            }
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
+                    }
+                }
+            }
+        ]
+    };
+</g:if>
+<g:elseif test="${data && chart == BaseConfig.CHART_BAR}">
+    JSPC.app.reporting.current.chart.option = {
+        color: [
+            JSPC.app.reporting.helper.series._color.blue, JSPC.app.reporting.helper.series._color.ice
+        ],
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        toolbox: JSPC.app.reporting.helper.toolbox,
+        dataset: {
+            source: [
+                ['id', 'name', 'value1', 'value2'],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[3] ? 0 : it[2]}, ${it[3] ? it[2] * -1: 0}]," } %>
+            ]
+        },
+        legend: {
+            data: [ <% print labels.chart.collect{ "'${it}'" }.join(', ') %> ]
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter (params) {
+                var str = params[0].name
+                if (params.length > 1) {
+                    if (params[0].value[2]) {
+                        str += '<br/>' + params[0].marker + ' ' + params[0].seriesName
+                    }
+                    if (params[0].value[3]) {
+                        str += '<br/>' + params[1].marker + ' ' + params[1].seriesName
+                    }
+                }
+                return str
+           }
+        },
+        grid:  {
+            top: 40,
+            right: '5%',
+            bottom: 10,
+            left: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            offset: 5,
+            minInterval: 1,
+            axisLabel: {
+                formatter (value) { return Math.abs(value) }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            offset: 5,
+            minInterval: 1,
+            axisTick: { show: true },
+            axisLine: { onZero: true }
+        },
+        series: [
+            {
+                name: '${labels.chart[0]}',
+                type: 'bar',
+                stack: 'total',
+                encode: {
+                    x: 'value1',
+                    y: 'name'
+                },
+                label: {
+                    show: false,
+                    position: 'right'
+                }
+            },
+            {
+                name: '${labels.chart[1]}',
+                type: 'bar',
+                stack: 'total',
+                encode: {
+                    x: 'value2',
+                    y: 'name'
+                },
+                label: {
+                    show: false,
+                    position: 'left'
+                }
+            }
+        ]
+    };
+</g:elseif>
+<g:elseif test="${! data}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>

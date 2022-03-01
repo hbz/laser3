@@ -124,7 +124,7 @@
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.error')}</p>
+            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
 </body>
 </html>

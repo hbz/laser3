@@ -401,43 +401,34 @@ class BaseConfig {
         }
     }
 
-    static String getConfigLabel(def token) {
+    static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+        messageSource.getMessage(token, null, locale)
+    }
+
+    static String getConfigLabel(def token) {
+        getLabel('reporting.cfg.' + token)
     }
 
     static String getFilterLabel(String key) {
-        //println 'getFilterLabel(): ' + key
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage('reporting.cfg.filter.' + key, null, locale)
+        getLabel('reporting.cfg.filter.' + key)
     }
 
     static String getSourceLabel(String key, String source) {
-        //println 'getSourceLabel(): ' + key + ' - ' + source
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage('reporting.cfg.source.' + key + '.' + source, null, locale)
+        getLabel('reporting.cfg.source.' + key + '.' + source)
     }
 
     static String getQueryLabel(String key, String qKey, List qValues) {
-        //println 'getQueryLabel(): ' + key + ' - ' + qKey + ' - ' + qValues
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
-
         if (qValues[0].startsWith('generic')) {
-            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
+            getLabel('reporting.cfg.' + qValues[0])
         } else {
-            messageSource.getMessage('reporting.cfg.query.' + key + '.' + qKey, null, locale)
+            getLabel('reporting.cfg.query.' + key + '.' + qKey)
         }
     }
 
     static String getDistributionLabel(String key, String dist) {
-        //println 'getDistributionLabel(): ' + key + ' - ' + dist
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage('reporting.cfg.dist.' + key + '.' + dist, null, locale)
+        getLabel('reporting.cfg.dist.' + key + '.' + dist)
     }
 }

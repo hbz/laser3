@@ -201,7 +201,12 @@ class ReportingGlobalService {
                 result.putAll( PackageQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 
-                if (suffix in ['x']) {
+                if (suffix in ['*']) {
+                    //println 'ReportingGlobalService KEY_PACKAGE *'
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
+                }
+                else if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PACKAGE, 'chartLabel.' + it) }
@@ -212,7 +217,12 @@ class ReportingGlobalService {
                 result.putAll( PlatformQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 
-                if (suffix in ['x']) {
+                if (suffix in ['*']) {
+                    //println 'ReportingGlobalService KEY_PLATFORM *'
+                    result.labels.chart = [BaseConfig.getLabel('reporting.chart.chartLabel.counterpart.label'), BaseConfig.getLabel('reporting.chart.chartLabel.noCounterpart.label')]
+                    result.tmpl = TMPL_PATH_CHART + 'generic_signOrphaned'
+                }
+                else if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).base.distribution.getAt('default').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getDistributionLabel(BaseConfig.KEY_PLATFORM, 'chartLabel.' + it) }
