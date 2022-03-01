@@ -48,11 +48,12 @@ class PlatformQuery extends BaseQuery {
         }
         else if ( suffix in ['*']) {
 
-            handleGenericAllQuery(
+            handleGenericAllSignOrphanedQuery(
                     params.query,
-                    'select plt.name, plt.name, count(plt.name) from Platform plt where plt.id in (:idList) group by plt.name order by plt.name',
+                    'select plt.id, plt.name, count(plt.name), plt.id from Platform plt where plt.id in (:idList) group by plt.id, plt.name order by plt.name',
                     'select plt.id from Platform plt where plt.id in (:idList) and plt.name = :d order by plt.id',
                     idList,
+                    orphanedIdList,
                     result
             )
         }

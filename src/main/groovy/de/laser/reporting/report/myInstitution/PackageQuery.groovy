@@ -59,11 +59,12 @@ class PackageQuery extends BaseQuery {
         }
         else if ( suffix in ['*']) {
 
-            handleGenericAllQuery(
+            handleGenericAllSignOrphanedQuery(
                     params.query,
-                    'select pkg.name, pkg.name, count(pkg.name) from Package pkg where pkg.id in (:idList) group by pkg.name order by pkg.name',
+                    'select pkg.id, pkg.name, count(pkg.name), false from Package pkg where pkg.id in (:idList) group by pkg.id, pkg.name order by pkg.name',
                     'select pkg.id from Package pkg where pkg.id in (:idList) and pkg.name = :d order by pkg.id',
                     idList,
+                    orphanedIdList,
                     result
             )
         }
@@ -91,7 +92,7 @@ class PackageQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.PACKAGE_SCOPE, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['platform']) {
+        else if ( suffix in ['nominalPlatform']) {
 
             sharedQuery_package_platform()
         }

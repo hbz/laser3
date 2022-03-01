@@ -32,10 +32,13 @@
             <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
+        <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
 
         <style>
+            #reporting-chart-nodata { display: none; }
             #chart-wrapper { height: 380px; width: 98%; margin: 3em auto 2em; }
         </style>
 
@@ -64,15 +67,20 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
+                            $('#loadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
 
-                        if (! JSPC.app.reporting.current.chart.option) {
-                            $("#reporting-modal-nodata").modal('show');
+                        if (! JSPC.app.reporting.current.chart.option && ! JSPC.app.reporting.current.chart.statusCode) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 204) {
+                            $('#reporting-chart-nodata').show();
                         }
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
@@ -108,20 +116,16 @@
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
+                        $("#reporting-modal-error").modal('show');
                     })
+                    .always(function() { $('#loadingIndicator').hide(); });
                 }
             }
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.error')}</p>
+            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
-        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodata')}</p>
-        </semui:modal>
-        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodetails')}</p>
-        </semui:modal>
-
 </body>
 </html>
