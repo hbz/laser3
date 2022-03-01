@@ -22,7 +22,9 @@
                 if (query == 'platform-x-propertyWekb') {
                     if (params.id != null && params.id != 0) {
                         wekbProperty = GlobalExportHelper.getQueryCache(token).dataDetails.find { it.id == params.long('id') }.esProperty
-                        dtConfig[wekbProperty].dtc = true
+                        if (wekbProperty && dtConfig[wekbProperty]) {
+                            dtConfig[wekbProperty].dtc = true
+                        }
                     }
                 }
                 dtConfig.remove(null) // ?????

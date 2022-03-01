@@ -160,3 +160,6 @@
         ]
     };
 </g:elseif>
+<g:elseif test="${! data}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>

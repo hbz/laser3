@@ -50,6 +50,7 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default: [
                                     package : [
+                                            //'package-platform',    // TODO - moved to distribution !
                                             'package-contentType' :     [ '@' ],
                                             'package-packageStatus' :   [ '@' ],
                                             'package-file' :            [ '@' ],
@@ -79,7 +80,7 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'x.providers.1', 'x.providers.2' ]
                                     ],
-                                    'package-x-platform' : [
+                                    'package-x-platform' : [    // TODO - moved from query !
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []

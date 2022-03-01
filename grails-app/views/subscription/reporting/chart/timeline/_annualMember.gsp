@@ -1,3 +1,4 @@
+<g:if test="${data}">
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'value', 'isCurrent'],
@@ -59,3 +60,7 @@ JSPC.app.reporting.current.chart.option = {
         }
     ]
 };
+</g:if>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:else>

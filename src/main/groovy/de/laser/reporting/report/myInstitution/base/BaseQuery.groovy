@@ -115,6 +115,23 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    static void handleGenericAllSignOrphanedQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, List<Long> orphanedIdList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[3] = orphanedIdList.contains(d[0])
+            d[0] = Math.abs(d[1].hashCode())
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] )
+            ])
+        }
+    }
+
     static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []

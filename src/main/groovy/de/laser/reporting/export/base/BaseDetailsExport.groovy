@@ -149,7 +149,7 @@ abstract class BaseDetailsExport {
             cfg = 'default'
         }
         base.fields.get(cfg).findAll {
-            (it.value[0] != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
+            (it.value.type != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
 

@@ -52,7 +52,7 @@ class PlatformXCfg extends BaseConfig {
                     query : [
                             default: [
                                     platform : [
-                                           // 'platform-org',     // TODO - move to query2 !?
+                                           // 'platform-org',   // TODO - moved to distribution !
                                             'platform-serviceProvider' :            [ '@' ],
                                             'platform-softwareProvider' :           [ '@' ],
                                             'platform-status' :                     [ '@' ],
@@ -97,7 +97,7 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-statisticsUpdate'
                                             ]
                                     ],
-                                    'platform-x-org' : [
+                                    'platform-x-org' : [       // TODO - moved from query !
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []

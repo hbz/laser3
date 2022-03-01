@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4133    24.02.2022  dev     2.3         David   Feature     Reporting: x-property überarbeiten
+
 --      24.02.2022  dev     2.3         Andreas Bug         Bezeichner für Organisationsnamensfilterfeld korrigiert
 
 4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
