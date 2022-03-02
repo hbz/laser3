@@ -210,7 +210,7 @@
                                 <g:else>
                                     <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">
                                         <div class="ui blue circular label">
-                                            ${childSubIds.size()}#
+                                            ${childSubIds.size()}
                                         </div>
                                     </g:link>
                                 </g:else>
