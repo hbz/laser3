@@ -12,7 +12,7 @@
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
                                                         optionValue="${{BaseConfig.getQueryLabel(cfgKey, it.key, it.value)}}"
-                                                        optionExpl="${{esdConfig.keySet().contains(it) ? '(we:kb)' : ''}}"
+                                                        optionExpl="${{esdConfig.keySet().contains(it.key) ? '(we:kb)' : ''}}"
                                                         class="ui selection dropdown la-not-clearable"
                                                         noSelection="${message(code: 'default.select.choose.label')}" />
                 </div>
