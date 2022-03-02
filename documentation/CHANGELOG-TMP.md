@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4146    02.03.2022  dev     2.3         Andreas Bug         Admin-Referenzwertliste konnte nicht mehr geladen werden
+
 4133    24.02.2022  dev     2.3         David   Feature     Reporting: x-property überarbeiten
 
 --      24.02.2022  dev     2.3         Andreas Bug         Bezeichner für Organisationsnamensfilterfeld korrigiert

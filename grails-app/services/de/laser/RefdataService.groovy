@@ -130,16 +130,17 @@ class RefdataService {
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
+                                String query = "SELECT DISTINCT dummy.${it.name}.id, rdc.id FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
                                 List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->
-                                    if (it2[1].id == RefdataCategory.getByDesc(anno.cat())?.id) {
-                                        fieldCheck << ["${it2[0]}": true]
+                                    RefdataValue rdv = RefdataValue.get(it2[0])
+                                    if (it2[1] == RefdataCategory.getByDesc(anno.cat())?.id) {
+                                        fieldCheck << ["${rdv}": true]
                                     }
                                     else {
-                                        fieldCheck << ["${it2[0]}": it2[1]]
+                                        fieldCheck << ["${rdv}": RefdataCategory.get(it2[1])]
                                     }
                                 }
                                 return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.getByDesc(anno.cat()), check: fieldCheck]
