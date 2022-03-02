@@ -7,9 +7,14 @@
         },
         dataset: {
             source: [
-                ['id', 'name', 'value', 'isOrphaned'],
-                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}, ${it[3]}]," } %>
+                ['id', 'name', 'value', 'isOrphaned', 'tmpCmb'],
+                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}, ${it[3]}, ${it[2] + it[3]}]," } %>
             ]
+        },
+        legend: {
+            bottom: 0,
+            left: 'center',
+            z: 1
         },
         toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
@@ -25,37 +30,27 @@
                 return str
            }
         },
-        legend: {
-            bottom: 0,
-            left: 'center',
-            z: 1
-        },
         series: [
             {
                 type: 'pie',
-                radius: '70%',
+                radius: ['15%', '70%'],
                 center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
                     itemName: 'name',
-                    value: 'value',
+                    value: 'tmpCmb',
                     id: 'id'
                 },
                 emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
                 itemStyle: {
+                    borderColor: JSPC.app.reporting.helper.series._color.background,
+                    borderWidth: 1,
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
-                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
-                        }
-                        else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
+                        if (params.data[3]) {
                             return JSPC.app.reporting.helper.series._color.ice
-                        }
-                        else {
-                            if (params.data[3] == true) {
-                                return JSPC.app.reporting.helper.series._color.ice
-                            }
-                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        } else {
+                            return JSPC.app.reporting.helper.series._color.blue;
                         }
                     }
                 }
@@ -76,7 +71,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[3] ? 0 : it[2]}, ${it[3] ? it[2] * -1: 0}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}, ${it[3] ? it[3] * -1 : 0}]," } %>
             ]
         },
         legend: {
@@ -130,8 +125,12 @@
                     y: 'name'
                 },
                 label: {
-                    show: false,
-                    position: 'right'
+                    show: true,
+                    position: 'right',
+                    formatter (params) {
+                        var v = Math.abs(params.value[2])
+                        if (v > 0) { return v } else { return '' }
+                    }
                 }
             },
             {
@@ -143,8 +142,12 @@
                     y: 'name'
                 },
                 label: {
-                    show: false,
-                    position: 'left'
+                    show: true,
+                    position: 'left',
+                    formatter (params) {
+                        var v = Math.abs(params.value[3])
+                        if (v > 0) { return v } else { return '' }
+                    }
                 }
             }
         ]

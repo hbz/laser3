@@ -28,6 +28,32 @@ if (! JSPC.app.reporting) {
                             title: '${message(code:'reporting.chart.toolbox.saveAsImage')}',
                             icon: 'image://${resource(dir:'images', file:'reporting/download.svg', absolute:true)}'
                         },
+                        myZoomIn: {
+                            title: '${message(code:'reporting.chart.toolbox.zoomIn')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-in.svg', absolute:true)}',
+                            onclick: function (){
+                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
+                                    var r = parseInt( s.option.radius[1].replace('%','') )
+                                    if (r < 90) {
+                                        s.option.radius[1] = (r + 5) + '%'
+                                        JSPC.app.reporting.current.chart.echart.resize()
+                                    }
+                                })
+                            }
+                        },
+                        myZoomOut: {
+                            title: '${message(code:'reporting.chart.toolbox.zoomOut')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-out.svg', absolute:true)}',
+                            onclick: function (){
+                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
+                                    var r = parseInt( s.option.radius[1].replace('%','') )
+                                    if (r > 30) {
+                                        s.option.radius[1] = (r - 5) + '%'
+                                        JSPC.app.reporting.current.chart.echart.resize()
+                                    }
+                                })
+                            }
+                        },
                         myLegendToggle: {
                             title: '${message(code:'reporting.chart.toolbox.toggleLegend')}',
                             icon: 'image://${resource(dir:'images', file:'reporting/menu.svg', absolute:true)}',
@@ -44,32 +70,6 @@ if (! JSPC.app.reporting) {
                                 JSPC.app.reporting.current.chart.echart.resize()
                             }
                         },
-                        myZoomIn: {
-                            title: '${message(code:'reporting.chart.toolbox.zoomIn')}',
-                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-in.svg', absolute:true)}',
-                            onclick: function (){
-                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
-                                    var r = parseInt( s.option.radius.replace('%','') )
-                                    if (r < 90) {
-                                        s.option.radius = (r + 5) + '%'
-                                        JSPC.app.reporting.current.chart.echart.resize()
-                                    }
-                                })
-                            }
-                        },
-                        myZoomOut: {
-                            title: '${message(code:'reporting.chart.toolbox.zoomOut')}',
-                            icon: 'image://${resource(dir:'images', file:'reporting/zoom-out.svg', absolute:true)}',
-                            onclick: function (){
-                                JSPC.app.reporting.current.chart.echart.getModel().getSeries().forEach( function(s) {
-                                    var r = parseInt( s.option.radius.replace('%','') )
-                                    if (r > 10) {
-                                        s.option.radius = (r - 5) + '%'
-                                        JSPC.app.reporting.current.chart.echart.resize()
-                                    }
-                                })
-                            }
-                        }
                     }
                 },
             },
@@ -96,6 +96,7 @@ if (! JSPC.app.reporting) {
                 _color: {
                     palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc' ],
                     redInactiveSolid: '#f2cccd',
+                    background: '#f4f8f9',
 
                     red:    'rgb(238,102,102)',
                     green:  'rgb(144,202,117)',

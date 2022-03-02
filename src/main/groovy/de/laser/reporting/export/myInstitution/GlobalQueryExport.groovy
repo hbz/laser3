@@ -40,7 +40,12 @@ class GlobalQueryExport extends BaseQueryExport {
                     [e.label.toString(), e.value1, e.value2, e.value3] // changed order - properties - TODO
                 }
                 else {
-                    [e.label.toString(), e.value2, e.value1] // changed order - default - TODO
+                    if (queryCache.tmpl == '/myInstitution/reporting/chart/generic_signOrphaned') {  // unchanged order - TODO
+                        [e.label.toString(), e.value1, e.value2]
+                    }
+                    else {
+                        [e.label.toString(), e.value2, e.value1] // changed order - default - TODO
+                    }
                 }
             }
         }

@@ -61,7 +61,7 @@ class PackageQuery extends BaseQuery {
 
             handleGenericAllSignOrphanedQuery(
                     params.query,
-                    'select pkg.id, pkg.name, count(pkg.name), false from Package pkg where pkg.id in (:idList) group by pkg.id, pkg.name order by pkg.name',
+                    'select pkg.id, pkg.name, 1, false from Package pkg where pkg.id in (:idList) order by pkg.name',
                     'select pkg.id from Package pkg where pkg.id in (:idList) and pkg.name = :d order by pkg.id',
                     idList,
                     orphanedIdList,
