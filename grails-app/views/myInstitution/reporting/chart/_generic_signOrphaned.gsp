@@ -21,7 +21,6 @@
             trigger: 'item',
             formatter (params) {
                 var str = params.name
-                console.log( params )
                 if (! params.data[3]) {
                     str += '<br/>' + params.marker + ' ${labels.chart[0]}'
                 } else {
