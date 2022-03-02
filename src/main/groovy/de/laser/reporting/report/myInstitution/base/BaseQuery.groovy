@@ -120,14 +120,17 @@ class BaseQuery {
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
-            d[3] = orphanedIdList.contains(d[0])
+            d[3] = orphanedIdList.contains(d[0]) ? 1 : 0
+            d[2] = d[3] ? 0 : 1
             d[0] = Math.abs(d[1].hashCode())
 
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
                     label : d[1],
-                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] )
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] ),
+                    value1: d[2], // matched
+                    value2: d[3]  // orphaned
             ])
         }
     }
