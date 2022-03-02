@@ -220,15 +220,17 @@
                             $('#reporting-chart-nodata').show();
                         }
                         else {
+                            var chartHeight = 400;
                             if (JSPC.app.reporting.current.request.chart == 'bar') {
-                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length);
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                                $('#chart-wrapper').css('height', 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = Math.min(1800, 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length));
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
-                                $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length);
                             }
+                            $('#chart-wrapper').css('height', chartHeight + 'px');
 
                             var echart = echarts.init($('#chart-wrapper')[0]);
                             echart.setOption( JSPC.app.reporting.current.chart.option );

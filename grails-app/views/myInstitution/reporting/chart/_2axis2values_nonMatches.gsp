@@ -30,7 +30,7 @@
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
-                radius: '70%',
+                radius: [0, '70%'],
                 center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
