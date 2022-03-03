@@ -5,6 +5,8 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.helper.ConfigUtils
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -44,7 +46,7 @@ class ElasticSearchHelper {
 
         if (cmbKey != ElasticSearchHelper.IGNORE_FILTER) {
 
-            Map<String, Map> esDataMap = BaseConfig.getCurrentElasticsearchDataConfig( cfgKey )
+            Map<String, Map> esDataMap = BaseConfig.getCurrentConfigElasticsearchData( cfgKey )
 
             BaseFilter.getCurrentFilterKeys(params, cmbKey).each { key ->
                 if (params.get(key)) {
@@ -102,12 +104,7 @@ class ElasticSearchHelper {
                                 ],
                                 from: 0,
                                 size: 10000,
-                                _source: [
-                                        "uuid", "openAccess", "paymentType", "scope",
-                                        "altname", "description", "descriptionURL",
-                                        "curatoryGroups.*", "ddcs.*", "identifiers.*", "nationalRanges.*", "regionalRanges.*",
-                                        "lastUpdatedDisplay"
-                                ]
+                                _source: PackageExport.ES_SOURCE_FIELDS
                         ]
                         response.success = { resp, data ->
                             data.hits.hits.each {
@@ -155,14 +152,7 @@ class ElasticSearchHelper {
                                 ],
                                 from: 0,
                                 size: 10000,
-                                _source: [
-                                        "uuid", "providerUuid",
-                                        "altname",
-                                        "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
-                                        "statisticsFormat", "statisticsUpdate", "counterCertified",
-                                        "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
-                                        "lastUpdatedDisplay"
-                                ]
+                                _source: PlatformExport.ES_SOURCE_FIELDS
                         ]
                         response.success = { resp, data ->
                             data.hits.hits.each {

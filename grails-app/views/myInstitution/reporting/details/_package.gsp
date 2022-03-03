@@ -14,7 +14,7 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key )
+                    Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key )
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">

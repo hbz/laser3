@@ -129,7 +129,7 @@ class PlatformXCfg extends BaseConfig {
             ],
     ]
 
-    static Map<String, Map> ES_DT_CONFIG = [
+    static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                                  : [ dtc: true   ],
             'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?

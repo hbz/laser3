@@ -16,7 +16,7 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+                    Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key ).clone()
 
                     if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
 

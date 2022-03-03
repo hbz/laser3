@@ -171,7 +171,7 @@ class PackageXCfg extends BaseConfig {
             ]
     ]
 
-    static Map<String, Map> ES_DT_CONFIG = [
+    static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                      : [ dtc: true  ],
             'sortname'                  : [ dtc: false ],

@@ -11,8 +11,8 @@
             <%
                 String key = GlobalExportHelper.getCachedExportStrategy(token)
 
-                Map<String, Map> esdConfig = BaseConfig.getCurrentElasticsearchDataConfig( key )
-                Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key ).clone()
+                Map<String, Map> esdConfig = BaseConfig.getCurrentConfigElasticsearchData( key )
+                Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key ).clone()
 
                 if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
 
