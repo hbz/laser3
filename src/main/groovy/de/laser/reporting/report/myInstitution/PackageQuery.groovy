@@ -304,6 +304,42 @@ class PackageQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
+            else if (params.query in ['package-x-archivingAgency']) {
+
+                Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)
+                Map<String, Object> struct = [:]
+                Map<String, Object> helper = [:]
+                List<Long> noDataList = []
+
+                esRecords.each { it ->
+                    List cgList = it.value.get('packageArchivingAgencies')
+                    cgList.each { aa ->
+                        if (! struct.containsKey(aa.archivingAgency)) {
+                            struct.put(aa.archivingAgency, [])
+                            helper.put(aa.archivingAgency, aa)
+                        }
+                        struct.get(aa.archivingAgency).add( Long.parseLong(it.key) )
+                    }
+                    if (!cgList) {
+                        noDataList.add(Long.parseLong(it.key))
+                    }
+                }
+                struct.eachWithIndex {it, idx ->
+                    Map<String, Object> aa = helper.get(it.key)
+                    List d = [idx, aa.archivingAgency, it.value.size()]
+                    result.data.add( d )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: it.value
+                    ])
+                }
+                ElasticSearchHelper.sortResultDataList( result.data )
+
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_DATA_LABEL, noDataList, result)
+                _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
+            }
             else if (params.query in ['package-x-nationalRange']) {
 
                 Map<String, Object> esRecords = BaseFilter.getCachedFilterESRecords(prefix, params)

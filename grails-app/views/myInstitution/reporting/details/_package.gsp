@@ -198,6 +198,15 @@
                         </g:if>
                     </laser:reportDetailsTableTD>
 
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
+
+                        <g:if test="${esRecordIds.contains(pkg.id)}">
+                            <g:each in="${esRecords.get(pkg.id as String).packageArchivingAgencies}" var="archivingAgency">
+                                ${archivingAgency.archivingAgency}<br />
+                            </g:each>
+                        </g:if>
+                    </laser:reportDetailsTableTD>
+
                     <laser:reportDetailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
