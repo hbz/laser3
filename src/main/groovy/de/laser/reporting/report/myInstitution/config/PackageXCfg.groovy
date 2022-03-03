@@ -95,6 +95,11 @@ class PackageXCfg extends BaseConfig {
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
+                                    'package-x-archivingAgency' : [  // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
                                     'package-x-ddc' : [  // ES
                                              detailsTemplate     : 'package',
                                              chartTemplate       : 'generic',
@@ -194,6 +199,7 @@ class PackageXCfg extends BaseConfig {
 
             'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'package.descriptionURL.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
+            'package-x-archivingAgency' : [ dtc: false, es: true,               export: true, label: 'package.archivingAgency.label', mapping: 'packageArchivingAgencies' ],
             '_+_lastUpdated'            : [ dtc: true  ],    // virtual
             '_+_wekb'                   : [ dtc: true  ],    // virtual
     ]

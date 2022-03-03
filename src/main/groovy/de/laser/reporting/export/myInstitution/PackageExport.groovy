@@ -49,6 +49,7 @@ class PackageExport extends BaseDetailsExport {
                                     'breakable'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                     'x-ddc'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                     'x-curatoryGroup'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-archivingAgency'     : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                     'description'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                     'descriptionURL'        : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             ]
@@ -174,6 +175,12 @@ class PackageExport extends BaseDetailsExport {
                             cg.name + ( cgType ? ' - ' + cgType : '')
                         }
                         content.add (cgList ? cgList.join( CSV_VALUE_SEPARATOR ) : '')
+                    }
+                    else if (key == 'x-archivingAgency') {
+                        List<String> aaList = record?.get( esData.mapping )?.collect{ aa ->
+                            aa.archivingAgency
+                        }
+                        content.add (aaList ? aaList.join( CSV_VALUE_SEPARATOR ) : '')
                     }
                     else if (key == 'x-ddc') {
                         List<String> ddcList = record?.get( esData.mapping )?.collect{ ddc ->

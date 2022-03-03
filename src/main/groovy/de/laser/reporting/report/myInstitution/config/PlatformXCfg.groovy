@@ -138,7 +138,7 @@ class PlatformXCfg extends BaseConfig {
             'softwareProvider'                      : [ dtc: false  ],
 
             'status'                                : [ dtc: false  ],
-            'platform-altname'                      : [             es: true,               export: true,   label: 'package.show.altname'],
+            'platform-altname'                      : [             es: true,               export: true, label: 'package.show.altname'],
             'platform-x-propertyWekb'               : [             es: true  ],
             'platform-ipAuthentication'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION ],
             'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],
