@@ -974,8 +974,9 @@ class AjaxJsonController {
         } catch (Exception e) {
             log.error( e.getMessage() )
             e.printStackTrace()
+            result.remove('data')
+            result.remove('dataDetails')
         }
-
         if (result.tmpl) {
             render template: result.tmpl, model: result
         }

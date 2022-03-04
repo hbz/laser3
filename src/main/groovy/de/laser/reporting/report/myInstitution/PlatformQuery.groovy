@@ -43,6 +43,17 @@ class PlatformQuery extends BaseQuery {
             )
             handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
         }
+        Closure sharedQuery_platform_primaryUrl = {
+            // println 'sharedQuery_platform_primaryUrl()'
+            handleGenericAllQuery(
+                    params.query,
+                    'select plt.primaryUrl, plt.primaryUrl, count(*) from Platform plt where plt.id in (:idList) and plt.primaryUrl != null group by plt.primaryUrl order by plt.primaryUrl',
+                    'select plt.id from Platform plt where plt.id in (:idList) and plt.primaryUrl = :d order by plt.name',
+                    idList,
+                    result
+            )
+            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.primaryUrl is null order by plt.name', idList, result)
+        }
 
         if (! idList) {
         }
@@ -83,6 +94,9 @@ class PlatformQuery extends BaseQuery {
         }
         else if ( suffix in ['org']) {
             sharedQuery_platform_org()
+        }
+        else if ( suffix in ['primaryUrl']) {
+            sharedQuery_platform_primaryUrl()
         }
         else if ( suffix in ['x']) {
 
@@ -140,6 +154,9 @@ class PlatformQuery extends BaseQuery {
             }
             else if (params.query in ['platform-x-org']) {
                 sharedQuery_platform_org()
+            }
+            else if (params.query in ['platform-x-primaryUrl']) {
+                sharedQuery_platform_primaryUrl()
             }
         }
         result

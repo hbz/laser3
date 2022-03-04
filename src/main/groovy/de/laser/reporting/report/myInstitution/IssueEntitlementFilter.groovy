@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext
 @Deprecated
 class IssueEntitlementFilter extends BaseFilter {
 
-    static int TMP_QUERY_CONSTRAINT = 10000
+    static int TMP_QUERY_CONSTRAINT = 30000
 
     static Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
@@ -173,16 +173,7 @@ class IssueEntitlementFilter extends BaseFilter {
         //println queryParams
         //println whereParts
 
-        Set<Long> tmpIdSet = []
-        List<Long> tmp = queryParams.issueEntitlementIdList.clone() as List
-        while (tmp) {
-            queryParams.issueEntitlementIdList = tmp.take(TMP_QUERY_CONSTRAINT)
-            tmp = tmp.drop(TMP_QUERY_CONSTRAINT) as List<Long>
-            tmpIdSet.addAll( IssueEntitlement.executeQuery( query, queryParams ))
-        }
-        List<Long> issueEntitlementIdList = tmpIdSet.sort().toList().take(TMP_QUERY_CONSTRAINT)
-
-        filterResult.data.put(BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', issueEntitlementIdList) // postgresql: out-of-range
+        filterResult.data.put(BaseConfig.KEY_ISSUEENTITLEMENT + 'IdList', _handleLargeQuery(query, queryParams, 'issueEntitlementIdList').take( TMP_QUERY_CONSTRAINT ))
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT ).keySet().each{ pk ->
             if (pk != 'base') {
@@ -219,7 +210,7 @@ class IssueEntitlementFilter extends BaseFilter {
         Map<String, Object> queryParams = [ issueEntitlementIdList: filterResult.data.issueEntitlementIdList ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? Subscription.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? _handleLargeQuery(query, queryParams, 'issueEntitlementIdList') : [] )
     }
 
     static void _handleInternalPackageFilter(String partKey, Map<String, Object> filterResult) {
@@ -229,28 +220,42 @@ class IssueEntitlementFilter extends BaseFilter {
         Map<String, Object> queryParams = [ issueEntitlementIdList: filterResult.data.issueEntitlementIdList ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? Package.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.issueEntitlementIdList ? _handleLargeQuery(query, queryParams, 'issueEntitlementIdList') : [] )
     }
 
     static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (org.id) from OrgRole ro join ro.pkg pkg join ro.org org'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)', 'ro.roleType in (:roleTypes)' ]
 
         Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER] ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Org.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? _handleLargeQuery(query, queryParams, 'packageIdList') : [] )
     }
 
     static void _handleInternalPlatformFilter(String partKey, Map<String, Object> filterResult) {
-        // if (! filterResult.data.get('packageIdList')) { filterResult.data.put( partKey + 'IdList', [] ) }
         String queryBase = 'select distinct (plt.id) from Package pkg join pkg.nominalPlatform plt'
         List<String> whereParts = [ 'pkg.id in (:packageIdList)' ]
 
         Map<String, Object> queryParams = [ packageIdList: filterResult.data.packageIdList ]
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
-        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? Platform.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.packageIdList ? _handleLargeQuery(query, queryParams, 'packageIdList') : [] )
+    }
+
+    static def _handleLargeQuery(String query, Map queryParams, String idListName) {
+        Set<Long> tmpIdSet = []
+
+        IssueEntitlement.withTransaction {
+            List<Long> tmpIdList = queryParams.getAt( idListName ).clone() as List<Long>
+            while (tmpIdList) {
+                //println '--- ' + query + ' : ' + idListName + ' ---> ' + tmpIdList.size()
+
+                queryParams.putAt( idListName, tmpIdList.take( 10000 ) )
+                tmpIdList = tmpIdList.drop( 10000 ) as List<Long>
+                tmpIdSet.addAll( IssueEntitlement.executeQuery(query, queryParams) )
+            }
+        }
+        tmpIdSet.sort().toList()
     }
 }
