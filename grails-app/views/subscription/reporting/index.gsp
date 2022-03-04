@@ -78,6 +78,9 @@
                         if (! JSPC.app.reporting.current.chart.option && ! JSPC.app.reporting.current.chart.statusCode) {
                             $("#reporting-modal-error").modal('show');
                         }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 500) {
+                            $("#reporting-modal-error").modal('show');
+                        }
                         else if (JSPC.app.reporting.current.chart.statusCode == 204) {
                             $('#reporting-chart-nodata').show();
                         }

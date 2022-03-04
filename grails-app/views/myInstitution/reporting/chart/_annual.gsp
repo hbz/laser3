@@ -133,6 +133,9 @@
         ]
     };
 </g:elseif>
-<g:elseif test="${! data}">
+<g:elseif test="${data != null && data.isEmpty()}">
     JSPC.app.reporting.current.chart.statusCode = 204
 </g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

@@ -20,7 +20,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     fields: [
                             'name'                      : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
-                            'primaryUrl'                : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
+                            'primaryUrl'                : [ type: FIELD_TYPE_PROPERTY ],
                             'org'                       : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_ORG, spec: FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: FIELD_TYPE_ELASTICSEARCH ],
@@ -56,6 +56,7 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-serviceProvider' :            [ '@' ],
                                             'platform-softwareProvider' :           [ '@' ],
                                             'platform-status' :                     [ '@' ],
+//                                            'platform-primaryUrl' :                 [ '@' ],   // TODO - moved to distribution !
                                             'platform-ipAuthentication' :           [ '@' ],    // ES
                                             'platform-shibbolethAuthentication' :   [ '@' ],    // ES
                                             'platform-passwordAuthentication' :     [ '@' ],    // ES
@@ -98,10 +99,15 @@ class PlatformXCfg extends BaseConfig {
                                             ]
                                     ],
                                     'platform-x-org' : [       // TODO - moved from query !
+                                                               detailsTemplate     : 'platform',
+                                                               chartTemplate       : 'generic',
+                                                               chartLabels         : []
+                                    ],
+                                    'platform-x-primaryUrl' : [       // TODO - moved from query !
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
-                                    ],
+                                    ]
                             ]
                     ]
             ],
@@ -133,7 +139,7 @@ class PlatformXCfg extends BaseConfig {
 
             'name'                                  : [ dtc: true   ],
             'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
-            'primaryUrl'                            : [ dtc: true   ],
+            'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],
             'softwareProvider'                      : [ dtc: false  ],
 

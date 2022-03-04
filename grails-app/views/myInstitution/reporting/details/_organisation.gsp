@@ -1,5 +1,6 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
+<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <g:render template="/myInstitution/reporting/details/top" />
 
@@ -18,6 +19,7 @@
             </g:elseif>
             <g:if test="${query.startsWith('provider-')}">
                 <th>${message(code:'org.platforms.label')}</th>
+                <th>${message(code:'wekb')}</th>
             </g:if>
             %{--<th></th>--}%
         </tr>
@@ -48,6 +50,16 @@
                             <g:each in="${org.platforms}" var="plt">
                                 <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>
                             </g:each>
+                        </td>
+                        <td>
+                            <g:if test="${wekb?.baseUrl && org.gokbId}">
+                                <a href="${wekb.baseUrl + '/public/orgContent/' + org.gokbId}" target="_blank">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
+                                            data-position="top right">
+                                        <i class="icon external alternate grey"></i>
+                                    </span>
+                                </a>
+                            </g:if>
                         </td>
                     </g:if>
                     %{--
