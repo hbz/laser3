@@ -326,7 +326,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex {it, idx ->
                     Map<String, Object> aa = helper.get(it.key)
-                    List d = [idx, aa.archivingAgency, it.value.size()]
+                    List d = [idx + 1, aa.archivingAgency, it.value.size()]
                     result.data.add( d )
                     result.dataDetails.add([
                             query : params.query,

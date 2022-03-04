@@ -168,7 +168,7 @@ class IssueEntitlementXCfg extends BaseConfig {
                             default : [
                                     platform : [
                                             'platform-x-org' :      [ '@' ],       // KEY_PLATFORM -> distribution
-                                            'platform-status' :     [ '@' ],
+                                            'platform-status' :     [ 'generic.plt.status' ],
                                     //        'nominalPlatform-serviceProvider' : [ '@' ],
                                     //        'nominalPlatform-softwareProvider' : [ '@' ],
                                             'platform-*' :          [ 'generic.all' ]

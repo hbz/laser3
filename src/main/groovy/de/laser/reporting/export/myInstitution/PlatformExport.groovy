@@ -24,31 +24,41 @@ class PlatformExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
-                                    'gokbId'                : [ type: FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
-                                    'altname'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'org+sortname+name'     : [ type: FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
-                                    'primaryUrl'            : [ type: FIELD_TYPE_PROPERTY ],
-                                    'serviceProvider'       : [ type: FIELD_TYPE_REFDATA ],
-                                    'softwareProvider'      : [ type: FIELD_TYPE_REFDATA ],
-                                    'status'                : [ type: FIELD_TYPE_REFDATA ],
-                                    'ipAuthentication'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'shibbolethAuthentication'     : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'passwordAuthentication'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'proxySupported'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsFormat'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'statisticsUpdate'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterCertified'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR3Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR4SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5Supported'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR5SushiApiSupported'   : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-property'                   : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'globalUID'                     : [ type: FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                        : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                          : [ type: FIELD_TYPE_PROPERTY ],
+                                    'altname'                       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'org+sortname+name'             : [ type: FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
+                                    'primaryUrl'                    : [ type: FIELD_TYPE_PROPERTY ],
+                                    'serviceProvider'               : [ type: FIELD_TYPE_REFDATA ],
+                                    'softwareProvider'              : [ type: FIELD_TYPE_REFDATA ],
+                                    'status'                        : [ type: FIELD_TYPE_REFDATA ],
+                                    'ipAuthentication'              : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'shibbolethAuthentication'      : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'passwordAuthentication'        : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'proxySupported'                : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsFormat'              : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'statisticsUpdate'              : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterCertified'              : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR3Supported'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4Supported'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR4SushiApiSupported'    : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5Supported'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'counterR5SushiApiSupported'    : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-property'                    : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
                     ]
             ]
+    ]
+
+    static List<String> ES_SOURCE_FIELDS = [
+
+            "uuid", "providerUuid",
+            "altname",
+            "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
+            "statisticsFormat", "statisticsUpdate", "counterCertified",
+            "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
+            "lastUpdatedDisplay"
     ]
 
     PlatformExport(String token, Map<String, Object> fields) {
@@ -74,7 +84,7 @@ class PlatformExport extends BaseDetailsExport {
         Platform plt = obj as Platform
         List content = []
 
-        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( KEY )
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( KEY )
 
         fields.each{ f ->
             String key = f.key

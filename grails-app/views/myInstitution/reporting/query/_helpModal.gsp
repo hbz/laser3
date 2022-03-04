@@ -405,7 +405,7 @@
         </p>
         <p>
             <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
-            <g:set var="esdConfig" value="${BaseConfig.getCurrentElasticsearchDataConfig(BaseConfig.KEY_PLATFORM)}" />
+            <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
             <ol class="ui list">
                 <g:each in="${esProperties}" var="prop">
                     <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li>
