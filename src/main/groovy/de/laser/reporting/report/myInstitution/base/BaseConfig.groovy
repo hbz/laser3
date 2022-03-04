@@ -139,34 +139,49 @@ class BaseConfig {
         }
     }
 
-    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+    static Map<String, Object> getCurrentConfigByFilter(String filter) {
         Map<String, Object> cfg = [:]
+        // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (prefix in [ KEY_COSTITEM ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+            cfg = getCurrentConfig( filter )
         }
-        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
-        }
-        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
-        }
-        else if (prefix in ['org']) {
+        else if (filter in ['org']) {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
-        else if (prefix in [ KEY_PACKAGE ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
+        else {
+            println '|--- BaseConfig.getCurrentConfigByFilter() failed'
         }
-        else if (prefix in [ KEY_PLATFORM]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
-        }
-        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-        }
-
-        // println 'BaseConfig.getCurrentConfigByPrefix( ' + prefix + ' ) -> ' + cfg.base.meta
         cfg
     }
+
+//    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+//        Map<String, Object> cfg = [:]
+//
+//        if (prefix in [ KEY_COSTITEM ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+//        }
+//        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
+//        }
+//        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
+//        }
+//        else if (prefix in ['org']) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
+//        }
+//        else if (prefix in [ KEY_PACKAGE ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
+//        }
+//        else if (prefix in [ KEY_PLATFORM]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
+//        }
+//        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+//        }
+//
+//        cfg
+//    }
 
     static Map<String, Object> getCustomImplRefdata(String key) {
         getCustomImplRefdata(key, null)

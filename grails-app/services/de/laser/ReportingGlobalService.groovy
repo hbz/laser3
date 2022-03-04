@@ -268,8 +268,8 @@ class ReportingGlobalService {
                     return
                 }
             }
-            //println 'ReportingGlobalService.doChartDetails() -> BaseConfig.getCurrentConfigByPrefix( ' + prefix + ' )'
-            Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+            //println 'ReportingGlobalService.doChartDetails() -> prefix:' + prefix + ', suffix:' + suffix
+            Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( params.filter )
 
             if (cfg) {
                 result.labels = BaseQuery.getQueryLabels( cfg, params )
