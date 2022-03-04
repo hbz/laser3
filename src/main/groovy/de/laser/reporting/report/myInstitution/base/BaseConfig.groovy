@@ -163,6 +163,8 @@ class BaseConfig {
         else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
             cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
         }
+
+        // println 'BaseConfig.getCurrentConfigByPrefix( ' + prefix + ' ) -> ' + cfg.base.meta
         cfg
     }
 

@@ -30,7 +30,7 @@ class PlatformXCfg extends BaseConfig {
                             'softwareProvider'          : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
                             'status'                    : [ type: FIELD_TYPE_REFDATA ],
                             'packageStatus'             : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_STATUS ],
-                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS, spec: FIELD_IS_MULTIPLE ],
                             'counterCertified'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'statisticsFormat'          : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             //'type'                    : [ type: FIELD_TYPE_REFDATA ],
@@ -122,6 +122,7 @@ class PlatformXCfg extends BaseConfig {
                             default : [
                                     platformOrg : [ // label
                                             'provider-orgType' : [ 'generic.org.orgType' ],
+//                                            'provider-status' :  [ 'generic.org.status' ],
                                             'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]

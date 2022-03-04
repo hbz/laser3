@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4148    03.03.2022  dev     2.3         David   Feature     Reporting: Archiving Agency
+
 4133    24.02.2022  dev     2.3         David   Feature     Reporting: x-property überarbeiten
 
 4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
