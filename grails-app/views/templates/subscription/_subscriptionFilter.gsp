@@ -17,7 +17,7 @@
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
+                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -31,7 +31,7 @@
             <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
+                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
