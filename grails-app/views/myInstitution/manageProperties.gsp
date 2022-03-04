@@ -20,7 +20,7 @@
 
 <semui:filter>
     <g:form action="manageProperties" method="post" class="ui form" id="${params.id}">
-        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"

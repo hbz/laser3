@@ -78,7 +78,7 @@
         <div class="four fields">
 
             <!-- 2-1 + 2-2 -->
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
 
             <!-- 2-3 -->
             <div class="field">
