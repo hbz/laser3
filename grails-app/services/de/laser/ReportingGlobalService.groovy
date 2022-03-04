@@ -268,7 +268,7 @@ class ReportingGlobalService {
                     return
                 }
             }
-            //println 'ReportingGlobalService.doChartDetails() -> prefix:' + prefix + ', suffix:' + suffix
+            //println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
             Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( params.filter )
 
             if (cfg) {
