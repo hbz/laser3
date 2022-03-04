@@ -14,7 +14,7 @@
             <tr>
                 <%
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
-                    Map<String, Map> dtConfig = BaseConfig.getCurrentDetailsTableConfig( key )
+                    Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key )
                 %>
                 <th></th>
                 <g:each in="${dtConfig}" var="k,b">
@@ -194,6 +194,15 @@
                                     }
                                 %>
                                 ${curatoryGroup.name} ${cgType}<br />
+                            </g:each>
+                        </g:if>
+                    </laser:reportDetailsTableTD>
+
+                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
+
+                        <g:if test="${esRecordIds.contains(pkg.id)}">
+                            <g:each in="${esRecords.get(pkg.id as String).packageArchivingAgencies}" var="archivingAgency">
+                                ${archivingAgency.archivingAgency}<br />
                             </g:each>
                         </g:if>
                     </laser:reportDetailsTableTD>

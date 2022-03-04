@@ -81,7 +81,7 @@ class BaseDetails {
     static String getFieldLabelforColumn(String key, String field) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        Map<String, Map> esdConfig = BaseConfig.getCurrentElasticsearchDataConfig(key)
+        Map<String, Map> esdConfig = BaseConfig.getCurrentConfigElasticsearchData(key)
 
         // println ' > BaseDetails.getFieldLabelforColumn() ' + key + ' + ' + field
         String label = field

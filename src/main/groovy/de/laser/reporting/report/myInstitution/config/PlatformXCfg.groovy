@@ -30,7 +30,7 @@ class PlatformXCfg extends BaseConfig {
                             'softwareProvider'          : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
                             'status'                    : [ type: FIELD_TYPE_REFDATA ],
                             'packageStatus'             : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_STATUS ],
-                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS, spec: FIELD_IS_MULTIPLE ],
                             'counterCertified'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'statisticsFormat'          : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             //'type'                    : [ type: FIELD_TYPE_REFDATA ],
@@ -129,7 +129,7 @@ class PlatformXCfg extends BaseConfig {
             ],
     ]
 
-    static Map<String, Map> ES_DT_CONFIG = [
+    static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                                  : [ dtc: true   ],
             'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
@@ -138,7 +138,7 @@ class PlatformXCfg extends BaseConfig {
             'softwareProvider'                      : [ dtc: false  ],
 
             'status'                                : [ dtc: false  ],
-            'platform-altname'                      : [             es: true,               export: true,   label: 'package.show.altname'],
+            'platform-altname'                      : [             es: true,               export: true, label: 'package.show.altname'],
             'platform-x-propertyWekb'               : [             es: true  ],
             'platform-ipAuthentication'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION ],
             'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],

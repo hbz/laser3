@@ -22,7 +22,7 @@ class PlatformQuery extends BaseQuery {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( BaseConfig.KEY_PLATFORM )
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( BaseConfig.KEY_PLATFORM )
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 

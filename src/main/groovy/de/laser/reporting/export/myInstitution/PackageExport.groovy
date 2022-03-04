@@ -31,29 +31,39 @@ class PackageExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ type: FIELD_TYPE_PROPERTY ],
-                                    'gokbId'                : [ type: FIELD_TYPE_PROPERTY ],
-                                    'name'                  : [ type: FIELD_TYPE_PROPERTY ],
-                                    'altname'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-id'                  : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'globalUID'                     : [ type: FIELD_TYPE_PROPERTY ],
+                                    'gokbId'                        : [ type: FIELD_TYPE_PROPERTY ],
+                                    'name'                          : [ type: FIELD_TYPE_PROPERTY ],
+                                    'altname'                       : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-id'                          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                                     'x-provider+sortname+name'      : [ type: FIELD_TYPE_COMBINATION ],
                                     'x-platform+name+primaryUrl'    : [ type: FIELD_TYPE_COMBINATION ],
-                                    'contentType'           : [ type: FIELD_TYPE_REFDATA ],
-                                    'file'                  : [ type: FIELD_TYPE_REFDATA ],
-                                    'packageStatus'         : [ type: FIELD_TYPE_REFDATA ],
-                                    '@-package-titleCount'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
-                                    'scope'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'consistent'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'paymentType'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'openAccess'            : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'breakable'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-ddc'                 : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-curatoryGroup'       : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'description'           : [ type: FIELD_TYPE_ELASTICSEARCH ],
-                                    'descriptionURL'        : [ type: FIELD_TYPE_ELASTICSEARCH ]
+                                    'contentType'                   : [ type: FIELD_TYPE_REFDATA ],
+                                    'file'                          : [ type: FIELD_TYPE_REFDATA ],
+                                    'packageStatus'                 : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-package-titleCount'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'scope'                         : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'consistent'                    : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'paymentType'                   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'openAccess'                    : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'breakable'                     : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-ddc'                         : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-curatoryGroup'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'x-archivingAgency'             : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'description'                   : [ type: FIELD_TYPE_ELASTICSEARCH ],
+                                    'descriptionURL'                : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             ]
                     ]
             ]
+    ]
+
+    static List<String> ES_SOURCE_FIELDS = [
+
+            "uuid",
+            "openAccess", "paymentType", "scope",
+            "altname", "description", "descriptionURL",
+            "curatoryGroups.*", "packageArchivingAgencies.*", "ddcs.*", "identifiers.*", "nationalRanges.*", "regionalRanges.*",
+            "lastUpdatedDisplay"
     ]
 
     PackageExport(String token, Map<String, Object> fields) {
@@ -79,7 +89,7 @@ class PackageExport extends BaseDetailsExport {
         Package pkg = obj as Package
         List content = []
 
-        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig( KEY )
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( KEY )
 
         fields.each{ f ->
             String key = f.key
@@ -174,6 +184,12 @@ class PackageExport extends BaseDetailsExport {
                             cg.name + ( cgType ? ' - ' + cgType : '')
                         }
                         content.add (cgList ? cgList.join( CSV_VALUE_SEPARATOR ) : '')
+                    }
+                    else if (key == 'x-archivingAgency') {
+                        List<String> aaList = record?.get( esData.mapping )?.collect{ aa ->
+                            aa.archivingAgency
+                        }
+                        content.add (aaList ? aaList.join( CSV_VALUE_SEPARATOR ) : '')
                     }
                     else if (key == 'x-ddc') {
                         List<String> ddcList = record?.get( esData.mapping )?.collect{ ddc ->

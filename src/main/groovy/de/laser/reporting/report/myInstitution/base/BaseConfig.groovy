@@ -110,20 +110,20 @@ class BaseConfig {
         }
     }
 
-    static Map<String, Map> getCurrentDetailsTableConfig(String key) {
+    static Map<String, Map> getCurrentConfigDetailsTable(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
-            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
+            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
         } else {
             [:]
         }
     }
-    static Map<String, Map> getCurrentElasticsearchDataConfig(String key) {
+    static Map<String, Map> getCurrentConfigElasticsearchData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('ES_DT_CONFIG')) {
-            config.ES_DT_CONFIG.subMap( config.ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
+            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
         } else {
             [:]
         }
@@ -139,32 +139,49 @@ class BaseConfig {
         }
     }
 
-    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+    static Map<String, Object> getCurrentConfigByFilter(String filter) {
         Map<String, Object> cfg = [:]
+        // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (prefix in [ KEY_COSTITEM ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+            cfg = getCurrentConfig( filter )
         }
-        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
-        }
-        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
-        }
-        else if (prefix in ['org']) {
+        else if (filter in ['org']) {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
-        else if (prefix in [ KEY_PACKAGE ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
-        }
-        else if (prefix in [ KEY_PLATFORM]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
-        }
-        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+        else {
+            println '|--- BaseConfig.getCurrentConfigByFilter() failed'
         }
         cfg
     }
+
+//    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+//        Map<String, Object> cfg = [:]
+//
+//        if (prefix in [ KEY_COSTITEM ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+//        }
+//        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
+//        }
+//        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
+//        }
+//        else if (prefix in ['org']) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
+//        }
+//        else if (prefix in [ KEY_PACKAGE ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
+//        }
+//        else if (prefix in [ KEY_PLATFORM]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
+//        }
+//        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
+//            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+//        }
+//
+//        cfg
+//    }
 
     static Map<String, Object> getCustomImplRefdata(String key) {
         getCustomImplRefdata(key, null)
@@ -384,8 +401,8 @@ class BaseConfig {
         MessageSource messageSource = mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        Map pkgMap = getCurrentElasticsearchDataConfig(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
-        Map pltMap = getCurrentElasticsearchDataConfig(KEY_PLATFORM).get( KEY_PLATFORM + '-' + key )  as Map<String, Object>
+        Map pkgMap = getCurrentConfigElasticsearchData(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
+        Map pltMap = getCurrentConfigElasticsearchData(KEY_PLATFORM).get( KEY_PLATFORM + '-' + key )  as Map<String, Object>
 
         if (pkgMap) {
             return [

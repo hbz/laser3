@@ -125,9 +125,11 @@ class PackageFilter extends BaseFilter {
                         filterLabelValue = Org.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'subscriptionStatus') {
+                        Long[] pList = params.list(key).collect{ Long.parseLong(it) }
+
                         queryParts.add('Subscription sub')
-                        whereParts.add('sub.status.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
+                        whereParts.add('sub.status.id in (:p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, pList)
 
                         queryParts.add('SubscriptionPackage subPkg')
                         whereParts.add('subPkg.subscription = sub and subPkg.pkg = pkg')
@@ -138,7 +140,7 @@ class PackageFilter extends BaseFilter {
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
 
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
+                        filterLabelValue = RefdataValue.getAll(pList).collect{ it.getI10n('value') }
                     }
                     else {
                         println ' --- ' + pType + ' not implemented --- '

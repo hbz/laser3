@@ -27,7 +27,7 @@ class PackageXCfg extends BaseConfig {
                             'file'                      : [ type: FIELD_TYPE_REFDATA ],
                             'openAccess'                : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'packageStatus'             : [ type: FIELD_TYPE_REFDATA ],
-                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS, spec: FIELD_IS_MULTIPLE ],
                             'paymentType'               : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'nominalPlatform'           : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_PLATFORM, spec: FIELD_IS_MULTIPLE ],
                             'orProvider'                : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_OR_PROVIDER, spec: FIELD_IS_MULTIPLE ],
@@ -91,6 +91,11 @@ class PackageXCfg extends BaseConfig {
                                             chartLabels         : []
                                     ],
                                     'package-x-curatoryGroup' : [ // ES
+                                            detailsTemplate     : 'package',
+                                            chartTemplate       : 'generic',
+                                            chartLabels         : []
+                                    ],
+                                    'package-x-archivingAgency' : [  // ES
                                             detailsTemplate     : 'package',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
@@ -159,6 +164,7 @@ class PackageXCfg extends BaseConfig {
                                             'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-serviceProvider' :    [ '@' ],
                                             'platform-softwareProvider' :   [ '@' ],
+                                            'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
                                     ]
                             ]
@@ -166,7 +172,7 @@ class PackageXCfg extends BaseConfig {
             ]
     ]
 
-    static Map<String, Map> ES_DT_CONFIG = [
+    static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                      : [ dtc: true  ],
             'sortname'                  : [ dtc: false ],
@@ -194,6 +200,7 @@ class PackageXCfg extends BaseConfig {
 
             'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'package.descriptionURL.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
+            'package-x-archivingAgency' : [ dtc: false, es: true,               export: true, label: 'package.archivingAgency.label', mapping: 'packageArchivingAgencies' ],
             '_+_lastUpdated'            : [ dtc: true  ],    // virtual
             '_+_wekb'                   : [ dtc: true  ],    // virtual
     ]
