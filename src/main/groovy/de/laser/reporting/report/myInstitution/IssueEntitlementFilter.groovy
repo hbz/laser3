@@ -249,7 +249,7 @@ class IssueEntitlementFilter extends BaseFilter {
         IssueEntitlement.withTransaction {
             List<Long> tmpIdList = queryParams.getAt( idListName ).clone() as List<Long>
             while (tmpIdList) {
-                println '--- ' + query + ' : ' + idListName + ' ---> ' + tmpIdList.size()
+                //println '--- ' + query + ' : ' + idListName + ' ---> ' + tmpIdList.size()
 
                 queryParams.putAt( idListName, tmpIdList.take( 10000 ) )
                 tmpIdList = tmpIdList.drop( 10000 ) as List<Long>
