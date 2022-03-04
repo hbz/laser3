@@ -161,9 +161,10 @@ class PackageXCfg extends BaseConfig {
                     query : [
                             default : [
                                     platform : [
-                                            'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-serviceProvider' :    [ '@' ],
                                             'platform-softwareProvider' :   [ '@' ],
+                                            'platform-org' :                [ '@' ],    // KEY_PLATFORM -> distribution
+                                            'platform-primaryUrl' :         [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
                                     ]
