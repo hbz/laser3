@@ -30,7 +30,7 @@ class StatsSyncJob extends AbstractJob {
     static List<String> configFlags = ['laserStatsSyncJobActive']
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running && ConfigUtils.getLaserStatsSyncJobActive()
+        !jobIsRunning && !statsSyncService.running && Boolean.valueOf(ConfigUtils.getLaserStatsSyncJobActive())
     }
     boolean isRunning() {
         jobIsRunning
