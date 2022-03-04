@@ -140,7 +140,6 @@ class PackageXCfg extends BaseConfig {
                             default : [
                                     provider : [
                                             'provider-orgType' : [ 'generic.org.orgType' ],
-//                                            'provider-status' :  [ 'generic.org.status' ],
                                             'provider-*' :       [ 'generic.all' ],
                                     ]
                             ]
@@ -165,7 +164,7 @@ class PackageXCfg extends BaseConfig {
                                             'platform-x-org' :              [ '@' ],    // KEY_PLATFORM -> distribution
                                             'platform-serviceProvider' :    [ '@' ],
                                             'platform-softwareProvider' :   [ '@' ],
-//                                            'platform-status' :             [ 'generic.plt.status' ],
+                                            'platform-status' :             [ 'generic.plt.status' ],
                                             'platform-*' :                  [ 'generic.all' ]
                                     ]
                             ]

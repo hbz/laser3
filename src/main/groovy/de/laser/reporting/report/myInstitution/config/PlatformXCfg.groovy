@@ -122,7 +122,6 @@ class PlatformXCfg extends BaseConfig {
                             default : [
                                     platformOrg : [ // label
                                             'provider-orgType' : [ 'generic.org.orgType' ],
-//                                            'provider-status' :  [ 'generic.org.status' ],
                                             'provider-*' :       [ 'generic.all' ]
                                     ]
                             ]
