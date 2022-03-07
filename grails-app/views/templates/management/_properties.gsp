@@ -45,7 +45,7 @@
      </g:if>
 
     <g:if test="${controllerName == "myInstitution"}">
-
+        <div class="ui segment" >
             <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" style="margin-bottom: 0"
                     params="[tab: params.tab]">
                 <div class="two fields" style="margin-bottom: 0">
@@ -58,6 +58,7 @@
                     </div>
                 </div>
             </g:form>
+        </div>
     </g:if>
 
 
