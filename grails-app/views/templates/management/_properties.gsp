@@ -49,13 +49,14 @@
      </g:if>
 
     <g:if test="${controllerName == "myInstitution"}">
-            <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
+
+            <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" style="margin-bottom: 0"
                     params="[tab: params.tab]">
-                <div class="two fields">
+                <div class="two fields" style="margin-bottom: 0">
                     <g:render template="/templates/properties/genericFilter"
                               model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
 
-                    <div class="field la-field-right-aligned">
+                    <div class="field la-field-noLabel">
                         <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
                                class="ui secondary button"/>
                     </div>

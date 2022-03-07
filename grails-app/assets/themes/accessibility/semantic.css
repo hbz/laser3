@@ -1074,6 +1074,10 @@ aside.ui.accordion .title:not(.ui) {
   margin-top: 1.6rem !important;
 }
 
+.ui.form .field.la-field-noLabel {
+  margin-top: 1.8rem !important;
+}
+
 /*******************************
         DIVERSE
 *******************************/
