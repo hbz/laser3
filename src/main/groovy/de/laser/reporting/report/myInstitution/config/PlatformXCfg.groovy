@@ -20,7 +20,7 @@ class PlatformXCfg extends BaseConfig {
                     ],
                     fields: [
                             'name'                      : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
-                            'primaryUrl'                : [ type: FIELD_TYPE_PROPERTY /* blind */ ],
+                            'primaryUrl'                : [ type: FIELD_TYPE_PROPERTY ],
                             'org'                       : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_ORG, spec: FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: FIELD_TYPE_ELASTICSEARCH ],
@@ -30,7 +30,7 @@ class PlatformXCfg extends BaseConfig {
                             'softwareProvider'          : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
                             'status'                    : [ type: FIELD_TYPE_REFDATA ],
                             'packageStatus'             : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_PACKAGE_STATUS ],
-                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS ],
+                            'subscriptionStatus'        : [ type: FIELD_TYPE_CUSTOM_IMPL, customImplRdv: CI_GENERIC_SUBSCRIPTION_STATUS, spec: FIELD_IS_MULTIPLE ],
                             'counterCertified'          : [ type: FIELD_TYPE_ELASTICSEARCH ],
                             'statisticsFormat'          : [ type: FIELD_TYPE_ELASTICSEARCH ]
                             //'type'                    : [ type: FIELD_TYPE_REFDATA ],
@@ -56,6 +56,7 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-serviceProvider' :            [ '@' ],
                                             'platform-softwareProvider' :           [ '@' ],
                                             'platform-status' :                     [ '@' ],
+//                                            'platform-primaryUrl' :                 [ '@' ],   // TODO - moved to distribution !
                                             'platform-ipAuthentication' :           [ '@' ],    // ES
                                             'platform-shibbolethAuthentication' :   [ '@' ],    // ES
                                             'platform-passwordAuthentication' :     [ '@' ],    // ES
@@ -98,10 +99,15 @@ class PlatformXCfg extends BaseConfig {
                                             ]
                                     ],
                                     'platform-x-org' : [       // TODO - moved from query !
+                                                               detailsTemplate     : 'platform',
+                                                               chartTemplate       : 'generic',
+                                                               chartLabels         : []
+                                    ],
+                                    'platform-x-primaryUrl' : [       // TODO - moved from query !
                                             detailsTemplate     : 'platform',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
-                                    ],
+                                    ]
                             ]
                     ]
             ],
@@ -129,16 +135,16 @@ class PlatformXCfg extends BaseConfig {
             ],
     ]
 
-    static Map<String, Map> ES_DT_CONFIG = [
+    static Map<String, Map> CMB_ES_DT_CONFIG = [
 
             'name'                                  : [ dtc: true   ],
             'org'                                   : [ dtc: true   ],    // TODO - move to query2 !?
-            'primaryUrl'                            : [ dtc: true   ],
+            'primaryUrl'                            : [ dtc: true   ],    // TODO - move to query2 !?
             'serviceProvider'                       : [ dtc: false  ],
             'softwareProvider'                      : [ dtc: false  ],
 
             'status'                                : [ dtc: false  ],
-            'platform-altname'                      : [             es: true,               export: true,   label: 'package.show.altname'],
+            'platform-altname'                      : [             es: true,               export: true, label: 'package.show.altname'],
             'platform-x-propertyWekb'               : [             es: true  ],
             'platform-ipAuthentication'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION ],
             'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],

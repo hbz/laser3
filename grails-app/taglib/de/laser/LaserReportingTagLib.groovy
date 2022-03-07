@@ -258,7 +258,7 @@ class LaserReportingTagLib {
         String field = attrs.field
 
         Map<String, Object> esRecords = attrs.records as Map
-        Map<String, Map> esdConfig  = BaseConfig.getCurrentElasticsearchDataConfig(key).get( key + '-' + field )
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData(key).get( key + '-' + field )
 
         Map<String, Object> record = esRecords.getAt(id as String) as Map
         if (record) {

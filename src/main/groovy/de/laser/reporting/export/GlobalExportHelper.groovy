@@ -109,8 +109,8 @@ class GlobalExportHelper extends BaseExportHelper {
     static List<String> getIncompleteQueryLabels(String token) {
 
         Map<String, Object> queryCache = getQueryCache( token )
-        String prefix = queryCache.query.split('-')[0]
-        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+        //String prefix = queryCache.query.split('-')[0]
+        Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( getMeta(token).filter )
         BaseQuery.getQueryLabels(cfg, queryCache.query as String) // TODO
     }
 

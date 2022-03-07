@@ -323,12 +323,12 @@ class ReportingGlobalService {
                     return
                 }
             }
-
-            Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+            //println 'ReportingGlobalService.doChartDetails() -> filter: ' + params.filter + ', prefix:' + prefix + ', suffix:' + suffix
+            Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( params.filter )
 
             if (cfg) {
                 result.labels = BaseQuery.getQueryLabels( cfg, params )
-
+                //println 'BaseQuery.getQueryLabels( cfg, params ) ' + BaseQuery.getQueryLabels( cfg, params )
                 if (suffix in ['x']) {
 
                     String tmpl = cfg.base.distribution.get('default').get(params.query).detailsTemplate

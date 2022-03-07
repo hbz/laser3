@@ -1,5 +1,5 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
-<g:set var="esdConfig" value="${BaseConfig.getCurrentElasticsearchDataConfig(cfgKey)}" />
+<g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(cfgKey)}" />
 
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
