@@ -46,7 +46,7 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('property&value')}">
-                <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+                <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('privateContacts')}">

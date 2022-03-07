@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="four fields">
-            <g:render template="/templates/properties/genericFilter" model="[propList: filterPropList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: filterPropList, label:message(code: 'subscription.property.search')]"/>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <laser:select class="ui dropdown" name="form"

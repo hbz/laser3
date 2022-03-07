@@ -3,7 +3,7 @@
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
-    <label for="filterPropDef">${message(code: 'subscription.property.search')}
+    <label for="filterPropDef">${label}
         <i class="question circle icon la-popup"></i>
         <span class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}

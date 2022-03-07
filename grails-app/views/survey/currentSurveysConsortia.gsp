@@ -124,7 +124,7 @@
 
             </div>
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         </div>
 

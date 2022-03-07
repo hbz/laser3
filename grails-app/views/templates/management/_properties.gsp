@@ -4,67 +4,63 @@
     <g:set var="allProperties"
            value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
 
-    <div class="ui segment">
-
-        <g:if test="${controllerName == "subscription"}">
+    <g:if test="${controllerName == "subscription"}">
+        <div class="ui segment" >
             <div class="ui two column very relaxed grid">
                 <div class="column">
-                    <semui:filter>
-                        <h3 class="ui header">${message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])}:</h3>
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
-                            <g:render template="/templates/properties/genericFilter"
-                                      model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef']"/>
+                            <div class="fields" style="margin-bottom: 0">
 
-                            <div class="field la-field-right-aligned">
-                                <a href="${request.forwardURI}"
-                                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                                <input type="submit" value="${message(code: 'default.button.filter.label')}"
-                                       class="ui secondary button"/>
+
+                                <g:render template="/templates/properties/genericFilter"
+                                          model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
+
+                                <div class="field la-field-noLabel" >
+                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
+                                           class="ui secondary button"/>
+                                </div>
                             </div>
                         </g:form>
-                    </semui:filter>
                 </div>
 
                 <div class="column">
-                    <semui:filter>
-                        <h3 class="ui header">${message(code: 'subscriptionsManagement.allProperties')}:</h3>
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
-                            <g:render template="/templates/properties/genericFilter"
-                                      model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef']"/>
+                            <div class="fields" style="margin-bottom: 0">
+                                <g:render template="/templates/properties/genericFilter"
+                                          model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
 
-                            <div class="field la-field-right-aligned">
-                                <a href="${createLink(controller: controllerName, action: actionName, params: [id: params.id, tab: params.tab])}"
-                                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                                <input type="submit" value="${message(code: 'default.button.filter.label')}"
-                                       class="ui secondary button"/>
+                                <div class="field la-field-noLabel">
+                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
+                                           class="ui secondary button"/>
+                                </div>
                             </div>
                         </g:form>
-                    </semui:filter>
                 </div>
             </div>
 
             <div class="ui vertical divider"><g:message code="default.or"/></div>
-        </g:if>
-        <g:if test="${controllerName == "myInstitution"}">
-            <semui:filter>
-                <h3 class="ui header">${message(code: 'subscriptionsManagement.allProperties')}:</h3>
-                <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
-                        params="[tab: params.tab]">
-                    <g:render template="/templates/properties/genericFilter"
-                              model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef']"/>
+        </div>
+     </g:if>
 
-                    <div class="field la-field-right-aligned">
-                        <a href="${createLink(controller: controllerName, action: actionName, params: [id: params.id, tab: params.tab])}"
-                           class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" value="${message(code: 'default.button.filter.label')}"
+    <g:if test="${controllerName == "myInstitution"}">
+        <div class="ui segment" >
+            <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" style="margin-bottom: 0"
+                    params="[tab: params.tab]">
+                <div class="two fields" style="margin-bottom: 0">
+                    <g:render template="/templates/properties/genericFilter"
+                              model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
+
+                    <div class="field la-field-noLabel">
+                        <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
                                class="ui secondary button"/>
                     </div>
-                </g:form>
-            </semui:filter>
-        </g:if>
-    </div>
+                </div>
+            </g:form>
+        </div>
+    </g:if>
+
 
     <g:if test="${memberProperties}">%{-- check for content --}%
         <div class="ui one stackable cards">

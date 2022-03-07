@@ -166,7 +166,7 @@
 
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.identifier')}">
                         <i class="question circle icon"></i>
                     </span>
