@@ -32,7 +32,7 @@
                     </g:if>
                     <g:else>
                         <tr>
-                            <td style="text-align: center">${i + 1}</td>
+                            <td class="center aligned">${i + 1}</td>
                     </g:else>
                         <td>${org.sortname}</td>
                         <td>
@@ -50,7 +50,9 @@
         <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
-                <th></th>
+                <th scope="col" class="center aligned">
+                    ${message(code:'sidewide.number')}
+                </th>
                 <th scope="col">${message(code:'org.sortname.label')}</th>
                 <th scope="col">${message(code:'default.name.label')}</th>
             </tr>
@@ -58,7 +60,7 @@
             <tbody>
                 <g:each in="${minusList}" var="org" status="i">
                     <tr>
-                        <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
+                        <td class="center aligned"><span class="ui label circular red">${i + 1}</span></td>
                         <td>${org.sortname}</td>
                         <td>
                             <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
@@ -70,4 +72,5 @@
     </div>
 </g:if>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

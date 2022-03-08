@@ -91,4 +91,5 @@
     </table>
 </div>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

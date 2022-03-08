@@ -19,7 +19,9 @@
         <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
-                <th></th>
+                <th scope="col" class="center aligned">
+                    ${message(code:'sidewide.number')}
+                </th>
                 <th scope="col">${message(code:'tipp.name')}</th>
                 <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
             </tr>
@@ -28,10 +30,10 @@
                 <g:each in="${list}" var="tipp" status="i">
                     <g:if test="${plusListNames.contains(tipp.name)}">
                         <tr>
-                            <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
+                            <td class="center aligned"><span class="ui label circular green">${i + 1}</span></td>
                     </g:if>
                     <g:else>
-                        <td style="text-align: center">${i + 1}.</td>
+                        <td class="center aligned">${i + 1}</td>
                     </g:else>
                         <td>
                             <%
@@ -95,4 +97,5 @@
     </div>
 </g:if>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

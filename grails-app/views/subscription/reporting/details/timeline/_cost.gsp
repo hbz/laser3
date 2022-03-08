@@ -192,7 +192,7 @@
             <tbody>
             <g:each in="${relevantCostItems}" var="ci" status="i">
                 <tr>
-                    <td>${i+1}.</td>
+                    <td>${i+1}</td>
                     <td>
                         <g:each in="${ci.sub.orgRelations}" var="ciSubscr">
                             <g:if test="${[RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id].contains(ciSubscr.roleType.id)}">
@@ -258,6 +258,7 @@
     </div><!-- .segment -->
 </g:if>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
 
 
