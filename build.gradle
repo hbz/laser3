@@ -57,13 +57,13 @@ dependencies {
     compile 'com.bertramlabs.plugins:asset-pipeline-grails:3.0.9' // changed: runtime -> compile
     profile 'org.grails.profiles:web'
     runtime 'org.apache.tomcat:tomcat-jdbc'
-    testCompile 'org.grails:grails-gorm-testing-support'
-    testCompile 'org.grails.plugins:geb'
-    testCompile 'org.grails:grails-web-testing-support'
-    testCompile 'org.grails.plugins:geb:1.1.2'
-    testRuntime 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1'
-    testRuntime 'net.sourceforge.htmlunit:htmlunit:2.18'
-    testRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.47.1'
+//    testCompile 'org.grails:grails-gorm-testing-support'
+//    testCompile 'org.grails.plugins:geb'
+//    testCompile 'org.grails:grails-web-testing-support'
+//    testCompile 'org.grails.plugins:geb:1.1.2'
+//    testRuntime 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1'
+//    testRuntime 'net.sourceforge.htmlunit:htmlunit:2.18'
+//    testRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.47.1'
 
     // legacy
     // --------------------------------------------------
@@ -153,12 +153,12 @@ grails {
 }
 
 // ..
-tasks.withType(Test) {
-    systemProperty 'geb.env', System.getProperty('geb.env')
-    systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
-    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
-    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
-}
+//tasks.withType(Test) {
+//    systemProperty 'geb.env', System.getProperty('geb.env')
+//    systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
+//    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+//    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
+//}
 
 // asset-pipeline
 assets {
