@@ -7,30 +7,32 @@
     <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
-            <th></th>
-            <th>${message(code:'tipp.name')}</th>
+            <th scope="col" class="center aligned">
+                ${message(code:'sidewide.number')}
+            </th>
+            <th scope="col">${message(code:'tipp.name')}</th>
 
             <g:if test="${query != 'tipp-publisherName'}">
-                <th>${message(code:'tipp.publisher')}</th>
+                <th scope="col">${message(code:'tipp.publisher')}</th>
             </g:if>
             <g:if test="${query != 'tipp-seriesName'}">
-                <th>${message(code:'tipp.seriesName')}</th>
+                <th scope="col">${message(code:'tipp.seriesName')}</th>
             </g:if>
             <g:if test="${query != 'tipp-subjectReference'}">
-                <th>${message(code:'tipp.subjectReference')}</th>
+                <th scope="col">${message(code:'tipp.subjectReference')}</th>
             </g:if>
             <g:if test="${query != 'tipp-titleType'}">
-                <th>${message(code:'tipp.titleType')}</th>
+                <th scope="col">${message(code:'tipp.titleType')}</th>
             </g:if>
             <g:if test="${query != 'tipp-medium'}">
-                <th>${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'tipp.medium')}</th>
             </g:if>
         </tr>
         </thead>
         <tbody>
             <g:each in="${list}" var="tipp" status="i">
                 <tr>
-                    <td style="text-align: center">${i + 1}.</td>
+                    <td class="center aligned">${i + 1}</td>
                     <td>
                         <%
                             Long ieId = IssueEntitlement.executeQuery(

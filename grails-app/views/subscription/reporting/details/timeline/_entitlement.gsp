@@ -20,8 +20,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>${message(code:'tipp.name')}</th>
-                <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'tipp.name')}</th>
+                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
             </tr>
             </thead>
             <tbody>
@@ -61,15 +61,17 @@
         <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
-                <th></th>
-                <th>${message(code:'tipp.name')}</th>
-                <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col" class="center aligned">
+                    ${message(code:'sidewide.number')}
+                </th>
+                <th scope="col">${message(code:'tipp.name')}</th>
+                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
             </tr>
             </thead>
             <tbody>
                 <g:each in="${minusList}" var="tipp" status="i">
                     <tr>
-                        <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
+                        <td class="center aligned"><span class="ui label circular red">${i + 1}</span></td>
                         <td>
                             <%
                                 Long ieId2 = IssueEntitlement.executeQuery(

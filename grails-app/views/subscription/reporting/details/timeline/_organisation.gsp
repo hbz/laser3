@@ -17,20 +17,22 @@
         <table class="ui table la-js-responsive-table la-table compact">
             <thead>
             <tr>
-                <th></th>
-                <th>${message(code:'org.sortname.label')}</th>
-                <th>${message(code:'default.name.label')}</th>
+                <th scope="col" class="center aligned">
+                    ${message(code:'sidewide.number')}
+                </th>
+                <th scope="col">${message(code:'org.sortname.label')}</th>
+                <th scope="col">${message(code:'default.name.label')}</th>
             </tr>
             </thead>
             <tbody>
                 <g:each in="${list}" var="org" status="i">
                     <g:if test="${plusList.contains(org)}">
                         <tr>
-                            <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
+                            <td class="center aligned"><span class="ui label circular green">${i + 1}</span></td>
                     </g:if>
                     <g:else>
                         <tr>
-                            <td style="text-align: center">${i + 1}.</td>
+                            <td style="text-align: center">${i + 1}</td>
                     </g:else>
                         <td>${org.sortname}</td>
                         <td>
@@ -49,8 +51,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>${message(code:'org.sortname.label')}</th>
-                <th>${message(code:'default.name.label')}</th>
+                <th scope="col">${message(code:'org.sortname.label')}</th>
+                <th scope="col">${message(code:'default.name.label')}</th>
             </tr>
             </thead>
             <tbody>
