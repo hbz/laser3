@@ -145,7 +145,7 @@
                 <td>
                     <span style="color:darkgrey"><g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" /></span>
                     <br />
-                    <span> class="la-secondHeaderRow" data-label="${message(code:'financials.sum.billingAfterTax')}:">
+                    <span class="la-secondHeaderRow" data-label="${message(code:'financials.sum.billingAfterTax')}:">
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
                     </span>
                 </td>
