@@ -17,6 +17,7 @@ class Constants {
     public static final String MIME_ALL                    = "*/*"
     public static final String MIME_TEXT_JSON              = "text/json"
     public static final String MIME_TEXT_PLAIN             = "text/plain"
+    public static final String MIME_TEXT_TSV               = "text/tab-separated-values"
     public static final String MIME_TEXT_XML               = "text/xml"
     public static final String MIME_APPLICATION_JSON       = "application/json"
     public static final String MIME_APPLICATION_XML        = "application/xml"

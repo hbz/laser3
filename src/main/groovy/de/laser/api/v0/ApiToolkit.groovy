@@ -16,6 +16,7 @@ class ApiToolkit {
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
     static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
+    static final API_LEVEL_EZB          = 'API_LEVEL_EZB'
     static final API_LEVEL_OAMONITOR    = 'API_LEVEL_OAMONITOR'
     static final API_LEVEL_NATSTAT      = 'API_LEVEL_NATSTAT'
     static final API_LEVEL_INVOICETOOL  = 'API_LEVEL_INVOICETOOL'
@@ -30,6 +31,7 @@ class ApiToolkit {
             API_LEVEL_READ,
             API_LEVEL_WRITE,
             API_LEVEL_DATAMANAGER,
+            API_LEVEL_EZB,
             API_LEVEL_OAMONITOR,
             API_LEVEL_NATSTAT,
             API_LEVEL_INVOICETOOL
@@ -39,6 +41,7 @@ class ApiToolkit {
         [
             API_LEVEL_READ,
             API_LEVEL_DATAMANAGER,
+            API_LEVEL_EZB,
             API_LEVEL_OAMONITOR,
             API_LEVEL_NATSTAT,
             API_LEVEL_INVOICETOOL

@@ -7,6 +7,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.api.v0.special.ApiEZB
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.catalogue.ApiCatalogue
@@ -23,7 +24,7 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class ApiManager {
 
-    static final VERSION = '0.128'
+    static final VERSION = '0.129'
 
     /**
      * @return Object
@@ -36,6 +37,7 @@ class ApiManager {
         def result
 
         boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
+        boolean isEZB         = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_EZB)
         boolean isOAMonitor   = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_OAMONITOR)
         boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
         boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
@@ -120,6 +122,19 @@ class ApiManager {
                 }
             }
         } */
+        else if (checkValidRequest('ezb/subscription')) {
+
+            if (! (isEZB || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiEZB.requestSubscription((Subscription) tmp.obj, contextOrg)
+            }
+        }
         else if (checkValidRequest('license')) {
 
             ApiBox tmp = ApiLicense.findLicenseBy(query, value)

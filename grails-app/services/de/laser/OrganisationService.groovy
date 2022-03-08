@@ -38,8 +38,8 @@ class OrganisationService {
         if (OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
             OrgSetting.add(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, RDStore.YN_NO)
         }
-        if (OrgSetting.get(org, OrgSetting.KEYS.LASERSTAT_SERVER_KEY) == OrgSetting.SETTING_NOT_FOUND) {
-            OrgSetting.add(org, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, RandomStringUtils.randomAlphanumeric(24))
+        if (OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.EZB_SERVER_ACCESS, RDStore.YN_NO)
         }
 
         // called after
