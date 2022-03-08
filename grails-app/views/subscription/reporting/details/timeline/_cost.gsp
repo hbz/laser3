@@ -145,17 +145,23 @@
                 <td>
                     <span style="color:darkgrey"><g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" /></span>
                     <br />
-                    <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                    <span> class="la-secondHeaderRow" data-label="${message(code:'financials.sum.billingAfterTax')}:">
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                    </span>
                 </td>
                 <td>
                     <span style="color:darkgrey"><g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" /></span>
                     <br />
-                    <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                    <span> class="la-secondHeaderRow" data-label="${message(code:'financials.sum.localAfterTax')}:">
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                    </span>
                 </td>
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.startDate}"/>
                     <br />
-                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.endDate}"/>
+                    <span> class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.endDate}"/>
+                    </span>
                 </td>
             </tr>
         </g:each>
