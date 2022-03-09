@@ -474,8 +474,34 @@
           $ref: "#/components/responses/notAuthorized"
         403:
           $ref: "#/components/responses/forbidden"
-        406:
-          $ref: "#/components/responses/notAcceptable"
+
+  /ezb/subscription/list:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a list of subscriptions eligible for EZB yellow tagging
+      description: >
+        Retrieving a list of subscriptions of organisations that have granted the data exchange. An optional parameter changedFrom may be submitted
+        for incremental harvesting
+
+      parameters:
+        - $ref: "#/components/parameters/changedFrom"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderList"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no appropriate organisations found
 
   /oamonitor/organisations/list:
 
@@ -504,7 +530,6 @@
           description: Valid request, but no appropriate organisations found
         406:
           $ref: "#/components/responses/notAcceptable"
-
 
   /oamonitor/organisations:
 

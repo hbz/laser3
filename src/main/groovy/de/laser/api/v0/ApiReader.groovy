@@ -12,6 +12,7 @@ class ApiReader {
             'costItemList':             [Constants.MIME_APPLICATION_JSON],
             'document':                 [Constants.MIME_ALL],
             'ezb/subscription':         [Constants.MIME_TEXT_TSV],
+            'ezb/subscription/list':    [Constants.MIME_APPLICATION_JSON],
             'issueEntitlements':        [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':                  [Constants.MIME_APPLICATION_JSON],
             'licenseList':              [Constants.MIME_APPLICATION_JSON],
@@ -34,6 +35,7 @@ class ApiReader {
 
     static SIMPLE_QUERIES = [
             'oamonitor/organisations/list',
+            'ezb/subscription/list',
             'refdataList',
             'platformList',
             'propertyList',

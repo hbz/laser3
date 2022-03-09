@@ -48,7 +48,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
                             def algorithm = p2[1]
 
                             def key = load[0]
-                            def timestamp = load[1]
+                            def changedFrom = load[1]
                             def nounce = load[2]
                             def digest = load[3]
 
@@ -64,7 +64,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
                             checksum = hmac(
                                     method +    // http-method
                                     path +      // uri
-                                    timestamp + // timestamp
+                                    changedFrom + // changedFrom
                                     nounce +    // nounce
                                     (query ? URLDecoder.decode(query) : '') + // parameter
                                     body,       // body

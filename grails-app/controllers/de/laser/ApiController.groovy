@@ -5,6 +5,7 @@ import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
+import de.laser.helper.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
@@ -155,6 +156,7 @@ class ApiController {
         String obj     = params.get('obj')
         String query   = params.get('q', '')
         String value   = params.get('v', '')
+        String changedFrom = params.get('changedFrom', '')
         String context = params.get('context')
         String format
 
@@ -228,13 +230,14 @@ class ApiController {
                             format = 'you_shall_not_pass'
                             break
                     }
-
+                    Date changedDate = changedFrom ? DateUtils.getSDF_ymd().parse(changedFrom) : null
                     result = ApiManager.read(
                             (String) obj,
                             (String) query,
                             (String) value,
                             (Org) contextOrg,
-                            format
+                            format,
+                            changedDate
                     )
 
                     if (result instanceof Doc) {
