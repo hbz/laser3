@@ -94,3 +94,13 @@
 .ui.segment[class*="bottom attached"] {
   padding-top: 2em;
 }
+aside.la-metabox {
+  position: absolute !important;
+  width: inherit;
+  margin: 0 !important;
+}
+aside.la-metabox + .la-metabox-spacer {
+  height: 70px;
+  margin: 1rem 0;
+  padding: 1em 0;
+}
