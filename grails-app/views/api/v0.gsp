@@ -134,18 +134,19 @@ var apiKey        = &quot;&lt;your apiKey&gt;&quot;
 var apiPassword   = &quot;&lt;your apiPassword&gt;&quot;
 var method        = &quot;GET&quot;
 var path          = &quot;/api/v0/&lt;apiEndpoint&gt;&quot;
-var changedFrom   = &quot;&lt;changedFrom&gt;&quot;
+var timestamp     = &quot;&quot; // not used yet
 var nounce        = &quot;&quot; // not used yet
 var q             = &quot;&lt;q&gt;&quot;
 var v             = &quot;&lt;v&gt;&quot;
 var context       = &quot;&lt;context&gt;&quot;
+var changedFrom   = &quot;&lt;changedFrom&gt;&quot;
 
-var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null)], function(e, i){ return e }).join('&amp;')
+var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null), (changedFrom ? &quot;changedFrom=&quot; + changedFrom : null)], function(e, i){ return e }).join('&amp;')
 var body          = &quot;&quot; // not used yet
 
-var message       = method + path + changedFrom + nounce + query + body
+var message       = method + path + timestamp + nounce + query + body
 var digest        = CryptoJS.HmacSHA256(message, apiPassword)
-var authorization = &quot;hmac &quot; + apiKey + &quot;:&quot; + changedFrom + &quot;:&quot; + nounce + &quot;:&quot; + digest + &quot;,hmac-sha256&quot;
+var authorization = &quot;hmac &quot; + apiKey + &quot;:&quot; + timestamp + &quot;:&quot; + nounce + &quot;:&quot; + digest + &quot;,hmac-sha256&quot;
 
 console.log('(debug only) message: ' + message)
 console.log('(http-header) x-authorization: ' + authorization)
@@ -227,7 +228,7 @@ console.log('(http-header) x-authorization: ' + authorization)
                 var key       = jQuery(selectors.top_pass).val().trim()
                 var method    = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path      = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
-                var changedFrom = ""
+                var timestamp = ""
                 var nounce    = ""
 
                 var context = jQuery(div).find(selectors.query_context)
@@ -258,15 +259,15 @@ console.log('(http-header) x-authorization: ' + authorization)
                 }
 
                 var algorithm     = "hmac-sha256"
-                var digest        = CryptoJS.HmacSHA256(method + path + changedFrom + nounce + query + body, key)
-                var authorization = "hmac " + id + ":" + changedFrom + ":" + nounce + ":" + digest + "," + algorithm
+                var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
+                var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
-                //if (debug) {
+                /*if (debug) {
                     console.log('id:            ' + id)
                     console.log('key:           ' + key)
                     console.log('method:        ' + method)
                     console.log('path:          ' + path)
-                    console.log('changedFrom:   ' + changedFrom)
+                    console.log('timestamp:     ' + timestamp)
                     console.log('nounce:        ' + nounce)
                     console.log('context:       ' + context)
                     console.log('query:         ' + query)
@@ -274,7 +275,7 @@ console.log('(http-header) x-authorization: ' + authorization)
                     console.log('algorithm:     ' + algorithm)
                     console.log('digest:        ' + digest)
                     console.log('authorization: ' + authorization)
-                //}
+                }*/
                 return authorization
             }
     </laser:script>

@@ -5,7 +5,6 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 #### 0.130
 
 - added new endpoint: __/ezb/subscription/list__
-- removed parameter timestamp
 - added new parameter changedFrom
 
 #### 0.129
