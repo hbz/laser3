@@ -23,4 +23,10 @@ databaseChangeLog = {
             column(name: "id_sub_fk")
         }
     }
+
+    changeSet(author: "galffy (generated)", id: "1646746237792-5") {
+        createIndex(indexName: "id_tipp_idx", tableName: "identifier") {
+            column(name: "id_tipp_fk")
+        }
+    }
 }

@@ -7,7 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4150    08.03.2022  rc-2.2  2.2.10      Andreas Feature     Neuer API-Endpunkt für EZB
+4150    08.03.2022  rc-2.2  2.2.11      Andreas Feature     Neuer API-Endpunkt für EZB
 
 4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
 
