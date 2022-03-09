@@ -468,17 +468,17 @@ r2d2 = {
 
         $(ctxSel + ' .ui.accordion').accordion();
 
-        $(ctxSel + ' .ui.metaboxContent.accordion').accordion({
+        $(ctxSel + ' .ui.la-metabox.accordion').accordion({
 
             onOpening: function() {
                 //$(".table").trigger('reflow');
-                $(".metaboxContent ").css({'box-shadow':'0 1px 10px 0 rgb(34 36 38 / 40%)','transition' :'box-shadow 0.3s ease-in-out'});
+                $(".la-metabox ").css({'box-shadow':'0 1px 10px 0 rgb(34 36 38 / 40%)','transition' :'box-shadow 0.3s ease-in-out'});
             },
             onOpen: function() {
                 //$(".table").trigger('reflow')
             },
             onClose: function() {
-                $(".metaboxContent ").css('box-shadow','none');
+                $(".la-metabox ").css('box-shadow','none');
             }
         });
 

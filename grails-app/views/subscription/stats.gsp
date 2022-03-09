@@ -48,7 +48,7 @@
             </div>
         </g:if>
         <g:else>
-            <aside class="ui segment metaboxContent accordion">
+            <aside class="ui segment la-metabox accordion">
                 <div class="title">
                     <g:message code="default.usage.platformMetadataHeader"/><i class="dropdown icon la-dropdown-accordion"></i>
                 </div>
@@ -61,7 +61,7 @@
                     </g:each>
                 </div>
             </aside>
-            <div class="metaboxContent-spacer"></div>
+            <div class="la-metabox-spacer"></div>
         </g:else>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <div class="ui segment">
