@@ -100,61 +100,40 @@ class ApiEZB {
     }
 
     /**
+     * checks implicit EZB_SERVER_ACCESS
+     *
      * @return JSON | FORBIDDEN
      */
-    static requestOrganisation(Org org, Org context) {
-        Map<String, Object> result = [:]
+    static JSON getAllSubscriptions(Date changedFrom = null) {
+        Collection<Object> result = []
 
-        boolean hasAccess = calculateAccess(org)
-        if (hasAccess) {
+        List<Org> orgs = getAccessibleOrgs()
+        orgs.each { Org org ->
+            Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
+            orgStubMap.subscriptions = []
+            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true'
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+            if(changedFrom) {
+                queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
+                queryParams.changedFrom = changedFrom
+            }
+            List<Subscription> available = Subscription.executeQuery(queryString, queryParams)
 
-            org = GrailsHibernateUtil.unwrapIfProxy(org)
+            println "${available.size()} available subscriptions found .."
 
-            //def context = org // TODO
-
-            result.globalUID    = org.globalUID
-            result.gokbId       = org.gokbId
-            result.comment      = org.comment
-            result.name         = org.name
-            result.scope        = org.scope
-            result.shortname    = org.shortname
-            result.sortname     = org.sortname
-            result.region       = org.region?.value
-            result.country      = org.country?.value
-            result.libraryType  = org.libraryType?.value
-            result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
-
-            //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
-            //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
-
-            // RefdataValues
-
-            result.sector       = org.sector?.value
-            result.type         = org.orgType?.collect{ it.value }
-            result.status       = org.status?.value
-
-            // References
-
-            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.Address
-            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
-            result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-            //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
-            //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // de.laser.PersonRole
-
-            result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
-            result.subscriptions = getSubscriptionCollection(org)
-
-            result = ApiToolkit.cleanUp(result, true, true)
+            available.each { sub ->
+                orgStubMap.subscriptions.add(ApiUnsecuredMapReader.getSubscriptionStubMap(sub))
+            }
+            result << orgStubMap
         }
 
-        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+        return (result ? new JSON(result) : null)
     }
 
     /**
      * @return TSV | FORBIDDEN
      */
-    static requestSubscription(Subscription sub, Org context) {
+    static requestSubscription(Subscription sub) {
         Map<String, List> export
 
         boolean hasAccess = calculateAccess(sub)
