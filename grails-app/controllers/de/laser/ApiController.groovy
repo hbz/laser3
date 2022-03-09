@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ExportService
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
@@ -8,12 +9,14 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.GPathResult
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.http.HttpStatus
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
 
     ContextService contextService
     ApiService apiService
+    ExportService exportService
 
     @Secured(['permitAll'])
     def index() {
@@ -215,6 +218,9 @@ class ApiController {
                         case Constants.MIME_TEXT_PLAIN:
                             format = Constants.MIME_TEXT_PLAIN
                             break
+                        case Constants.MIME_TEXT_TSV:
+                            format = Constants.MIME_TEXT_TSV
+                            break
                         case Constants.MIME_ALL:
                             format = Constants.MIME_ALL
                             break
@@ -263,35 +269,71 @@ class ApiController {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
-        Map<String, Object> respStruct = ApiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
-
-        JSON json   = (JSON) respStruct.json
-        int status  = (int) respStruct.status
-
-        String responseTime = ((System.currentTimeMillis() - startTimeMillis) / 1000).toString()
-
-        response.setContentType(Constants.MIME_APPLICATION_JSON)
-        response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
-        response.setStatus(status)
-
-        if (debugMode) {
-            response.setHeader("Laser-Api-Debug-Mode", "true")
-            response.setHeader("Laser-Api-Debug-Result-Length", json.toString().length().toString())
-            response.setHeader("Laser-Api-Debug-Result-Time", responseTime)
-
-            if (json.target instanceof List) {
-                response.setHeader("Laser-Api-Debug-Result-Size", json.target.size().toString())
+        if(format == Constants.MIME_TEXT_TSV) {
+            String respStruct
+            int status = HttpStatus.BAD_REQUEST.value()
+            if(result instanceof Map) {
+                respStruct = exportService.generateSeparatorTableString(result.titleRow, result.columnData, '\t')
+                status = HttpStatus.OK.value()
             }
-        }
+            else {
+                respStruct = result
+                switch(result) {
+                    case Constants.HTTP_FORBIDDEN: HttpStatus.FORBIDDEN.value()
+                        break
+                    case Constants.HTTP_INTERNAL_SERVER_ERROR: HttpStatus.INTERNAL_SERVER_ERROR.value()
+                        break
+                }
+            }
+            String responseTime = ((System.currentTimeMillis() - startTimeMillis) / 1000).toString()
+            response.setContentType(Constants.MIME_TEXT_TSV)
+            response.setCharacterEncoding(Constants.UTF8)
+            response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
+            response.setStatus(status)
+            render respStruct
+            /*
+            if (debugMode) {
+                response.setHeader("Laser-Api-Debug-Mode", "true")
+                response.setHeader("Laser-Api-Debug-Result-Length", json.toString().length().toString())
+                response.setHeader("Laser-Api-Debug-Result-Time", responseTime)
 
-        if (json.target instanceof List) {
-            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+                if (json.target instanceof List) {
+                    response.setHeader("Laser-Api-Debug-Result-Size", json.target.size().toString())
+                }
+            }*/
         }
         else {
-            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+            Map<String, Object> respStruct = ApiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
+
+            JSON json   = (JSON) respStruct.json
+            int status  = (int) respStruct.status
+
+            String responseTime = ((System.currentTimeMillis() - startTimeMillis) / 1000).toString()
+
+            response.setContentType(Constants.MIME_APPLICATION_JSON)
+            response.setCharacterEncoding(Constants.UTF8)
+            response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
+            response.setStatus(status)
+
+            if (debugMode) {
+                response.setHeader("Laser-Api-Debug-Mode", "true")
+                response.setHeader("Laser-Api-Debug-Result-Length", json.toString().length().toString())
+                response.setHeader("Laser-Api-Debug-Result-Time", responseTime)
+
+                if (json.target instanceof List) {
+                    response.setHeader("Laser-Api-Debug-Result-Size", json.target.size().toString())
+                }
+            }
+
+            if (json.target instanceof List) {
+                log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Items: ${json.target.size().toString()})")
+            }
+            else {
+                log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${json.toString().length().toString()})")
+            }
+
+            render json.toString(true)
         }
 
-        render json.toString(true)
     }
 }

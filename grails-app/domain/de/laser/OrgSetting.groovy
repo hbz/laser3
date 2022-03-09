@@ -11,13 +11,14 @@ class OrgSetting {
 
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
     //in order of display
-    final static SETTING_TABS = ['general', 'api', 'natstat', 'oamonitor']
+    final static SETTING_TABS = ['general', 'api', 'ezb', 'natstat', 'oamonitor']
 
     static enum KEYS {
         API_LEVEL                   (String),
         API_KEY                     (String),
         API_PASSWORD                (String),
         CUSTOMER_TYPE               (Role),
+        EZB_SERVER_ACCESS           (RefdataValue, RDConstants.Y_N),
         GASCO_ENTRY                 (RefdataValue, RDConstants.Y_N),
         OAMONITOR_SERVER_ACCESS     (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
@@ -78,6 +79,7 @@ class OrgSetting {
     // only these settings are editable by orgs themselves
     static List<OrgSetting.KEYS> getEditableSettings() {
         [
+                OrgSetting.KEYS.EZB_SERVER_ACCESS,
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,

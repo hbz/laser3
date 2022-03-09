@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.129
+
+- added new endpoint: __/ezb/subscriptionKBART__
+- added new API level: API_LEVEL_EZB
+
 #### 0.128
 
 - added new attribute: `IssueEntitlement.perpetualAccessBySub`

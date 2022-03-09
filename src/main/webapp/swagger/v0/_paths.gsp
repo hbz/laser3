@@ -447,6 +447,35 @@
         406:
           $ref: "#/components/responses/notAcceptable"
 
+  /ezb/subscription:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a single subscription with more information
+      description: >
+        Retrieves a list of the given subscription's holding according to the KBART standard, enriched by columns used in LAS:eR
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            text/tab-separated-values:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        406:
+          $ref: "#/components/responses/notAcceptable"
 
   /oamonitor/organisations/list:
 

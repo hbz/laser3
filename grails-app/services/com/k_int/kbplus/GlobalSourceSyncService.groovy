@@ -250,6 +250,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     triggeredTypes = ['TitleInstancePackagePlatform']
                     max = 5000
                     break
+                case "titleNamespace": triggeredTypes = ['Platform']
+                    max = 5000
+                    break
                 default: triggeredTypes = []
                     break
             }
@@ -284,6 +287,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                     }
                                                 }
+                                            }
+                                            break
+                                        case 'Platform': List<Platform> platforms = Platform.findAllByGokbIdInList(uuids.toList())
+                                            log.debug("from current page, ${platforms.size()} packages exist in LAS:eR")
+                                            platforms.eachWithIndex { Platform platform, int idx ->
+                                                log.debug("now processing platform ${idx} with uuid ${platform.gokbId}, total entry: ${offset+idx}")
+                                                platform.titleNamespace = result.records.find { record -> record.uuid == platform.gokbId }.titleNamespace
+                                                platform.save()
                                             }
                                             break
                                         case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
@@ -396,7 +407,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             catch (Exception e) {
-                log.error("package reloading has failed, please consult stacktrace as follows: ",e)
+                log.error("component reloading has failed, please consult stacktrace as follows: ",e)
             }
             running = false
         })
