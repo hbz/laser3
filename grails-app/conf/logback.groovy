@@ -7,6 +7,7 @@ import org.springframework.boot.logging.logback.ColorConverter
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
 
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
 
 conversionRule 'clr', ColorConverter
 conversionRule 'wex', WhitespaceThrowableProxyConverter
@@ -46,7 +47,7 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 String targetDir = "${BuildSettings.BASE_DIR}/logs"
-String date = "${new Date().format('yyyy-MM-dd')}"
+String date = "${(new SimpleDateFormat("yyyy-MM-dd")).format(new Date())}"
 
 if (Environment.isDevelopmentMode() && targetDir != null) {
 

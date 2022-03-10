@@ -61,6 +61,7 @@ class SystemAnnouncement {
      * @return a {@link List} of system announces
      */
     static List<SystemAnnouncement> getPublished(int periodInDays) {
+        // grails4: Date dcCheck = LocalDate.now().minusDays(periodInDays).toDate()
         Date dcCheck = (new Date()).minus(periodInDays)
 
         SystemAnnouncement.executeQuery(

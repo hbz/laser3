@@ -19,6 +19,7 @@ import org.hibernate.type.TextType
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.Statement
+import java.text.SimpleDateFormat
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
@@ -136,7 +137,8 @@ class BootStrapService {
         log.debug("setJSONFormatDate ..")
 
         JSON.registerObjectMarshaller(Date) {
-            return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            return it ? (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")).format( it ) : null
+            //return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
         log.debug("adjustDatabasePermissions ..")
