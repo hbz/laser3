@@ -1,3 +1,5 @@
+package de.laser
+
 class UrlMappings {
 
     static mappings = {
