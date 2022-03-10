@@ -1,0 +1,75 @@
+println("<-- local config found and loaded -->")
+
+activateTestJob = false
+
+aggr_es_cluster = 'laser2'
+aggr_es_hostname  = '127.0.0.1'
+
+
+appDefaultPrefs {
+    globalDatepickerFormat    = 'yyyy-mm-dd'
+    globalDateFormat          = 'yyyy-MM-dd'
+    globalDateFormatSQL       = '%Y-%m-%d'
+}
+
+basicDataFileName = 'basicDataDump.xml'
+basicDataPath = ''
+
+
+dataSource.url = 'jdbc:postgresql://localhost:5432/laser'
+dataSource.username = 'laser'
+dataSource.password = 'laser'
+dataSource.dbCreate = 'none'
+
+deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // database backups (before deploys)
+documentStorageLocation = '/tmp/laser' // uploaded documents
+
+financials.currency = "EUR|GBP|USD|CHF" // priority of order
+
+globalDataSyncJobActiv = false
+
+grails.mail.disabled = true
+grails.mail.overrideAddress = "laser@local"
+grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
+grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run'    // pdf generation; server only
+grails.plugin.databasemigration.updateOnStart = true
+grails.serverURL = 'https://laser-qa.hbz-nrw.de'
+
+isSendEmailsForDueDatesOfAllUsers = false
+isUpdateDashboardTableInDatabase = false
+
+laserStatsSyncJobActive = true
+
+laserSystemId = 'LAS:eR - 1.7'
+
+notifications.email.from = 'laser@local'
+notifications.email.genericTemplate = true // if enabled, no customisation in email ..  else, customised template will be sent
+notifications.email.replyTo = 'laser@local'
+
+notificationsJobActive = false
+
+orgDumpFileExtension = '.xml'
+orgDumpFileNamePattern = 'orgDump_'
+
+pgDumpPath = '/usr/bin/pg_dump'
+
+quartzHeartbeat = 'Never'
+
+reporting.elasticSearch.url = 'http://localhost:9200'
+reporting.elasticSearch.indicies.packages = 'wekbpackages'
+reporting.elasticSearch.indicies.platforms = 'wekbplatforms'
+
+schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
+
+showDebugInfo = true
+showStatsInfo = true
+showSystemInfo = true
+
+statsApiUrl = 'https://xy'
+StatsSyncJobActiv = true
+
+systemEmail = 'laser@local'
+
+
+
+

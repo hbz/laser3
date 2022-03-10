@@ -1,0 +1,187 @@
+token,value_de,value_en
+access.choice.remote,Zugangswahl Remote,Access choice remote
+access.limitation,Zugangsbegrenzung,Access limitation
+access.method,Access Method,Access Method
+access.method.ip,Access Method IP,Access Method IP
+access.point.type,Access Point Type,Access Point Type
+address.type,Art der Adresse,Address Type
+authority,Autorität,Authority
+category.a.f,Preiskategorie Beck,Price category Beck
+category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
+category.euromonitor,Preiskategorie Euromonitor,Price category Euromonitor
+category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Journals
+category.juris,Preiskategorie juris,Price category juris
+category.unwto,Preiskategorie UNWTO,Price category UNWTO
+category.world.bank,Preiskategorie World Bank,Price category World Bank
+combo.status,Combo Status,Combo Status
+combo.type,Combo Type,Combo Type
+concurrent.access,SimUser,Concurrent Access
+confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
+contact.content.type,Kontakttyp,Type of Contact
+contact.type,Art des Kontaktes,Contact Type
+core.status,Kerntitel-Status,Core Status
+cost.configuration,Kostenkonfiguration,Cost configuration
+cost.item.category,CostItemCategory,CostItemCategory
+cost.item.element,CostItemElement,CostItemElement
+cost.item.status,CostItemStatus,CostItemStatus
+cost.item.type,Typ,Type
+country,Land,Country
+coverage.depth,Umfang,Coverage depth
+currency,Währung,Currency
+customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
+delivery.edit.status,Status Bearbeitung,Delivery edit status
+delivery.status,Status Lieferungen,Delivery status
+document.context.status,Document Context Status,Document Context Status
+document.type,Dokumenttyp,Document Type
+dbs.subject.group,DBS Fächergruppe,DBS Subject Group
+ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
+e.invoice.portal,eRechnungs Portal,eInvoice Portal
+existence,Vorliegen,Existence
+external.internal,Extern und intern,External and internal
+fact.metric,FactMetric,FactMetric
+fact.type,FactType,FactType
+filter.fake.values,filter.fake.values,filter.fake.values
+funder.type,Trägerschaft,Funder Type
+funder.hsk.type,Trägerschaft,Funder Type HSK
+gender,Geschlecht,Gender
+ie.accept.status,IE Accept Status,IE Accept Status
+ie.access.status,IE Access Status,IE Access Status
+ie.medium,IEMedium,IEMedium
+ill.code,Fernleihindikator,Ill code
+indemnification,Entschädigung Auswahl,Indemnification Choice
+invoicing,Rechnungsstellung,Invoicing
+ip.authentication,IP-Authentifizierung,IP Authentication
+ipv4.address.format,IPv4 Address Format,IPv4 Address Format
+ipv6.address.format,IPv6 Address Format,IPv6 Address Format
+kfl.advisor,KfL-Betreuer,KfL advisor
+language,Sprache,Language
+language.iso,Sprache nach ISO 639-2,Language according to ISO 639-2
+library.network,Verbundzugehörigkeit,Library Network
+library.type,Bibliothekstyp,Library Type
+license.arc.archival.copy.content,Archivkopie Form,Archival Copy Content
+license.arc.archival.copy.cost,Archivkopie Kosten,Archival Copy Cost
+license.arc.archival.copy.time,Archivkopie Zeitpunkt,Archival Copy Time
+license.arc.archival.copy.transmission.format,Archivkopie Übermittlungsformat,Archival Copy Transmission Format
+license.arc.authorized,Hostingrecht Berechtigte,Hosting Authorized
+license.arc.hosting.restriction,Hostingrecht Einschränkung,Hosting Restriction
+license.arc.hosting.solution,Hostingrecht Lösung,Hosting Solution
+license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
+license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
+license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
+license.category,Vertragskategorie,LicenseCategory
+license.content,Vertrag: Inhaltsdaten,License: content data
+license.metadata,Vertrag: Metadaten,License: metadata
+license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
+license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
+license.oa.license.to.publish,Publikationslizenz,License to Publish
+license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
+license.oa.repository,Repositorium,Repository
+license.oa.type,Open Access Typ,Open Access Type
+license.remote.access,License.RemoteAccess,License.RemoteAccess
+license.remote.access2,Remote-Zugriff,Remote Access
+license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
+license.statistics.format,Statistik Auslieferungsformat (Vertrag),Statistics Format (License)
+license.statistics.frequency,Statistik Auslieferungsfrequenz (Vertrag),Statistics Frequency (License)
+license.statistics.standards,Statistikstandard,Statistics Standards
+license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
+license.status,Vertragsstatus,License Status
+license.structure,Vertragskonstruktion,License Structure
+link.type,Link Type,Link Type
+mail.template.language,MailTemplate Sprache,MailTemplate Language
+mail.template.type,MailTemplate Typ,MailTemplate Type
+number.type,Zahlen-Typ,Number Type
+oa.content.receiver,OA-Inhalte Empfänger,OA content receiver
+oa.author.identification,OA Autorenidentifikation,OA author identification
+oa.publishing.timespan,OA Publikation Zeitspanne,OA publishing timespan
+oa.publishing.report.delivery,OA Publikations-Report Lieferweg,OA publishing report delivery
+oa.responsible.party,OA Zuständigkeit,OA responsible party
+oa.time.moment,OA relevanter Zeitpunkt,OA relevant time moment
+org.sector,Bereich,OrgSector
+org.status,Status,Status
+org.type,Organisationstyp,Organisation Type
+organisational.role,Organisational Role,Organisational Role
+package.breakable,Package.Breakable,Package.Breakable
+package.consistent,Package.Consistent,Package.Consistent
+package.file,Package.File,Package.File
+package.list.status,Package.ListStatus,Package.ListStatus
+package.scope,Package.Scope,Package.Scope
+package.status,Paketstatus,Package Status
+package.type,Package.Type,Package.Type
+package.content.type,Package Content Type,Package Content Type
+payment.type,Payment Type,Payment Type
+pending.change.status,PendingChangeStatus,PendingChangeStatus
+pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
+permissions,Berechtigungen,Permissions
+person.contact.type,Kontaktart,Person: Contact Type
+person.function,Funktion,Person Function
+person.position,Position,Person Position
+person.responsibility,Verantwortlich,Person Responsibility
+platform.status,Platform Status,Platform Status
+regions.at,Österreichische Länder,States of Austria
+regions.de,Bundesländer Deutschlands,Federal States of Germany
+regions.ch,Kantone der Schweiz,Cantons of Switzerland
+reminder.method,ReminderMethod,ReminderMethod
+reminder.trigger,ReminderTrigger,ReminderTrigger
+reminder.unit,ReminderUnit,ReminderUnit
+reporting.contact.type,Art des Kontaktes,Contact Type
+semester,Semester,Semester
+share.configuration,Share Configuration,Share Configuration
+sim.user.number,Sim User Zahl,Sim-User Number
+sis.access.extensions,FID - Zugriffserweiterungen / -ergänzungen, SIS - access extensions / completions
+sis.access.kind,FID - Art der erworbenen Zugriffsrechte,SIS - kind of purchased access rights
+sis.authentication,FID-Authentifizierung,SIS authentication
+sis.business.model.base,FID-Geschäftsmodell - Grundtyp,SIS business model - base type
+sis.business.model.attr1,FID-Geschäftsmodell - Attribute_1,SIS business model - Attribute_1
+sis.business.model.attr2,FID-Geschäftsmodell - Attribute_2,SIS business model - Attribute_2
+sis.cost.sharing,FID - Kostenbeteiligung,SIS - cost sharing
+sis.hosting,FID-Hosting,SIS hosting
+sis.license.status,FID-Vertragsstatus,SIS license status
+sis.pricing.model,FID-Preismodell,SIS pricing model
+sis.product.type,FID - Produktart,SIS product type
+sis.proof,FID-Nachweis,SIS proof
+sis.proxy.config.status,FID-Proxykonfig-Status,SIS proxy config status
+sis.rejection.reason,FID - Grund für Nichtzustandekommen,SIS - rejection reason
+sis.user.group,FID-Nutzerkreis,SIS user group
+sis.user.group.base,FID-Nutzerkreismodell - Grundtyp,SIS user group model - base type
+sis.user.group.attr1,FID-Nutzerkreismodell - Attribute_1,SIS user group model - Attribute_1
+sis.user.group.attr2,FID-Nutzerkreismodell - Attribute_2,SIS user group model - Attribute_2
+platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics Format (Platform)
+platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
+subjectgroup,Fächergruppe,Subject Group
+subscription.form,Lizenzform,Subscription Form
+subscription.resource,Ressourcentyp,Resource type
+subscription.status,Lizenzstatus,Subscription Status
+subscription.type,Subscription Type,Subscription Type
+subscription.kind,Lizenzart,Subscription Kind
+survey.status,Umfrage-Status,Survey Status
+survey.type,Umfrage-Typ,Survey Type
+task.priority,Aufgabenpriorität,Task Priority
+task.status,Aufgabenstatus,Task Status
+tax.type,TaxType,TaxType
+termination.condition,Kündigung Voraussetzung,Termination Condition
+ticket.category,Kategorie,Ticket Category
+ticket.status,Ticketstatus,Ticket Status
+tipp.access.status,TIPP Access Status,TIPP Access Status
+tipp.access.type,Zugangstyp,TIPP Access Type
+tipp.delayed.oa,TitleInstancePackagePlatform.DelayedOA,TitleInstancePackagePlatform.DelayedOA
+tipp.hybrid.oa,TitleInstancePackagePlatform.HybridOA,TitleInstancePackagePlatform.HybridOA
+tipp.status,TIPP Status,TIPP Status
+tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
+title.status,TitleInstanceStatus,TitleInstanceStatus
+title.medium,Title Medium,Title Medium
+title.type,Title Type,Title Type
+transform.format,Transform Format,Transform Format
+transform.type,Transform Type,Transform Type
+usage.status,UsageStatus,UsageStatus
+user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
+user.setting.theme,Theme,Theme
+workflow.condition.type,Typ,Type
+workflow.task.priority,Priorität,Priority
+workflow.task.status,Status,Status
+workflow.workflow.state,Zustand,State
+workflow.workflow.status,Status,Status
+y.n,Ja/Nein,Yes/No
+y.n.l,Ja/Nein/Eingeschränkt/Keine Angaben,Yes/No/limited/no statement
+y.n.o,Ja/Nein/Anderes,Yes/No/Others
+y.n.r,Ja/Nein/Eingeschränkt/Keine Angaben/Nicht relevant,Yes/No/limited/no statement/not relevant
+y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown

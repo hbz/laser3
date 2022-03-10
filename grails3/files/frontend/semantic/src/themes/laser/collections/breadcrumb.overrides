@@ -1,0 +1,16 @@
+/*******************************
+         Theme Overrides
+*******************************/
+.ui.breadcrumb {
+  color: @darkGrey;
+  //float: left;
+  padding-bottom: 21px;
+}
+/* Link */
+.ui.breadcrumb a {
+  color: @grey;
+}
+.ui.breadcrumb a:hover {
+  color: @linkHoverColor;
+}
+

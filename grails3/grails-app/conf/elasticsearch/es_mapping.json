@@ -1,0 +1,225 @@
+{
+    "dynamic_templates": [
+      {
+        "date": {
+          "match": "*date*",
+          "match_mapping_type": "date",
+          "mapping": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss'Z'||epoch_millis"
+          }
+        }
+      },
+      {
+        "year": {
+          "match": "*year*",
+          "match_mapping_type": "string",
+          "mapping": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      {
+        "allFieldWithname": {
+          "match": "*name",
+          "unmatch": "object*",
+          "match_mapping_type": "string",
+          "mapping": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      {
+        "publisher": {
+          "match": "publisher*",
+          "match_mapping_type": "string",
+          "mapping": {
+            "type": "nested",
+            "properties": {
+              "id": { "type": "long" },
+              "name": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      {
+        "objectIDs": {
+          "match": "*id",
+          "unmatch": "g*",
+          "match_mapping_type": "long",
+          "mapping": {
+            "index": false,
+            "type": "long"
+          }
+        }
+      }
+    ],
+    "properties": {
+      "availableToOrgs": {
+        "type": "long"
+      },
+      "availableToUser": {
+        "type": "long"
+      },
+      "consortiaGUID": {
+        "type": "text"
+      },
+      "gokbId": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "guid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "identifiers": {
+        "type" : "nested",
+        "properties": {
+          "type": { "type": "keyword"},
+          "value": { "type": "keyword"}
+        }
+      },
+      "isPublic": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "lastUpdated": {
+        "type": "date"
+      },
+      "medium": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "long" },
+          "value": { "type": "keyword" },
+          "value_de": { "type": "text" },
+          "value_en": { "type": "text" }
+        }
+      },
+      "members": {
+        "properties": {
+          "name": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      "membersCount": {
+        "index": false,
+        "type": "long"
+      },
+      "name": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "objectClassName": {
+        "index": false,
+        "type": "text"
+      },
+      "objectName": {
+        "index": false,
+        "type": "text"
+      },
+      "platforms": {
+        "properties": {
+          "name": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      "primaryUrl": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "priority": {
+        "type": "long"
+      },
+      "rectype": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "status": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "long" },
+          "value": { "type": "keyword" },
+          "value_de": { "type": "text" },
+          "value_en": { "type": "text" }
+        }
+      },
+      "titleCountCurrent": {
+        "index": false,
+        "type": "long"
+      },
+      "type": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "long" },
+          "value": { "type": "keyword" },
+          "value_de": { "type": "text" },
+          "value_en": { "type": "text" }
+        }
+      },
+      "visible": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      }
+    }
+}

@@ -1,0 +1,8 @@
+/*******************************
+         Theme Overrides
+*******************************/
+@media only screen and (min-width: @laser-breakpoint) {
+  .ui.container {
+    width: 1220px;
+  }
+}

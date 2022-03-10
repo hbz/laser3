@@ -1,0 +1,14 @@
+.classpath
+.DS_Store
+.gradle
+.idea
+*.iml
+*.ipr
+*.iws
+.project
+.settings
+git.properties
+Thumbs.db
+build/
+logs/
+out/

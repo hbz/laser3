@@ -1,0 +1,331 @@
+{
+  "properties": {
+    "availableToOrgs": {
+      "type": "long"
+    },
+    "availableToUser": {
+      "type": "long"
+    },
+    "consortiaGUID": {
+      "type": "text"
+    },
+    "consortiaName": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "dateCreated": {
+      "type": "date"
+    },
+    "dbId": {
+      "index": false,
+      "type": "long"
+    },
+    "endDate": {
+      "type": "date"
+    },
+    "endYear": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "gokbId": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "guid": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "identifiers": {
+      "properties": {
+        "type": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "value": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        }
+      }
+    },
+    "isPublic": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "lastUpdated": {
+      "type": "date"
+    },
+    "medium": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
+      }
+    },
+    "members": {
+      "properties": {
+        "dbId": {
+          "index": false,
+          "type": "long"
+        },
+        "name": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "shortname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "sortname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        }
+      }
+    },
+    "membersCount": {
+      "index": false,
+      "type": "long"
+    },
+    "name": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "objectClassName": {
+      "index": false,
+      "type": "text"
+    },
+    "objectId": {
+      "index": false,
+      "type": "long"
+    },
+    "objectName": {
+      "index": false,
+      "type": "text"
+    },
+    "objectTypeId": {
+      "index": false,
+      "type": "long"
+    },
+    "orgId": {
+      "index": false,
+      "type": "long"
+    },
+    "orgName": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "packages": {
+      "properties": {
+        "pkgid": {
+          "index": false,
+          "type": "long"
+        },
+        "pkgname": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        },
+        "providerId": {
+          "index": false,
+          "type": "long"
+        },
+        "providerName": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        }
+      }
+    },
+    "platforms": {
+      "properties": {
+        "dbId": {
+          "index": false,
+          "type": "long"
+        },
+        "name": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+        }
+      }
+    },
+    "primaryUrl": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "priority": {
+      "type": "long"
+    },
+    "providerName": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "publisher": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "name": { "type": "keyword" }
+      }
+    },
+    "publishers": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "name": { "type": "keyword" }
+      }
+    },
+    "rectype": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "shortname": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "sortname": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "startYear": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    },
+    "status": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
+      }
+    },
+    "titleCountCurrent": {
+      "index": false,
+      "type": "long"
+    },
+    "type": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
+      }
+    },
+    "visible": {
+      "fields": {
+        "keyword": {
+          "ignore_above": 256,
+          "type": "keyword"
+        }
+      },
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,175 @@
+
+/*--------------
+      Card
+---------------*/
+
+.ui.cards > .card,
+.ui.card {
+
+  width: @width;
+  min-height: @minHeight;
+  background: @background;
+  padding: @padding;
+
+  border: @border;
+  border-radius: @borderRadius;
+  box-shadow: none;
+  transition: @transition;
+  z-index: @zIndex;
+}
+.ui.cards > .card > .content > .header,
+.ui.card > .content  .header {
+  color: @headerColor;
+  font-size: @headerFontSize;
+}
+/* Default Header Size */
+.ui.cards > .card > .content > .header:not(.ui),
+.ui.card > .content > .header:not(.ui) {
+  font-weight: @headerFontWeight;
+  font-size: @headerFontSize;
+  margin-top: @headerLineHeightOffset;
+  line-height: @headerLineHeight;
+}
+.ui.cards > .card > .content > .header:not(.ui).la-primary-header ,
+.ui.card > .content > .header:not(.ui).la-primary-header {
+  text-transform: uppercase;
+    font-size: 0.85rem;
+}
+.ui.card.la-role-admin {
+  border-right: 10px solid @blue;
+}
+.ui.card.la-role-yoda {
+  border-right: 10px solid @green;
+}
+/* Solving the Problem of negative Margins in Grid inside of Card */
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
+}
+
+
+/* definition list in cards */
+.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: .7em;
+}
+.ui.table tfoot th.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: .7em;
+  font-weight: 700;
+}
+.la-inline-lists  dl{
+  display: table-row;
+}
+.la-inline-lists  dl  dt,
+.la-inline-lists dl  dd {
+  display: table-cell;
+  padding-top: 0.4rem;
+  padding-bottom: 1rem;
+}
+.la-inline-lists  dl  dt,
+.la-inline-lists th{
+
+}
+.la-inline-lists dl  dd {
+  padding-left: 1rem;
+}
+.la-inline-lists  dl  dd {
+  word-wrap: break-word;
+}
+
+.la-inline-lists .la-dl-no-table dl dt,
+.la-inline-lists .la-dl-no-table dl dd{
+  display: inline;
+}
+.la-inline-lists .ui.card {
+  width: 100%;
+}
+
+.inline-lists > dl > dt,
+.inline-lists > dl > dd {
+  display: inline-block;
+  vertical-align: top;
+}
+.inline-lists > dl > dt {
+  width: 25%;
+}
+.inline-lists > dl > dt > label {
+  font-weight: bold;
+}
+.inline-lists > dl > dd {
+  width: 70%;
+  word-wrap: break-word;
+}
+.ui.card>.extra a:not(.ui), .ui.cards>.card>.extra a:not(.ui) {
+   color: @linkColor;
+}
+.ui.card>.content>a.header, .ui.cards>.card>.content>a.header {
+  color: @linkColor;
+}
+.ui.card:last-child {
+  margin-bottom: 1em;
+}
+
+.la-sidekick {
+  margin-top: 1rem;
+  .hidden + .ui.card {
+    margin-top: 0em;
+  }
+}
+// card at subscription/index
+.la-tableCard .ui.card, .la-tableCard .ui.cards .ui.card{
+  width: auto;
+  .content {
+    padding: 0;
+    display: flex;
+    .la-card-column {
+      flex-grow: 1;
+      padding: @contentPadding;
+      &:first-child {
+        border-right: @extraDivider;
+      }
+      .la-card-flexRow {
+        display: flex
+      }
+    }
+    .la-card-column-with-row {
+      padding: @contentPadding;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+}
+.ui.one.cards .card {
+  width: 100%;
+}
+#container-tasks,
+#container-documents,
+#container-notes,
+#container-provider,
+#container-billing,
+#container-links
+{
+  width: 100%;
+}
+
+
+@media only screen and (max-width : @largeMonitorBreakpoint) {
+  .ui.two.doubling.cards > .card {
+    width: @oneCard;
+    //margin-left: @oneCardSpacing;
+    //margin-right: @oneCardSpacing;
+  }
+}
+.la-padding-top-1em {
+  padding-top:1em;
+}
+.la-padding-left-07em {
+  padding-top:1em;
+  padding-left:.7em;
+}
