@@ -1288,7 +1288,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     oldIDs.addAll(tippA.ids.collect { Identifier id -> id.value })
                 }
                 if(oldIDs) {
-                    Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:oldValues)',[tipp:tippA, oldValues: oldIDs]) //damn those wrestlers ...
+                    Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)',[tipp:tippA, newValues: tippB.identifiers.collect { idData -> idData.value }]) //damn those wrestlers ...
                 }
                 tippB.identifiers.each { idData ->
                     if(!(idData.namespace.toLowerCase() in ['originediturl','uri'])) {
