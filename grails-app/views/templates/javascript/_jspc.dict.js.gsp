@@ -49,7 +49,7 @@ JSPC.dict = {
         String tmp = "    '${it}' : { "
         tmp =  tmp + "de: '" + message(code: "${it}", locale: localeDe) + "', en: '" + message(code: "${it}", locale: localeEn) + "'"
         tmp =  tmp + (index < translations.size() - 1 ? " }, " : " }")
-        println tmp
+        println raw(tmp)
     }
     println "} "
 

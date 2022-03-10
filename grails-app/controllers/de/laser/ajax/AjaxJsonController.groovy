@@ -33,7 +33,6 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
-import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
@@ -785,7 +784,7 @@ class AjaxJsonController {
             List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])
 
             rq.each { RefdataValue it ->
-                if (it instanceof I10nTrait || it instanceof AbstractI10n) {
+                if (it instanceof AbstractI10n) {
                     result.add([value: "${genericOIDService.getOID(it)}", text: "${it.getI10n('value')}"])
                 }
                 else {
