@@ -78,13 +78,14 @@ components:
       description: Value for this query
 </g:else>
 
-    timestamp:
-      name: timestamp
+    changedFrom:
+      name: changedFrom
       in: query
       schema:
-        type: integer
+        type: string
+        format: date
       required: false
-      description: Timestamp from which changes should be considered
+      description: Date from which changes should be considered
 
 <g:if test="${apiContext}">
     context:

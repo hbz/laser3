@@ -68,11 +68,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         ns    column:'id_ns_fk', index:'id_value_idx'
         note  column:'id_note',  type: 'text'
 
-        lic   column:'id_lic_fk'
-        org   column:'id_org_fk'
-        pkg   column:'id_pkg_fk'
-        sub   column:'id_sub_fk'
-        tipp  column:'id_tipp_fk'
+        lic   column:'id_lic_fk', index: 'id_lic_idx'
+        org   column:'id_org_fk', index: 'id_org_idx'
+        pkg   column:'id_pkg_fk', index: 'id_pkg_idx'
+        sub   column:'id_sub_fk', index: 'id_sub_idx'
+        tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
         instanceOf column: 'id_instance_of_fk'
 
         dateCreated column: 'id_date_created'

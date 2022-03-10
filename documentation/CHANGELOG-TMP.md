@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      10.03.2022  rc-2.2  2.2.11      Andreas Bug         Sync-Fehler korrigiert
+
+4150    08.03.2022  rc-2.2  2.2.11      Andreas Feature     Neuer API-Endpunkt für EZB
+
 4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
 
 4143    23.02.2022  rc-2.2  2.2.10      Andreas Bug         Identifier und URL wurden bei Anbietern nicht mit synchronisiert
