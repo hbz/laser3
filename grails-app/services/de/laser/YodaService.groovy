@@ -331,7 +331,8 @@ class YodaService {
     Map<String,Object> listDeletedTIPPs() {
         globalService.cleanUpGorm()
         //merge duplicate tipps
-        List<String,Integer> duplicateTIPPRows = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId,count(tipp.gokbId) from TitleInstancePackagePlatform tipp group by tipp.gokbId having count(tipp.gokbId) > 1')
+//        List<String,Integer> duplicateTIPPRows = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId,count(tipp.gokbId) from TitleInstancePackagePlatform tipp group by tipp.gokbId having count(tipp.gokbId) > 1')
+        List duplicateTIPPRows = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId,count(tipp.gokbId) from TitleInstancePackagePlatform tipp group by tipp.gokbId having count(tipp.gokbId) > 1')
         List<String> duplicateTIPPKeys = []
         List<Long> excludes = []
         List<Map<String,Object>> mergingTIPPs = []

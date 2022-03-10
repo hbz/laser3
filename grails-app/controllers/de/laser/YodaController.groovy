@@ -227,7 +227,8 @@ class YodaController {
                 "select date_trunc('day', dateCreated) as day from SystemActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
         )
         dayDates.unique().take(30).each { it ->
-            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = SystemActivityProfiler.executeQuery(
+//            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = SystemActivityProfiler.executeQuery(
+            List slots = SystemActivityProfiler.executeQuery(
                     "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
                             "  from SystemActivityProfiler where date_trunc('day', dateCreated) = :day " +
                             " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",

@@ -21,11 +21,8 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
-import de.laser.workflow.WfCondition
 import de.laser.workflow.WfConditionPrototype
-import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
-import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -35,7 +32,7 @@ import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
-import org.hibernate.internal.SQLQueryImpl
+import org.hibernate.SQLQuery
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
@@ -1523,7 +1520,7 @@ class AdminController  {
                 break
         }
 
-        SQLQueryImpl sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
+        SQLQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
 SELECT * FROM (
       SELECT idns.idns_ns,
              idns.idns_id,
