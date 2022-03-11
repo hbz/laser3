@@ -147,7 +147,7 @@ class ApiEZB {
                 platCheck = Platform.executeQuery('select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :sub', [sub: sub], [max: 1])
             if(platCheck)
                 plat = platCheck[0]
-            String titleNS
+            String titleNS = null
             if(plat) {
                 titleNS = plat.titleNamespace
             }
@@ -249,7 +249,7 @@ class ApiEZB {
         //num_last_volume_online
         outRow.add(row.containsKey('ic_end_volume') ? row['ic_end_volume'] : ' ')
         //num_last_issue_online
-        outRow.add(row.containsKey('ic_end_issue') ? row['ic_end_volume'] : ' ')
+        outRow.add(row.containsKey('ic_end_issue') ? row['ic_end_issue'] : ' ')
         //title_url
         outRow.add(row['tipp_host_platform_url'] ?: ' ')
         //first_author (no value?)
@@ -259,6 +259,7 @@ class ApiEZB {
             String titleId = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] == titleNS }?.get('id_value')
             outRow.add(titleId ?: ' ')
         }
+        else outRow.add(' ')
         //embargo_information
         outRow.add(row.containsKey('ic_embargo') ? row['ic_embargo'] : ' ')
         //coverage_depth
@@ -268,7 +269,7 @@ class ApiEZB {
         //publication_type
         outRow.add(row['title_type'])
         //publisher_name
-        outRow.add(row['tipp_publisher_name'])
+        outRow.add(row['tipp_publisher_name'] ?: ' ')
         //date_monograph_published_print (no value unless BookInstance)
         outRow.add(row['tipp_date_first_in_print'] ? formatter.format(row['tipp_date_first_in_print']) : ' ')
         //date_monograph_published_online (no value unless BookInstance)
