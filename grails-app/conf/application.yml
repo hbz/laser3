@@ -1,5 +1,7 @@
 ---
 grails:
+    assets:
+        bundle: true
     profile: web
     codegen:
         defaultPackage: de.laser
@@ -82,7 +84,7 @@ grails:
     controllers:
         defaultScope: singleton
         upload:
-            maxFileSize: 104857600
+            maxFileSize:    104857600
             maxRequestSize: 104857600
     converters:
         encoding: UTF-8
