@@ -10,6 +10,8 @@ import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
 
+import java.time.LocalDate
+
 /**
  * This class reflects system-wide messages which can be shown on the dashboard (for announcements).
  * The system announcement may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
@@ -61,8 +63,7 @@ class SystemAnnouncement {
      * @return a {@link List} of system announces
      */
     static List<SystemAnnouncement> getPublished(int periodInDays) {
-        // grails4: Date dcCheck = LocalDate.now().minusDays(periodInDays).toDate()
-        Date dcCheck = (new Date()).minus(periodInDays)
+        Date dcCheck = LocalDate.now().minusDays(periodInDays).toDate()
 
         SystemAnnouncement.executeQuery(
                 'select sa from SystemAnnouncement sa ' +
