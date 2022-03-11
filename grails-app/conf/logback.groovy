@@ -12,26 +12,39 @@ import java.text.SimpleDateFormat
 conversionRule 'clr', ColorConverter
 conversionRule 'wex', WhitespaceThrowableProxyConverter
 
-// -- filter
+// --[ filter
 
 class ShrinkFilter extends Filter<ILoggingEvent> {
 
     @Override
     FilterReply decide(ILoggingEvent event) {
         if (event.getMessage().contains("HHH020003")) {
+            // WARN
+            // Could not find a specific ehcache configuration for cache named [..]; using defaults
             return FilterReply.DENY
         }
-        if (event.getMessage().contains("HHH020008")) {
+        else if (event.getMessage().contains("HHH020008")) {
+            // WARN
             return FilterReply.DENY
         }
-        if (event.getMessage().contains("Replaced rule for ")) {
+        else if (event.getMessage().contains("HHH90000022")) {
+            // WARN
+            // Hibernate's legacy org.hibernate.Criteria API is deprecated; use the JPA javax.persistence.criteria.CriteriaQuery instead
+            return FilterReply.DENY
+        }
+        else if (event.getMessage().contains("HHH90001005")) {
+            // INFO
+            // Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits
+            return FilterReply.DENY
+        }
+        else if (event.getMessage().contains("Replaced rule for ")) {
             return FilterReply.DENY
         }
         return FilterReply.ACCEPT
     }
 }
 
-// -- appender
+// --[ appender
 
 appender('STDOUT', ConsoleAppender) {
     encoder(PatternLayoutEncoder) {

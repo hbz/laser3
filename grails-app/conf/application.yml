@@ -94,7 +94,7 @@ grails:
             htmlcodec: xml
             codecs:
                 expression: html
-                scriptlet: html
+                scriptlet: none # // TODO: html
                 taglib: none
                 staticparts: none
 management:

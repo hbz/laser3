@@ -2,12 +2,14 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.SimpleDateFormat
 
 /**
  * This service retrieves data for task retrieval and creation
@@ -547,6 +549,7 @@ class TaskService {
         }
 
         String NO_STATUS = RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+        SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notimeShort')
 
         validSubscriptionsWithInstanceOf.each {
 
@@ -556,9 +559,9 @@ class TaskService {
                             + ' - '
                             + (it[4] ? it[4].getI10n('value') : NO_STATUS)
                             + ((it[2] || it[3]) ? ' (' : ' ')
-                            + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
+                            + (it[2] ? sdf.format(it[2]) : '')
                             + '-'
-                            + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
+                            + (it[3] ? sdf.format(it[3]) : '')
                             + ((it[2] || it[3]) ? ') ' : ' ')
             )
             if (isConsortium) {
@@ -577,9 +580,9 @@ class TaskService {
                             + ' - '
                             + (it[4] ? it[4].getI10n('value') : NO_STATUS)
                             + ((it[2] || it[3]) ? ' (' : ' ')
-                            + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
+                            + (it[2] ? sdf.format(it[2]) : '')
                             + '-'
-                            + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
+                            + (it[3] ? sdf.format(it[3]) : '')
                             + ((it[2] || it[3]) ? ') ' : ' ')
             )
             validSubscriptionsDropdown << [optionKey: optionKey, optionValue: optionValue]
@@ -600,6 +603,8 @@ class TaskService {
         List<License> validLicensesOhneInstanceOf = []
         List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
+
+        SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notimeShort')
 
         if (contextOrg) {
             String licensesQueryMitInstanceOf =
@@ -646,7 +651,7 @@ class TaskService {
         validLicensesDropdown = validLicensesMitInstanceOf?.collect{
 
             def optionKey = it[0]
-            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
+            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? sdf.format(it[3]) : '') + ('-') + (it[4] ? sdf.format(it[4]) : '') + ')'
             boolean isLicensingConsortium = 'Licensing Consortium' == it[5]?.value
 
             if (isLicensingConsortium) {
@@ -657,7 +662,7 @@ class TaskService {
         validLicensesOhneInstanceOf?.collect{
 
             Long optionKey = it[0]
-            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? it[3]?.format('dd.MM.yy') : '') + ('-') + (it[4] ? it[4]?.format('dd.MM.yy') : '') + ')'
+            String optionValue = it[1] + ' ' + (it[2].getI10n('value')) + ' (' + (it[3] ? sdf.format(it[3]) : '') + ('-') + (it[4] ? sdf.format(it[4]) : '') + ')'
             validLicensesDropdown << [optionKey: optionKey, optionValue: optionValue]
         }
         if (isWithInstanceOf) {

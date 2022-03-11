@@ -52,6 +52,7 @@ import org.springframework.web.multipart.MultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 /**
  * This is one of the central controllers as it manages every call related to the context institution.
@@ -1638,7 +1639,7 @@ join sub.orgRelations or_sub where
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
                 'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
-                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: (new Date()).minus(365)]
+                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: LocalDate.now().minusDays(365).toDate()]
         )
         result.num_announcements = result.recentAnnouncements.size()
 

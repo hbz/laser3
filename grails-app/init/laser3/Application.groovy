@@ -13,6 +13,7 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static Log static_logger = LogFactory.getLog(Application)
 
     static void main(String[] args) {
+        System.setProperty('spring.devtools.restart.enabled', 'false')
         GrailsApp.run(Application, args)
     }
 

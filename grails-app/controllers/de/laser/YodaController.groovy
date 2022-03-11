@@ -41,6 +41,7 @@ import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.sql.Timestamp
+import java.time.LocalDate
 
 /**
  * This controller is a buddy-for-everything controller and handles thus all sorts of global management
@@ -367,8 +368,8 @@ class YodaController {
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
         result.globalTimeline           = [:]
-        result.globalTimelineStartDate  = (new Date()).minus(30)
-        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( (new Date()).minus(it) ) }
+        result.globalTimelineStartDate  = LocalDate.now().minusDays(30).toDate()
+        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( LocalDate.now().minusDays(it).toDate() ) }
 
         Map<String, Integer> ordered = [:]
 
