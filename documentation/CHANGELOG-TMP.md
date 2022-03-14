@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.03.2022  rc-2.2  2.2.11      Andreas Bug         Rollen von Kontakten konnten nicht entknüpft werden
+
 --      10.03.2022  rc-2.2  2.2.11      Andreas Bug         Sync-Fehler korrigiert
 
 4150    08.03.2022  rc-2.2  2.2.11      Andreas Feature     Neuer API-Endpunkt für EZB
