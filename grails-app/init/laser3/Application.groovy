@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.EnvironmentAware
 import org.springframework.core.env.Environment
+import org.springframework.core.env.MapPropertySource
 
 class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
@@ -22,15 +23,12 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
         File externalConfig = ConfigUtils.getConfigFile(environment)
 
         if (externalConfig.exists()) {
-            static_logger.info("-----> Loading local configuration file: ${externalConfig.absolutePath} <-----")
+            static_logger.info("-----> Found local configuration file: ${externalConfig.absolutePath} <-----")
             ConfigObject config = new ConfigSlurper().parse(externalConfig.toURI().toURL())
-            // TODO --
-            println 'environment.propertySources.addFirst(new MapPropertySource("externalGroovyConfig", config))'
-            println environment
-            println config
+            environment.propertySources.addFirst(new MapPropertySource('externalGroovyConfig', config))
         }
         else {
-            static_logger.warn("Local configuration file not found: ${externalConfig.absolutePath}")
+            static_logger.warn("-----> Local configuration file NOT found: ${externalConfig.absolutePath} <-----")
         }
     }
 }

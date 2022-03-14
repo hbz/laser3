@@ -37,6 +37,9 @@ class ShrinkFilter extends Filter<ILoggingEvent> {
             // Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits
             return FilterReply.DENY
         }
+        else if (event.getMessage().contains("Cached entry expired :")) {
+            return FilterReply.DENY
+        }
         else if (event.getMessage().contains("Replaced rule for ")) {
             return FilterReply.DENY
         }

@@ -112,6 +112,7 @@ hibernate:
         use_second_level_cache: true
         use_query_cache: false
         region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+        #region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory # jcache instead of ehcache
 
 dataSource:
     pooled: true
@@ -144,12 +145,12 @@ environments:
     development:
         dataSource:
             dbCreate: none #create-drop
-            url: jdbc:postgresql://localhost:5432/laser_upgrade
+            url: jdbc:postgresql://localhost:5432/laser3
     test:
         dataSource:
             dbCreate: none #update
-            url: jdbc:postgresql://localhost:5432/laser_upgrade
+            url: jdbc:postgresql://localhost:5432/laser3
     production:
         dataSource:
             dbCreate: none
-            url: jdbc:postgresql://localhost:5432/laser_upgrade
+            url: jdbc:postgresql://localhost:5432/laser3

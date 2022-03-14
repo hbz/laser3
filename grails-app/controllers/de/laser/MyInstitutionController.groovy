@@ -1673,18 +1673,19 @@ join sub.orgRelations or_sub where
         if ( params.restrict == 'ALL' )
           params.restrict=null
 
-        String base_query = " from PendingChange as pc where owner = ?";
-        def qry_params = [result.institution]
+        String base_query = " from PendingChange as pc where owner = :o"
+        Map qry_params = [o: result.institution]
         if ( ( params.restrict != null ) && ( params.restrict.trim().length() > 0 ) ) {
           def o =  genericOIDService.resolveOID(params.restrict)
           if ( o != null ) {
             if ( o instanceof License ) {
-              base_query += ' and license = ?'
+                base_query += ' and license = :l'
+                qry_params.put('l', o)
             }
             else {
-              base_query += ' and subscription = ?'
+                base_query += ' and subscription = :s'
+                qry_params.put('s', o)
             }
-            qry_params.add(o)
           }
         }
 
