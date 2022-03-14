@@ -82,10 +82,15 @@
                                     $('body #ezb_server_access').editable('destroy').editable({
                                         validate: function (value) {
                                             if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
+                                                var r = confirm("EZB confirm TODO" );
+                                                if (r == false) {
+                                                   return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt!"
+                                                }
+                                                /*
                                                 $('#fakeEzb').trigger('click');
                                                 if(JSPC.app.orgSettings.confVal === false) {
                                                     return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt";
-                                                }
+                                                */
                                             }
                                         },
                                         tpl: '<select class="ui dropdown"></select>'
@@ -99,7 +104,6 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
-
                                 </laser:script>
 
                                 <g:each in="${settings}" var="os">
@@ -121,8 +125,7 @@
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="ezb_server_access" config="${os.key.rdc}"/>
-                                                    <g:hiddenField name="fakeEzb" value="true" class="js-open-confirm-modal" data-confirm-term-how="ok" data-confirm-tokenMsg="org.setting.EZB_SERVER_ACCESS.confirm"/>
+                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="ezb_server_access" config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
