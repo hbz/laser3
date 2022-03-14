@@ -75,7 +75,7 @@ class ApiEZB {
                 "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
                 key    : OrgSetting.KEYS.EZB_SERVER_ACCESS,
-                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
+                rdValue: RDStore.YN_YES,
                 deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
         ])
         //List<Org> orgs = Org.executeQuery('select id.org from Identifier id where id.ns.ns = :ezb', [ezb: IdentifierNamespace.EZB_ORG_ID])
@@ -104,25 +104,28 @@ class ApiEZB {
      *
      * @return JSON | FORBIDDEN
      */
-    static JSON getAllSubscriptions(Date changedFrom = null) {
+    static JSON getAllSubscriptions(Date changedFrom = null, Org contextOrg) {
         Collection<Object> result = []
 
         List<Org> orgs = getAccessibleOrgs()
         orgs.each { Org org ->
             Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
             orgStubMap.subscriptions = []
-            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true'
-            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND sub.instanceOf is null'
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER]]
             if(changedFrom) {
                 queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
                 queryParams.changedFrom = changedFrom
             }
-            List<Subscription> available = Subscription.executeQuery(queryString, queryParams)
+            List<Subscription> available = Subscription.executeQuery(queryString, queryParams) as List<Subscription>
 
             println "${available.size()} available subscriptions found .."
 
-            available.each { sub ->
-                orgStubMap.subscriptions.add(ApiUnsecuredMapReader.getSubscriptionStubMap(sub))
+            available.each { Subscription sub ->
+                Map<String, Object> subscriptionStubMap = ApiUnsecuredMapReader.getSubscriptionStubMap(sub)
+                Set<OrgRole> availableMembers = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType and exists(select os from OrgSetting os where os.org = oo.org and os.key = :ezbAccess and os.rdValue = :yes)', [parent: sub, roleType: RDStore.OR_SUBSCRIBER_CONS, ezbAccess: OrgSetting.KEYS.EZB_SERVER_ACCESS, yes: RDStore.YN_YES])
+                subscriptionStubMap.members = ApiCollectionReader.getOrgLinkCollection(availableMembers, ApiReader.IGNORE_SUBSCRIPTION, contextOrg)
+                orgStubMap.subscriptions.add(subscriptionStubMap)
             }
             result << orgStubMap
         }
@@ -144,7 +147,7 @@ class ApiEZB {
                 platCheck = Platform.executeQuery('select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :sub', [sub: sub], [max: 1])
             if(platCheck)
                 plat = platCheck[0]
-            String titleNS
+            String titleNS = null
             if(plat) {
                 titleNS = plat.titleNamespace
             }
@@ -246,7 +249,7 @@ class ApiEZB {
         //num_last_volume_online
         outRow.add(row.containsKey('ic_end_volume') ? row['ic_end_volume'] : ' ')
         //num_last_issue_online
-        outRow.add(row.containsKey('ic_end_issue') ? row['ic_end_volume'] : ' ')
+        outRow.add(row.containsKey('ic_end_issue') ? row['ic_end_issue'] : ' ')
         //title_url
         outRow.add(row['tipp_host_platform_url'] ?: ' ')
         //first_author (no value?)
@@ -256,6 +259,7 @@ class ApiEZB {
             String titleId = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] == titleNS }?.get('id_value')
             outRow.add(titleId ?: ' ')
         }
+        else outRow.add(' ')
         //embargo_information
         outRow.add(row.containsKey('ic_embargo') ? row['ic_embargo'] : ' ')
         //coverage_depth
@@ -265,7 +269,7 @@ class ApiEZB {
         //publication_type
         outRow.add(row['title_type'])
         //publisher_name
-        outRow.add(row['tipp_publisher_name'])
+        outRow.add(row['tipp_publisher_name'] ?: ' ')
         //date_monograph_published_print (no value unless BookInstance)
         outRow.add(row['tipp_date_first_in_print'] ? formatter.format(row['tipp_date_first_in_print']) : ' ')
         //date_monograph_published_online (no value unless BookInstance)
