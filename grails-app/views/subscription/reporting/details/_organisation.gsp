@@ -7,13 +7,15 @@
     <table class="ui table la-js-responsive-table la-table compact">
         <thead>
             <tr>
-                <th></th>
-                <th>${message(code:'org.sortname.label')}</th>
-                <th>${message(code:'org.name.label')}</th>
-                <th>${message(code:'org.customerType.label')}</th>
-                <th>${message(code:'org.orgType.label')}</th>
-                <th>${message(code:'org.libraryNetwork.label')}</th>
-                <th>${message(code:'org.libraryType.label')}</th>
+                <th scope="col" class="center aligned">
+                    ${message(code:'sidewide.number')}
+                </th>
+                <th scope="col">${message(code:'org.sortname.label')}</th>
+                <th scope="col">${message(code:'org.name.label')}</th>
+                <th scope="col">${message(code:'org.customerType.label')}</th>
+                <th scope="col">${message(code:'org.orgType.label')}</th>
+                <th scope="col">${message(code:'org.libraryNetwork.label')}</th>
+                <th scope="col">${message(code:'org.libraryType.label')}</th>
 
                 <g:if test="${query == 'member-subjectGroup'}">
                     <th>${message(code:'org.subjectGroup.label')}</th>
@@ -40,7 +42,7 @@
         <tbody>
             <g:each in="${list}" var="org" status="i">
                 <tr>
-                    <td style="text-align: center">${i + 1}.</td>
+                    <td class="center aligned">${i + 1}</td>
                     <td>
                         <g:if test="${org.sortname}">
                             <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.sortname}</g:link>
@@ -89,4 +91,5 @@
     </table>
 </div>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
