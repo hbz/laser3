@@ -874,7 +874,7 @@ class DataloadService {
 
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
-        lastIndexUpdate = new Date(System.currentTimeMillis())
+        lastIndexUpdate = new Date()
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
         SystemEvent.createEvent('FT_INDEX_UPDATE_END')

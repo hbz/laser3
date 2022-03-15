@@ -6,6 +6,7 @@ import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.helper.MigrationHelper
 import de.laser.properties.PropertyDefinitionGroup
+import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
@@ -19,6 +20,8 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.SubscriptionProperty
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -608,7 +611,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Deprecated
     boolean isCurrentMultiYearSubscription() {
-        //Date currentDate = new Date(System.currentTimeMillis())
+        //Date currentDate = new Date()
         //println(this.endDate.minus(currentDate))
         //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
 
@@ -621,7 +624,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionNew() {
-        //Date currentDate = new Date(System.currentTimeMillis())
+        //Date currentDate = new Date()
         //println(this.endDate.minus(currentDate))
         //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
 

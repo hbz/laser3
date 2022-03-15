@@ -139,19 +139,6 @@ body.myInstitution_dashboard .ui.tab .item .header {
     border-bottom: 3px solid #e6eaef;
 }
 
-/* hotfix aside.metaboxContent */
-
-aside.metaboxContent {
-    position: absolute !important;
-    width: inherit;
-    margin: 0 !important;
-}
-aside.metaboxContent + .metaboxContent-spacer {
-    height: 64px;
-    margin: 1rem 0;
-    padding: 1em 0;
-}
-
 /* hotfix - finance */
 
 .ui.form .la-account-currency .field .calc {

@@ -8,7 +8,7 @@
     List<IdentifierNamespace> nsList = idData.nsList
 %>
 
-<aside class="ui segment metaboxContent accordion">
+<aside class="ui segment la-metabox accordion">
     <div class="title">
         <div class="ui blue ribbon label">${count}</div>
         <g:message code="default.identifiers.show"/><i class="dropdown icon la-dropdown-accordion"></i>
@@ -51,5 +51,5 @@
     </div>
 </aside>
 
-<div class="metaboxContent-spacer"></div>
+<div class="la-metabox-spacer"></div>
 <!-- template: meta/identifier -->

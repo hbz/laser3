@@ -75,7 +75,7 @@
 .ui.la-table.table{
   background-color: white;
 }
-.metaboxContent .ui.la-table.table{
+.la-metabox .ui.la-table.table{
   border-collapse: separate;
   background-color: transparent;
 }

@@ -26,9 +26,10 @@
 
         <semui:tabs actionName="settings">
             <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${accessService.checkPermX('FAKE,ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
+            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
             <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
@@ -77,6 +78,32 @@
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
+
+                                    $('body #ezb_server_access').editable('destroy').editable({
+                                        validate: function (value) {
+                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
+                                                var r = confirm("EZB confirm TODO" );
+                                                if (r == false) {
+                                                   return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt!"
+                                                }
+                                                /*
+                                                $('#fakeEzb').trigger('click');
+                                                if(JSPC.app.orgSettings.confVal === false) {
+                                                    return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt";
+                                                */
+                                            }
+                                        },
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown')
+                                                .dropdown({
+                                            clearable: true
+                                        })
+                                        ;
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
                                 </laser:script>
 
                                 <g:each in="${settings}" var="os">
@@ -97,6 +124,9 @@
                                                 <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                 </g:if>
+                                                <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
+                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="ezb_server_access" config="${os.key.rdc}" />
+                                                </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                 </g:elseif>

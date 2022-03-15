@@ -16472,6 +16472,13 @@ a.ui.basic.label:hover {
 .ui.label.survey-subscription {
   background-color: #fee8d2;
 }
+
+.ui.blue.circular.label:hover,
+.ui.blue.circular.label:focus {
+  border-radius: 0;
+  -webkit-transition: border-radius;
+  transition: border-radius;
+}
 /*!
  * # Semantic UI 2.4.2 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -19813,6 +19820,18 @@ dd {
 
 .ui.segment[class*="bottom attached"] {
   padding-top: 2em;
+}
+
+aside.la-metabox {
+  position: absolute !important;
+  width: inherit;
+  margin: 0 !important;
+}
+
+aside.la-metabox + .la-metabox-spacer {
+  height: 70px;
+  margin: 1rem 0;
+  padding: 1em 0;
 }
 /*!
  * # Semantic UI 2.4.2 - Step
@@ -28849,7 +28868,7 @@ Floated Menu / Item
   background-color: white;
 }
 
-.metaboxContent .ui.la-table.table {
+.la-metabox .ui.la-table.table {
   border-collapse: separate;
   background-color: transparent;
 }

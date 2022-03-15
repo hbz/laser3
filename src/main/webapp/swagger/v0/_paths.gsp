@@ -447,6 +447,61 @@
         406:
           $ref: "#/components/responses/notAcceptable"
 
+  /ezb/subscription:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a single subscription with more information
+      description: >
+        Retrieves a list of the given subscription's holding according to the KBART standard, enriched by columns used in LAS:eR
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            text/tab-separated-values:
+              schema:
+                $ref: "#/components/schemas/PlaceholderObject"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+
+  /ezb/subscription/list:
+
+    get:
+      tags:
+        - Datamanager
+      summary: Retrieving a list of subscriptions eligible for EZB yellow tagging
+      description: >
+        Retrieving a list of subscriptions of organisations that have granted the data exchange. An optional parameter changedFrom may be submitted
+        for incremental harvesting
+
+      parameters:
+        - $ref: "#/components/parameters/changedFrom"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceholderList"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no appropriate organisations found
 
   /oamonitor/organisations/list:
 
@@ -475,7 +530,6 @@
           description: Valid request, but no appropriate organisations found
         406:
           $ref: "#/components/responses/notAcceptable"
-
 
   /oamonitor/organisations:
 

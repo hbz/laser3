@@ -299,3 +299,9 @@
   background-color: @lightOrangeGenerated;
 }
 
+.ui.blue.circular.label {
+  &:hover, &:focus {
+    border-radius: 0;
+    transition:border-radius;
+  }
+}

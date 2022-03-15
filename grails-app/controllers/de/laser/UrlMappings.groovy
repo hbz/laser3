@@ -20,6 +20,8 @@ class UrlMappings {
 
         "/api/$version/specs.yaml"          (controller: 'api', action: 'loadSpecs')
         "/api/$version/changelog.md"        (controller: 'api', action: 'loadChangelog')
+        "/api/$version/ezb/$obj"            (controller: 'api', action: 'dispatch') { section = "ezb" }
+        "/api/$version/ezb/$obj/$cmd"       (controller: 'api', action: 'dispatch') { section = "ezb" }
         "/api/$version/oamonitor/$obj"      (controller: 'api', action: 'dispatch') { section = "oamonitor" }
         "/api/$version/oamonitor/$obj/$cmd" (controller: 'api', action: 'dispatch') { section = "oamonitor" }
         "/api/$version/statistic/$obj"      (controller: 'api', action: 'dispatch') { section = "statistic" }

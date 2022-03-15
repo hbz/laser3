@@ -110,6 +110,9 @@ class OrganisationController  {
                 OrgSetting.KEYS.CUSTOMER_TYPE,
                 OrgSetting.KEYS.GASCO_ENTRY
         ]
+        List<OrgSetting.KEYS> ezbSet = [
+                OrgSetting.KEYS.EZB_SERVER_ACCESS
+        ]
         List<OrgSetting.KEYS> oaMonitorSet = [
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS
         ]
@@ -125,6 +128,8 @@ class OrganisationController  {
             case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
                 break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
+                break
+            case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })
                 break
             case 'natstat': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in natstatSet })
                 break
@@ -181,7 +186,7 @@ class OrganisationController  {
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String datetoday = sdf.format(new Date())
         def message = message(code: 'export.all.orgs')
         // Write the output to a file
         String file = message+"_${datetoday}"
@@ -302,7 +307,7 @@ class OrganisationController  {
 
         def message = g.message(code: 'export.all.providers')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
 
         if ( params.exportXLS) {
@@ -1481,7 +1486,7 @@ class OrganisationController  {
 
             SXSSFWorkbook wb
             SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
