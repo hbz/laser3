@@ -287,13 +287,13 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                    if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
-                        personInstance.removeFromRoleLinks(psr)
-                        psr.delete()
-                    }
-                }
+            }
 
+            personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
+                if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
+                    personInstance.removeFromRoleLinks(psr)
+                    psr.delete()
+                }
             }
 
             if (params.positionType) {
@@ -315,13 +315,13 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                    if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
-                        personInstance.removeFromRoleLinks(psr)
-                        psr.delete()
-                    }
-                }
+            }
 
+            personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
+                if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
+                    personInstance.removeFromRoleLinks(psr)
+                    psr.delete()
+                }
             }
 
             personInstance.contacts.each { contact ->
