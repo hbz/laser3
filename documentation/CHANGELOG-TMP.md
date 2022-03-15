@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
---      14.03.2022  rc-2.2  2.2.11      Andreas Bug         Rollen von Kontakten konnten nicht entknüpft werden
+--      15.03.2022  rc-2.2  2.2.12      Andreas Bug         Abfragefehler im Lizenzlistenendpunkt behoben
+
+--      14.03.2022  rc-2.2  2.2.12      Andreas Bug         Rollen von Kontakten konnten nicht entknüpft werden
 
 --      10.03.2022  rc-2.2  2.2.11      Andreas Bug         Sync-Fehler korrigiert
 

@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.132
+
+- bugfix for __/subscription/list__
+
 #### 0.131
 
 - added new attribute: `Subscription.members` for __/ezb/subscription/list__

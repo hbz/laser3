@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class ApiManager {
 
-    static final VERSION = '0.131'
+    static final VERSION = '0.132'
 
     /**
      * @return Object
@@ -278,7 +278,7 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiSubscription.requestSubscription((Org) tmp.obj, contextOrg)
+                result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
             }
         }
         else {
