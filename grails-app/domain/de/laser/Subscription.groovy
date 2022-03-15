@@ -609,7 +609,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Deprecated
     boolean isCurrentMultiYearSubscription() {
-        Date currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date()
         //println(this.endDate.minus(currentDate))
         return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
@@ -619,7 +619,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionNew() {
-        Date currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date()
         //println(this.endDate.minus(currentDate))
         return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
     }

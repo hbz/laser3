@@ -519,11 +519,11 @@
                         <div class="la-flexbox">
                             <g:if test="${invertDirection}">
                                 <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
                             </g:if>
                             <g:else>
                                 <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
                             </g:else>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
