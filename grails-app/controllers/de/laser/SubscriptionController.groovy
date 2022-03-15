@@ -658,7 +658,7 @@ class SubscriptionController {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
+                response.contentType = "text/tab-separated-values"
                 ServletOutputStream out = response.outputStream
                 Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
                 out.withWriter { writer ->
