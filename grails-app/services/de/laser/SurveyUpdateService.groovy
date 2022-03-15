@@ -33,7 +33,7 @@ class SurveyUpdateService extends AbstractLockableService {
     boolean surveyCheck() {
         if(!running) {
             running = true
-            Date currentDate = new Date(System.currentTimeMillis())
+            Date currentDate = new Date()
 
             Map<String,Object> updatedObjs = [:]
 

@@ -18,7 +18,7 @@ class SqlDateUtils {
      */
     static boolean isToday(date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) == 0
+        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) == 0
     }
 
     /**
@@ -50,7 +50,7 @@ class SqlDateUtils {
      */
     static boolean isBeforeToday(date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) < 0
+        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) < 0
     }
 
     /**
@@ -60,7 +60,7 @@ class SqlDateUtils {
      */
     static boolean isAfterToday(date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) > 0
+        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) > 0
     }
 
     /**
@@ -83,7 +83,7 @@ class SqlDateUtils {
      * @return is the given date between today and the reminder period?
      */
     static boolean isDateBetweenTodayAndReminderPeriod(dateToTest, int reminderPeriod) {
-        Date today = new Date(System.currentTimeMillis())
+        Date today = new Date()
         Date infoDate = getDateInNrOfDays(reminderPeriod)
         isDateBetween(dateToTest, today, infoDate)
     }

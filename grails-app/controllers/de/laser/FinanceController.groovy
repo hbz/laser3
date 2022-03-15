@@ -142,7 +142,7 @@ class FinanceController  {
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
             SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}.xlsx\"")
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
                 workbook.write(response.outputStream)
@@ -216,7 +216,7 @@ class FinanceController  {
             CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
                 csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}_${viewMode}.csv\"")
+                    response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}_${viewMode}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
