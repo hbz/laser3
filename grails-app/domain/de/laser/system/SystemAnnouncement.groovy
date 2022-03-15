@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.ConfigUtils
+import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import grails.util.Holders
@@ -63,7 +64,7 @@ class SystemAnnouncement {
      * @return a {@link List} of system announces
      */
     static List<SystemAnnouncement> getPublished(int periodInDays) {
-        Date dcCheck = LocalDate.now().minusDays(periodInDays).toDate()
+        Date dcCheck = MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(periodInDays) )
 
         SystemAnnouncement.executeQuery(
                 'select sa from SystemAnnouncement sa ' +

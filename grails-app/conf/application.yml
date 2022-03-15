@@ -32,6 +32,8 @@ spring:
         template:
             check-template-location: false
     devtools:
+        livereload:
+            enabled: false
         restart:
             additional-exclude:
                 - '*.gsp'
@@ -40,6 +42,8 @@ spring:
                 - '**/*.gson'
                 - 'logback.groovy'
                 - '*.properties'
+            enabled: true
+            trigger-file: 'restart.trigger'
 management:
     endpoints:
         enabled-by-default: false

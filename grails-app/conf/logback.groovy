@@ -25,6 +25,7 @@ class ShrinkFilter extends Filter<ILoggingEvent> {
         }
         else if (event.getMessage().contains("HHH020008")) {
             // WARN
+            // Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits
             return FilterReply.DENY
         }
         else if (event.getMessage().contains("HHH90000022")) {
@@ -50,9 +51,13 @@ class ShrinkFilter extends Filter<ILoggingEvent> {
 // --[ appender
 
 appender('STDOUT', ConsoleAppender) {
+    // TODO -- REMOVE --
+    // TODO -- REMOVE --
+    filter(ShrinkFilter)
+    // TODO -- REMOVE --
+    // TODO -- REMOVE --
     encoder(PatternLayoutEncoder) {
         charset = Charset.forName('UTF-8')
-
         pattern =
             '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' +
                     '%clr(%5p) ' + // Log level
@@ -71,7 +76,7 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
         file = "${targetDir}/errors.log"
         append = true
         encoder(PatternLayoutEncoder) {
-            pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} | %level %logger - %msg%n"
+            pattern = "%d{yyyy-MM-dd HH:mm:ss.SSS} | %level %logger{32} [%file:%line] - %msg%n"
         }
     }
     appender("LOGFILE", FileAppender) {
@@ -79,7 +84,7 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
         append = true
         filter(ShrinkFilter)
         encoder(PatternLayoutEncoder) {
-            pattern = "%d{HH:mm:ss.SSS} | %level %logger - %nopex%msg%n"
+            pattern = "%d{HH:mm:ss.SSS} | %level [%file:%line] - %nopex%msg%n"
         }
     }
 

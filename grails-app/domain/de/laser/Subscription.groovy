@@ -4,8 +4,8 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
+import de.laser.helper.MigrationHelper
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
@@ -19,13 +19,12 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.SubscriptionProperty
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 /**
  * This is the most central of all the domains and the turning point of everything: the subscription.
@@ -609,9 +608,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Deprecated
     boolean isCurrentMultiYearSubscription() {
-        Date currentDate = new Date(System.currentTimeMillis())
+        //Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
+        //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
+
+        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        return (this.isMultiYearSubscription() && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
     /**
@@ -619,18 +621,28 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionNew() {
-        Date currentDate = new Date(System.currentTimeMillis())
+        //Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
-        return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
+        //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
+
+        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        return (this.isMultiYear && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
     boolean isCurrentMultiYearSubscriptionToParentSub() {
-        return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
+        //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
+
+        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        return (this.isMultiYear && endDate && this.instanceOf && (endDate.minus(MigrationHelper.dateToLocalDate(this.instanceOf.startDate)) > 366))
     }
 
     @Deprecated
     boolean islateCommer() {
-        return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
+        //return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
+
+        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        LocalDate startDate = MigrationHelper.dateToLocalDate(this.startDate)
+        return (endDate && (endDate.minus(startDate) > 366 && endDate.minus(startDate) < 728))
     }
 
     /**
@@ -638,7 +650,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if this subscription is a local subscription and the running time is between 364 and 366 days (to include leap years as well)
      */
     boolean isAllowToAutomaticRenewAnnually() {
-        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
+        //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
+
+        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        LocalDate startDate = MigrationHelper.dateToLocalDate(this.startDate)
+        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (endDate.minus(startDate) > 363) && (endDate.minus(startDate) < 367))
     }
 
     /**

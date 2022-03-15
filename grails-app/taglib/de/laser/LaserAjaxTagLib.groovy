@@ -1,6 +1,5 @@
 package de.laser
 
-import asset.pipeline.grails.AssetsTagLib
 import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
 

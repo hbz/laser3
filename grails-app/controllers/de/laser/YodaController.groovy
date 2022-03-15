@@ -368,8 +368,8 @@ class YodaController {
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
 
         result.globalTimeline           = [:]
-        result.globalTimelineStartDate  = LocalDate.now().minusDays(30).toDate()
-        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( LocalDate.now().minusDays(it).toDate() ) }
+        result.globalTimelineStartDate  = MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(30) )
+        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getSDF_NoTime()).format( MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(it) ) )}
 
         Map<String, Integer> ordered = [:]
 

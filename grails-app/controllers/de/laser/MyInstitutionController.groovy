@@ -8,12 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
-import de.laser.properties.LicenseProperty
-import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PendingChangeService
-import de.laser.properties.PersonProperty
-import de.laser.properties.PlatformProperty
-import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -1639,7 +1634,7 @@ join sub.orgRelations or_sub where
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
                 'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
-                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: LocalDate.now().minusDays(365).toDate()]
+                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(365) )]
         )
         result.num_announcements = result.recentAnnouncements.size()
 

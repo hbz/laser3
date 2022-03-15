@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting; de.laser.helper.DateUtils; de.laser.ApiSource" %>
+<%@ page import="de.laser.helper.MigrationHelper; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting; de.laser.helper.DateUtils; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -756,7 +756,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && orgSub.endDate.minus(orgSub.startDate) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && MigrationHelper.dateToLocalDate(orgSub.endDate).minus(MigrationHelper.dateToLocalDate(orgSub.startDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
