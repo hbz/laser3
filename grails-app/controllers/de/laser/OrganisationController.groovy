@@ -110,6 +110,9 @@ class OrganisationController  {
                 OrgSetting.KEYS.CUSTOMER_TYPE,
                 OrgSetting.KEYS.GASCO_ENTRY
         ]
+        List<OrgSetting.KEYS> ezbSet = [
+                OrgSetting.KEYS.EZB_SERVER_ACCESS
+        ]
         List<OrgSetting.KEYS> oaMonitorSet = [
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS
         ]
@@ -125,6 +128,8 @@ class OrganisationController  {
             case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
                 break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
+                break
+            case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })
                 break
             case 'natstat': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in natstatSet })
                 break
