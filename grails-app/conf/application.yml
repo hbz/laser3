@@ -7,22 +7,31 @@ grails:
         defaultPackage: de.laser
     gorm:
         reactor:
-            # Whether to translate GORM events into Reactor events
-            # Disabled by default for performance reasons
+            # whether to translate GORM events into Reactor events. disabled by default for performance reasons
             events: false
+    cache:
+        enabled: true
+        config:
+            cache:
+                name: 'message'
+        ehcache:
+            ehcacheXmlLocation: 'ehcache.xml'
     exceptionresolver:
         params:
             exclude:
                 - password
+
 info:
     app:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
-        build: # should work if deployed as WAR
+        build:
+            # build/* - should work if deployed as WAR
             date: '@info.app.build.date@'
             host: '@info.app.build.host@'
             javaVersion: '@info.app.build.javaVersion@'
+
 spring:
     jmx:
         unique-names: true
@@ -44,6 +53,7 @@ spring:
                 - '*.properties'
             enabled: true
             trigger-file: 'restart.trigger'
+
 management:
     endpoints:
         enabled-by-default: false
@@ -103,10 +113,63 @@ grails:
                 scriptlet: none # // TODO: html
                 taglib: none
                 staticparts: none
-management:
-    endpoints:
-        jmx:
-            unique-names: true
+
+---
+grails:
+    plugin:
+        auditLog:
+            auditDomainClassName: 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
+            defaultActor: 'SYS'
+        databasemigration:
+            updateOnStart:  true
+        wkhtmltopdf:
+            binary: '/usr/bin/wkhtmltopdf'
+        springsecurity:
+            authority:
+                className: 'de.laser.auth.Role'
+            userLookup:
+                userDomainClassName: 'de.laser.auth.User'
+                usernamePropertyName: 'username'
+                authorityJoinClassName: 'de.laser.auth.UserRole'
+            password:
+                algorithm: 'SHA-256'
+                hash:
+                    iterations: 1
+            successHandler:
+                alwaysUseDefault: false
+                defaultTargetUrl: '/home/index'
+                logout:
+                    afterLogoutUrl: '/'
+            logout:
+                postOnly: false
+            controllerAnnotations:
+                staticRules:
+                    -   pattern: '/assets/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/static/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/**/js/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/**/css/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/**/images/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/**/favicon.ico'
+                        access: [ 'permitAll' ]
+            filterChain:
+                chainMap:
+                    -   pattern: '/assets/**'
+                        filters: 'none'
+                    -   pattern: '/**/js/**'
+                        filters: 'none'
+                    -   pattern: '/**/css/**'
+                        filters: 'none'
+                    -   pattern: '/**/images/**'
+                        filters: 'none'
+                    -   pattern: '/**/favicon.ico'
+                        filters: 'none'
+                    -   pattern: '/**'
+                        filters: 'JOINED_FILTERS'
 
 ---
 hibernate:
