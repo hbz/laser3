@@ -62,8 +62,6 @@ sourceSets {
 
 dependencies {
      developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    // https://github.com/spring-projects/spring-loaded
-    // agent "org.springframework:springloaded:1.2.8.RELEASE" // --- instead of spring-boot-devtools (java 8 ONLY)
 
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-autoconfigure'
