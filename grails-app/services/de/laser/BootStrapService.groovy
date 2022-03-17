@@ -2,6 +2,7 @@ package de.laser
 
 import com.opencsv.CSVReader
 import de.laser.auth.*
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.ServerUtils
@@ -50,9 +51,9 @@ class BootStrapService {
 
         log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
         log.info("Server: ${ServerUtils.getCurrentServer()}")
-        log.info("Database: ${grailsApplication.config.dataSource.url}")
-        log.info("Database datasource dbCreate: ${grailsApplication.config.dataSource.dbCreate}")
-        log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
+        log.info("Database: ${AppUtils.getConfig('dataSource.url')}")
+        log.info("Database datasource dbCreate: ${AppUtils.getConfig('dataSource.dbCreate')}")
+        log.info("Database migration plugin updateOnStart: ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}")
         log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")
 
         String dsp = cacheService.getDiskStorePath()
@@ -193,10 +194,10 @@ class BootStrapService {
             }
         }
 
-        if (grailsApplication.config.systemUsers) {
+        if (AppUtils.getConfig('systemUsers')) {
             log.debug("found systemUsers in local config file ..")
 
-            grailsApplication.config.systemUsers.each { su ->
+            AppUtils.getConfig('systemUsers').each { su ->
                 log.debug("checking: [${su.name}, ${su.display}, ${su.roles}, ${su.affils}]")
 
                 User user = User.findByUsername(su.name)

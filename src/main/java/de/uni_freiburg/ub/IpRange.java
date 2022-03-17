@@ -72,7 +72,7 @@ public class IpRange {
 	 */
 	public static IpRange parseIpRange(String s) throws InvalidRangeException {
 		// remove all whitespace characters
-		s = StringUtils.removeAll(s, "\\s");
+		s = s.replaceAll("\\s", ""); //s = StringUtils.removeAll(s, "\\s");
 
 		// handle cidr notation
 		String[] parts = s.split("/");

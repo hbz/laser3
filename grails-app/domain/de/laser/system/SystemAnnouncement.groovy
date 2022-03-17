@@ -4,6 +4,7 @@ package de.laser.system
 import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
@@ -114,8 +115,8 @@ class SystemAnnouncement {
      * @return true if the publishing was successful, false otherwise
      */
     boolean publish() {
-        if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'SystemAnnouncement.publish() failed due grailsApplication.config.grails.mail.disabled = true'
+        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+            println 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
             return false
         }
 

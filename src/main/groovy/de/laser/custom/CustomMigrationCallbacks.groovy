@@ -1,5 +1,6 @@
 package de.laser.custom
 
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import liquibase.Liquibase
 import liquibase.changelog.ChangeSet
@@ -25,7 +26,7 @@ class CustomMigrationCallbacks {
 			println '-        ' + diff.size() + ' relevant changesets detected ..'
 			println '-        dumping current database ..'
 
-			def dataSource = grailsApplication.config.dataSource
+			def dataSource = AppUtils.getConfig('dataSource')
 			URI uri = new URI(dataSource.url.substring(5))
 
 			String backupFile = ConfigUtils.getDeployBackupLocation() + "/laser-backup-${new Date().format('yyyy-MM-dd-HH:mm:ss')}.sql"

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.AppUtils" %>
 <!doctype html>
 <html>
   <head>
@@ -19,7 +20,7 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${grailsApplication.config.financialImportTSVLoaderMappings.cols}" var="mpg">
+              <g:each in="${AppUtils.getConfig('financialImportTSVLoaderMappings.cols')}" var="mpg">
                 <tr>
                   <td>${mpg.colname}</td>
                   <td>${mpg.desc}

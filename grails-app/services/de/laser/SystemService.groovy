@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -48,7 +49,7 @@ class SystemService {
                 checks.Reporting = "ElasticSearch Config for Reporting not found"
             }
 
-            if (grailsApplication.config.grails.mail.disabled ) {
+            if (AppUtils.getConfig('grails.mail.disabled')) {
                 checks.MailService = "Mail Service not active"
             }
 

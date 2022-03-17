@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -20,12 +20,13 @@
             <tr><th class="seven wide">App</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>App name</td><td> <g:meta name="info.app.name"/></td></tr>
-            <tr><td>App version</td><td> <g:meta name="info.app.version"/></td></tr>
-            <tr><td>Grails version</td><td> <g:meta name="info.app.grailsVersion"/></td></tr>
+            <tr><td>App name</td><td> ${AppUtils.getMeta('info.app.name')}</td></tr>
+            <tr><td>App version</td><td> ${AppUtils.getMeta('info.app.version')}</td></tr>
+            <tr><td>Grails version</td><td> ${AppUtils.getMeta('info.app.grailsVersion')}</td></tr>
             <tr><td>Groovy (currently running)</td><td> ${GroovySystem.getVersion()}</td></tr>
             <tr><td>Java (currently running)</td><td> ${System.getProperty('java.version')}</td></tr>
             <tr><td>Configuration file</td><td> ${ConfigUtils.getConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
+            <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
             <tr><td>Last quartz heartbeat</td><td>${ConfigUtils.getQuartzHeartbeat()}</td></tr>
             <tr><td>Reloading active</td><td> ${Environment.reloadingAgentEnabled}</td></tr>
@@ -37,10 +38,10 @@
             <tr><th class="seven wide">Build</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Build date</td><td> <g:meta name="info.app.build.date"/></td></tr>
-            <tr><td>Build host</td><td> <g:meta name="info.app.build.host"/></td></tr>
-            <tr><td>Build profile</td><td> <g:meta name="info.app.build.profile"/></td></tr>
-            <tr><td>Build java version</td><td> <g:meta name="info.app.build.javaVersion"/></td></tr>
+            <tr><td>Build date</td><td> ${AppUtils.getMeta('info.app.build.date')}</td></tr>
+            <tr><td>Build host</td><td> ${AppUtils.getMeta('info.app.build.host')}</td></tr>
+            <tr><td>Build profile</td><td> ${AppUtils.getMeta('info.app.build.profile')}</td></tr>
+            <tr><td>Build java version</td><td> ${AppUtils.getMeta('info.app.build.javaVersion')}</td></tr>
         </tbody>
     </table>
 
@@ -49,10 +50,10 @@
             <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Database</td><td> ${grailsApplication.config.dataSource.url.split('/').last()}</td></tr>
+            <tr><td>Database</td><td> ${AppUtils.getConfig('dataSource.url').split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}</td></tr>
-            <tr><td>DataSource.dbCreate</td><td> ${grailsApplication.config.dataSource.dbCreate}</td></tr>
+            <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
+            <tr><td>DataSource.dbCreate</td><td> ${AppUtils.getConfig('dataSource.dbCreate')}</td></tr>
         <tbody>
     </table>
 
@@ -78,7 +79,7 @@
         </tbody>
     </table>
 
-    <g:if test="${grailsApplication.config.reporting?.elasticSearch}">
+    <g:if test="${AppUtils.getConfig('reporting.elasticSearch')}">
         <table class="ui celled la-js-responsive-table la-table table compact">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
@@ -86,14 +87,16 @@
             <tbody>
             <tr>
                 <td>ElasticSearch url</td>
-                <td><a href="${grailsApplication.config.reporting.elasticSearch.url + '/_cat/indices?v'}" target="_blank">${grailsApplication.config.reporting.elasticSearch.url}</a></td>
+                <td><a href="${AppUtils.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${AppUtils.getConfig('reporting.elasticSearch.url')}</a></td>
             </tr>
             <tr>
                 <td>ElasticSearch indicies</td>
                 <td>
-                    <g:each in="${grailsApplication.config.reporting.elasticSearch.indicies}" var="k, v">
-                        <a href="${grailsApplication.config.reporting.elasticSearch.url + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
-                    </g:each>
+                    <g:if test="${AppUtils.getConfig('reporting.elasticSearch.indicies')}">
+                        <g:each in="${AppUtils.getConfig('reporting.elasticSearch.indicies')}" var="k, v">
+                            <a href="${AppUtils.getConfig('reporting.elasticSearch.url') + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
+                        </g:each>
+                    </g:if>
                 </td>
             </tr>
             <tr>

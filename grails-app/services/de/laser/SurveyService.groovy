@@ -643,8 +643,8 @@ class SurveyService {
      */
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+            println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -717,8 +717,8 @@ class SurveyService {
      */
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'surveyService.emailToSurveyParticipationByFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+            println 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -1020,8 +1020,8 @@ class SurveyService {
      */
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
-        if (grailsApplication.config.grails.mail.disabled == true) {
-            println 'SurveyService.sendSurveyEmail() failed due grailsApplication.config.grails.mail.disabled = true'
+        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+            println 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String emailReceiver = user.getEmail()

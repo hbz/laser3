@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.FTControl
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.system.SystemEvent
 import grails.core.GrailsApplication
@@ -50,19 +51,16 @@ class ESWrapperService {
      */
     @javax.annotation.PostConstruct
     def init() {
-        log.debug("ESWrapperService::init");
-
+        log.info('ESWrapperService - init')
 
         //With ConfigUtils.getAggrEsIndices() not possible.
-        es_indices = grailsApplication.config.aggr_es_indices
+        es_indices      = AppUtils.getConfig('aggr_es_indices') as Map
         es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
         es_host         = ConfigUtils.getAggrEsHostname() ?: ESWrapperService.ES_HOST
 
-        log.debug("es_cluster = ${es_cluster_name}")
-        log.debug("es_indices = ${es_indices}")
-        log.debug("es_host = ${es_host}")
-
-        log.debug("ES Init completed");
+        log.debug("| es_cluster = ${es_cluster_name}")
+        log.debug("| es_indices = ${es_indices}")
+        log.debug("| es_host = ${es_host}")
     }
 
     /**

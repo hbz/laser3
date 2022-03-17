@@ -1,4 +1,4 @@
-<%@ page import="de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -555,10 +555,7 @@
 
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="logout">${message(code:'menu.user.logout')}</semui:link>
                                     <div class="divider"></div>
-
-                                    <g:if test="${grailsApplication.metadata['info.app.version']}">
-                                        <div class="header">Version: ${grailsApplication.metadata['info.app.version']} – ${grailsApplication.metadata['info.app.build.date']}</div>
-                                    </g:if>
+                                    <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
                                     <div class="header">
                                         ${systemService.getNumberOfActiveUsers()} Benutzer online
                                     </div>

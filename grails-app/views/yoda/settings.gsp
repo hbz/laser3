@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemSetting" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.system.SystemSetting" %>
 <!doctype html>
 <html>
 <head>
@@ -16,7 +16,7 @@
 <div>
     <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
 
-    <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
+    <g:set var="mailConfigDisabled" value="${AppUtils.getConfig('grails.mail.disabled')}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
     <table class="ui celled la-js-responsive-table la-table table">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.helper.ConfigUtils" %>
 <style>
         /** inline style here with intention:
             flex layout helps footer to stick at bottom when main high not high enough
@@ -127,27 +127,27 @@
                 <div class="ui inverted link list">
 
                     <a target="_blank" class="item" href="https://github.com/hbz/laser2/releases">
-                        Version: ${grailsApplication.metadata['info.app.version']}
+                        Version: ${AppUtils.getMeta('info.app.version')}
                     </a>
 
-                    <g:if test="${grailsApplication.metadata['git.branch']}">
-                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.branch']}">
-                            Branch: ${grailsApplication.metadata['git.branch']}
+                    <g:if test="${AppUtils.getMeta('git.branch')}">
+                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${AppUtils.getMeta('git.branch')}">
+                            Branch: ${AppUtils.getMeta('git.branch')}
                         </a>
                     </g:if>
 
                     <div class="item">
-                        <g:if test="${grailsApplication.metadata['git.commit.id']}">
-                            <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.commit.id']}">
-                                Build: ${grailsApplication.metadata['info.app.build.date']}
+                        <g:if test="${AppUtils.getMeta('git.commit.id')}">
+                            <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${AppUtils.getMeta('git.commit.id')}">
+                                Build: ${AppUtils.getMeta('info.app.build.date')}
                             </a>
                         </g:if>
                         <g:else>
-                            Build: ${grailsApplication.metadata['info.app.build.date']}
+                            Build: ${AppUtils.getMeta('info.app.build.date')}
                         </g:else>
                     </div>
 
-                    <!-- (${grailsApplication.metadata['info']}) -->
+                    <!-- (${AppUtils.getMeta('info')}) -->
                 </div>
             </div>
 

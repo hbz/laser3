@@ -2,6 +2,7 @@ package de.laser.system
 
 import de.laser.Org
 import de.laser.ContextService
+import de.laser.helper.AppUtils
 import grails.util.Holders
 
 /**
@@ -45,7 +46,7 @@ class SystemProfiler {
      * @return the current version
      */
     static String getCurrentArchive() {
-        String av = Holders.grailsApplication.metadata['info.app.version'] ?: 'unkown'
+        String av = AppUtils.getMeta('info.app.version') ?: 'unkown'
         List<String> avList = av.split("\\.")
         if (avList.size() >= 2) {
             return "${avList[0]}.${avList[1]}"

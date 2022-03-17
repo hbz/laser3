@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.helper.AppUtils; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -83,8 +83,8 @@
                             <div class="item">
                                 <div class="content middle aligned">
                                     <div class="header">Elasticsearch Index</div>
-                                    <g:if test="${grailsApplication.config.reporting.elasticSearch}">
-                                        <a href="${grailsApplication.config.reporting.elasticSearch.url + '/_cat/indices?v'}" target="_blank">${grailsApplication.config.reporting.elasticSearch.url}</a>
+                                    <g:if test="${AppUtils.getConfig('reporting.elasticSearch')}">
+                                        <a href="${AppUtils.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${AppUtils.getConfig('reporting.elasticSearch.url')}</a>
                                     </g:if>
                                     <g:else>--</g:else>
                                 </div>

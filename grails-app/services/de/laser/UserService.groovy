@@ -4,6 +4,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.auth.UserRole
+import de.laser.helper.AppUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
@@ -224,7 +225,7 @@ class UserService {
      */
     @Deprecated
     void setupAdminAccounts(Map<String,Org> orgs) {
-        List adminUsers = grailsApplication.config.adminUsers
+        List adminUsers = AppUtils.getConfig('adminUsers') as List
         List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'

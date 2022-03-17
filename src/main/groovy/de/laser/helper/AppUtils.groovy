@@ -5,6 +5,20 @@ import grails.core.GrailsClass
 
 class AppUtils {
 
+    // --
+
+    static String getMeta(String token) {
+        Holders.grailsApplication.metadata[ token ] ?: token
+    }
+    static def getConfig(String token) {
+        Holders.grailsApplication.config[ token ] ?: null
+    }
+    static def getPluginConfig(String token) {
+        Holders.grailsApplication.config[ 'grails.plugin.' + token ] ?: null
+    }
+
+    // --
+
     static GrailsClass getDomainClass(String qualifiedName) {
         // fallback
         String fallback = qualifiedName.replace("class ", "")

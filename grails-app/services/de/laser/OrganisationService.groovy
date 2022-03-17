@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
+import de.laser.helper.AppUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
@@ -228,7 +229,7 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                grailsApplication.config.systemUsers.each { su ->
+                AppUtils.getConfig('systemUsers')?.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
                     admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)

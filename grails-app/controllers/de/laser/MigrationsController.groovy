@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.AppUtils
 import de.laser.titles.TitleInstance
 import de.laser.helper.ConfigUtils
 import grails.gorm.transactions.Transactional
@@ -35,14 +35,14 @@ class MigrationsController {
 
         result += '<ul>'
         validNsList.each { vns ->
-            result += '<li><a href="' + grailsApplication.config.grails.serverURL + '/migrations/erms2362?ns=' + vns + '">' + vns + '</a></li>'
+            result += '<li><a href="' + AppUtils.getConfig('grails.serverURL') + '/migrations/erms2362?ns=' + vns + '">' + vns + '</a></li>'
         }
         result += '</ul>'
         result += '<hl/>'
 
         if (! validNsList.contains(ns_str)) {
             render text: '<!DOCTYPE html><html lang="en"><head><title>' +
-                    grailsApplication.config.grails.serverURL +
+                    AppUtils.getConfig('grails.serverURL') +
                     '</title></head><body><pre>Namespace <strong>' + ns_str + '</strong> is not positive listed .. process canceled</pre></body></html>'
 
             return
@@ -81,7 +81,7 @@ class MigrationsController {
                     tmp += ")"
 
                     if( c.link) {
-                        tmp += " =-----> [ <a href='${c.link}' target='_blank'>${c.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                        tmp += " =-----> [ <a href='${c.link}' target='_blank'>${c.link.replace(AppUtils.getConfig('grails.serverURL'),'')}</a> ]"
                     }
                     m += tmp
                 }
@@ -99,7 +99,7 @@ class MigrationsController {
                         tmp += "GOKBID:${c.reference.gokbId} - "
                     }
                     if (c.reference.link) {
-                        tmp += "<a href='${c.reference.link}' target='_blank'>${c.reference.link.replace(grailsApplication.config.grails.serverURL,'')}</a> ]"
+                        tmp += "<a href='${c.reference.link}' target='_blank'>${c.reference.link.replace(AppUtils.getConfig('grails.serverURL'),'')}</a> ]"
                     }
                     o += tmp
                 }
@@ -134,12 +134,12 @@ class MigrationsController {
         }
 
         result += code([
-                "# ${grailsApplication.config.grails.serverURL}",
+                "# ${AppUtils.getConfig('grails.serverURL')}",
                 "# " + ConfigUtils.getLaserSystemId(),
                 "# Processing time: ${System.currentTimeMillis() - ts} ms"
         ])
 
-        render text: '<!DOCTYPE html><html lang="en"><head><title>' + grailsApplication.config.grails.serverURL + '</title></head><body>' + result + '</body></html>'
+        render text: '<!DOCTYPE html><html lang="en"><head><title>' + AppUtils.getConfig('grails.serverURL') + '</title></head><body>' + result + '</body></html>'
     }
 
     @Deprecated
@@ -154,7 +154,7 @@ class MigrationsController {
                                                     null
                                             )))))
 
-            return link ? (grailsApplication.config.grails.serverURL + link + reference.id) : null
+            return link ? (AppUtils.getConfig('grails.serverURL') + link + reference.id) : null
         }
 
         List<Identifier> oldIds = Identifier.findAllByNs(oldNs)

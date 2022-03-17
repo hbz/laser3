@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.AppUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
@@ -91,7 +92,7 @@ class AdminController  {
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
-        result.mailDisabled = grailsApplication.config.grails.mail.disabled
+        result.mailDisabled = AppUtils.getConfig('grails.mail.disabled')
 
         if (params.id) {
             SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))

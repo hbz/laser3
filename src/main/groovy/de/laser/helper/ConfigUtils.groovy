@@ -2,15 +2,19 @@ package de.laser.helper
 
 import grails.config.Config
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.core.env.Environment
 
 class ConfigUtils {
+
+    static Log static_logger = LogFactory.getLog(ConfigUtils)
 
     // -- config file --
 
     static File getConfigFile(Environment environment) {
         Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
-        String ian = sysProps.get('info.app.name') ?: 'laser2'
+        String ian = sysProps.get('info.app.name')
         String clc = sysProps.get('custom.local.config') ? ('-' + sysProps.get('custom.local.config')) : ''
 
         new File("${System.getProperty('user.home')}/.grails/${ian}-config${clc}.groovy")
@@ -130,8 +134,8 @@ class ConfigUtils {
     // -- check --
 
     static void checkConfig() {
-        println ": --------------------------------------------->"
-        println ": ConfigUtils.checkConfig()"
+        static_logger.info('ConfigUtils - checkConfig')
+
         println ": --------------------------------------------->"
 
         getActivateTestJob(true)

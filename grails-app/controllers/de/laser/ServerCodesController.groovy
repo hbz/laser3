@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import grails.core.GrailsApplication
@@ -37,8 +38,8 @@ class ServerCodesController {
                     "URI: "     + request.forwardURI + nl +
                     "Zeitpunkt: " + DateUtils.getSDF_NoZ().format( new Date() ) + nl +
                     "System: "  + ConfigUtils.getLaserSystemId() + nl +
-                    "Branch: "  + grailsApplication.metadata['git.branch'] + nl +
-                    "Commit: "  + grailsApplication.metadata['git,commit.id'] + nl +
+                    "Branch: "  + AppUtils.getMeta('git.branch') + nl +
+                    "Commit: "  + AppUtils.getMeta('git.commit.id') + nl +
                     "Class: "   + (root?.class?.name ?: exception.class.name) + nl
 
             if (exception.message) {
