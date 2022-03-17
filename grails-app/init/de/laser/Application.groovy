@@ -1,4 +1,4 @@
-package laser3
+package de.laser
 
 import de.laser.helper.ConfigUtils
 import grails.boot.GrailsApp

@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.helper.AjaxUtils
-import de.laser.helper.ServerUtils
+import de.laser.helper.AppUtils
 import org.grails.io.support.GrailsResourceUtils
 
 class LaserAssetsTagLib {
@@ -23,7 +23,7 @@ class LaserAssetsTagLib {
         else {
             Map<String, Object> map = [:]
 
-            if (ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD) {
+            if (AppUtils.getCurrentServer() != AppUtils.PROD) {
                 if (attrs.file) {
                     map = [file: GrailsResourceUtils.getPathFromBaseDir(attrs.file)]
                 }

@@ -6,7 +6,6 @@ import de.laser.auth.UserOrg
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
@@ -182,7 +181,7 @@ class InstAdmService {
      */
     void sendMail(User user, String subj, String view, Map model) {
 
-        if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_LOCAL) {
+        if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
             println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }

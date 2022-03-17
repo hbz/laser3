@@ -1,4 +1,4 @@
-import de.laser.helper.ServerUtils
+import de.laser.helper.AppUtils
 
 databaseChangeLog = {
 
@@ -51,7 +51,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1621490825895-6") {
         grailsChange {
             change {
-                if(ServerUtils.getCurrentServer() != ServerUtils.SERVER_QA) {
+                if(AppUtils.getCurrentServer() != AppUtils.QA) {
                     sql.execute("insert into alternative_name (altname_version, altname_org_fk, altname_name, altname_date_created, altname_last_updated, altname_last_updated_cascading) values " +
                         "(1,(select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0'),(select org_name from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7'),now(),now(),now()), " +
                         "(1,(select org_id from org where org_guid = 'org:d6c20e58-36ba-4f6f-b4c6-acbb081cbec9'),(select org_name from org where org_guid = 'org:7b8f92b0-d823-4025-8e86-fa03982d6c13'),now(),now(),now()), " +
@@ -262,7 +262,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1621490825895-20") {
         grailsChange {
             change {
-                if(ServerUtils.getCurrentServer() != ServerUtils.SERVER_QA) {
+                if(AppUtils.getCurrentServer() != AppUtils.SERVER_QA) {
                     sql.execute("delete from org as o where not exists (select org_id from org_type where org_id = o.org_id) and not exists (select us_id from user_setting where o.org_id = us_org_fk);")
                 }
             }

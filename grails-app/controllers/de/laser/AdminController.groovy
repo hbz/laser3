@@ -17,7 +17,6 @@ import de.laser.api.v0.ApiToolkit
  
 import de.laser.exceptions.CleanupException
 import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
@@ -541,7 +540,7 @@ class AdminController  {
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     def updateQASubscriptionDates() {
-        if (ServerUtils.getCurrentServer() in [ServerUtils.SERVER_QA, ServerUtils.SERVER_LOCAL]) {
+        if (AppUtils.getCurrentServer() in [AppUtils.QA, AppUtils.LOCAL]) {
             def updateReport = statusUpdateService.updateQASubscriptionDates()
             if(updateReport instanceof Boolean)
                 flash.message = message(code:'subscription.qaTestDateUpdate.success')

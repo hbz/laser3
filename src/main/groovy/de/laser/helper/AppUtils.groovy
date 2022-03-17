@@ -1,11 +1,44 @@
 package de.laser.helper
 
+import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
 
 class AppUtils {
 
-    // --
+    public static final PROD    = 'PROD'
+    public static final QA      = 'QA'
+    public static final DEV     = 'DEV'
+    public static final LOCAL   = 'LOCAL'
+
+    // -- Server
+
+    static String getCurrentServer() {
+        // laserSystemId mapping for runtime check; do not delete
+
+        if (! Environment.isDevelopmentMode()) {
+
+            switch (ConfigUtils.getLaserSystemId()) {
+                case 'LAS:eR-Dev':
+                case 'LAS:eR-Dev @ Grails3': // TODO - remove
+                case 'LAS:eR-Dev @ Grails4': // TODO - remove
+                    return DEV
+                    break
+                case 'LAS:eR-QA/Stage':
+                case 'LAS:eR-QA/Stage @ Grails3': // TODO - remove
+                case 'LAS:eR-QA/Stage @ Grails4': // TODO - remove
+                    return QA
+                    break
+                case 'LAS:eR-Productive':
+                    return PROD
+                    break
+            }
+        }
+
+        return LOCAL
+    }
+
+    // -- App
 
     static String getMeta(String token) {
         Holders.grailsApplication.metadata[ token ] ?: token
@@ -17,7 +50,7 @@ class AppUtils {
         Holders.grailsApplication.config[ 'grails.plugin.' + token ] ?: null
     }
 
-    // --
+    // -- DC
 
     static GrailsClass getDomainClass(String qualifiedName) {
         // fallback

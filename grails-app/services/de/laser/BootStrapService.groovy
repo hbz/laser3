@@ -5,7 +5,6 @@ import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
-import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
@@ -50,7 +49,7 @@ class BootStrapService {
         log.info("--------------------------------------------------------------------------------")
 
         log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
-        log.info("Server: ${ServerUtils.getCurrentServer()}")
+        log.info("Server: ${AppUtils.getCurrentServer()}")
         log.info("Database: ${AppUtils.getConfig('dataSource.url')}")
         log.info("Database datasource dbCreate: ${AppUtils.getConfig('dataSource.dbCreate')}")
         log.info("Database migration plugin updateOnStart: ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}")
@@ -250,7 +249,7 @@ class BootStrapService {
      */
     void setupAdminUsers() {
 
-        if (ServerUtils.getCurrentServer() == ServerUtils.SERVER_QA) {
+        if (AppUtils.getCurrentServer() == AppUtils.QA) {
             log.debug("check if all user accounts are existing on QA ...")
 
             Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
@@ -444,7 +443,7 @@ class BootStrapService {
     void updatePsqlRoutines() {
 
         try {
-            def folder = this.class.classLoader.getResource('functions')
+            URL folder = this.class.classLoader.getResource('functions')
             File dir = new File(folder.file)
 
             if (dir.exists()) {

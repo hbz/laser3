@@ -3,10 +3,10 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
 import de.laser.system.SystemEvent
 import de.laser.helper.SqlDateUtils
 import grails.plugins.mail.MailService
@@ -212,8 +212,8 @@ class DashboardDueDatesService {
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
-        String currentServer = ServerUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+        String currentServer = AppUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);

@@ -3,7 +3,6 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
-import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
@@ -25,7 +24,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 /**
@@ -662,8 +660,8 @@ class SurveyService {
                     User user = userOrg.user
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
-                    String currentServer = ServerUtils.getCurrentServer()
-                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+                    String currentServer = AppUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
 
                         try {
@@ -736,8 +734,8 @@ class SurveyService {
                     User user = userOrg.user
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
-                    String currentServer = ServerUtils.getCurrentServer()
-                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+                    String currentServer = AppUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
 
                     String subjectText
                     Object[] args = [surveyInfo.name]
@@ -1025,8 +1023,8 @@ class SurveyService {
         }else {
 
             String emailReceiver = user.getEmail()
-            String currentServer = ServerUtils.getCurrentServer()
-            String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+            String currentServer = AppUtils.getCurrentServer()
+            String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
 
             surveyEntries.each { survey ->
                 try {

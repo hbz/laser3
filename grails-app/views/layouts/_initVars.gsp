@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemTicket; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ServerUtils; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.system.SystemTicket; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
 <%@ page import="org.grails.web.util.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
 <laser:serviceInjection />
@@ -7,7 +7,7 @@
     // -- part 1
     // -- set in semanticUI.gsp (scope: page)
 
-    currentServer   = ServerUtils.getCurrentServer()
+    currentServer   = AppUtils.getCurrentServer()
     currentUser     = contextService.getUser()
     currentLang     = 'de'
     currentTheme    = 'laser'

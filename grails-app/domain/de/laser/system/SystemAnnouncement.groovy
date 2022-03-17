@@ -8,7 +8,6 @@ import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
 
@@ -171,8 +170,8 @@ class SystemAnnouncement {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 
-        String currentServer = ServerUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+        String currentServer = AppUtils.getCurrentServer()
+        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES

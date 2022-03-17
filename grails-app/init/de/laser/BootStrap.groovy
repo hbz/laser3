@@ -1,4 +1,4 @@
-package laser3
+package de.laser
 
 import javax.servlet.http.HttpServletRequest
 

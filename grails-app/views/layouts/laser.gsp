@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -35,13 +35,13 @@
 
 <body class="${controllerName}_${actionName}">
 
-    <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
+    <g:if test="${currentServer == AppUtils.LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
     </g:if>
-    <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
+    <g:if test="${currentServer == AppUtils.DEV}">
         <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
     </g:if>
-    <g:if test="${currentServer == ServerUtils.SERVER_QA}">
+    <g:if test="${currentServer == AppUtils.QA}">
         <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
 
@@ -778,7 +778,7 @@
             $(document).ready(function() {
                 sys.profiler("${ ProfilerUtils.generateKey( webRequest )}");
 
-                <g:if test="${ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD}">
+                <g:if test="${AppUtils.getCurrentServer() != AppUtils.PROD}">
                     jsqtk.go();
                     console.log('[ JSPC ]:', JSPC);
                 </g:if>

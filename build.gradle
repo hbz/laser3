@@ -160,6 +160,10 @@ dependencies {
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
 
+springBoot {
+    mainClassName = 'de.laser.Application'
+}
+
 bootRun {
     ignoreExitValue true
     jvmArgs(

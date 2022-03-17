@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ServerUtils" %>
+<%@ page import="de.laser.helper.AppUtils" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -57,7 +57,7 @@
     </div>
 </g:if>
 
-<g:if test="${ServerUtils.getCurrentServer() == ServerUtils.SERVER_DEV}">
+<g:if test="${AppUtils.getCurrentServer() == AppUtils.DEV}">
     <g:renderException exception="${exception}"/>
 </g:if>
 <g:elseif env="development">

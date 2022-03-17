@@ -3,14 +3,11 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
 import de.laser.helper.AppUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
-import org.apache.commons.lang.RandomStringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -217,7 +214,7 @@ class OrganisationService {
      * Creates a bunch of (now empty; initially, also a hard-coded test data set was defined as well!) organisations with a set of users assigned to it
      */
     void createOrgsFromScratch() {
-        String currentServer = ServerUtils.getCurrentServer()
+        String currentServer = AppUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
                                           vollnutzer:Role.findByAuthority('ORG_INST'),
                                           konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
@@ -240,7 +237,7 @@ class OrganisationService {
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer == ServerUtils.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
+        if(currentServer == AppUtils.QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          vollnutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
                                          konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
@@ -272,7 +269,7 @@ class OrganisationService {
                 userService.setupAdminAccounts(orgMap)
             }
         }
-        else if(currentServer == ServerUtils.SERVER_DEV) {
+        else if(currentServer == AppUtils.DEV) {
             userService.setupAdminAccounts([konsortium:hbz])
         }
     }
