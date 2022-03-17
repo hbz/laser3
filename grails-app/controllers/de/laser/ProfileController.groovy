@@ -5,7 +5,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
-import de.laser.helper.EhcacheWrapper
 import de.laser.helper.PasswordUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -617,7 +616,7 @@ class ProfileController {
         User user = contextService.getUser()
         flash.message = ""
 
-        if (passwordEncoder.isPasswordValid(user.password, params.password_current, null)) {
+        if (passwordEncoder.matches(params.password_current, user.password)) {
 
             if (PasswordUtils.isUserPasswordValid(params.password_new)) {
                 user.password = params.password_new

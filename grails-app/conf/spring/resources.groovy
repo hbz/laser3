@@ -1,6 +1,7 @@
 package spring
 
 import de.laser.custom.CustomMigrationCallbacks
+import de.laser.custom.CustomPasswordEncoderFactories
 import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
@@ -75,8 +76,13 @@ beans = {
 
     securityContextPersistenceFilter( SecurityContextPersistenceFilter )
 
-    // [ wkhtmltopdf ..
+    // [ password fallback ..
+    passwordEncoder(CustomPasswordEncoderFactories) { bean ->
+        bean.factoryMethod = "createDelegatingPasswordEncoder"
+    }
+    // .. ]
 
+    // [ wkhtmltopdf ..
     wkhtmltoxService( CustomWkhtmltoxService ) {
         grailsApplication = ref('grailsApplication')
         mailMessageContentRenderer = ref('mailMessageContentRenderer')

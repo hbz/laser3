@@ -131,10 +131,10 @@ grails:
                 userDomainClassName: 'de.laser.auth.User'
                 usernamePropertyName: 'username'
                 authorityJoinClassName: 'de.laser.auth.UserRole'
-            password:
-                algorithm: 'SHA-256'
-                hash:
-                    iterations: 1
+#            password:
+#                algorithm: 'SHA-256'
+#                hash:
+#                    iterations: 1
             successHandler:
                 alwaysUseDefault: false
                 defaultTargetUrl: '/home/index'
