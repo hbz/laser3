@@ -110,7 +110,7 @@ grails:
             htmlcodec: xml
             codecs:
                 expression: html
-                scriptlet: none # // TODO: html
+                scriptlet: none # fallback // TODO: html
                 taglib: none
                 staticparts: none
 
@@ -173,6 +173,7 @@ grails:
 
 ---
 hibernate:
+    allow_update_outside_transaction: true # fallback // TODO: html
     cache:
         default_schema: 'public'
         queries: false

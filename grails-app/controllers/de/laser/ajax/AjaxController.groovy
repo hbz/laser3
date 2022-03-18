@@ -16,6 +16,8 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
@@ -1796,36 +1798,62 @@ class AjaxController {
     GrailsClass domain_class = AppUtils.getDomainClass( params.__newObjectClass )
     if ( domain_class ) {
 
-      if ( contextObj ) {
-        // log.debug("Create a new instance of ${params.__newObjectClass}");
+        if ( contextObj ) {
+            log.debug("Create a new instance of ${params.__newObjectClass}")
 
-        def new_obj = domain_class.getClazz().newInstance();
+            def new_obj = domain_class.getClazz().newInstance();
+            PersistentEntity new_obj_pe = grailsApplication.mappingContext.getPersistentEntity(domain_class.getClazz().name)
 
-        domain_class.getPersistentProperties().each { p -> // list of GrailsDomainClassProperty
-          // log.debug("${p.name} (assoc=${p.isAssociation()}) (oneToMany=${p.isOneToMany()}) (ManyToOne=${p.isManyToOne()}) (OneToOne=${p.isOneToOne()})");
-          if ( params[p.name] ) {
-            if ( p.isAssociation() ) {
-              if ( p.isManyToOne() || p.isOneToOne() ) {
-                // Set ref property
-                // log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}");
-                // if ( key == __new__ then we need to create a new instance )
-                def new_assoc = resolveOID2(params[p.name])
-                if(new_assoc){
-                  new_obj[p.name] = new_assoc
+            new_obj_pe.persistentProperties.each { p ->
+                if ( params[p.name] ) {
+                    log.debug("set simple prop ${p.name} = ${params[p.name]}")
+                    new_obj[p.name] = params[p.name]
                 }
-              }
-              else {
-                // Add to collection
-                // log.debug("add to collection ${p.name} for OID ${params[p.name]}");
-                new_obj[p.name].add(resolveOID2(params[p.name]))
-              }
             }
-            else {
-              // log.debug("Set simple prop ${p.name} = ${params[p.name]}");
-              new_obj[p.name] = params[p.name]
+            new_obj_pe.associations.each { p ->
+                if ( params[p.name] ) {
+                    if ( p.toString().startsWith('one-to-one:') || p.toString().startsWith('many-to-one:') ) { // TODO -- implementation
+                        // Set ref property
+                        log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}")
+                        // if ( key == __new__ then we need to create a new instance )
+                        def new_assoc = resolveOID2(params[p.name])
+                        if (new_assoc){
+                            new_obj[p.name] = new_assoc
+                        }
+                    }
+                    else {
+                        // Add to collection
+                        log.debug("add to collection ${p.name} for OID ${params[p.name]}")
+                        new_obj[p.name].add(resolveOID2(params[p.name]))
+                    }
+                }
             }
-          }
-        }
+
+//        domain_class.getPersistentProperties().each { p -> // list of GrailsDomainClassProperty
+//          // log.debug("${p.name} (assoc=${p.isAssociation()}) (oneToMany=${p.isOneToMany()}) (ManyToOne=${p.isManyToOne()}) (OneToOne=${p.isOneToOne()})");
+//          if ( params[p.name] ) {
+//            if ( p.isAssociation() ) {
+//              if ( p.isManyToOne() || p.isOneToOne() ) {
+//                // Set ref property
+//                // log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}");
+//                // if ( key == __new__ then we need to create a new instance )
+//                def new_assoc = resolveOID2(params[p.name])
+//                if(new_assoc){
+//                  new_obj[p.name] = new_assoc
+//                }
+//              }
+//              else {
+//                // Add to collection
+//                // log.debug("add to collection ${p.name} for OID ${params[p.name]}");
+//                new_obj[p.name].add(resolveOID2(params[p.name]))
+//              }
+//            }
+//            else {
+//              // log.debug("Set simple prop ${p.name} = ${params[p.name]}");
+//              new_obj[p.name] = params[p.name]
+//            }
+//          }
+//        }
 
         if ( params.__recip ) {
           // log.debug("Set reciprocal property ${params.__recip} to ${contextObj}");

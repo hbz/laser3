@@ -1,3 +1,4 @@
+
 // ---[ build
 
 buildscript {
@@ -146,7 +147,6 @@ dependencies {
     compile 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
 
     // other stuff
-    // compile 'ch.qos.logback:logback-classic:1.2.10'
     compile 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
     compile 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
     compile 'gov.loc:bagit:4.12.3'                              // from 4.0 : 5.x available
@@ -235,10 +235,12 @@ assets {
 
 // ---[ gradle tasks
 
-tasks.register('devtoolsRestart', Exec) {
-    group = 'laser'
-    workingDir ='./grails-app/conf/spring'
-    commandLine = ['touch', 'restart.trigger']
-    println "${workingDir} -> ${commandLine}"
+task( 'devtools.restart', group: 'laser', type: Exec ) {
+    workingDir './grails-app/conf/spring'
+    commandLine 'touch', 'restart.trigger'
 }
 
+task( 'dbm.gorm-diff', group: 'laser', type: Exec ) {
+    executable 'sh'
+    args '-c', System.getProperty('GRAILS_HOME') + '/bin/grails prod dbm-gorm-diff changelog-' + (java.time.LocalDate.now()).format('yyyy-MM-dd') + '.groovy --add'
+}
