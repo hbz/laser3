@@ -3,6 +3,7 @@ package de.laser
 
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PackageService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
@@ -15,7 +16,9 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.mvc.FlashScope
+import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
@@ -45,6 +48,7 @@ class CopyElementsService {
     FormService formService
     LicenseService licenseService
     CompareService compareService
+    PackageService packageService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -276,7 +280,7 @@ class CopyElementsService {
     void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         targetObject.refresh()
-        List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject)
+        List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
         subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
             Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
@@ -400,7 +404,12 @@ class CopyElementsService {
                     }
                 }
                 if (subMember.issueEntitlements && targetObject.issueEntitlements) {
-                    subMember.issueEntitlements?.each { ie ->
+                    memberHoldingsToTransfer << newSubscription
+                    //def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+                    //Sql sql = new Sql(dataSource)
+                    //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+                    //packageService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
+                    /*subMember.issueEntitlements?.each { ie ->
                         if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                             def ieProperties = ie.properties
                             ieProperties.globalUID = null
@@ -431,7 +440,7 @@ class CopyElementsService {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
 
                 //OrgRole
@@ -455,6 +464,11 @@ class CopyElementsService {
                     }
                 }
 //                }
+            }
+        }
+        if(memberHoldingsToTransfer) {
+            targetObject.packages.each { SubscriptionPackage targetPkg ->
+                subscriptionService.addToMemberSubscription(targetObject, memberHoldingsToTransfer, targetPkg.pkg, true)
             }
         }
     }
@@ -833,9 +847,9 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            if(!bulkOperationRunning) {
-                bulkOperationRunning = true
-                executorService.execute({
+            //if(!bulkOperationRunning) {
+                //bulkOperationRunning = true
+                //executorService.execute({
                     try {
                         Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
                         if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
@@ -873,9 +887,9 @@ class CopyElementsService {
                     catch (Exception e) {
                         e.printStackTrace()
                     }
-                    bulkOperationRunning = false
-                })
-            }
+                    //bulkOperationRunning = false
+                //})
+            //}
 
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }
@@ -1516,6 +1530,11 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
+                    def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+                    Sql sql = new Sql(dataSource)
+                    List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
+                    packageService.bulkAddHolding(sql, targetObject.id, subscriptionHolding, targetObject.hasPerpetualAccess)
+                    /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
                             //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
@@ -1555,6 +1574,7 @@ class CopyElementsService {
                             }
                         }
                     }
+                     */
                 }
             }
         }

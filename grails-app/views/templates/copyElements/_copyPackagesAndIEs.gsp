@@ -393,7 +393,7 @@
         </g:elseif>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
-                <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
+                <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
                 <input type="submit" id="copyElementsSubmit" class="ui button js-click-control"
                        data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"

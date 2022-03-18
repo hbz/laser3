@@ -5,6 +5,7 @@ import de.laser.IssueEntitlement
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
+import de.laser.finance.PriceItem
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
@@ -106,73 +107,80 @@ class PackageService {
      */
     void bulkAddHolding(Sql sql, Long subId, List<GroovyRowResult> packageTitles, boolean hasPerpetualAccess) {
         Calendar now = GregorianCalendar.getInstance()
-        sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) values " +
-                "(:version, :dateCreated, :lastUpdated, :subscription, :tipp, :accessStartDate, :accessEndDate, :reason, :medium, :status, :acceptStatus, :name, :sortname, :perpetualAccess)") { stmt ->
-            packageTitles.each { GroovyRowResult tippB ->
-                Map configMap = [
+        Map<String, List<Map>> configMaps = ['titles':[], 'coverages': [], 'prices': []]
+        packageTitles.each { GroovyRowResult tippB ->
+            Map titleMap = [
+                    version: 0,
+                    dateCreated: new Timestamp(now.getTimeInMillis()),
+                    lastUpdated: new Timestamp(now.getTimeInMillis()),
+                    subscription: subId,
+                    tipp: tippB['tipp_id'],
+                    accessStartDate: tippB['tipp_access_start_date'],
+                    accessEndDate: tippB['tipp_access_end_date'],
+                    reason: 'manually added by user',
+                    medium: tippB['tipp_medium_rv_fk'],
+                    status: tippB['tipp_status_rv_fk'],
+                    acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id,
+                    name: tippB['tipp_name'],
+                    sortname: escapeService.generateSortTitle(tippB['tipp_name']),
+                    perpetualAccess: hasPerpetualAccess ? subId : null
+            ]
+            configMaps.titles << titleMap
+            List missingTippCoverages = sql.rows("select * from tippcoverage where tc_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
+            missingTippCoverages.each { GroovyRowResult covB ->
+                Map coverageMap = [
                         version: 0,
+                        startDate: covB['tc_start_date'],
+                        startVolume: covB['tc_start_volume'],
+                        startIssue: covB['tc_start_issue'],
+                        endDate: covB['tc_end_date'],
+                        endVolume: covB['tc_end_volume'],
+                        endIssue: covB['tc_end_issue'],
+                        coverageDepth: covB['tc_coverage_depth'],
+                        coverageNote: covB['tc_coverage_note'],
+                        embargo: covB['tc_embargo'],
+                        tipp: tippB['tipp_id'],
+                        subId: subId,
+                        current: RDStore.TIPP_STATUS_CURRENT.id
+                ]
+                configMaps.coverages << coverageMap
+            }
+            List missingTippPrices = sql.rows("select * from price_item where pi_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
+            missingTippPrices.each { GroovyRowResult piB ->
+                Map priceMap = [
+                        version: 0,
+                        tipp: tippB['tipp_id'],
+                        subId: subId,
+                        current: RDStore.TIPP_STATUS_CURRENT.id,
                         dateCreated: new Timestamp(now.getTimeInMillis()),
                         lastUpdated: new Timestamp(now.getTimeInMillis()),
-                        subscription: subId,
-                        tipp: tippB['tipp_id'],
-                        accessStartDate: tippB['tipp_access_start_date'],
-                        accessEndDate: tippB['tipp_access_end_date'],
-                        reason: 'manually added by user',
-                        medium: tippB['tipp_medium_rv_fk'],
-                        status: tippB['tipp_status_rv_fk'],
-                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id,
-                        name: tippB['tipp_name'],
-                        sortname: escapeService.generateSortTitle(tippB['tipp_name']),
-                        perpetualAccess: hasPerpetualAccess ? subId : null
+                        guid: PriceItem.class.name + ":" + UUID.randomUUID().toString(),
+                        listPrice: piB['pi_list_price'],
+                        listCurrency: piB['pi_list_currency_rv_fk']
                 ]
+                configMaps.prices << priceMap
+            }
+        }
+
+        sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) values " +
+                "(:version, :dateCreated, :lastUpdated, :subscription, :tipp, :accessStartDate, :accessEndDate, :reason, :medium, :status, :acceptStatus, :name, :sortname, :perpetualAccess)") { stmt ->
+            configMaps.titles.each { Map configMap ->
                 log.debug("adding new issue entitlement: ${configMap.toMapString()}")
                 stmt.addBatch(configMap)
             }
         }
         sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) values " +
-                "(:version, :issueEntitlement, :dateCreated, :lastUpdated, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :coverageDepth, :coverageNote, :embargo)") { stmt ->
-            packageTitles.each { GroovyRowResult tippB ->
-                List missingTippCoverages = sql.rows("select * from tippcoverage where tc_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
-                List issueEntitlement = sql.rows("select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current",[tipp: tippB['tipp_id'], subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
-                Long ieId = issueEntitlement.get(0)['ie_id']
-                missingTippCoverages.each { GroovyRowResult covB ->
-                    Map configMap = [
-                            version: 0,
-                            issueEntitlement: ieId,
-                            startDate: covB['tc_start_date'],
-                            startVolume: covB['tc_start_volume'],
-                            startIssue: covB['tc_start_issue'],
-                            endDate: covB['tc_end_date'],
-                            endVolume: covB['tc_end_volume'],
-                            endIssue: covB['tc_end_issue'],
-                            coverageDepth: covB['tc_coverage_depth'],
-                            coverageNote: covB['tc_coverage_note'],
-                            embargo: covB['tc_embargo']
-                    ]
-                    log.debug("adding new coverage: ${configMap.toMapString()}")
-                    stmt.addBatch(configMap)
-                }
+                "(:version, (select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current), :dateCreated, :lastUpdated, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :coverageDepth, :coverageNote, :embargo)") { stmt ->
+            configMaps.coverages.each { Map configMap ->
+                log.debug("adding new coverage: ${configMap.toMapString()}")
+                stmt.addBatch(configMap)
             }
         }
         sql.withBatch("insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) values " +
-                "(:version, :issueEntitlement, :dateCreated, :lastUpdated, :guid, :listCurrency, :listPrice)") { stmt ->
-            packageTitles.each { GroovyRowResult tippB ->
-                List missingTippPrices = sql.rows("select * from price_item where pi_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
-                List issueEntitlement = sql.rows("select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current",[tipp: tippB['tipp_id'], subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
-                Long ieId = issueEntitlement.get(0)['ie_id']
-                missingTippPrices.each { GroovyRowResult piB ->
-                    Map configMap = [
-                            version: 0,
-                            issueEntitlement: ieId,
-                            dateCreated: new Timestamp(now.getTimeInMillis()),
-                            lastUpdated: new Timestamp(now.getTimeInMillis()),
-                            guid: IssueEntitlement.class.name + ":" + UUID.randomUUID().toString(),
-                            listPrice: piB['pi_list_price'],
-                            listCurrency: piB['pi_list_currency_rv_fk']
-                    ]
-                    log.debug("adding new price item: ${configMap.toMapString()}")
-                    stmt.addBatch(configMap)
-                }
+                "(:version, (select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current), :dateCreated, :lastUpdated, :guid, :listCurrency, :listPrice)") { stmt ->
+            configMaps.prices.each { Map configMap ->
+                log.debug("adding new price item: ${configMap.toMapString()}")
+                stmt.addBatch(configMap)
             }
         }
     }
