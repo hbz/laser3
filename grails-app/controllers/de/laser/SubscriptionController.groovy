@@ -1429,6 +1429,7 @@ class SubscriptionController {
                 flash.error = ctrlResult.result.error
                 if(ctrlResult.result.newSub)
                     ctrlResult.result.newSub
+                redirect action: 'renewSubscription', params: [id: ctrlResult.result.subscription.id]
             }
         }
         else {

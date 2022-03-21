@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      16.03.2022  dev     2.3         Andreas Bug         falscher Umgang mit Fehler bei manueller Lizenzverlängerung
+
 4162    15.03.2022  dev     2.3         Andreas Bug         Brücke bei Umfragemerkmalen eingebaut
 
 --      15.03.2022  rc-2.2  2.2.12      Andreas Bug         Abfragefehler im Lizenzlistenendpunkt behoben
