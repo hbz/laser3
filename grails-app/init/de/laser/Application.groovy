@@ -22,12 +22,14 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
         File externalConfig = ConfigUtils.getConfigFile(environment)
 
         if (externalConfig.exists()) {
-            static_logger.info("-----> Found local configuration file: ${externalConfig.absolutePath} <-----")
+            static_logger.info("| ----->")
+            static_logger.info("| -----> Found local configuration file: ${externalConfig.absolutePath} <-----")
+            static_logger.info("| ----->")
             ConfigObject config = new ConfigSlurper().parse(externalConfig.toURI().toURL())
             environment.propertySources.addFirst(new MapPropertySource('externalGroovyConfig', config))
         }
         else {
-            static_logger.warn("-----> Local configuration file NOT found: ${externalConfig.absolutePath} <-----")
+            static_logger.warn("| -----> Local configuration file NOT found: ${externalConfig.absolutePath} <-----")
         }
     }
 }
