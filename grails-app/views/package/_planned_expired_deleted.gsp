@@ -98,7 +98,6 @@
                     model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
       </div>
   </div>
-  </div>
 
   <g:if test="${titlesList}">
       <semui:paginate action="${actionName}" controller="package" params="${params}"
@@ -107,8 +106,10 @@
   </g:if>
 
 
-    <g:render template="/templates/orgLinksModal"
+  <%-- <g:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+    // TODO -- no usage found
+  --%>
 
     <laser:script file="${this.getGroovyPageFileName()}">
       JSPC.app.selectAll = function () {

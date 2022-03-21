@@ -235,9 +235,9 @@ assets {
 
 // ---[ gradle tasks
 
-task( 'devtools.triggerRestart', group: 'laser', type: Copy ) {
-    from './grails-app/conf/spring/restart.trigger'
-    into './grails-app/conf/spring/'
+task( 'devtools.triggerRestart', group: 'laser', type: Exec ) {
+    workingDir './grails-app/conf/spring'
+    commandLine 'touch', 'restart.trigger'
 }
 
 task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {

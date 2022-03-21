@@ -50,12 +50,12 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
-                clos:{ value ->
+                onameClosure: { value ->
                     String result = '%'
                     if ( value && ( value.length() > 0 ) )
                         result = "%${value.trim().toLowerCase()}%"
@@ -89,12 +89,12 @@ class AjaxController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?)",
-            rowQry:"select o from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
+            countQry:"select count(o) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            rowQry:"select o from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
-                            clos:{ value ->
+                            onameClosure: { value ->
                                 String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
@@ -107,12 +107,12 @@ class AjaxController {
     ],
     "CommercialOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?)",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
-                            clos:{ value ->
+                            onameClosure: { value ->
                                 String result = '%'
                                 if ( value && ( value.length() > 0 ) )
                                     result = "%${value.trim().toLowerCase()}%"
@@ -129,6 +129,7 @@ class AjaxController {
      * Test call
      * @return the string 'test()'
      */
+    @Secured(['ROLE_USER'])
     def test() {
         render 'test()'
     }
@@ -137,6 +138,7 @@ class AjaxController {
      * Renders the given dialog message template
      * @return the template responding the given parameter
      */
+    @Secured(['ROLE_USER'])
     def genericDialogMessage() {
 
         if (params.template) {
@@ -151,6 +153,7 @@ class AjaxController {
      * Updates the user session cache for the given cache map key (formed by a key prefix and an uri) with the given value
      * @return void (an empty map)
      */
+    @Secured(['ROLE_USER'])
     def updateSessionCache() {
         if (contextService.getUser()) {
             SessionCacheWrapper cache = contextService.getSessionCache()
@@ -275,53 +278,25 @@ class AjaxController {
     }
 
   @Deprecated
-  def refdataSearch() {
+  @Secured(['ROLE_USER'])
+  def refdataAllOrgs() {
       // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
 
-    //log.debug("refdataSearch params: ${params}");
-    
     Map<String, Object> result = [:]
     //we call toString in case we got a GString
-    def config = refdata_config.get(params.id?.toString())
-
-    if ( config == null ) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-        // If we werent able to locate a specific config override, assume the ID is just a refdata key
-      config = [
-        domain:'RefdataValue',
-        countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${params.id}'",
-        rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${params.id}' order by rdv.order, rdv.value_" + locale,
-        qryParams:[],
-        cols:['value'],
-        format:'simple'
-      ]
-    }
+    Map config = refdata_config.get('allOrgs')
 
     if ( config ) {
-
       // result.config = config
-
-      def query_params = []
-      config.qryParams.each { qp ->
-        log.debug("Processing query param ${qp} value will be ${params[qp.param]}");
-        if ( qp.clos ) {
-          query_params.add(qp.clos(params[qp.param]?:''));
-        }
-        else {
-          query_params.add(params[qp.param]);
-        }
-      }
-
-        if (config.domain == 'Org') {
-            // new added param for org queries in this->refdata_config
-            query_params.add(RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS))
+        Map<String, Object> query_params = [:]
+        config.qryParams.each { qp ->
+            log.debug("Processing query param ${qp} value will be ${params[qp.param]}");
+            if ( qp.onameClosure ) {
+                query_params.putAt('oname', qp.onameClosure(params[qp.param]?:''));
+            }
         }
 
-        //log.debug("Row qry: ${config.rowQry}");
-        //log.debug("Params: ${query_params}");
-        //log.debug("Count qry: ${config.countQry}");
-
-      def cq = Org.executeQuery(config.countQry,query_params);    
+      def cq = Org.executeQuery(config.countQry,query_params);
 
       def rq = Org.executeQuery(config.rowQry,
                                 query_params,
@@ -332,7 +307,7 @@ class AjaxController {
         result.sEcho = params.sEcho
         result.iTotalRecords = cq[0]
         result.iTotalDisplayRecords = cq[0]
-    
+
         rq.each { it ->
           def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
           int ctr = 0;
@@ -393,17 +368,17 @@ class AjaxController {
 
     if ( config ) {
 
-      List query_params = []
+      Map<String, Object> query_params = [:]
       config.qryParams.each { qp ->
-        if ( qp?.clos) {
-          query_params.add(qp.clos(params[qp.param]?:''));
+        if ( qp.onameClosure) {
+          query_params.putAt('oname', qp.onameClosure(params[qp.param]?:''));
         }
-        else if(qp?.value) {
-            params."${qp.param}" = qp?.value
+        else if( qp.value ) {
+            params."${qp.param}" = qp.value
         }
-        else {
-          query_params.add(params[qp.param]);
-        }
+//        else {
+//          query_params.add(params[qp.param]);
+//        }
       }
 
       def cq = RefdataValue.executeQuery(config.countQry,query_params);
@@ -1894,6 +1869,7 @@ class AjaxController {
      * @param oid the oid key to resolve
      * @return the object matching to the given oid, null otherwise
      */
+    @Secured(['ROLE_USER'])
   def resolveOID2(String oid) {
     String[] oid_components = oid.split(':')
     def result

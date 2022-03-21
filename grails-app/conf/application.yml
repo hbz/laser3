@@ -173,14 +173,17 @@ grails:
 
 ---
 hibernate:
-    allow_update_outside_transaction: true # fallback // TODO: html
+    allow_update_outside_transaction: true # fallback // TODO: hibernate 5.1 behavior
     cache:
         default_schema: 'public'
+        ehcache:
+            missing_cache_strategy: 'create'
         queries: false
         use_second_level_cache: true
         use_query_cache: false
-        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
-        #region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory # jcache instead of ehcache
+        region:
+            factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+            #factory_class: org.hibernate.cache.jcache.JCacheRegionFactory # jcache instead of ehcache
 
 dataSource:
     pooled: true

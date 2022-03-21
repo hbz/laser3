@@ -55,7 +55,7 @@
     $('#add_org_head_row').empty()
 
         JSPC.app.oOrTable = $('#org_role_tab').dataTable( {
-            "ajax": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
+            "ajax": "<g:createLink controller="ajax" action="refdataAllOrgs" params="${[format:'json']}"/>",
             "scrollY":          '25vh',
             "scrollCollapse":   false,
             "paging":           false,
