@@ -14,10 +14,12 @@ class ConfigUtils {
 
     static File getConfigFile(Environment environment) {
         Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
-        String ian = sysProps.get('info.app.name')
-        String clc = sysProps.get('custom.local.config') ? ('-' + sysProps.get('custom.local.config')) : ''
 
-        new File("${System.getProperty('user.home')}/.grails/${ian}-config${clc}.groovy")
+        String appName = sysProps.get('info.app.name') ?: environment.getProperty('info.app.name') // TODO : fallback - database migration plugin
+//        String lcf = sysProps.get('local.config.flag') ?: environment.getProperty('local.config.flag') ?: ''
+//        if (lcf) { lcf = '-' + lcf }
+//        new File("${System.getProperty('user.home')}/.grails/${ian}-config${lcf}.groovy")
+        new File("${System.getProperty('user.home')}/.grails/${appName}-config.groovy")
     }
 
     // -- comfortable --

@@ -7,6 +7,8 @@ import liquibase.changelog.ChangeSet
 import liquibase.changelog.RanChangeSet
 import liquibase.database.Database
 
+import java.text.SimpleDateFormat
+
 class CustomMigrationCallbacks {
 
 	def grailsApplication
@@ -29,7 +31,7 @@ class CustomMigrationCallbacks {
 			def dataSource = AppUtils.getConfig('dataSource')
 			URI uri = new URI(dataSource.url.substring(5))
 
-			String backupFile = ConfigUtils.getDeployBackupLocation() + "/laser-backup-${new Date().format('yyyy-MM-dd-HH:mm:ss')}.sql"
+			String backupFile = ConfigUtils.getDeployBackupLocation() + "/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
 
 			Map<String, String> config = [
 					dbname: "${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",

@@ -5,19 +5,19 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://repo.grails.org/grails/core' }
-    // https://github.com/n0mer/gradle-git-properties/issues/195
-    //TODO configurations.all {
-    //    resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
-    // }
+        // https://github.com/n0mer/gradle-git-properties/issues/195
+        //TODO configurations.all {
+        //    resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
+        //}
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath 'org.grails.plugins:hibernate5:7.0.5'
-        classpath 'org.grails.plugins:database-migration:4.0.0'         // from 3.0.3
+        classpath 'org.grails.plugins:database-migration:3.1.0'         // from 3.0.3
         // classpath 'gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0'    // -- nn --
         // https://github.com/bertramdev/asset-pipeline
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.3' // from 3.2.4
-        // TODO classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'
+        //TODO classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'
 
         // dependency resolving issue
         classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
@@ -34,7 +34,7 @@ apply plugin: 'org.grails.grails-web'
 // apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
 apply plugin: 'com.bertramlabs.asset-pipeline'
 apply plugin: 'org.grails.grails-gsp'
-// TODO apply plugin: 'com.gorylenko.gradle-git-properties'
+//TODO apply plugin: 'com.gorylenko.gradle-git-properties'
 
 // ---[ config
 
@@ -124,7 +124,7 @@ dependencies {
     compile 'org.grails.plugins:audit-logging:4.0.3'            // from 3.0.3
 
     // https://github.com/grails/grails-database-migration
-    compile 'org.grails.plugins:database-migration:4.0.0'       // from 3.0.3
+    compile 'org.grails.plugins:database-migration:3.1.0'       // from 3.0.3
 
     compile 'org.grails.plugins:grails-executor:0.4'
     compile 'org.grails.plugins:mail:3.0.0'                     // from 2.0.0
@@ -151,7 +151,7 @@ dependencies {
     compile 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
     compile 'gov.loc:bagit:4.12.3'                              // from 4.0 : 5.x available
     compile 'org.codehaus.gpars:gpars:1.2.1'
-    compile 'org.liquibase:liquibase-core:4.6.2'                // from 3.5.5 : + org.grails.plugins:database-migration
+    compile 'org.liquibase:liquibase-core:3.10.1'                // from 3.5.5 : + org.grails.plugins:database-migration
 
     runtime 'org.postgresql:postgresql:42.3.3'                  // from 42.3.0
 
@@ -235,12 +235,13 @@ assets {
 
 // ---[ gradle tasks
 
-task( 'devtools.restart', group: 'laser', type: Exec ) {
-    workingDir './grails-app/conf/spring'
-    commandLine 'touch', 'restart.trigger'
+task( 'devtools.triggerRestart', group: 'laser', type: Copy ) {
+    from './grails-app/conf/spring/restart.trigger'
+    into './grails-app/conf/spring/'
 }
 
-task( 'dbm.gorm-diff', group: 'laser', type: Exec ) {
+task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
+    String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
     executable 'sh'
-    args '-c', System.getProperty('GRAILS_HOME') + '/bin/grails prod dbm-gorm-diff changelog-' + (java.time.LocalDate.now()).format('yyyy-MM-dd') + '.groovy --add'
+    args '-c', grailsExe + ' prod dbm-gorm-diff changelog-' + java.time.LocalDate.now().format('yyyy-MM-dd') + '.groovy --add'
 }

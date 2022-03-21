@@ -9,13 +9,13 @@
 
     buildscript {
         dependencies {
-            classpath "org.grails.plugins:database-migration:4.0.0"
+            classpath "org.grails.plugins:database-migration:3.1.0"
         }
     }
     
     dependencies {
-        compile 'org.grails.plugins:database-migration:4.0.0'
-        compile 'org.liquibase:liquibase-core:4.6.2'
+        compile 'org.grails.plugins:database-migration:3.1.0'
+        compile 'org.liquibase:liquibase-core:3.10.1'
     }
 
     sourceSets {
