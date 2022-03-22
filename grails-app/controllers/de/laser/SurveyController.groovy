@@ -4511,15 +4511,30 @@ class SurveyController {
             }
         }
 
-        packagesToProcess.each { pkg ->
-            subscriptionService.addToMemberSubscription(result.parentSuccessorSubscription, result.newSubs, pkg, params.linkWithEntitlements == 'on')
-            /*result.newSubs.each { Subscription memberSub ->
-                    if (linkWithEntitlements) {
-                        subscriptionService.addToSubscriptionCurrentStock(memberSub, result.parentSuccessorSubscription, pkg)
-                    }
-                    else
-                        subscriptionService.addToSubscription(memberSub, pkg, false)
-            }*/
+        boolean bulkProcessRunning = false
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each {
+            if (it.name == 'PackageTransfer_'+result.parentSuccessorSubscription.id) {
+                bulkProcessRunning = true
+            }
+        }
+        if(!bulkProcessRunning) {
+            boolean withEntitlements = params.linkWithEntitlements == 'on'
+            executorService.execute({
+                Thread.currentThread().setName('PackageTransfer_'+result.parentSuccessorSubscription.id)
+                packagesToProcess.each { pkg ->
+                    subscriptionService.addToMemberSubscription(result.parentSuccessorSubscription, result.newSubs, pkg, withEntitlements)
+                    /*result.newSubs.each { Subscription memberSub ->
+                            if (linkWithEntitlements) {
+                                subscriptionService.addToSubscriptionCurrentStock(memberSub, result.parentSuccessorSubscription, pkg)
+                            }
+                            else
+                                subscriptionService.addToSubscription(memberSub, pkg, false)
+                    }*/
+                }
+            })
+            executorService.shutdown()
         }
 
         result.countNewSubs = countNewSubs

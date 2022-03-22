@@ -57,8 +57,6 @@ class CopyElementsService {
     static final String WORKFLOW_PROPERTIES = '4'
     static final String WORKFLOW_END = '6'
 
-    boolean bulkOperationRunning = false
-
     /**
      * Gets a list of base attributes for the given object type
      * @param obj the object type which should be copied
@@ -831,8 +829,14 @@ class CopyElementsService {
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
-            boolean isTargetSubChanged = false
-
+            boolean isTargetSubChanged = false, bulkOperationRunning = false
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each {
+                if (it.name == 'PackageTransfer_'+sourceObject.id) {
+                    bulkOperationRunning = true
+                }
+            }
             if (params.subscription?.deletePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
                     genericOIDService.resolveOID(it)
@@ -847,9 +851,8 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            //if(!bulkOperationRunning) {
-                //bulkOperationRunning = true
-                //executorService.execute({
+            if(!bulkOperationRunning) {
+                executorService.execute({
                     try {
                         Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
                         if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
@@ -887,9 +890,9 @@ class CopyElementsService {
                     catch (Exception e) {
                         e.printStackTrace()
                     }
-                    //bulkOperationRunning = false
-                //})
-            //}
+                })
+                executorService.shutdown()
+            }
 
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }

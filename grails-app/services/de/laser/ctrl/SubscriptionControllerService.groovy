@@ -1580,7 +1580,7 @@ class SubscriptionControllerService {
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each { Thread thread ->
-                if (thread.name == 'PackageSync_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                     bulkProcessRunning = true
                 }
@@ -1597,7 +1597,7 @@ class SubscriptionControllerService {
                 globalSourceSyncService.defineMapFields()
                 //to be deployed in parallel thread
                 executorService.execute({
-                    Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                    Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
