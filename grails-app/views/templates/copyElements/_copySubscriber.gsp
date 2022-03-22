@@ -126,9 +126,9 @@
             </table>
         </g:else>
 
-        <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
+        <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control"
+            <input id="copySubscriber" type="submit" class="ui button js-click-control"
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
         </tbody>
@@ -146,6 +146,10 @@
             var v = $(this).height();
             $("#firstTable .titleCell").eq(k).height(v);
         });
+
+    $("#copySubscriber").submit(function() {
+        $(this).disable();
+    });
 </laser:script>
 
 <style>

@@ -1063,6 +1063,7 @@ class SubscriptionControllerService {
                     excludes << 'freezeHolding'
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
+                    List<Subscription> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1132,19 +1133,22 @@ class SubscriptionControllerService {
 
                             memberSub.refresh()
 
-                            packagesToProcess.each { Package pkg ->
-                                if(params.linkWithEntitlements)
-                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                else
-                                    subscriptionService.addToSubscription(memberSub, pkg, false)
-                            }
-
                             licensesToProcess.each { License lic ->
                                 subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
-
+                            memberSubs << memberSub
                         }
                                 //}
+                    }
+
+                    packagesToProcess.each { Package pkg ->
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                        /*
+                        if()
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                        else
+                            subscriptionService.addToSubscription(memberSub, pkg, false)
+                        */
                     }
 
                     result.subscription.syncAllShares(synShareTargetList)
@@ -1572,14 +1576,16 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             Locale locale = LocaleContextHolder.getLocale()
+            boolean bulkProcessRunning = false
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each { Thread thread ->
                 if (thread.name == 'PackageSync_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
+                    bulkProcessRunning = true
                 }
             }
-            if(params.addUUID) {
+            if(params.addUUID && !bulkProcessRunning) {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
                 String addTypeChildren = params.addTypeChildren
@@ -1589,33 +1595,33 @@ class SubscriptionControllerService {
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
                 globalSourceSyncService.defineMapFields()
-                if(!Package.findByGokbId(pkgUUID)) {
-                    //to be deployed in parallel thread
-                    executorService.execute({
-                        Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                //to be deployed in parallel thread
+                executorService.execute({
+                    Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                    if(!Package.findByGokbId(pkgUUID)) {
                         try {
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
                             else {
-                                if(queryResult.records && queryResult.count > 0) {
-                                    if(queryResult.count > 5000)
-                                        globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
-                                    else
-                                        globalSourceSyncService.updateRecords(queryResult.records, 0)
-                                }
-                                else {
-                                    globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                Package.withNewTransaction {
+                                    if(queryResult.records && queryResult.count > 0) {
+                                        if(queryResult.count > 5000)
+                                            globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
+                                        else
+                                            globalSourceSyncService.updateRecords(queryResult.records, 0)
+                                    }
+                                    else {
+                                        globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                    }
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                                 if(addTypeChildren) {
-                                    Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
-                                    }
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -1624,19 +1630,17 @@ class SubscriptionControllerService {
                             log.error("sync job has failed, please consult stacktrace as follows: ")
                             e.printStackTrace()
                         }
-                    })
-                }
-                else {
-                    Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                    log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                    subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                    if(addTypeChildren) {
-                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
-                        }
                     }
-                    subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
-                }
+                    else {
+                        Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                        if(addTypeChildren) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                        }
+                        subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                    }
+                })
             }
 
             [result:result,status:STATUS_OK]

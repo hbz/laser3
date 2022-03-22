@@ -4511,18 +4511,16 @@ class SurveyController {
             }
         }
 
-        boolean linkWithEntitlements = params.linkWithEntitlements == 'on'
-        executorService.execute({
-            result.newSubs.each { Subscription memberSub ->
-                packagesToProcess.each { pkg ->
+        packagesToProcess.each { pkg ->
+            subscriptionService.addToMemberSubscription(result.parentSuccessorSubscription, result.newSubs, pkg, params.linkWithEntitlements == 'on')
+            /*result.newSubs.each { Subscription memberSub ->
                     if (linkWithEntitlements) {
                         subscriptionService.addToSubscriptionCurrentStock(memberSub, result.parentSuccessorSubscription, pkg)
                     }
                     else
                         subscriptionService.addToSubscription(memberSub, pkg, false)
-                }
-            }
-        })
+            }*/
+        }
 
         result.countNewSubs = countNewSubs
         if(result.newSubs) {
