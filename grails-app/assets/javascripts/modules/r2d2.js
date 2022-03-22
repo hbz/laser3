@@ -403,6 +403,7 @@ r2d2 = {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
 
         if (! ctxSel) { return null }
+        let confirmationModalXeditableFlag = false;
 
         //tooltip
         tooltip.init(ctxSel);
@@ -591,11 +592,8 @@ r2d2 = {
 
         // confirmation modal
         function _buildConfirmationModal(elem) {
+                var ajaxUrl = elem ? elem.getAttribute("data-confirm-messageUrl") : false;
 
-                //var $body = $('body');
-                //var $modal = $('#js-modal');
-                //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
-                var ajaxUrl = elem.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
                         url: ajaxUrl
@@ -611,12 +609,14 @@ r2d2 = {
                         })
                 }
 
-                var tokenMsg = elem.getAttribute("data-confirm-tokenMsg") ? elem.getAttribute("data-confirm-tokenMsg") : false;
+                var tokenMsg = elem ? elem.getAttribute("data-confirm-tokenMsg") : false;
                 tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
 
-                var dataAttr = elem.getAttribute("data-confirm-id")? elem.getAttribute("data-confirm-id")+'_form':false;
-                var how = elem.getAttribute("data-confirm-term-how") ? elem.getAttribute("data-confirm-term-how"):"delete";
-                var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
+                var dataAttr = elem ? elem.getAttribute("data-confirm-id")+'_form':false;
+                var how = elem ? elem.getAttribute("data-confirm-term-how"):"delete";
+                if (elem) {
+                    var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
+                }
                 var $jscb = $('#js-confirmation-button')
 
                 switch (how) {
@@ -693,6 +693,13 @@ r2d2 = {
                             if (remoteLink) {
                                 bb8.ajax4remoteLink(elem)
                             }
+                            // x-editable
+                            if (confirmationModalXeditableFlag == true) {
+                                $(document).on('click', '#js-confirmation-button', function(event) {
+                                    confirmationModalXeditableFlag = true;
+                                    $('button.editable-submit').click();
+                                });
+                            }
                             $('#js-confirmation-content-term').html('');
                         },
                         onDeny : function() {
@@ -700,6 +707,10 @@ r2d2 = {
                             // delete hidden field
                             if ($('#additionalHiddenField')) {
                                 $('#additionalHiddenField').remove();
+                            }
+                            // x-editable
+                            if (confirmationModalXeditableFlag == true) {
+                                $('button.editable-cancel').click();
                             }
                         }
 
@@ -711,6 +722,23 @@ r2d2 = {
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
             _buildConfirmationModal(this);
+        });
+
+        // x-editable
+        $('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('.button.editable-submit').click(function(e) {
+            let test = $('.js-open-confirm-modal-xeditable').data('confirm-value');
+
+
+            if ($('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('select').val() ==  $('.js-open-confirm-modal-xeditable').data('confirm-value')) {
+
+                if (confirmationModalXeditableFlag == false) {
+                    e.preventDefault();
+                    confirmationModalXeditableFlag = true;
+
+                    let x = $('.js-open-confirm-modal-xeditable')[0];
+                    _buildConfirmationModal(x);
+                }
+            }
         });
 
         // for old remote links = ajax calls

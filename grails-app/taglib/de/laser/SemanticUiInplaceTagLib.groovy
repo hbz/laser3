@@ -181,6 +181,10 @@ class SemanticUiInplaceTagLib {
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${attrs.field}"
+                String cssClass = attrs.cssClass
+                String tokenmsg = attrs.tokenmsg
+                String how = attrs.how
+                String confirmationValue = attrs.confirmationValue
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
@@ -195,13 +199,23 @@ class SemanticUiInplaceTagLib {
                 }
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne ${cssClass}\" "
                 if(attrs.owner instanceof SurveyResult){
                     out << "data-onblur=\"submit\" "
                 }else {
                     out << "data-onblur=\"ignore\" "
                 }
-                out << dataValue + "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
+                out << dataValue + "data-pk=\"${oid}\"  "
+                if(attrs.how) {
+                    out << "data-confirm-term-how=\"${how}\" "
+                }
+                if(attrs.tokenmsg) {
+                    out << "data-confirm-tokenmsg=\"${tokenmsg}\" "
+                }
+                if(attrs.confirmationValue) {
+                    out << "data-confirm-value=\"${confirmationValue}\" "
+                }
+                out << "data-type=\"select\" data-name=\"${attrs.field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
