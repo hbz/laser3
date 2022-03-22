@@ -262,8 +262,7 @@
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
-                <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                        SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)}">
+                <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
                     <th>${message(code:'default.actions.label')}</th>
                 </g:if>
             </tr>
