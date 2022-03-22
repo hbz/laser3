@@ -158,7 +158,7 @@ class RefdataService {
             }
         }
 
-        log.debug(checkResult.toMapString())
+        log.debug( 'integrityCheck: ' + checkResult.size())
 
         checkResult.sort()
     }

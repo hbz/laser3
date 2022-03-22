@@ -1,23 +1,26 @@
 
-// ---[ build
+// ---[ build script
 
 buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://repo.grails.org/grails/core' }
+
         // https://github.com/n0mer/gradle-git-properties/issues/195
-        //TODO configurations.all {
-        //    resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
-        //}
+        configurations.all {
+            resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
+        }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath 'org.grails:grails-gradle-plugin:' + grailsVersion
         classpath 'org.grails.plugins:hibernate5:7.0.5'
         classpath 'org.grails.plugins:database-migration:3.1.0'         // from 3.0.3
+
         // classpath 'gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0'    // -- nn --
         // https://github.com/bertramdev/asset-pipeline
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.3' // from 3.2.4
-        //TODO classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'
+        // https://github.com/n0mer/gradle-git-properties
+        classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'  // 2.4.0 available
 
         // dependency resolving issue
         classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
@@ -34,12 +37,22 @@ apply plugin: 'org.grails.grails-web'
 // apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
 apply plugin: 'com.bertramlabs.asset-pipeline'
 apply plugin: 'org.grails.grails-gsp'
-//TODO apply plugin: 'com.gorylenko.gradle-git-properties'
+apply plugin: 'com.gorylenko.gradle-git-properties'
+
+// ---[ plugin: database migration ! before dependencies configuration
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'grails-app/migrations'
+        }
+    }
+}
 
 // ---[ config
 
 version '3.0.0.alpha'
-group 'laser3'
+group 'de.laser'
 
 repositories {
     mavenLocal()
@@ -50,16 +63,6 @@ configurations {
     developmentOnly
     runtimeClasspath {
         extendsFrom developmentOnly
-    }
-}
-
-// ---[ plugin: database migration ! before dependencies configuration
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'grails-app/migrations'
-        }
     }
 }
 
@@ -160,6 +163,11 @@ dependencies {
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
 
+//webdriverBinaries {           // -- nn --
+//    chromedriver '2.45.0'
+//    geckodriver '0.24.0'
+//}
+
 springBoot {
     mainClassName = 'de.laser.Application'
 }
@@ -177,30 +185,43 @@ bootRun {
 }
 
 // ---[ plugin: gradle-git-properties
-//TODO gitProperties {
-//    //keys = ['git.branch','git.commit.id','git.commit.time']
-//    dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
-//    //dateFormatTimeZone = "PST"
-//    gitPropertiesDir = new File("${project.rootDir}/")
-//}
 
-tasks.withType(GroovyCompile) {
-    configure(groovyOptions) {
-        forkOptions.jvmArgs = ['-Xmx1024m']
+gitProperties {
+    dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
+    //dateFormatTimeZone = "PST"
+    gitPropertiesDir = new File("${project.rootDir}/")
+}
+
+buildProperties {
+    inputs.property('info.app.build.date', new Date().format('dd.MM.yyyy HH:mm'))
+    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
+    inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
+
+    doLast {
+        File grailsBuildInfo = it.outputs.files.files.find { it.name == 'grails.build.info' } as File
+        if (! grailsBuildInfo) return
+
+        Properties properties = new Properties()
+        grailsBuildInfo.withInputStream { properties.load(it) }             // read props from file
+
+        File BuildInfoFile = new File("${project.rootDir}/git.properties")
+        BuildInfoFile.withInputStream { properties.load(it) }               // read props from file
+
+        properties.setProperty('build.time', new Date().format("dd.MM.yyyy HH:mm:ss"))     // add custom props
+
+        grailsBuildInfo.withOutputStream { properties.store(it, null) }    // write back to file
     }
 }
 
-//webdriverBinaries {                   // -- nn --
-//    chromedriver '2.45.0'
-//    geckodriver '0.24.0'
-//}
+// ---[ war
 
-//tasks.withType(Test) {                // -- nn --
-//    systemProperty 'geb.env', System.getProperty('geb.env')
-//    systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
-//    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
-//    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
-//}
+war {
+    baseName = 'laser3'
+    archiveName = 'laser3.war'
+}
+grails {
+    pathingJar = true   // windows - command line limitation
+}
 
 // ---[ plugin: asset pipeline
 
@@ -234,6 +255,19 @@ assets {
 }
 
 // ---[ gradle tasks
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+    }
+}
+
+//tasks.withType(Test) {        // -- nn --
+//    systemProperty 'geb.env', System.getProperty('geb.env')
+//    systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
+//    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+//    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
+//}
 
 task( 'devtools.triggerRestart', group: 'laser', type: Exec ) {
     workingDir './grails-app/conf/spring'

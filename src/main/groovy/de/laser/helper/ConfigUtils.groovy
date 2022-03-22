@@ -186,12 +186,13 @@ class ConfigUtils {
             key.split('\\.').each { lvl ->
                 result = result ? result.get(lvl) : cfg.get(lvl)
             }
+
             if (validate) {
                 if (result == null) {
-                    println(": ${key} .. not found : WARNING")
+                    println(": NOT found ..  ${key}")
                 }
                 else {
-                    println(": ${key} .. ok")
+                    println(": ok ..         ${key}  ->  " + result)
                 }
             }
         }

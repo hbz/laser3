@@ -371,6 +371,7 @@ class OrganisationController  {
      * @return the identifier construction modal
      * @see IdentifierNamespace
      */
+    @Secured(['ROLE_USER'])
     def createIdentifier(){
         log.debug("OrganisationController::createIdentifier ${params}")
         Org org   = params.id? Org.get(params.id) : null
@@ -405,6 +406,7 @@ class OrganisationController  {
      * Call to edit a given identifier; opens the creation modal with prefilled values
      * @return the identifier construction modal with prefilled values
      */
+    @Secured(['ROLE_USER'])
     def editIdentifier(){
         log.debug("OrganisationController::editIdentifier ${params}")
         Identifier identifier = Identifier.get(params.identifier)
@@ -424,6 +426,7 @@ class OrganisationController  {
      * @return the identifier list view
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def processCreateIdentifier(){
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
@@ -457,6 +460,7 @@ class OrganisationController  {
      * @return the identifier list view, opened on tab customer identifiers
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def processCreateCustomerIdentifier(){
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
 
@@ -505,6 +509,7 @@ class OrganisationController  {
      * @return the identifier list view
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def processEditIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
         Identifier identifier   = Identifier.get(params.identifierId)
@@ -564,6 +569,7 @@ class OrganisationController  {
      * @return the identifier list view, opened on tab customer identifiers
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def processEditCustomerIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
         CustomerIdentifier customeridentifier   = CustomerIdentifier.get(params.customeridentifier)
@@ -593,6 +599,7 @@ class OrganisationController  {
      * @see CustomerIdentifier
      * @see Platform
      */
+    @Secured(['ROLE_USER'])
     def createCustomerIdentifier(){
         log.debug("OrganisationController::createCustomerIdentifier ${params}")
         Org org   = Org.get(params.id)
@@ -611,6 +618,7 @@ class OrganisationController  {
      * Call to open the customer identifier creation modal with prefilled values
      * @return the customer identifier construction modal with prefilled values
      */
+    @Secured(['ROLE_USER'])
     def editCustomerIdentifier(){
         log.debug("OrganisationController::editCustomerIdentifier ${params}")
         CustomerIdentifier customeridentifier = CustomerIdentifier.get(params.customeridentifier)
@@ -1504,6 +1512,7 @@ class OrganisationController  {
     /**
      * Links two organisations with the given params
      */
+    @Secured(['ROLE_USER'])
     def linkOrgs() {
         organisationControllerService.linkOrgs(params)
         redirect action: 'show', id: params.context
@@ -1512,6 +1521,7 @@ class OrganisationController  {
     /**
      * Removes the given link between two organisations
      */
+    @Secured(['ROLE_USER'])
     def unlinkOrg() {
         organisationControllerService.unlinkOrg(params)
         redirect action: 'show', id: params.id
@@ -1521,6 +1531,7 @@ class OrganisationController  {
      * Assigns the given organisation type to the given organisation
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def addOrgType() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -1546,6 +1557,7 @@ class OrganisationController  {
      * Removes the given organisation type from the given organisation
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def deleteOrgType() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -1572,6 +1584,7 @@ class OrganisationController  {
      * Assigns the given subject group to the given organisation
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def addSubjectGroup() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
@@ -1606,6 +1619,7 @@ class OrganisationController  {
      * Removes the given subject group from the given organisation
      */
     @Transactional
+    @Secured(['ROLE_USER'])
     def deleteSubjectGroup() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 

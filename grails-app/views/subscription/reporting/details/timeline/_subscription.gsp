@@ -4,7 +4,7 @@
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <%
-    List<Long,Long> orgSubList = []
+    List orgSubList = []
     if (list) {
         orgSubList = Org.executeQuery(
                     'select org.id, sub.id from OrgRole oo join oo.org org join oo.sub sub where sub in (:list) and oo.roleType in :subscriberRoleTypes ' +

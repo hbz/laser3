@@ -103,9 +103,9 @@ class YodaController {
         ]
         result.editable = true
 
-        result.currentConfig = grails.util.Holders.config
+        result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
 
-        result
+            result
     }
 
     /**
@@ -518,18 +518,14 @@ class YodaController {
                     }
                 }
 
-                String cKey = "${controllerClass.simpleName}"
-                if (controllerClass.getAnnotation(Deprecated)) {
-                    cKey ="${controllerClass.simpleName} <em>*</em>"
-                }
-                cList<< ["${cKey}": [
+                cList << ["${controllerClass.simpleName}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': [
                                 public: mList.public.sort{it.key},
                                 others: mList.others.sort{it.key}
-                            ]
-                        ]
-                ]
+                        ],
+                        'deprecated': controllerClass.getAnnotation(Deprecated) ? true : false
+                ]]
             }
         }
         result.controller = cList.sort{it.key}

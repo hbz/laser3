@@ -72,7 +72,10 @@
 <h2 class="ui header">Controller Security</h2>
 
 <g:each in="${controller}" var="c">
-    <a href="#jumpMark_${c.key}">${c.key.replace('Controller', '')}</a>
+    <a href="#jumpMark_${c.key}">
+        <g:if test="${c.value.deprecated}"><em>${c.key.replace('Controller', '')} *</em></g:if>
+        <g:else>${c.key.replace('Controller', '')}</g:else>
+    </a>
     &nbsp;&nbsp;
 </g:each>
 
@@ -122,13 +125,14 @@
 
                 <h3 class="ui header" id="jumpMark_${c.key}">
                     ${c.key}
+                    <g:if test="${c.value.deprecated}"><em>&larr; Deprecated</em></g:if>
                     <g:each in="${c.value.secured}" var="cSecured">
                         <span class="${cSecured}">${cSecured}</span> &nbsp;
                     </g:each>
                 </h3>
 
                 <div class="ui segment">
-                    <div class="ui divided list">
+                    <div class="ui relaxed divided list">
                         <g:each in="${c.value.methods.public}" var="method">
                             <g:set var="refactoringDone" value="${method.value?.refactoring == 'done'}" />
                             <div class="item${refactoringDone ? ' refactoring-done':''}">
@@ -148,7 +152,8 @@
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'secured'}">
                                         <g:each in="${info.value}" var="ss">
-                                            <span class="${ss.value}">${ss.value}</span>
+                                            <g:set var="infoValue" value="${Arrays.toString(ss).replace('[','').replace(']','')}" />
+                                            <span class="${infoValue}">${infoValue}</span>
                                         </g:each>
                                     </g:elseif>
                                     <g:elseif test="${info.key == 'transactional'}">
@@ -171,7 +176,7 @@
                 </div>
                 <g:if test="${c.value.methods.others}">
                     <div class="ui segment">
-                        <div class="ui divided list">
+                        <div class="ui relaxed divided list">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="item">
                                     <g:link controller="${c.key.split('Controller')[0]}" action="${method.key}">${method.key}</g:link>
@@ -190,7 +195,8 @@
                                         </g:elseif>
                                         <g:elseif test="${info.key == 'secured'}">
                                             <g:each in="${info.value}" var="ss">
-                                                <span class="${ss.value}">${ss.value}</span>
+                                                <g:set var="infoValue" value="${Arrays.toString(ss).replace('[','').replace(']','')}" />
+                                                <span class="${infoValue}">${infoValue}</span>
                                             </g:each>
                                         </g:elseif>
                                         <g:elseif test="${info.key == 'transactional'}">

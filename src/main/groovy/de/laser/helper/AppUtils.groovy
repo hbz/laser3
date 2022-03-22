@@ -41,13 +41,13 @@ class AppUtils {
     // -- App
 
     static String getMeta(String token) {
-        Holders.grailsApplication.metadata[ token ] ?: token
+        Holders.grailsApplication.metadata.get( token ) ?: token
     }
     static def getConfig(String token) {
-        Holders.grailsApplication.config[ token ] ?: null
+        ConfigUtils.readConfig( token, false )
     }
     static def getPluginConfig(String token) {
-        Holders.grailsApplication.config[ 'grails.plugin.' + token ] ?: null
+        ConfigUtils.readConfig( 'grails.plugin.' + token, false )
     }
 
     // -- DC
