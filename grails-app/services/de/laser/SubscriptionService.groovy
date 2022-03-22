@@ -978,8 +978,8 @@ class SubscriptionService {
             // Step 3 - If createEntitlements ...
         */
         if ( createEntitlements ) {
-            List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            packageService.bulkAddHolding(sql, subscription.id, packageTitles, subscription.hasPerpetualAccess)
+            //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+            packageService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
         }
     }
 
@@ -1029,8 +1029,8 @@ class SubscriptionService {
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
         Sql sql = new Sql(dataSource)
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
-        List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-        packageService.bulkAddHolding(sql, target.id, consortiumHolding, target.hasPerpetualAccess)
+        //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+        packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess)
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])

@@ -102,87 +102,22 @@ class PackageService {
      * Adds the given set of package titles, retrieved by native database query, to the given subscription. Insertion as issue entitlements is being done by native SQL as well as it performs much better than GORM
      * @param sql the SQL connection, established at latest in the calling method
      * @param subId the ID of the subscription whose holding should be enriched by the given title set
-     * @param packageTitles the set of titles (retrieved as SQL rows) to add
+     * @param pkgId the ID of the package whose holding should be added to the subscription
      * @param hasPerpetualAccess the flag whether the title access have been purchased perpetually
      */
-    void bulkAddHolding(Sql sql, Long subId, List<GroovyRowResult> packageTitles, boolean hasPerpetualAccess) {
-        Calendar now = GregorianCalendar.getInstance()
-        Map<String, List<Map>> configMaps = ['titles':[], 'coverages': [], 'prices': []]
-        packageTitles.each { GroovyRowResult tippB ->
-            Map titleMap = [
-                    version: 0,
-                    dateCreated: new Timestamp(now.getTimeInMillis()),
-                    lastUpdated: new Timestamp(now.getTimeInMillis()),
-                    subscription: subId,
-                    tipp: tippB['tipp_id'],
-                    accessStartDate: tippB['tipp_access_start_date'],
-                    accessEndDate: tippB['tipp_access_end_date'],
-                    reason: 'manually added by user',
-                    medium: tippB['tipp_medium_rv_fk'],
-                    status: tippB['tipp_status_rv_fk'],
-                    acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id,
-                    name: tippB['tipp_name'],
-                    sortname: escapeService.generateSortTitle(tippB['tipp_name']),
-                    perpetualAccess: hasPerpetualAccess ? subId : null
-            ]
-            configMaps.titles << titleMap
-            List missingTippCoverages = sql.rows("select * from tippcoverage where tc_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
-            missingTippCoverages.each { GroovyRowResult covB ->
-                Map coverageMap = [
-                        version: 0,
-                        startDate: covB['tc_start_date'],
-                        startVolume: covB['tc_start_volume'],
-                        startIssue: covB['tc_start_issue'],
-                        endDate: covB['tc_end_date'],
-                        endVolume: covB['tc_end_volume'],
-                        endIssue: covB['tc_end_issue'],
-                        coverageDepth: covB['tc_coverage_depth'],
-                        coverageNote: covB['tc_coverage_note'],
-                        embargo: covB['tc_embargo'],
-                        tipp: tippB['tipp_id'],
-                        subId: subId,
-                        current: RDStore.TIPP_STATUS_CURRENT.id
-                ]
-                configMaps.coverages << coverageMap
-            }
-            List missingTippPrices = sql.rows("select * from price_item where pi_tipp_fk = :tipp", [tipp: tippB['tipp_id']])
-            missingTippPrices.each { GroovyRowResult piB ->
-                Map priceMap = [
-                        version: 0,
-                        tipp: tippB['tipp_id'],
-                        subId: subId,
-                        current: RDStore.TIPP_STATUS_CURRENT.id,
-                        dateCreated: new Timestamp(now.getTimeInMillis()),
-                        lastUpdated: new Timestamp(now.getTimeInMillis()),
-                        guid: PriceItem.class.name + ":" + UUID.randomUUID().toString(),
-                        listPrice: piB['pi_list_price'],
-                        listCurrency: piB['pi_list_currency_rv_fk']
-                ]
-                configMaps.prices << priceMap
-            }
+    void bulkAddHolding(Sql sql, Long subId, Long pkgId, boolean hasPerpetualAccess) {
+        String perpetualAccessCol = '', perpetualAccessColHeader = ''
+        if(hasPerpetualAccess) {
+            perpetualAccessColHeader = ', ie_perpetual_access_by_sub_fk'
+            perpetualAccessCol = ", ${subId}"
         }
 
-        sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) values " +
-                "(:version, :dateCreated, :lastUpdated, :subscription, :tipp, :accessStartDate, :accessEndDate, :reason, :medium, :status, :acceptStatus, :name, :sortname, :perpetualAccess)") { stmt ->
-            configMaps.titles.each { Map configMap ->
-                log.debug("adding new issue entitlement: ${configMap.toMapString()}")
-                stmt.addBatch(configMap)
-            }
-        }
-        sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) values " +
-                "(:version, (select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current), :dateCreated, :lastUpdated, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :coverageDepth, :coverageNote, :embargo)") { stmt ->
-            configMaps.coverages.each { Map configMap ->
-                log.debug("adding new coverage: ${configMap.toMapString()}")
-                stmt.addBatch(configMap)
-            }
-        }
-        sql.withBatch("insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) values " +
-                "(:version, (select ie_id from issue_entitlement where ie_tipp_fk = :tipp and ie_subscription_fk = :subId and ie_status_rv_fk = :current), :dateCreated, :lastUpdated, :guid, :listCurrency, :listPrice)") { stmt ->
-            configMaps.prices.each { Map configMap ->
-                log.debug("adding new price item: ${configMap.toMapString()}")
-                stmt.addBatch(configMap)
-            }
-        }
+        sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname ${perpetualAccessColHeader}) " +
+                "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, 'manually added by user', tipp_medium_rv_fk, tipp_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, tipp_name, tipp_sort_name ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :deleted", [pkgId: pkgId, deleted: RDStore.TIPP_STATUS_DELETED.id])
+        sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) " +
+                "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), tc_start_date, tc_start_volume, tc_start_issue, tc_end_date, tc_end_volume, tc_end_issue, tc_coverage_depth, tc_coverage_note, tc_embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :deleted", [subId: subId, pkgId: pkgId, deleted: RDStore.TIPP_STATUS_DELETED.id])
+        sql.executeInsert("insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) " +
+                "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :deleted", [subId: subId, pkgId: pkgId, deleted: RDStore.TIPP_STATUS_DELETED.id])
     }
 
 }

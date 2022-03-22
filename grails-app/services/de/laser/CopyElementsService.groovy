@@ -1532,8 +1532,8 @@ class CopyElementsService {
                     }
                     def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
                     Sql sql = new Sql(dataSource)
-                    List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
-                    packageService.bulkAddHolding(sql, targetObject.id, subscriptionHolding, targetObject.hasPerpetualAccess)
+                    //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
+                    packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
                     /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
                             //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
