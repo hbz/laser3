@@ -36,7 +36,7 @@
 <%-- ERMS-2082 --%>
 
 <div class="html ui top attached segment example">
-    <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
+    <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heißt, eine Aktion ausführt)</div>
     <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                       controller="dev"
                       action="frontend"
