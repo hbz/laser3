@@ -69,21 +69,9 @@
                                     });
 
                                     $('body #ezb_server_access').editable('destroy').editable({
-                                        validate: function (value) {
-                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
-                                                var r = confirm("EZB confirm TODO" );
-                                                if (r == false) {
-                                                   return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt!"
-                                                }
-                                                /*
-                                                $('#fakeEzb').trigger('click');
-                                                if(JSPC.app.orgSettings.confVal === false) {
-                                                    return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt";
-                                                */
-                                            }
-                                        },
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
+                                        r2d2.initDynamicSemuiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -111,15 +99,24 @@
                                             <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
 
                                                 <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue"
+                                                    <semui:xEditableRefData owner="${os}"
+                                                                            field="rdValue"
                                                                             id="oamonitor_server_access"
                                                                             tokenmsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
-                                                                            how="ok"  cssClass="js-open-confirm-modal-xeditable"
+                                                                            how="ok"
+                                                                            cssClass="js-open-confirm-modal-xeditable"
                                                                             confirmationValue="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="ezb_server_access" config="${os.key.rdc}" />
+                                                    <semui:xEditableRefData owner="${os}"
+                                                                            field="rdValue"
+                                                                            id="ezb_server_access"
+                                                                            tokenmsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                                                            how="ok"
+                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            confirmationValue="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
