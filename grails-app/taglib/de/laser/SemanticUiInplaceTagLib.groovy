@@ -182,9 +182,9 @@ class SemanticUiInplaceTagLib {
                 String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${attrs.field}"
                 String cssClass = attrs.cssClass
-                String tokenmsg = attrs.tokenmsg
-                String how = attrs.how
-                String confirmationValue = attrs.confirmationValue
+                String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
+                String data_confirm_term_how = attrs.data_confirm_term_how
+                String data_confirm_value = attrs.data_confirm_value
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
@@ -206,14 +206,14 @@ class SemanticUiInplaceTagLib {
                     out << "data-onblur=\"ignore\" "
                 }
                 out << dataValue + "data-pk=\"${oid}\"  "
-                if(attrs.how) {
-                    out << "data-confirm-term-how=\"${how}\" "
+                if(attrs.data_confirm_term_how) {
+                    out << "data-confirm-term-how=\"${data_confirm_term_how}\" "
                 }
-                if(attrs.tokenmsg) {
-                    out << "data-confirm-tokenmsg=\"${tokenmsg}\" "
+                if(attrs.data_confirm_tokenMsg) {
+                    out << "data-confirm-tokenmsg=\"${data_confirm_tokenMsg}\" "
                 }
-                if(attrs.confirmationValue) {
-                    out << "data-confirm-value=\"${confirmationValue}\" "
+                if(attrs.data_confirm_value) {
+                    out << "data-confirm-value=\"${data_confirm_value}\" "
                 }
                 out << "data-type=\"select\" data-name=\"${attrs.field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"

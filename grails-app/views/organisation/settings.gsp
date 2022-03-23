@@ -102,20 +102,20 @@
                                                     <semui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="oamonitor_server_access"
-                                                                            tokenmsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
-                                                                            how="ok"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                                                            data_confirm_term_how="ok"
                                                                             cssClass="js-open-confirm-modal-xeditable"
-                                                                            confirmationValue="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="ezb_server_access"
-                                                                            tokenmsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
-                                                                            how="ok"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                                                            data_confirm_term_how="ok"
                                                                             cssClass="js-open-confirm-modal-xeditable"
-                                                                            confirmationValue="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
