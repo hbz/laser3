@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.133
+
+- removed duplicate column access_type from __/ezb/subscription__
+
 #### 0.132
 
 - bugfix for __/subscription/list__
