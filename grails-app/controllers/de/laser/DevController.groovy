@@ -9,12 +9,14 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DevController  {
 
+    ContextService contextService
+
     /**
      * @return the frontend view with sample area for frontend developing and showcase
      */
     @Secured(['ROLE_ADMIN'])
     def frontend() {
-        Map<String, Object> result = [test:123]
+        Map<String, Object> result = [test:123, user: contextService.getUser(), institution: contextService.getOrg()]
         result
     }
 
