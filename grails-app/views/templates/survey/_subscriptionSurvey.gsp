@@ -1122,14 +1122,14 @@
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
                                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
-                                    <semui:xEditableRefData  tokenmsg="${message(code: 'survey.participationProperty.confirmation')}"
-                                                             how="ok"
-                                                             cssClass="js-open-confirm-modal-xeditable"
-                                                             confirmationValue="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
-                                                             owner="${surveyResult}"
-                                                             field="refValue" type="text"
-                                                             id="participation"
-                                                             config="${surveyResult.type.refdataCategory}"/>
+                                    <semui:xEditableRefData data_confirm_tokenMsg="${message(code: 'survey.participationProperty.confirmation')}"
+                                                            data_confirm_term_how="ok"
+                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
+                                                            owner="${surveyResult}"
+                                                            field="refValue" type="text"
+                                                            id="participation"
+                                                            config="${surveyResult.type.refdataCategory}"/>
                                 </g:if>
                                 <g:else>
                                     <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"

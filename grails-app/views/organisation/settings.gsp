@@ -69,21 +69,9 @@
                                     });
 
                                     $('body #ezb_server_access').editable('destroy').editable({
-                                        validate: function (value) {
-                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_YES.id}") {
-                                                var r = confirm("EZB confirm TODO" );
-                                                if (r == false) {
-                                                   return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt!"
-                                                }
-                                                /*
-                                                $('#fakeEzb').trigger('click');
-                                                if(JSPC.app.orgSettings.confVal === false) {
-                                                    return "Sie haben der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB nicht zugestimmt";
-                                                */
-                                            }
-                                        },
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
+                                        r2d2.initDynamicSemuiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -105,21 +93,35 @@
                                                     <i class="question circle icon"></i>
                                                 </span>
                                             </g:if>
+                                            <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
+                                                    <i class="question circle icon"></i>
+                                                </span>
+                                            </g:elseif>
                                         </td>
                                         <td>
 
                                             <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
 
                                                 <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue"
+                                                    <semui:xEditableRefData owner="${os}"
+                                                                            field="rdValue"
                                                                             id="oamonitor_server_access"
-                                                                            tokenmsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
-                                                                            how="ok"  cssClass="js-open-confirm-modal-xeditable"
-                                                                            confirmationValue="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                                                            data_confirm_term_how="ok"
+                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue" id="ezb_server_access" config="${os.key.rdc}" />
+                                                    <semui:xEditableRefData owner="${os}"
+                                                                            field="rdValue"
+                                                                            id="ezb_server_access"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.EZB.confirm')}"
+                                                                            data_confirm_term_how="ok"
+                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
                                                     <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
