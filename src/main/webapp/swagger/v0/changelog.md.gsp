@@ -5,6 +5,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 #### 0.133
 
 - removed duplicate column access_type from __/ezb/subscription__
+- removed attribute: `Package.license`
 
 #### 0.132
 
