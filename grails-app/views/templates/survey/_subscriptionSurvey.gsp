@@ -263,20 +263,7 @@
 
                 <br />
 
-                <div class="field" style="text-align: right;">
-                    <button id="subscription-info-toggle"
-                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i></button></button>
-                    <laser:script file="${this.getGroovyPageFileName()}">
-                        $('#subscription-info-toggle').on('click', function () {
-                            $("#subscription-info").transition('slide down');
-                            if ($("#subscription-info").hasClass('visible')) {
-                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i>')
-                            } else {
-                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> <i class="ui angle double up icon"></i>')
-                            }
-                        })
-                    </laser:script>
-                </div>
+
 
                 <g:if test="${subscription && subscription.packages}">
 
@@ -302,6 +289,20 @@
         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
             <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
         </g:if>
+        <div class="field" style="text-align: right;">
+            <button id="subscription-info-toggle"
+                    class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i></button></button>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('#subscription-info-toggle').on('click', function () {
+                    $("#subscription-info").transition('slide down');
+                    if ($("#subscription-info").hasClass('visible')) {
+                        $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i>')
+                            } else {
+                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> <i class="ui angle double up icon"></i>')
+                            }
+                        })
+            </laser:script>
+        </div>
 
         <div id="subscription-info" class="la-inline-lists hidden">
 
