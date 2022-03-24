@@ -93,6 +93,11 @@
                                                     <i class="question circle icon"></i>
                                                 </span>
                                             </g:if>
+                                            <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
+                                                    <i class="question circle icon"></i>
+                                                </span>
+                                            </g:elseif>
                                         </td>
                                         <td>
 
@@ -112,7 +117,7 @@
                                                     <semui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="ezb_server_access"
-                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.EZB.confirm')}"
                                                                             data_confirm_term_how="ok"
                                                                             cssClass="js-open-confirm-modal-xeditable"
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"

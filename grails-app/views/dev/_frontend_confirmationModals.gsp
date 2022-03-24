@@ -1,7 +1,7 @@
 <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Einfacher Link</h4>
 <div class="html ui top attached segment example">
-    <div class="ui top attached label">Link, der als Button funktioniert (das heißt, dass er eine Aktion ausführt)</div>
+    <div class="ui top attached label"></div>
     <g:link controller="dev"
             action="frontend"
             params=""
@@ -40,9 +40,9 @@
 </div>
 
 <%-- ERMS-2082 --%>
-
+<h4 class="ui header">Inhalt der Nachricht per Ajax: AjaxController.genericDialogMessage()</h4>
 <div class="html ui top attached segment example">
-    <div class="ui top attached label">Inhalt der Nachricht per Ajax: AjaxController.genericDialogMessage()</div>
+    <div class="ui top attached label"></div>
 
     <g:link controller="dev"
             action="frontend"
@@ -59,9 +59,9 @@
 </div>
 
 <%-- ERMS-2082 --%>
-
+<h4 class="ui header">Link (Button), der den AJAX-Contoler aufruft</h4>
 <div class="html ui top attached segment example">
-    <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heißt, eine Aktion ausführt)</div>
+    <div class="ui top attached label"></div>
     <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                       controller="dev"
                       action="frontend"
