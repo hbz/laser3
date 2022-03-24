@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      23.03.2022  dev     2.3         Andreas Bug         doppelte Spalte access_type aus KBART-Export entfernt
+
 --      16.03.2022  dev     2.3         Andreas Bug         falscher Umgang mit Fehler bei manueller Lizenzverlängerung
 
 4162    15.03.2022  dev     2.3         Andreas Bug         Brücke bei Umfragemerkmalen eingebaut
