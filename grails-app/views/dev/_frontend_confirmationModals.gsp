@@ -15,7 +15,7 @@
     <ul>
         <li>Damit aus dem Tabellen-Header ein Label wird, wenn Tabelle zusammengeschoben
             <ol>
-                <li>Die Tabelle muss sie Klasse <strong>'la-js-responsive-table'</strong> bekommen</li>
+                <li>Die Tabelle muss die Klasse <strong>'la-js-responsive-table'</strong> bekommen</li>
                 <li>Alle Tabellen-Spalten müssen einen <strong>Bezeichner</strong> bekommen, außer Icons, diese benötigen einen <strong>Tooltip</strong>
                 </li>
             </ol>
