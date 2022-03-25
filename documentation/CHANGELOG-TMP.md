@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4175    25.03.2022  dev     2.3         Andreas Bug         Bereinigungsfunktion für fehlende Vertrag-Teilnehmer-Verknüpfungen erstellt
+
 --      23.03.2022  dev     2.3         Andreas Bug         doppelte Spalte access_type aus KBART-Export entfernt
 
 --      16.03.2022  dev     2.3         Andreas Bug         falscher Umgang mit Fehler bei manueller Lizenzverlängerung
