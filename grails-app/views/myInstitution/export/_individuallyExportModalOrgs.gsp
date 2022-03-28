@@ -3,12 +3,18 @@
 <g:set var="exportClickMeService" bean="exportClickMeService"/>
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI()}"/>
+<g:if test="${actionName in ['listInstitution']}">
+    <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
+</g:elseif>
+<g:else>
+    <g:set var="exportFileName" value="${message(code: 'subscription.details.consortiaMembers.label')}"/>
+</g:else>
 
 <semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
     <g:form action="${actionName}" controller="${controllerName}" params="${params+[exportClickMeExcel: true]}">
 
-        <g:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: message(code: 'subscription.details.consortiaMembers.label')]}"/>
+        <g:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName]}"/>
 
     </g:form>
 

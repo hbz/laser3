@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class ApiManager {
 
-    static final VERSION = '0.130'
+    static final VERSION = '0.132'
 
     /**
      * @return Object
@@ -142,7 +142,7 @@ class ApiManager {
                 return Constants.HTTP_FORBIDDEN
             }
 
-            result = ApiEZB.getAllSubscriptions(changedFrom)
+            result = ApiEZB.getAllSubscriptions(changedFrom, contextOrg)
         }
         else if (checkValidRequest('license')) {
 
@@ -278,7 +278,7 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiSubscription.requestSubscription((Org) tmp.obj, contextOrg)
+                result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
             }
         }
         else {
