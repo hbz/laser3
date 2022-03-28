@@ -29,6 +29,7 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -1617,7 +1618,7 @@ class ExportService {
 					//access_end_date
 					row.add(entitlement?.accessEndDate ? formatter.format(entitlement.accessEndDate) : (tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : ' '))
 					//medium
-					row.add(tipp.medium.value ?: ' ')
+					row.add(tipp.medium ? tipp.medium.value : ' ')
 
 
 					//zdb_id

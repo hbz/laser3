@@ -7,6 +7,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.api.v0.special.ApiEZB
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.catalogue.ApiCatalogue
@@ -16,6 +17,7 @@ import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
+import org.apache.tools.ant.util.DateUtils
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
@@ -30,7 +32,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '0.128'
+    static final VERSION = '0.132'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -50,15 +52,16 @@ class ApiManager {
      *     <li>NOT_IMPLEMENTED: if requested method(object type) is not supported</li>
      * </ul>
      */
-    static read(String obj, String query, String value, Org contextOrg, String format) {
+    static read(String obj, String query, String value, Org contextOrg, String format, Date changedFrom = null) {
         def result
 
         boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
+        boolean isEZB         = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_EZB)
         boolean isOAMonitor   = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_OAMONITOR)
         boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
         boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
 
-        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
+        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value} ${changedFrom ? changedFrom.format(DateUtils.ISO8601_DATE_PATTERN) : ''}")
 
         Closure checkValidRequest = { endpoint ->
             if (! endpoint.equalsIgnoreCase(obj)) {
@@ -138,6 +141,27 @@ class ApiManager {
                 }
             }
         } */
+        else if (checkValidRequest('ezb/subscription')) {
+
+            if (! (isEZB || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiEZB.requestSubscription((Subscription) tmp.obj)
+            }
+        }
+        else if (checkValidRequest('ezb/subscription/list')) {
+
+            if (! (isEZB || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            result = ApiEZB.getAllSubscriptions(changedFrom, contextOrg)
+        }
         else if (checkValidRequest('license')) {
 
             ApiBox tmp = ApiLicense.findLicenseBy(query, value)

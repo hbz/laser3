@@ -2,6 +2,25 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.132
+
+- bugfix for __/subscription/list__
+
+#### 0.131
+
+- added new attribute: `Subscription.members` for __/ezb/subscription/list__
+- internal refactoring
+
+#### 0.130
+
+- added new endpoint: __/ezb/subscription/list__
+- added new parameter changedFrom
+
+#### 0.129
+
+- added new endpoint: __/ezb/subscription__
+- added new API level: API_LEVEL_EZB
+
 #### 0.128
 
 - added new attribute: `IssueEntitlement.hasPerpetualAccess`

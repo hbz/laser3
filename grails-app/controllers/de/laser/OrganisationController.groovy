@@ -110,6 +110,9 @@ class OrganisationController  {
                 OrgSetting.KEYS.CUSTOMER_TYPE,
                 OrgSetting.KEYS.GASCO_ENTRY
         ]
+        List<OrgSetting.KEYS> ezbSet = [
+                OrgSetting.KEYS.EZB_SERVER_ACCESS
+        ]
         List<OrgSetting.KEYS> oaMonitorSet = [
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS
         ]
@@ -125,6 +128,8 @@ class OrganisationController  {
             case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
                 break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
+                break
+            case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })
                 break
             case 'natstat': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in natstatSet })
                 break
@@ -242,6 +247,31 @@ class OrganisationController  {
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
         result.consortiaMemberTotal = availableOrgs.size()
+
+
+        def message = g.message(code: 'menu.institutions')
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = message+"_${datetoday}"
+        if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
+        }
         result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
         result
     }
@@ -263,6 +293,7 @@ class OrganisationController  {
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
         result.consortiaTotal = availableOrgs.size()
         result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+
         result
     }
 

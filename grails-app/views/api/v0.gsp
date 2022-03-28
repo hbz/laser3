@@ -139,8 +139,9 @@ var nounce        = &quot;&quot; // not used yet
 var q             = &quot;&lt;q&gt;&quot;
 var v             = &quot;&lt;v&gt;&quot;
 var context       = &quot;&lt;context&gt;&quot;
+var changedFrom   = &quot;&lt;changedFrom&gt;&quot;
 
-var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null)], function(e, i){ return e }).join('&amp;')
+var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null), (changedFrom ? &quot;changedFrom=&quot; + changedFrom : null)], function(e, i){ return e }).join('&amp;')
 var body          = &quot;&quot; // not used yet
 
 var message       = method + path + timestamp + nounce + query + body
@@ -164,6 +165,7 @@ console.log('(http-header) x-authorization: ' + authorization)
             var selectors = {
                 query_q:       'tr[data-param-name="q"] input',
                 query_v:       'tr[data-param-name="v"] input',
+                query_changedFrom: 'tr[data-param-name="changedFrom"] input',
                 query_context: 'tr[data-param-name="context"] input',
 
                 top:      '.topbar-wrapper',
@@ -243,11 +245,13 @@ console.log('(http-header) x-authorization: ' + authorization)
                 if(method == "GET") {
                     var q = jQuery(div).find(selectors.query_q)
                     var v = jQuery(div).find(selectors.query_v)
+                    var changedFrom = jQuery(div).find(selectors.query_changedFrom)
 
                     q = (q.length && q.val().trim().length) ? "q=" + q.val().trim() : ''
                     v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''
+                    changedFrom = (changedFrom.length && changedFrom.val().trim().length) ? "changedFrom=" + changedFrom.val().trim() : ''
 
-                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '')
+                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '') + ( changedFrom ? (q || v || context ? '&' : '') : '' ) + changedFrom
                 }
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')
