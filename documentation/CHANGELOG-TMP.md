@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel
+
+4171    28.03.2022  rc-2.2  2.2.12      Moe     Bug         Umfragen auch bei abgelaufener Lizenz
+
 4175    25.03.2022  dev     2.3         Andreas Bug         Bereinigungsfunktion für fehlende Vertrag-Teilnehmer-Verknüpfungen erstellt
 
 --      23.03.2022  dev     2.3         Andreas Bug         doppelte Spalte access_type aus KBART-Export entfernt
