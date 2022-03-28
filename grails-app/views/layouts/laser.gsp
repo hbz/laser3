@@ -474,9 +474,7 @@
                                         <i  class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</semui:link>--%>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkOrgLicRoles"><g:message code="menu.admin.checkOrgLicRoles"/></semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</semui:link>

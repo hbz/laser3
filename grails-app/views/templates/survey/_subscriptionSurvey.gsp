@@ -1122,7 +1122,12 @@
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
                                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
-                                    <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
+                                    <semui:xEditableRefData data_confirm_tokenMsg="${message(code: 'survey.participationProperty.confirmation')}"
+                                                            data_confirm_term_how="ok"
+                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
+                                                            owner="${surveyResult}"
+                                                            field="refValue" type="text"
                                                             id="participation"
                                                             config="${surveyResult.type.refdataCategory}"/>
                                 </g:if>
@@ -1157,15 +1162,9 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('body #participation').editable('destroy').editable({
-        validate: function (value) {
-            if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
-                var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
-                if (r == false) {
-                    return "Sie haben der Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"
-                }
-            }
-        },
-        tpl: '<select class="ui dropdown"></select>'}).on('shown', function() {
+        tpl: '<select class="ui dropdown"></select>'
+        }).on('shown', function() {
+            r2d2.initDynamicSemuiStuff('body');
             $(".table").trigger('reflow');
             $('.ui.dropdown').dropdown({ clearable: true });
         }).on('hidden', function() {

@@ -63,7 +63,9 @@
             <g:sortableColumn property="name"
                               title="${message(code: 'package.show.pkg_name')}"
                               params="${params}"/>
-            <th>${message(code: 'package.compare.overview.tipps')}</th>
+            <g:sortableColumn property="titleCount"
+                              title="${message(code: 'package.compare.overview.tipps')}"
+                              params="${params}"/>
             <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
                               params="${params}"/>
             <g:sortableColumn property="nominalPlatformName"
