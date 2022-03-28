@@ -5,7 +5,7 @@
 <g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI()}"/>
 <g:if test="${actionName in ['listInstitution']}">
     <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
-</g:elseif>
+</g:if>
 <g:else>
     <g:set var="exportFileName" value="${message(code: 'subscription.details.consortiaMembers.label')}"/>
 </g:else>
