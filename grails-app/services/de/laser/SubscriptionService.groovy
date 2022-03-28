@@ -548,6 +548,10 @@ class SubscriptionService {
                  RDStore.SUBSCRIPTION_INTENDED,
                  RDStore.SUBSCRIPTION_ORDERED]
         )
+        if(!validSubChilds){
+            validSubChilds = Subscription.findAllByInstanceOfAndStatus(
+                    subscription, subscription.status)
+        }
         if(validSubChilds) {
             /*validSubChilds = validSubChilds?.sort { a, b ->
                 def sa = a.getSubscriber()
