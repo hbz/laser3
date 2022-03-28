@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel 
+
 4171    28.03.2022  rc-2.2  2.2.12      Moe     Bug         Umfragen auch bei abgelaufener Lizenz
 
 --      15.03.2022  rc-2.2  2.2.12      Andreas Bug         Abfragefehler im Lizenzlistenendpunkt behoben
