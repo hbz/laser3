@@ -178,6 +178,7 @@ bootRun {
         '-Dspring.output.ansi.enabled=always', 
         '-noverify', 
         '-XX:TieredStopAtLevel=1',
+//        '-XX:HotswapAgent=fatjar',
         '-Xmx1024m')
     sourceResources sourceSets.main
     String springProfilesActive = 'spring.profiles.active'
@@ -269,13 +270,25 @@ tasks.withType(GroovyCompile) {
 //    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
 //}
 
-task( 'devtools.triggerRestart', group: 'laser', type: Exec ) {
-    workingDir './grails-app/conf/spring'
-    commandLine 'touch', 'restart.trigger'
-}
-
 task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
     String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
     executable 'sh'
     args '-c', grailsExe + ' prod dbm-gorm-diff changelog-' + java.time.LocalDate.now().format('yyyy-MM-dd') + '.groovy --add'
+}
+task( 'devtools.triggerRestart', group: 'laser' ) {
+    doLast {
+        FileWriter fw = new FileWriter('./grails-app/conf/spring/restart.trigger')
+        fw.write(System.currentTimeMillis().toString())
+        fw.close()
+    }
+}
+task ( 'system.environment', group: 'laser' ) {
+    doLast {
+        System.getenv().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+    }
+}
+task ( 'system.properties', group: 'laser' ) {
+    doLast {
+        System.getProperties().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+    }
 }

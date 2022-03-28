@@ -36,6 +36,7 @@ spring:
     jmx:
         unique-names: true
     main:
+        lazy-initialization: true # todo - local only
         banner-mode: "off"
     groovy:
         template:

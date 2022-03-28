@@ -189,10 +189,10 @@ class ConfigUtils {
 
             if (validate) {
                 if (result == null) {
-                    println(": NOT found ..  ${key}")
+                    println(": NOT found  ->  ${key}")
                 }
                 else {
-                    println(": ok ..         ${key}  ->  " + result)
+                    println(": ok             ${key}  ->  " + result)
                 }
             }
         }

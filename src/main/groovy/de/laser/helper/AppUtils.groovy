@@ -50,6 +50,22 @@ class AppUtils {
         ConfigUtils.readConfig( 'grails.plugin.' + token, false )
     }
 
+    // -- Devtools
+
+    static boolean isRestartedByDevtools() {
+        try {
+            FileReader fr = new FileReader('./grails-app/conf/spring/restart.trigger')
+            if (fr) {
+                Long ts = Long.parseLong(fr.readLine())
+                if (30000 > (System.currentTimeMillis() - ts)) {
+                    return true
+                }
+            }
+        } catch (Exception e) {}
+
+        false
+    }
+
     // -- DC
 
     static GrailsClass getDomainClass(String qualifiedName) {

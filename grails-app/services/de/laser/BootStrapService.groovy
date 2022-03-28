@@ -42,11 +42,13 @@ class BootStrapService {
      * Runs initialisation and triggers other startup methods
      * @param servletContext unused
      */
-    void init(def servletContext) {
+    void init (boolean quickStart) {
 
-        ConfigUtils.checkConfig()
+        if (! quickStart) {
+            ConfigUtils.checkConfig()
+        }
 
-        log.info("--------------------------------------------------------------------------------")
+        log.info '--------------------------------------------------------------------------------'
 
         log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
         log.info("Server: ${AppUtils.getCurrentServer()}")
@@ -60,78 +62,87 @@ class BootStrapService {
             log.info("Cache: ${dsp}")
         }
 
-        log.info("--------------------------------------------------------------------------------")
+        log.info '--------------------------------------------------------------------------------'
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
-        // Reset harddata flag for given refdata and properties
-
-        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.isHardData =:reset', [reset: false])
-        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.isHardData =:reset', [reset: false])
-        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.isHardData =:reset', [reset: false])
-
-        // Here we go ..
-
-        log.debug("updatePsqlRoutines ..")
-        updatePsqlRoutines()
-
-        log.debug("setupRefdata ..")
-        setupRefdata()
-
-        log.debug("reorderRefdata ..")
-        refdataReorderService.reorderRefdata()
-
-        log.debug("setupPropertyDefinitions ..")
-        setupPropertyDefinitions()
-
-        log.debug("setupRolesAndPermissions ..")
-        setupRolesAndPermissions()
-
-        log.debug("setupSystemUsers ..")
-        setupSystemUsers()
-
-        log.debug("setupAdminUsers ..")
-        setupAdminUsers()
-
-        if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
-            log.warn("there are user org rows with no role set. Please update the table to add role FKs")
+        if (quickStart) {
+            log.info "Quick start performed - setup operations ignored .. "
+            log.info '--------------------------------------------------------------------------------'
         }
+        else {
+            // Reset harddata flag for given refdata and properties
 
-        // def auto_approve_memberships = SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
+            RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.isHardData =:reset', [reset: false])
+            RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.isHardData =:reset', [reset: false])
+            PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.isHardData =:reset', [reset: false])
 
-        SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
+            // Here we go ..
 
-        if(mailSent){
-            mailSent.delete()
-        }
+            log.debug("updatePsqlRoutines ..")
+            updatePsqlRoutines()
 
-        SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
-        SystemSetting.findByName('StatusUpdateInterval') ?: new SystemSetting(name: 'StatusUpdateInterval', tp: SystemSetting.CONTENT_TYPE_STRING, value: '300').save()
+            log.debug("setupRefdata ..")
+            setupRefdata()
 
-        // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
+            log.debug("reorderRefdata ..")
+            refdataReorderService.reorderRefdata()
 
-        log.debug("setOrgRoleGroups ..")
-        setOrgRoleGroups()
+            log.debug("setupPropertyDefinitions ..")
+            setupPropertyDefinitions()
 
-        log.debug("setupOnixPlRefdata ..")
-        setupOnixPlRefdata()
+            log.debug("setupRolesAndPermissions ..")
+            setupRolesAndPermissions()
 
-        log.debug("setupContentItems ..")
-        setupContentItems()
+            log.debug("setupSystemUsers ..")
+            setupSystemUsers()
 
-        log.debug("setIdentifierNamespace ..")
-        setIdentifierNamespace()
+            log.debug("setupAdminUsers ..")
+            setupAdminUsers()
 
-        log.debug("checking database ..")
-
-        if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-            log.debug("database is probably empty; setting up essential data ..")
-            File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
-            if(f.exists())
-                apiService.setupBasicData(f)
-            else {
-                organisationService.createOrgsFromScratch()
+            if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
+                log.warn("there are user org rows with no role set. Please update the table to add role FKs")
             }
+
+            // def auto_approve_memberships = SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
+
+            SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
+
+            if (mailSent) {
+                mailSent.delete()
+            }
+
+            SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
+            SystemSetting.findByName('StatusUpdateInterval') ?: new SystemSetting(name: 'StatusUpdateInterval', tp: SystemSetting.CONTENT_TYPE_STRING, value: '300').save()
+
+            // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
+
+            log.debug("setOrgRoleGroups ..")
+            setOrgRoleGroups()
+
+            log.debug("setupOnixPlRefdata ..")
+            setupOnixPlRefdata()
+
+            log.debug("setupContentItems ..")
+            setupContentItems()
+
+            log.debug("setIdentifierNamespace ..")
+            setIdentifierNamespace()
+
+            log.debug("checking database ..")
+
+            if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
+                log.debug("database is probably empty; setting up essential data ..")
+                File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
+                if (f.exists())
+                    apiService.setupBasicData(f)
+                else {
+                    organisationService.createOrgsFromScratch()
+                }
+            }
+
+            log.debug("adjustDatabasePermissions ..")
+            adjustDatabasePermissions()
         }
 
         log.debug("setJSONFormatDate ..")
@@ -140,15 +151,6 @@ class BootStrapService {
             return it ? (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")).format( it ) : null
             //return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
-
-        log.debug("adjustDatabasePermissions ..")
-        adjustDatabasePermissions()
-
-        /*
-        only for local usage
-        log.debug("vacuumAndAnalyzeTables ..")
-        vacuumAndAnalyseTables()
-         */
 
         log.debug(".__                                .________ ")
         log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails4 ")

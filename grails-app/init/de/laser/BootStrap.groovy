@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.helper.AppUtils
+
 import javax.servlet.http.HttpServletRequest
 
 class BootStrap {
@@ -11,8 +13,7 @@ class BootStrap {
         HttpServletRequest.metaClass.isXhr = { ->
             'XMLHttpRequest' == delegate.getHeader('X-Requested-With')
         }
-
-        bootStrapService.init(servletContext)
+        bootStrapService.init( AppUtils.isRestartedByDevtools() )
     }
 
     def destroy = {
