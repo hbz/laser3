@@ -1,5 +1,5 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
-<laser:serviceInjection />
+<laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
 
@@ -9,25 +9,28 @@
 
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
 
-                <g:link class="ui icon button right floated" controller="subscription" action="members" id="${subscription.id}">
-                    <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
-                    <div class="ui blue circular label">
-                        ${countParticipants.subMembers}
-                    </div>
-                </g:link>
+            <g:link class="ui icon button right floated" controller="subscription" action="members"
+                    id="${subscription.id}">
+                <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
-                <g:link class="ui icon button right floated"  controller="survey" action="surveyParticipants"
-                        id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id]">
-                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
-                    <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
-                </g:link>
+                <div class="ui blue circular label">
+                    ${countParticipants.subMembers}
+                </div>
+            </g:link>
 
-                <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
-                    ( ${countParticipants.subMembersWithMultiYear}
-                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
-                </g:if>
-                <br><br><br>
+            <g:link class="ui icon button right floated" controller="survey" action="surveyParticipants"
+                    id="${surveyConfig.surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig.id]">
+                <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
+
+                <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
+            </g:link>
+
+            <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
+                ( ${countParticipants.subMembersWithMultiYear}
+                ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
+            </g:if>
+            <br><br><br>
         </g:if>
 
         <div class="ui card ">
@@ -139,7 +142,7 @@
 
                     </dl>
 
-                    <br />
+                    <br/>
 
                     <div class="ui form">
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
@@ -196,7 +199,7 @@
                                         <i class="info circle icon"></i>
                                     </span>
                                 </g:if>
-                                    <semui:linkIcon href="${surveyConfig.url}"/>
+                                <semui:linkIcon href="${surveyConfig.url}"/>
                             </dd>
 
                         </dl>
@@ -261,11 +264,7 @@
                     </div>
                 </g:else>
 
-                <br />
-
-
-
-
+                <br/>
 
             </div>
         </div>
@@ -281,182 +280,189 @@
                 <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                                <button
-                                    class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated " data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
-                                        <i class="ui angle double down large icon"></i>
-                                </button>
-                                <laser:script file="${this.getGroovyPageFileName()}">
-                                    $('.js-subscription-info-accordion')
-                                      .accordion({
-                                        onOpen: function() {
-                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
+                            <button
+                                    class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                    data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
+                                <i class="ui angle double down large icon"></i>
+                            </button>
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                $('.js-subscription-info-accordion')
+                                  .accordion({
+                                    onOpen: function() {
+                                      $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                    code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
                                         },
                                         onClose: function() {
-                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> ')
+                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                    code="surveyConfigsInfo.subscriptionInfo.show"/> ')
                                         }
                                       })
                                     ;
-                                </laser:script>
+                            </laser:script>
 
 
-                                <g:if test="${!subscription}">
-                                    <semui:headerTitleIcon type="Subscription"/>
-                                    <h2 class="ui icon header">
-                                        <g:link controller="public" action="gasco"
-                                                params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                            ${surveyConfig.subscription.name}
-                                        </g:link>
-                                    </h2>
+                            <g:if test="${!subscription}">
+                                <semui:headerTitleIcon type="Subscription"/>
+                                <h2 class="ui icon header">
+                                    <g:link controller="public" action="gasco"
+                                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                                        ${surveyConfig.subscription.name}
+                                    </g:link>
+                                </h2>
 
-                                    <div class="field" style="text-align: right;">
-                                        <g:link class="ui button" controller="public" action="gasco"
-                                                params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                            GASCO-Monitor
-                                        </g:link>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <semui:headerTitleIcon type="Subscription"/>
-                                    <h2 class="ui icon header">
+                                <div class="field" style="text-align: right;">
+                                    <g:link class="ui button" controller="public" action="gasco"
+                                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                                        GASCO-Monitor
+                                    </g:link>
+                                </div>
+                            </g:if>
+                            <g:else>
+                                <semui:headerTitleIcon type="Subscription"/>
+                                <h2 class="ui icon header">
                                     <g:link controller="subscription" action="show" id="${subscription.id}">
                                         ${subscription.name}
                                     </g:link>
-                                    </h2>
-                                    <semui:auditInfo auditable="[subscription, 'name']"/>
-                                </g:else>
-                            </div>
-                        <g:if test="${subscription}">
-                        <div class="content" id="subscription-info">
-                            <div class="ui two column stackable grid container">
-                            <div class="column">
-                                <dl>
-                                    <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                                    <dd>${subscription.status.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscription, 'status']"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                                    <dd>${subscription.kind?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscription, 'kind']"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                                    <dd>${subscription.form?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscription, 'form']"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                                    <dd>${subscription.resource?.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscription, 'resource']"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                                    <dd>${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
-                                    <dd><semui:auditInfo auditable="[subscription, 'hasPerpetualAccess']"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <g:message code="default.identifiers.label"/>
-                                    </dt>
-                                    <dd>
-                                        <g:each in="${subscription.ids?.sort { it.ns.ns }}"
-                                                var="id">
-                                            <span class="ui small basic image label">
-                                                ${id.ns.ns}: <div class="detail">${id.value}</div>
-                                            </span>
-                                        </g:each>
-                                    </dd>
-                                </dl>
-                            </div>
-
-
-                            <div class="column">
-                                %{--<g:if test="${subscription.packages}">
-                                    <table class="ui three column la-selectable table">
-                                        <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
-                                            <tr>
-                                                <th scope="row"
-                                                    class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
-                                                <td>
-                                                    <g:link controller="package" action="show"
-                                                            id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-
-                                                    <g:if test="${sp.pkg.contentProvider}">
-                                                        (${sp.pkg.contentProvider.name})
-                                                    </g:if>
-                                                </td>
-                                                <td class="right aligned">
-                                                </td>
-
-                                            </tr>
-                                        </g:each>
-                                    </table>
-                                </g:if>--}%
-
-                                <g:if test="${visibleOrgRelations}">
-
-                                    <g:render template="/templates/links/orgLinksAsList"
-                                              model="${[roleLinks    : visibleOrgRelations,
-                                                        roleObject   : subscription,
-                                                        roleRespValue: 'Specific subscription editor',
-                                                        editmode     : false,
-                                                        showPersons  : false
-                                              ]}"/>
-
-                                </g:if>
-                            </div>
-                        </div>
-
-
-                            <br />
-
-                           <div class="ui form">
-
-                            <g:set var="oldEditable" value="${editable}"/>
-                            <div id="subscription-properties" style="margin: 1em 0">
-                                <g:set var="editable" value="${false}" scope="request"/>
-                                <g:set var="editable" value="${false}" scope="page"/>
-                                <g:render template="/subscription/properties" model="${[
-                                        subscription: subscription, calledFromSurvey: true
-                                ]}"/>
-
-                            </div>
-
-                            <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
-                            <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-                        </div>
-
-
-                        <div class="ui card">
-                            <div class="content">
-                                <h2 class="ui header">
-                                    <g:message code="license.plural"/>
                                 </h2>
+                                <semui:auditInfo auditable="[subscription, 'name']"/>
+                            </g:else>
+                        </div>
+                        <g:if test="${subscription}">
+                            <div class="content" id="subscription-info">
+                                <div class="ui two column stackable grid container">
+                                    <div class="column">
+                                        <dl>
+                                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
+                                            <dd>${subscription.status.getI10n('value')}</dd>
+                                            <dd><semui:auditInfo auditable="[subscription, 'status']"/></dd>
+                                        </dl>
+                                        <dl>
+                                            <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
+                                            <dd>${subscription.kind?.getI10n('value')}</dd>
+                                            <dd><semui:auditInfo auditable="[subscription, 'kind']"/></dd>
+                                        </dl>
+                                        <dl>
+                                            <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
+                                            <dd>${subscription.form?.getI10n('value')}</dd>
+                                            <dd><semui:auditInfo auditable="[subscription, 'form']"/></dd>
+                                        </dl>
+                                        <dl>
+                                            <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
+                                            <dd>${subscription.resource?.getI10n('value')}</dd>
+                                            <dd><semui:auditInfo auditable="[subscription, 'resource']"/></dd>
+                                        </dl>
+                                        <dl>
+                                            <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                            <dd>${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
+                                            <dd><semui:auditInfo auditable="[subscription, 'hasPerpetualAccess']"/></dd>
+                                        </dl>
+                                        <dl>
+                                            <dt class="control-label">
+                                                <g:message code="default.identifiers.label"/>
+                                            </dt>
+                                            <dd>
+                                                <g:each in="${subscription.ids?.sort { it.ns.ns }}"
+                                                        var="id">
+                                                    <span class="ui small basic image label">
+                                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
+                                                    </span>
+                                                </g:each>
+                                            </dd>
+                                        </dl>
+                                    </div>
 
-                                <g:if test="${links && links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
-                                    <table class="ui fixed table">
-                                        <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
-                                            <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
-                                                <th scope="row" class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
-                                                <td>
-                                                    <g:link controller="license" action="show" id="${pair.id}">
-                                                        ${pair.reference} (${pair.status.getI10n("value")})
-                                                    </g:link>
-                                                    <g:formatDate date="${pair.startDate}" format="${message(code:'default.date.format.notime')}"/>-<g:formatDate date="${pair.endDate}" format="${message(code:'default.date.format.notime')}"/><br />
-                                                    <g:set var="comment" value="${DocContext.findByLink(link)}"/>
-                                                    <g:if test="${comment}">
-                                                        <em>${comment.owner.content}</em>
-                                                    </g:if>
-                                                </td>
-                                                <td class="right aligned">
-                                                    <g:if test="${pair.propertySet}">
-                                                        <button id="derived-license-properties-toggle${link.id}"
-                                                                class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                                                data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                                            <i class="ui angle double down icon"></i>
-                                                        </button>
-                                                        <laser:script file="${this.getGroovyPageFileName()}">
-                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
+
+                                    <div class="column">
+                                        %{--<g:if test="${subscription.packages}">
+                                            <table class="ui three column la-selectable table">
+                                                <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
+                                                    <tr>
+                                                        <th scope="row"
+                                                            class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
+                                                        <td>
+                                                            <g:link controller="package" action="show"
+                                                                    id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+
+                                                            <g:if test="${sp.pkg.contentProvider}">
+                                                                (${sp.pkg.contentProvider.name})
+                                                            </g:if>
+                                                        </td>
+                                                        <td class="right aligned">
+                                                        </td>
+
+                                                    </tr>
+                                                </g:each>
+                                            </table>
+                                        </g:if>--}%
+
+                                        <g:if test="${visibleOrgRelations}">
+
+                                            <g:render template="/templates/links/orgLinksAsList"
+                                                      model="${[roleLinks    : visibleOrgRelations,
+                                                                roleObject   : subscription,
+                                                                roleRespValue: 'Specific subscription editor',
+                                                                editmode     : false,
+                                                                showPersons  : false
+                                                      ]}"/>
+
+                                        </g:if>
+                                    </div>
+                                </div>
+
+
+                                <br/>
+
+                                <div class="ui form">
+
+                                    <g:set var="oldEditable" value="${editable}"/>
+                                    <div id="subscription-properties" style="margin: 1em 0">
+                                        <g:set var="editable" value="${false}" scope="request"/>
+                                        <g:set var="editable" value="${false}" scope="page"/>
+                                        <g:render template="/subscription/properties" model="${[
+                                                subscription: subscription, calledFromSurvey: true
+                                        ]}"/>
+
+                                    </div>
+
+                                    <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
+                                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                                </div>
+
+                                <div class="ui card">
+                                    <div class="content">
+                                        <h2 class="ui header">
+                                            <g:message code="license.plural"/>
+                                        </h2>
+                                        <g:if test="${links && links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
+                                            <table class="ui fixed table">
+                                                <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}"
+                                                        var="link">
+                                                    <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
+                                                        <th scope="row"
+                                                            class="control-label la-js-dont-hide-this-card">${pair.licenseCategory?.getI10n("value")}</th>
+                                                        <td>
+                                                            <g:link controller="license" action="show" id="${pair.id}">
+                                                                ${pair.reference} (${pair.status.getI10n("value")})
+                                                            </g:link>
+                                                            <g:formatDate date="${pair.startDate}"
+                                                                          format="${message(code: 'default.date.format.notime')}"/>-<g:formatDate
+                                                                date="${pair.endDate}"
+                                                                format="${message(code: 'default.date.format.notime')}"/><br/>
+                                                            <g:set var="comment"
+                                                                   value="${DocContext.findByLink(link)}"/>
+                                                            <g:if test="${comment}">
+                                                                <em>${comment.owner.content}</em>
+                                                            </g:if>
+                                                        </td>
+                                                        <td class="right aligned">
+                                                            <g:if test="${pair.propertySet}">
+                                                                <button id="derived-license-properties-toggle${link.id}"
+                                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                        data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
+                                                                    <i class="ui angle double down icon"></i>
+                                                                </button>
+                                                                <laser:script file="${this.getGroovyPageFileName()}">
+                                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
@@ -466,24 +472,24 @@
                                                             $(this).html('<i class="ui angle double up icon"></i>')
                                                         }
                                                     })
-                                                        </laser:script>
+                                                                </laser:script>
+                                                            </g:if>
+                                                        </td>
+                                                    </tr>
+                                                    <g:if test="${pair.propertySet}">
+                                                        <tr>
+                                                            <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                                        </tr>
                                                     </g:if>
-                                                </td>
-                                            </tr>
-                                            <g:if test="${pair.propertySet}">
-                                                <tr>
-                                                    <td colspan="3"><div id="${link.id}Properties"></div></td>
-                                                </tr>
-                                            </g:if>
-                                        </g:each>
-                                    </table>
-                                </g:if>
+                                                </g:each>
+                                            </table>
+                                        </g:if>
 
-                            </div><!-- .content -->
-                        </div>
+                                    </div><!-- .content -->
+                                </div>
 
-                    </div>
-                </g:if>
+                            </div>
+                        </g:if>
                     </div>
                 </div>
             </div>
@@ -493,7 +499,6 @@
             <div id="packages" class="la-inline-lists"></div>
         </g:if>
 
-
     </div>
 
     <aside class="six wide column la-sidekick">
@@ -502,9 +507,10 @@
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">
                     <g:render template="/templates/tasks/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
 
                 </div>
+
                 <div id="container-notes">
                     <g:render template="/templates/notes/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
@@ -639,7 +645,7 @@
                                     ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
 
                                     <g:if test="${costItem.startDate || costItem.endDate}">
-                                        <br />(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
+                                        <br/>(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
                                     </g:if>
                                 </td>
 
@@ -700,11 +706,11 @@
 
 
                                         <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                            <br />(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                            <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
                                         </g:if>
 
                                         <g:if test="${costItemSurvey.costDescription}">
-                                            <br />
+                                            <br/>
 
                                             <div class="ui icon la-popup-tooltip la-delay"
                                                  data-position="right center"
@@ -735,7 +741,7 @@
                                         <strong><g:formatNumber
                                                 number="${(newCostItem - oldCostItem)}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                            <br />
+                                            <br/>
                                             (<g:formatNumber
                                                     number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
                                                     minFractionDigits="2"
@@ -814,11 +820,11 @@
                                        value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
 
                                 <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                    <br />(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                    <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
                                 </g:if>
 
                                 <g:if test="${costItemSurvey.costDescription}">
-                                    <br />
+                                    <br/>
 
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-position="right center"
@@ -875,7 +881,7 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
                 <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th>${message(code: 'default.actions.label')}</th>
                 </g:if>
             </tr>
             </thead>
@@ -916,20 +922,21 @@
                                 <g:set var="refdataValues"
                                        value="${refdataValues + refdataValue?.getI10n('value')}"/>
                             </g:each>
-                            <br />
+                            <br/>
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
 
                     <td>
-                        <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                        <g:set var="surveyPropertyMandatoryEditable"
+                               value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                                       (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
                         <g:form action="surveyPropertyMandatory" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
 
                             <div class="ui checkbox">
                                 <input type="checkbox"
-                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' :  ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
+                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' : ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
                                        name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
                             </div>
                         </g:form>
@@ -961,7 +968,8 @@
                             <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
 
                             <div class="field required">
-                                <label>${message(code: 'surveyConfigs.property')} <g:message code="messageRequiredField" /></label>
+                                <label>${message(code: 'surveyConfigs.property')} <g:message
+                                        code="messageRequiredField"/></label>
                                 <semui:dropdown name="selectedProperty"
 
                                                 class="la-filterPropDef"
@@ -1032,7 +1040,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort{it.type.getI10n('name')}}" var="surveyResult" status="i">
+            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -1057,7 +1065,6 @@
                             </span>
                         </g:if>
 
-
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
@@ -1070,7 +1077,7 @@
                                            value="${refdataValues + refdataValue.getI10n('value')}"/>
                                 </g:if>
                             </g:each>
-                            <br />
+                            <br/>
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
@@ -1113,14 +1120,15 @@
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
                                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
-                                    <semui:xEditableRefData data_confirm_tokenMsg="${message(code: 'survey.participationProperty.confirmation')}"
-                                                            data_confirm_term_how="ok"
-                                                            cssClass="js-open-confirm-modal-xeditable"
-                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
-                                                            owner="${surveyResult}"
-                                                            field="refValue" type="text"
-                                                            id="participation"
-                                                            config="${surveyResult.type.refdataCategory}"/>
+                                    <semui:xEditableRefData
+                                            data_confirm_tokenMsg="${message(code: 'survey.participationProperty.confirmation')}"
+                                            data_confirm_term_how="ok"
+                                            cssClass="js-open-confirm-modal-xeditable"
+                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
+                                            owner="${surveyResult}"
+                                            field="refValue" type="text"
+                                            id="participation"
+                                            config="${surveyResult.type.refdataCategory}"/>
                                 </g:if>
                                 <g:else>
                                     <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
@@ -1145,7 +1153,7 @@
             </g:each>
         </table>
     </semui:form>
-    <br />
+    <br/>
 </g:if>
 
 
@@ -1162,17 +1170,17 @@
             $(".table").trigger('reflow')
     });
     <g:if test="${links}">
-       <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
+        <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
             $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
+                url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription"/>",
                       data: {
                            loadFor: "${link.sourceLicense.id}",
                            linkId: ${link.id}
-                }
-            }).done(function(response) {
-                $("#${link.id}Properties").html(response);
+            }
+        }).done(function(response) {
+            $("#${link.id}Properties").html(response);
             }).fail();
-       </g:each>
+        </g:each>
     </g:if>
 
     <g:if test="${subscription && subscription.packages}">
