@@ -265,23 +265,7 @@
 
 
 
-                <g:if test="${subscription && subscription.packages}">
 
-                                <div class="field" style="text-align: right;">
-                                    <button id="package-info-toggle"
-                                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i></button></button>
-                                    <laser:script file="${this.getGroovyPageFileName()}">
-                                        $('#package-info-toggle').on('click', function () {
-                                            $("#packages").transition('slide down');
-                                            if ($("#packages").hasClass('visible')) {
-                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i>')
-                                            } else {
-                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.hide"/> <i class="ui angle double up icon"></i>')
-                                            }
-                                        })
-                                    </laser:script>
-                                </div>
-                </g:if>
 
             </div>
         </div>
@@ -289,26 +273,27 @@
         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
             <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
         </g:if>
-        <div class="field" style="text-align: right;">
-            <button id="subscription-info-toggle"
-                    class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i></button></button>
-            <laser:script file="${this.getGroovyPageFileName()}">
-                $('#subscription-info-toggle').on('click', function () {
-                    $("#subscription-info").transition('slide down');
-                    if ($("#subscription-info").hasClass('visible')) {
-                        $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i>')
-                            } else {
-                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> <i class="ui angle double up icon"></i>')
-                            }
-                        })
-            </laser:script>
-        </div>
 
-        <div id="subscription-info" class="la-inline-lists hidden">
 
+        <div  class="la-inline-lists ">
             <div class="ui card">
                 <div class="content">
-                    <div class="header">
+                    <div class="header" >
+                        <button id="subscription-info-toggle"
+                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated" data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
+                                    <i class="ui angle double down large icon"></i>
+                        </button>
+                        <laser:script file="${this.getGroovyPageFileName()}">
+                            $('#subscription-info-toggle').on('click', function () {
+                                $("#subscription-info").transition('fade down');
+                                if ($("#subscription-info").hasClass('visible')) {
+                                    $(this).html('<i class="ui angle double down large icon"></i>').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>')
+                                } else {
+                                    $(this).html('<i class="ui angle double up large icon"></i>').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
+                                }
+                            })
+                        </laser:script>
+
                         <g:if test="${!subscription}">
                             <semui:headerTitleIcon type="Subscription"/>
                             <h2 class="ui icon header">
@@ -337,7 +322,7 @@
                     </div>
                 </div>
                 <g:if test="${subscription}">
-                    <div class="content">
+                    <div class="content hidden" id="subscription-info">
                         <div class="ui two column stackable grid container">
                             <div class="column">
                                 <dl>
@@ -496,11 +481,9 @@
                     </div>
                 </g:if>
             </div>
-
         </div>
-
         <g:if test="${subscription && subscription.packages}">
-            <div id="packages" class="la-inline-lists hidden"></div>
+            <div id="packages" class="la-inline-lists"></div>
         </g:if>
 
 

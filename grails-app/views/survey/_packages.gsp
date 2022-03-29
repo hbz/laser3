@@ -1,19 +1,39 @@
-<%@page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.helper.DateUtils;" %>
-<laser:serviceInjection />
+<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.helper.DateUtils;" %>
+<laser:serviceInjection/>
 
 <div class="ui card">
     <div class="content">
-            <g:each in="${packages}" var="pkgInfo">
+        <g:each in="${packages}" var="pkgInfo">
+            <div class="header">
+                <div class="field" style="text-align: right;">
+                    <button id="package-info-toggle"
+                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i></button></button>
+                    <laser:script file="${this.getGroovyPageFileName()}">
+                        $('#package-info-toggle').on('click', function () {
+                            $("#packages-content").transition('slide down');
+                            if ($("#packages-content").hasClass('visible')) {
+                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i>')
+                            } else {
+                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.hide"/> <i class="ui angle double up icon"></i>')
+                            }
+                        })
+                    </laser:script>
+                </div>
 
+
+                <i aria-hidden="true" class="circular la-package icon"></i>
+
+                <h2 class="ui icon header la-clear-before la-noMargin-top">
+                    <g:link controller="package" action="show"
+                            id="${pkgInfo.packageInstance.id}">${pkgInfo.packageInstance.name}</g:link>
+                </h2>
+            </div>
+
+            <div class="content hidden" id="packages-content">
                 <div class="ui grid">
 
                     <div class="sixteen wide column">
                         <div class="la-inline-lists">
-                            <h3 class="ui icon header la-clear-before la-noMargin-top"><i aria-hidden="true"
-                                                                                          class="circular la-package icon"></i>
-                                <g:link controller="package" action="show"
-                                        id="${pkgInfo.packageInstance.id}">${pkgInfo.packageInstance.name}</g:link>
-                            </h3>
 
                             <div class="ui two cards">
                                 <div class="ui card la-time-card">
@@ -174,7 +194,8 @@
                     </div><!-- .twelve -->
 
                 </div><!-- .grid -->
+            </div>
 
-            </g:each>
+        </g:each>
     </div><!-- .content -->
 </div>
