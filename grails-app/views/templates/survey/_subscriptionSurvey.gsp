@@ -275,55 +275,59 @@
         </g:if>
 
 
-        <div  class="la-inline-lists ">
-            <div class="ui card">
-                <div class="content">
-                    <div class="header" >
-                        <button id="subscription-info-toggle"
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated" data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
-                                    <i class="ui angle double down large icon"></i>
-                        </button>
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            $('#subscription-info-toggle').on('click', function () {
-                                $("#subscription-info").transition('fade down');
-                                if ($("#subscription-info").hasClass('visible')) {
-                                    $(this).html('<i class="ui angle double down large icon"></i>').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>')
-                                } else {
-                                    $(this).html('<i class="ui angle double up large icon"></i>').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
-                                }
-                            })
-                        </laser:script>
 
-                        <g:if test="${!subscription}">
-                            <semui:headerTitleIcon type="Subscription"/>
-                            <h2 class="ui icon header">
-                                <g:link controller="public" action="gasco"
-                                        params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                    ${surveyConfig.subscription.name}
-                                </g:link>
-                            </h2>
+        <div class="ui card">
+            <div class="content">
+                <div class="ui accordion la-accordion js-subscription-info-accordion">
+                    <div class="item">
+                        <div class="title">
+                                <button id="subscription-info-toggle"
+                                    class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated " data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
+                                        <i class="ui angle double down large icon"></i>
+                                </button>
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    $('.js-subscription-info-accordion')
+                                      .accordion({
+                                        onOpen: function() {
+                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
+                                        },
+                                        onClose: function() {
+                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> ')
+                                        }
+                                      })
+                                    ;
+                                </laser:script>
 
-                            <div class="field" style="text-align: right;">
-                                <g:link class="ui button" controller="public" action="gasco"
-                                        params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                    GASCO-Monitor
-                                </g:link>
+
+                                <g:if test="${!subscription}">
+                                    <semui:headerTitleIcon type="Subscription"/>
+                                    <h2 class="ui icon header">
+                                        <g:link controller="public" action="gasco"
+                                                params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                                            ${surveyConfig.subscription.name}
+                                        </g:link>
+                                    </h2>
+
+                                    <div class="field" style="text-align: right;">
+                                        <g:link class="ui button" controller="public" action="gasco"
+                                                params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                                            GASCO-Monitor
+                                        </g:link>
+                                    </div>
+                                </g:if>
+                                <g:else>
+                                    <semui:headerTitleIcon type="Subscription"/>
+                                    <h2 class="ui icon header">
+                                    <g:link controller="subscription" action="show" id="${subscription.id}">
+                                        ${subscription.name}
+                                    </g:link>
+                                    </h2>
+                                    <semui:auditInfo auditable="[subscription, 'name']"/>
+                                </g:else>
                             </div>
-                        </g:if>
-                        <g:else>
-                            <semui:headerTitleIcon type="Subscription"/>
-                            <h2 class="ui icon header">
-                            <g:link controller="subscription" action="show" id="${subscription.id}">
-                                ${subscription.name}
-                            </g:link>
-                            </h2>
-                            <semui:auditInfo auditable="[subscription, 'name']"/>
-                        </g:else>
-                    </div>
-                </div>
-                <g:if test="${subscription}">
-                    <div class="content hidden" id="subscription-info">
-                        <div class="ui two column stackable grid container">
+                        <g:if test="${subscription}">
+                        <div class="content" id="subscription-info">
+                            <div class="ui two column stackable grid container">
                             <div class="column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
@@ -404,7 +408,7 @@
                         </div>
 
 
-                        <br />
+                            <br />
 
                            <div class="ui form">
 
@@ -480,8 +484,11 @@
 
                     </div>
                 </g:if>
+                    </div>
+                </div>
             </div>
         </div>
+
         <g:if test="${subscription && subscription.packages}">
             <div id="packages" class="la-inline-lists"></div>
         </g:if>
