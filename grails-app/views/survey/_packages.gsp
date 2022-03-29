@@ -5,7 +5,7 @@
     <div class="content">
         <g:each in="${packages}" var="pkgInfo">
 
-            <div class="ui accordion la-accordion js-package-info-accordion">
+            <div class="ui accordion la-accordion-showMore js-package-info-accordion">
                 <div class="item">
                     <div class="title">
                         <button
@@ -200,11 +200,7 @@
         </g:each>
     </div><!-- .content -->
 </div>
-<style>
-.ui.accordion.la-accordion .item .active.title  .angle.double.icon {
-    transform: rotate(-180deg);
-}
-</style>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.js-package-info-accordion')
       .accordion({

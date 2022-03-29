@@ -278,10 +278,10 @@
 
         <div class="ui card">
             <div class="content">
-                <div class="ui accordion la-accordion js-subscription-info-accordion">
+                <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                                <button id="subscription-info-toggle"
+                                <button
                                     class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated " data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
                                         <i class="ui angle double down large icon"></i>
                                 </button>
