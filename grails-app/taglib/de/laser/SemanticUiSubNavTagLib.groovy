@@ -5,8 +5,8 @@ import de.laser.helper.SwissKnife
 
 class SemanticUiSubNavTagLib {
 
-    def contextService
-    def accessService
+    AccessService accessService
+    ContextService contextService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

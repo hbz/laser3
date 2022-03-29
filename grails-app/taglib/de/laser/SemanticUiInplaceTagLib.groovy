@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.Role
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
@@ -9,7 +10,7 @@ import java.text.SimpleDateFormat
 
 class SemanticUiInplaceTagLib {
 
-    def genericOIDService
+    GenericOIDService genericOIDService
 
     static namespace = "semui"
 

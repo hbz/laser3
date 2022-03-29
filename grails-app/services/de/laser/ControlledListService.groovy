@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
@@ -10,6 +10,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -21,10 +22,10 @@ import java.text.SimpleDateFormat
 @Transactional
 class ControlledListService {
 
-    def contextService
-    def genericOIDService
-    def messageSource
-    def accessService
+    AccessService accessService
+    ContextService contextService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
 
     /**
      * Retrieves a list of providers and agencies

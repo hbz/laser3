@@ -11,10 +11,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 @Transactional
 class SystemService {
 
-    def contextService
-    def grailsApplication
+    ContextService contextService
     def sessionRegistry
-    def springSecurityService
 
     /**
      * Dumps the state of currently active services

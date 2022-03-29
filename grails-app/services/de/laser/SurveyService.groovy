@@ -20,6 +20,7 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
@@ -34,15 +35,16 @@ class SurveyService {
 
     AccessService accessService
     ContextService contextService
-    def messageSource
-    ExportService exportService
-    MailService mailService
     EscapeService escapeService
-    GrailsApplication grailsApplication
-    String replyTo
-    GenericOIDService genericOIDService
-    SubscriptionService subscriptionService
+    ExportService exportService
     FilterService filterService
+    GenericOIDService genericOIDService
+    GrailsApplication grailsApplication
+    MailService mailService
+    MessageSource messageSource
+    SubscriptionService subscriptionService
+
+    String replyTo
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from

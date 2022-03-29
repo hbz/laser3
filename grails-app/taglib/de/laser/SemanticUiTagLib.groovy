@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.helper.*
 import org.grails.encoder.CodecLookup
@@ -16,15 +16,15 @@ import java.text.SimpleDateFormat
 
 class SemanticUiTagLib {
 
-    def yodaService
-    def auditService
-    def systemService
-    def contextService
-    def gokbService
-    def genericOIDService
+    AuditService auditService
     CodecLookup codecLookup
-    TagLibraryLookup gspTagLibraryLookup
+    ContextService contextService
+    GenericOIDService genericOIDService
+    GokbService gokbService
     LinksGenerationService linksGenerationService
+    SystemService systemService
+    TagLibraryLookup gspTagLibraryLookup
+    YodaService yodaService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

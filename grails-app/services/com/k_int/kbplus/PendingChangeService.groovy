@@ -41,6 +41,7 @@ import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
 import grails.web.mapping.LinkGenerator
 import org.hibernate.Session
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
@@ -54,12 +55,12 @@ import java.time.Duration
 @Transactional
 class PendingChangeService extends AbstractLockableService {
 
-    def genericOIDService
-    SubscriptionService subscriptionService
     AuditService auditService
     ContextService contextService
-    def messageSource
     EscapeService escapeService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
+    SubscriptionService subscriptionService
 
 
     final static EVENT_OBJECT_NEW = 'New Object'

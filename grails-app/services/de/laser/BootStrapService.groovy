@@ -9,6 +9,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
@@ -27,14 +28,14 @@ import java.text.SimpleDateFormat
 @Transactional
 class BootStrapService {
 
-    def apiService
-    def cacheService
+    ApiService apiService
+    CacheService cacheService
     def dataSource
-    def grailsApplication
-    def organisationService
-    def refdataReorderService
+    GrailsApplication grailsApplication
+    OrganisationService organisationService
+    RefdataReorderService refdataReorderService
     def sessionFactory
-    def userService
+    UserService userService
 
     final static BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
 

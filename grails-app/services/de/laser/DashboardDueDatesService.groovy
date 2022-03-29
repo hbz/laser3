@@ -12,6 +12,7 @@ import de.laser.helper.SqlDateUtils
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.mapping.LinkGenerator
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -33,7 +34,7 @@ class DashboardDueDatesService {
     MailService mailService
     LinkGenerator grailsLinkGenerator
     GenericOIDService genericOIDService
-    def messageSource
+    MessageSource messageSource
     EscapeService escapeService
     Locale locale
     String from

@@ -3,14 +3,12 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
-import de.laser.exceptions.CleanupException
 import de.laser.exceptions.SyncException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
-import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -23,10 +21,6 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
-import org.hibernate.Session
-import org.springframework.transaction.TransactionStatus
-
-import java.sql.Timestamp
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
@@ -35,13 +29,13 @@ import java.sql.Timestamp
 //@Transactional
 class YodaService {
 
-    def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
-    ChangeNotificationService changeNotificationService = Holders.grailsApplication.mainContext.getBean('changeNotificationService')
-    GlobalSourceSyncService globalSourceSyncService = Holders.grailsApplication.mainContext.getBean('globalSourceSyncService')
+    ContextService contextService
+    ChangeNotificationService changeNotificationService
     DeletionService deletionService
-    GokbService gokbService = Holders.grailsApplication.mainContext.getBean('gokbService')
-    LinkGenerator grailsLinkGenerator = Holders.grailsApplication.mainContext.getBean(LinkGenerator)
     GlobalService globalService
+    GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
+    LinkGenerator grailsLinkGenerator
     PackageService packageService
 
     /**

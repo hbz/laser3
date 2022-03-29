@@ -24,10 +24,10 @@ class OrganisationControllerService {
     AccessService accessService
     ContextService contextService
     FormService formService
-    MessageSource messageSource
     GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
+    MessageSource messageSource
 
     //---------------------------------------- linking section -------------------------------------------------
 

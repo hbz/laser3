@@ -66,9 +66,10 @@ import java.util.List
 @Transactional
 class ExportService {
 
-	SimpleDateFormat formatter = DateUtils.getSDF_ymd()
-	MessageSource messageSource
 	ContextService contextService
+	MessageSource messageSource
+
+	SimpleDateFormat formatter = DateUtils.getSDF_ymd()
 
 	/**
 	 * new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV

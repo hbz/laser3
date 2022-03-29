@@ -22,10 +22,10 @@ import java.text.SimpleDateFormat
 @Transactional
 class PropertyService {
 
-    GenericOIDService genericOIDService
-    ContextService contextService
-    MessageSource messageSource
     AccessService accessService
+    ContextService contextService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
 
     /**
      * Chops the order clause from the given query

@@ -12,6 +12,7 @@ import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j
 import groovy.util.slurpersupport.GPathResult
+import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 
@@ -20,7 +21,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class ApiService {
 
-    def messageSource
+    MessageSource messageSource
 
     /**
      * Strips whitespaces from the given string

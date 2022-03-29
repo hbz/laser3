@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.ExportService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.helper.AppUtils
@@ -8,6 +8,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -16,12 +17,11 @@ import org.springframework.context.i18n.LocaleContextHolder
 @Transactional
 class OrganisationService {
 
-    def contextService
-    def messageSource
-    def exportService
-    def grailsApplication
-    def instAdmService
-    def userService
+    ContextService contextService
+    MessageSource messageSource
+    ExportService exportService
+    InstAdmService instAdmService
+    UserService userService
     List<String> errors = []
 
     /**

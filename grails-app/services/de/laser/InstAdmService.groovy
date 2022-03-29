@@ -6,9 +6,10 @@ import de.laser.auth.UserOrg
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
-import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
+import grails.plugins.mail.MailService
 import grails.util.Holders
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -17,12 +18,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 @Transactional
 class InstAdmService {
 
-    GrailsApplication grailsApplication
-    def accessService
-    def contextService
-
-    def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-    def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
+    AccessService accessService
+    ContextService contextService
+    MailService mailService
+    MessageSource messageSource
 
     /**
      * Checks if the given institution has an administrator

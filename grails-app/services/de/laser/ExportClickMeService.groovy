@@ -9,6 +9,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class ExportClickMeService {
 
-    def messageSource
+    MessageSource messageSource
     ExportService exportService
     AccessPointService accessPointService
     ContextService contextService

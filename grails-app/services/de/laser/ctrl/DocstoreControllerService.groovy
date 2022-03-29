@@ -1,6 +1,5 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.GenericOIDService
 import de.laser.*
 import de.laser.helper.AppUtils
 import de.laser.helper.RDConstants
@@ -18,7 +17,6 @@ class DocstoreControllerService {
     static final int STATUS_ERROR = 1
 
     ContextService contextService
-    GenericOIDService genericOIDService
 
     /**
      * Edits a document with the given parameter map. The editing is done if the attached object could be retrieved. The document context is given by params.docctx

@@ -7,6 +7,7 @@ import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -19,9 +20,9 @@ class TaskService {
 
     final static WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
 
-    def accessService
-    def contextService
-    def messageSource
+    AccessService accessService
+    ContextService contextService
+    MessageSource messageSource
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 

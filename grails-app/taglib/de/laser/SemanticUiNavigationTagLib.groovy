@@ -5,8 +5,8 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 class SemanticUiNavigationTagLib {
 
-    def contextService
-    def accessService
+    AccessService accessService
+    ContextService contextService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

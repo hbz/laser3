@@ -4,7 +4,6 @@ import de.laser.auth.User
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.web.authentication.AjaxAwareAuthenticationSuccessHandler
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import org.springframework.security.core.Authentication

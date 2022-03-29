@@ -10,6 +10,7 @@ import de.laser.interfaces.CalculatedType
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
@@ -31,7 +32,7 @@ class FinanceService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    def messageSource
+    MessageSource messageSource
     AccessService accessService
     EscapeService escapeService
     FinanceControllerService financeControllerService

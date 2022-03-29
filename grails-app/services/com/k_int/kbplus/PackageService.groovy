@@ -21,9 +21,9 @@ import java.sql.Timestamp
 @Transactional
 class PackageService {
 
-    MessageSource messageSource
     EscapeService escapeService
     LinkGenerator grailsLinkGenerator
+    MessageSource messageSource
 
     /**
      * Lists conflicts which prevent an unlinking of the package from the given subscription
