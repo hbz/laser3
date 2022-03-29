@@ -9,8 +9,6 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  */
 class I10nTranslation {
 
-    def grailsApplication
-
     static supportedLocales = ['en', 'de', 'fr']
     static transients       = ['supportedLocales']
 

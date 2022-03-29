@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
@@ -25,11 +26,11 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController  {
 
-    GokbService gokbService
-    def contextService
-    def genericOIDService
-    YodaService yodaService
+    ContextService contextService
     ExportService exportService
+    GenericOIDService genericOIDService
+    GokbService gokbService
+    YodaService yodaService
 
     @Deprecated
   @Secured(['ROLE_ADMIN'])

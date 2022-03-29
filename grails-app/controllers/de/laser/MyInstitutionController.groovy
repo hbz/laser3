@@ -1,7 +1,8 @@
 package de.laser
 
-
+import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
@@ -58,38 +59,37 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-    def accessService
-    def addressbookService
-    def contextService
-    def dataSource
-    def deletionService
-    def docstoreService
-    def escapeService
-    def filterService
-    def financeService
-    def formService
-    def genericOIDService
-    def institutionsService
-    def organisationService
-    def orgTypeService
-    def propertyService
-    def reportingGlobalService
-    def subscriptionsQueryService
-    def subscriptionService
-    def surveyService
-    def userService
-    def taskService
+    AccessService accessService
+    AddressbookService addressbookService
+    ContextService contextService
     ComparisonService comparisonService
-    ExportService exportService
-    LinksGenerationService linksGenerationService
-    MyInstitutionControllerService myInstitutionControllerService
-    PendingChangeService pendingChangeService
-    UserControllerService userControllerService
-    GokbService gokbService
+    DeletionService deletionService
+    DocstoreService docstoreService
     ExportClickMeService exportClickMeService
-    WorkflowService workflowService
+    EscapeService escapeService
+    ExportService exportService
+    FilterService filterService
+    FinanceService financeService
+    FormService formService
+    GenericOIDService genericOIDService
+    GokbService gokbService
+    InstitutionsService institutionsService
+    LinksGenerationService linksGenerationService
     ManagementService managementService
+    MyInstitutionControllerService myInstitutionControllerService
+    OrganisationService organisationService
+    OrgTypeService orgTypeService
+    PendingChangeService pendingChangeService
+    PropertyService propertyService
+    ReportingGlobalService reportingGlobalService
+    SubscriptionsQueryService subscriptionsQueryService
+    SubscriptionService subscriptionService
+    SurveyService surveyService
+    TaskService taskService
+    UserControllerService userControllerService
+    UserService userService
     CustomWkhtmltoxService wkhtmltoxService
+    WorkflowService workflowService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked

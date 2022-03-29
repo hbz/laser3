@@ -24,13 +24,13 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessPointController  {
 
-    def contextService
-    def orgTypeService
-    GenericOIDService genericOIDService
-    AccessService accessService
     AccessPointControllerService accessPointControllerService
     AccessPointService accessPointService
+    AccessService accessService
+    ContextService contextService
+    GenericOIDService genericOIDService
     EscapeService escapeService
+    OrgTypeService orgTypeService
 
 
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]

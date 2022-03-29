@@ -1,6 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.ESWrapperService
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -33,6 +36,7 @@ import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
+import org.quartz.core.QuartzScheduler
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
 
@@ -54,24 +58,23 @@ class YodaController {
 
     SessionFactory sessionFactory
 
-    def yodaService
-    def cacheService
-    def statsSyncService
-    def dataloadService
-    def globalSourceSyncService
-    def contextService
-    def dashboardDueDatesService
-    StatusUpdateService statusUpdateService
-    SystemService systemService
+    CacheService cacheService
+    ContextService contextService
+    DashboardDueDatesService dashboardDueDatesService
+    DataloadService dataloadService
+    DeletionService deletionService
+    ESWrapperService ESWrapperService
+    ExportService exportService
     FinanceService financeService
     FormService formService
-    def quartzScheduler
-    def identifierService
-    def deletionService
-    def surveyUpdateService
-    def subscriptionService
-    def exportService
-    def ESWrapperService
+    GlobalSourceSyncService globalSourceSyncService
+    IdentifierService identifierService
+    QuartzScheduler quartzScheduler
+    StatsSyncService statsSyncService
+    StatusUpdateService statusUpdateService
+    SubscriptionService subscriptionService
+    SurveyUpdateService surveyUpdateService
+    YodaService yodaService
 
     /**
      * Shows the Yoda-dashboard
@@ -81,12 +84,6 @@ class YodaController {
     def index() {
         Map result = [:]
         result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def erms2362() {
-        redirect controller: 'migrations', action: 'erms2362', params: params
     }
 
     /**

@@ -1,5 +1,6 @@
 package de.laser.ajax
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -36,12 +37,12 @@ import java.util.regex.Pattern
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
-    def genericOIDService
-    def contextService
-    def accessService
-    def escapeService
-    def formService
-    def dashboardDueDatesService
+    GenericOIDService genericOIDService
+    ContextService contextService
+    AccessService accessService
+    EscapeService escapeService
+    FormService formService
+    DashboardDueDatesService dashboardDueDatesService
     IdentifierService identifierService
     FilterService filterService
     PendingChangeService pendingChangeService
@@ -310,7 +311,7 @@ class AjaxController {
 
         rq.each { it ->
           def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-          int ctr = 0;
+          int ctr = 0
           def row = [:]
           config.cols.each { cd ->
             // log.debug("Processing result col ${cd} pos ${ctr}");
@@ -346,7 +347,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def sel2RefdataSearch() {
 
-        log.debug("sel2RefdataSearch params: ${params}");
+        log.debug("sel2RefdataSearch params: ${params}")
     
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
@@ -380,8 +381,6 @@ class AjaxController {
 //          query_params.add(params[qp.param]);
 //        }
       }
-
-      def cq = RefdataValue.executeQuery(config.countQry,query_params);
       def rq = RefdataValue.executeQuery(config.rowQry,
                                 query_params,
                                 [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
@@ -1575,7 +1574,7 @@ class AjaxController {
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(401)
-            return;
+            return
         }
 
         if (params.owner) {
@@ -1838,19 +1837,19 @@ class AjaxController {
         // log.debug("Saving ${new_obj}");
         try{
           if ( new_obj.save() ) {
-            log.debug("Saved OK");
+            log.debug("Saved OK")
           }
           else {
             flash.domainError = new_obj
             new_obj.errors.each { e ->
-              log.debug("Problem ${e}");
+              log.debug("Problem: ${e}")
             }
           }
         }catch(Exception ex){
 
             flash.domainError = new_obj
             new_obj.errors.each { e ->
-            log.debug("Problem ${e}");
+            log.debug("Problem: ${e}")
             }
         }
       }

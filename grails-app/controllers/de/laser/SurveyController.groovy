@@ -43,26 +43,26 @@ class SurveyController {
 
     AccessService accessService
     ContextService contextService
-    SubscriptionsQueryService subscriptionsQueryService
-    FilterService filterService
-    DocstoreService docstoreService
-    OrgTypeService orgTypeService
-    GenericOIDService genericOIDService
-    SurveyService surveyService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
-    ExportService exportService
-    TaskService taskService
-    SubscriptionService subscriptionService
     ComparisonService comparisonService
-    EscapeService escapeService
-    PropertyService propertyService
-    LinksGenerationService linksGenerationService
     CopyElementsService copyElementsService
-    SurveyControllerService surveyControllerService
-    ExportClickMeService exportClickMeService
-    CustomWkhtmltoxService wkhtmltoxService
+    //CustomWkhtmltoxService wkhtmltoxService
+    DocstoreService docstoreService
+    EscapeService escapeService
     ExecutorService executorService
+    ExportClickMeService exportClickMeService
+    ExportService exportService
+    GenericOIDService genericOIDService
+    FilterService filterService
+    FinanceControllerService financeControllerService
+    FinanceService financeService
+    LinksGenerationService linksGenerationService
+    OrgTypeService orgTypeService
+    PropertyService propertyService
+    SubscriptionService subscriptionService
+    SubscriptionsQueryService subscriptionsQueryService
+    SurveyControllerService surveyControllerService
+    SurveyService surveyService
+    TaskService taskService
 
     /**
      * Redirects the call to the survey details view

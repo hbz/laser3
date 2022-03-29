@@ -1,5 +1,7 @@
 package de.laser
 
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.BudgetCode
@@ -31,14 +33,14 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
-    def accessService
-    def genericOIDService
-    def financeService
-    def escapeService
-    def exportService
-    FinanceControllerService financeControllerService
-    PendingChangeService pendingChangeService
+    AccessService accessService
+    EscapeService escapeService
     ExportClickMeService exportClickMeService
+    ExportService exportService
+    FinanceControllerService financeControllerService
+    FinanceService financeService
+    GenericOIDService genericOIDService
+    PendingChangeService pendingChangeService
 
     /**
      * Returns the financial overview page for the context institution. The number of visible tabs and

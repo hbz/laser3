@@ -1,5 +1,7 @@
 package de.laser
 
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
@@ -30,23 +32,23 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController  {
 
-    def accessPointService
-    def accessService
-    def addressbookService
-    def contextService
-    def deletionService
-    def docstoreService
-    def instAdmService
-    def filterService
-    def genericOIDService
-    def organisationService
-    def propertyService
-    def userService
+    AccessPointService accessPointService
+    AccessService accessService
+    AddressbookService addressbookService
+    ContextService contextService
+    DeletionService deletionService
+    DocstoreService docstoreService
+    ExportClickMeService exportClickMeService
+    FilterService filterService
+    GenericOIDService genericOIDService
     IdentifierService identifierService
+    InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
+    OrganisationService organisationService
+    PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
-    ExportClickMeService exportClickMeService
+    UserService userService
 
     /**
      * Redirects to {@link #list()}

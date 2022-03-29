@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.RDStore
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpSession
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class EbookCatalogueController {
 
-    def genericOIDService
+    GenericOIDService genericOIDService
 
     /**
      * The landing page of the catalogue

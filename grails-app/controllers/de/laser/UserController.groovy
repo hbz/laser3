@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
@@ -17,13 +17,12 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UserController  {
 
-    def genericOIDService
-    def instAdmService
-    def contextService
-    def accessService
-    def deletionService
-    def userService
+    ContextService contextService
+    DeletionService deletionService
+    GenericOIDService genericOIDService
+    InstAdmService instAdmService
     UserControllerService userControllerService
+    UserService userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
 

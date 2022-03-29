@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.FactService
 import de.laser.auth.User
 import de.laser.helper.ConfigUtils
 import de.laser.helper.SwissKnife
@@ -21,8 +22,8 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController  {
 
-    def factService
     ContextService contextService
+    FactService factService
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.titles.TitleInstance
  
 import de.laser.annotations.DebugAnnotation
@@ -17,10 +18,10 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PersonController  {
 
-    def addressbookService
-    def genericOIDService
-    def contextService
-    def formService
+    AddressbookService addressbookService
+    ContextService contextService
+    FormService formService
+    GenericOIDService genericOIDService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

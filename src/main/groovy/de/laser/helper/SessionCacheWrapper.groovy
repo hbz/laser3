@@ -14,11 +14,11 @@ class SessionCacheWrapper {
             session = RequestContextHolder.currentRequestAttributes().getSession()
         }
     }
-    def getSession() {
+    HttpSession getSession() {
         session
     }
 
-    def list() {
+    Map<String, Object> list() {
         Map<String, Object> result = [:]
 
         session.getAttributeNames().each {
@@ -31,16 +31,16 @@ class SessionCacheWrapper {
     List getKeys() {
         session.getAttributeNames().findAll{ it.startsWith(keyPrefix) }
     }
-    def put(String key, def value) {
+    void put(String key, def value) {
         session.setAttribute(keyPrefix + key, value)
     }
     def get(String key) {
         session.getAttribute(keyPrefix + key)
     }
-    def remove(String key) {
+    void remove(String key) {
         session.removeAttribute(keyPrefix + key)
     }
-    def clear() {
+    void clear() {
         session.getAttributeNames().each {
             if (it.startsWith(keyPrefix)){
                 remove(it.replaceFirst(keyPrefix, ''))

@@ -21,10 +21,10 @@ import org.springframework.transaction.TransactionStatus
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController  {
 
-    def genericOIDService
+    ContextService contextService
     DocstoreControllerService docstoreControllerService
+    // GenericOIDService genericOIDService
     MessageSource messageSource
-    def contextService
 
     /**
      * Called by /documents/_table and /documents/_card

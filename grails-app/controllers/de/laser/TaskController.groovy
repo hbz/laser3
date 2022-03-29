@@ -15,8 +15,8 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
-    def contextService
-    def taskService
+    ContextService contextService
+    TaskService taskService
 
     static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 

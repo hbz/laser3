@@ -1,5 +1,8 @@
 package de.laser
 
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
@@ -21,20 +24,20 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    def contextService
-    def genericOIDService
-    def exportService
-    def accessService
-    def docstoreService
-    SubscriptionControllerService subscriptionControllerService
-    def subscriptionService
-    def escapeService
-    def deletionService
-    def surveyService
     AccessPointService accessPointService
+    AccessService accessService
+    ContextService contextService
     CopyElementsService copyElementsService
+    DeletionService deletionService
+    DocstoreService docstoreService
+    EscapeService escapeService
     ExportClickMeService exportClickMeService
+    ExportService exportService
+    GenericOIDService genericOIDService
     ManagementService managementService
+    SubscriptionControllerService subscriptionControllerService
+    SubscriptionService subscriptionService
+    SurveyService surveyService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 

@@ -18,8 +18,8 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController  {
 
-    def contextService
-    def accessService
+    AccessService accessService
+    ContextService contextService
     GokbService gokbService
     PlatformControllerService platformControllerService
 

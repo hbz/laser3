@@ -14,7 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocController  {
 
-	def contextService
+	ContextService contextService
 
     static allowedMethods = [delete: 'POST']
 

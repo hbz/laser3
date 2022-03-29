@@ -8,7 +8,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AnnouncementController  {
 
-    def contextService
+    ContextService contextService
 
     /**
      * Lists all current announcements

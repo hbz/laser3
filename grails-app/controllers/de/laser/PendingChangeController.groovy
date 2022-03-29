@@ -1,7 +1,8 @@
 package de.laser
 
-
- 
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.annotations.DebugAnnotation
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDStore
@@ -14,10 +15,10 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PendingChangeController  {
 
-    def genericOIDService
-    def pendingChangeService
-    def executorWrapperService
-    def contextService
+    ContextService contextService
+    ExecutorWrapperService executorWrapperService
+    GenericOIDService genericOIDService
+    PendingChangeService pendingChangeService
 
     /**
      * Call to accept the given change and to trigger processing of the changes stored in the record

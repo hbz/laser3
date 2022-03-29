@@ -18,8 +18,8 @@ import org.springframework.http.HttpStatus
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
 
-    ContextService contextService
     ApiService apiService
+    ContextService contextService
     ExportService exportService
 
     /**

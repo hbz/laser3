@@ -14,9 +14,9 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AddressController  {
 
-	def contextService
-	def addressbookService
-    def formService
+    AddressbookService addressbookService
+    ContextService contextService
+    FormService formService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

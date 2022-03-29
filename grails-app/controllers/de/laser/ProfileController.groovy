@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
@@ -13,6 +13,7 @@ import de.laser.system.SystemTicket
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -22,16 +23,15 @@ import org.springframework.context.i18n.LocaleContextHolder
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
-    def contextService
-    def genericOIDService
-    def passwordEncoder
-    def instAdmService
-    def deletionService
-    def messageSource
+    ContextService contextService
+    DeletionService deletionService
     FormService formService
-    CacheService cacheService
-    RefdataService refdataService
+    GenericOIDService genericOIDService
+    InstAdmService instAdmService
+    MessageSource messageSource
+    def passwordEncoder
     PropertyService propertyService
+    RefdataService refdataService
 
     /**
      * Call to the current session user's profile

@@ -28,6 +28,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.SQLQuery
 import org.hibernate.Session
+import org.hibernate.SessionFactory
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
@@ -48,30 +49,30 @@ class SubscriptionControllerService {
     static final int STATUS_ERROR = 1
 
     AccessService accessService
-    FilterService filterService
-    FormService formService
-    TaskService taskService
     AddressbookService addressbookService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
-    FactService factService
-    SubscriptionService subscriptionService
-    PropertyService propertyService
+    AuditService auditService
     ContextService contextService
+    FactService factService
     EscapeService escapeService
     ExecutorService executorService
-    PackageService packageService
-    GokbService gokbService
-    SurveyService surveyService
-    AuditService auditService
-    GlobalSourceSyncService globalSourceSyncService
-    LinksGenerationService linksGenerationService
     ExecutorWrapperService executorWrapperService
+    FilterService filterService
+    FinanceControllerService financeControllerService
+    FinanceService financeService
+    FormService formService
     GenericOIDService genericOIDService
-    MessageSource messageSource
-    WorkflowService workflowService
+    GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
+    LinksGenerationService linksGenerationService
     ManagementService managementService
-    def sessionFactory
+    MessageSource messageSource
+    PackageService packageService
+    PropertyService propertyService
+    SessionFactory sessionFactory
+    SubscriptionService subscriptionService
+    SurveyService surveyService
+    TaskService taskService
+    WorkflowService workflowService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 

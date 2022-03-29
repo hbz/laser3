@@ -12,8 +12,8 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TestController {
 
-    def contextService
-	def accessService
+	AccessService accessService
+	ContextService contextService
 
 	/**
 	 * Currently not used anywhere

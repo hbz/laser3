@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ESSearchService
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
@@ -19,8 +20,8 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
-    def contextService
-    def ESSearchService
+    ContextService contextService
+    ESSearchService ESSearchService
 
     /**
      * Call to the list of all title instances recorded in the system

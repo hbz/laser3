@@ -1,5 +1,6 @@
 package de.laser.ajax
 
+import de.laser.ContextService
 import de.laser.helper.*
 import de.laser.system.SystemMessage
 import de.laser.system.SystemProfiler
@@ -10,7 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['permitAll'])
 class AjaxOpenController {
 
-    def contextService
+    ContextService contextService
 
     @Secured(['permitAll'])
     def status() {

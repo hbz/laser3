@@ -1,11 +1,12 @@
 package de.laser.interceptors
 
+import de.laser.ContextService
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
 
 class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
-    def contextService
+    ContextService contextService
 
     SystemProfilerInterceptor() {
         matchAll().excludes(controller: 'ajax')

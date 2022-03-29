@@ -13,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ContactController  {
 
-	def addressbookService
+	AddressbookService addressbookService
 	ContextService contextService
 	FormService formService
 

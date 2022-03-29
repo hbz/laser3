@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
@@ -16,10 +16,10 @@ import grails.plugin.springsecurity.annotation.Secured
  */
 class CostConfigurationController {
 
-    def contextService
-    def accessService
-    def genericOIDService
+    AccessService accessService
+    ContextService contextService
     FinanceService financeService
+    GenericOIDService genericOIDService
 
     /**
      * Gets the current list of an institution's cost configurations

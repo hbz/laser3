@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.ctrl.UsageControllerService
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
@@ -14,9 +15,8 @@ import org.hibernate.criterion.CriteriaSpecification
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UsageController  {
 
-    def contextService
-    def statsSyncService
-    def usageControllerService
+    StatsSyncService statsSyncService
+    UsageControllerService usageControllerService
 
     /**
      * Landing page of the statistics overview

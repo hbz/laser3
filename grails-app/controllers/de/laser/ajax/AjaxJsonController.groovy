@@ -1,7 +1,13 @@
 package de.laser.ajax
 
+import com.k_int.kbplus.GenericOIDService
+import de.laser.AccessService
+import de.laser.ContextService
+import de.laser.DataConsistencyService
 import de.laser.IssueEntitlement
 import de.laser.License
+import de.laser.ReportingGlobalService
+import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.properties.LicenseProperty
@@ -51,17 +57,17 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
-    def accessService
+    AccessService accessService
     def compareService
-    def contextService
+    ContextService contextService
     def controlledListService
-    def dataConsistencyService
-    def genericOIDService
+    DataConsistencyService dataConsistencyService
+    GenericOIDService genericOIDService
     def licenseService
     def linksGenerationService
-    def reportingGlobalService
+    ReportingGlobalService reportingGlobalService
     def reportingLocalService
-    def subscriptionService
+    SubscriptionService subscriptionService
 
     /**
      * Test call

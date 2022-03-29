@@ -1,6 +1,10 @@
 package de.laser
 
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -30,28 +34,28 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
-    def taskService
-    def docstoreService
-    def genericOIDService
-    def institutionsService
-    def pendingChangeService
-    def executorWrapperService
-    def accessService
-    def contextService
-    def addressbookService
-    def filterService
-    def orgTypeService
-    def deletionService
-    def subscriptionService
+    AccessService accessService
+    AddressbookService addressbookService
+    ContextService contextService
     CopyElementsService copyElementsService
+    CustomWkhtmltoxService wkhtmltoxService
+    DeletionService deletionService
+    DocstoreService docstoreService
+    EscapeService escapeService
+    ExecutorWrapperService executorWrapperService
+    FilterService filterService
     FormService formService
-    LicenseService licenseService
+    GenericOIDService genericOIDService
+    InstitutionsService institutionsService
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
+    LicenseService licenseService
+    OrgTypeService orgTypeService
+    PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
-    CustomWkhtmltoxService wkhtmltoxService
-    EscapeService escapeService
+    SubscriptionService subscriptionService
+    TaskService taskService
 
     //----------------------------------------- general or ungroupable section ----------------------------------------
 

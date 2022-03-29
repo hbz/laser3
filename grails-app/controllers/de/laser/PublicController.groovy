@@ -1,10 +1,12 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import grails.plugins.mail.MailService
 
 /**
  * This controller contains all pages which are accessible without a user account, i.e. public access pages
@@ -12,9 +14,9 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['permitAll'])
 class PublicController {
 
-    def genericOIDService
-    def mailService
     EscapeService escapeService
+    GenericOIDService genericOIDService
+    MailService mailService
 
     /**
      * Displays the WCAG statement

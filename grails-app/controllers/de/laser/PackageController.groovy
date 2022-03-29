@@ -1,6 +1,10 @@
 package de.laser
 
+import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.InstitutionsService
 import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
@@ -29,21 +33,21 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
 
-    def genericOIDService
-    def yodaService
-    def exportService
-    def institutionsService
-    ExecutorWrapperService executorWrapperService
-    def accessService
-    def contextService
-    def taskService
-    def addressbookService
-    def docstoreService
-    def gokbService
-    def filterService
+    AccessService accessService
+    AddressbookService addressbookService
+    ContextService contextService
+    DocstoreService docstoreService
     EscapeService escapeService
+    ExportService exportService
+    ExecutorWrapperService executorWrapperService
+    FilterService filterService
+    GenericOIDService genericOIDService
+    GokbService gokbService
+    InstitutionsService institutionsService
     MessageSource messageSource
     SubscriptionService subscriptionService
+    //TaskService taskService
+    YodaService yodaService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
