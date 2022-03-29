@@ -20,8 +20,6 @@ import de.laser.annotations.RefdataAnnotation
  */
 class OrgSetting {
 
-    def genericOIDService
-
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
     //in order of display at ids.gsp, used there
     final static SETTING_TABS = ['general', 'api', 'ezb', 'natstat', 'oamonitor']

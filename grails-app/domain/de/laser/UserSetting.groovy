@@ -16,8 +16,6 @@ import de.laser.annotations.RefdataAnnotation
  */
 class UserSetting {
 
-    def genericOIDService
-
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
     final static DEFAULT_REMINDER_PERIOD = 14
 

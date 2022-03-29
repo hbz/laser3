@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -14,9 +15,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Transactional
 class ReportingLocalService {
 
-    def contextService
-    def financeService
-    def financeControllerService
+    ContextService contextService
+    FinanceControllerService financeControllerService
+    FinanceService financeService
 
     static final String TMPL_PATH_CHART = '/subscription/reporting/chart/'
     static final String TMPL_PATH_DETAILS = '/subscription/reporting/details/'

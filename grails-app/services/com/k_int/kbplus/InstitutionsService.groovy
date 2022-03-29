@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.ContextService
 import de.laser.Doc
 import de.laser.DocContext
 import de.laser.Identifier
@@ -24,8 +25,8 @@ import java.nio.file.Path
 @Transactional
 class InstitutionsService {
 
-    def contextService
     AccessService accessService
+    ContextService contextService
 
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
     static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'

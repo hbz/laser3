@@ -1,7 +1,6 @@
 package de.laser
 
 
-import de.laser.titles.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
@@ -40,8 +39,6 @@ import javax.persistence.Transient
  * @see Subscription
  */
 class OrgRole implements ShareableTrait {
-
-    def shareService
 
     static belongsTo = [
         org: Org,

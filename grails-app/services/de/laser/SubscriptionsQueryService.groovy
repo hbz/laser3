@@ -1,6 +1,6 @@
 package de.laser
 
-
+import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
@@ -14,9 +14,9 @@ import java.text.SimpleDateFormat
  */
 @Transactional
 class SubscriptionsQueryService {
-    def genericOIDService
-    def propertyService
-    def accessService
+    AccessService accessService
+    GenericOIDService genericOIDService
+    PropertyService propertyService
 
     /**
      *

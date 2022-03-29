@@ -16,8 +16,8 @@ import java.sql.Timestamp
  */
 @Transactional
 class QueryService {
-    def subscriptionsQueryService
-    def taskService
+    SubscriptionsQueryService subscriptionsQueryService
+    TaskService taskService
 
     /**
      * Gets the date from which the given user wishes to be informed

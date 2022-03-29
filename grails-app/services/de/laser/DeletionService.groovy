@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ESWrapperService
 import de.laser.auth.User
 import de.laser.finance.*
 import de.laser.helper.RDConstants
@@ -20,8 +21,8 @@ import org.elasticsearch.client.RestHighLevelClient
 //@Transactional
 class DeletionService {
 
-    def ESWrapperService
-    def subscriptionService
+    ESWrapperService ESWrapperService
+    SubscriptionService subscriptionService
     ContextService contextService
 
     static boolean DRY_RUN                  = true

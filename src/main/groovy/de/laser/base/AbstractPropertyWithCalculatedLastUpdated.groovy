@@ -1,6 +1,5 @@
 package de.laser.base
 
-
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.interfaces.CalculatedLastUpdated

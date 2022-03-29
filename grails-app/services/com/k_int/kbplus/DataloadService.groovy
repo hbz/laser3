@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.Doc
 import de.laser.DocContext
 import de.laser.FTControl
+import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.License
@@ -25,6 +26,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
@@ -50,6 +52,12 @@ import java.util.concurrent.Future
 //@Transactional
 class DataloadService {
 
+    ESWrapperService ESWrapperService
+    ExecutorService executorService
+    //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    GlobalService globalService
+    GrailsApplication grailsApplication
+
     def stats = [:]
 
     def update_stages = [
@@ -59,11 +67,6 @@ class DataloadService {
         'License Data'
     ]
 
-    ExecutorService executorService
-    def ESWrapperService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-    def grailsApplication
-    def globalService
     def dataload_running=false
     def dataload_stage=-1
     def dataload_message=''

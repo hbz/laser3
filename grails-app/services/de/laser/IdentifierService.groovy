@@ -13,11 +13,11 @@ import org.springframework.context.i18n.LocaleContextHolder
 @Transactional
 class IdentifierService {
 
+    ContextService contextService
     GenericOIDService genericOIDService
+    LicenseControllerService licenseControllerService
     MessageSource messageSource
     SubscriptionService subscriptionService
-    ContextService contextService
-    LicenseControllerService licenseControllerService
 
     @Deprecated
     void checkNullUIDs() {

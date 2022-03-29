@@ -11,7 +11,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Transactional
 class FormService {
 
-    def contextService
+    ContextService contextService
 
     final static String FORM_SERVICE_TOKEN = 'FORM_SERVICE_TOKEN'
 

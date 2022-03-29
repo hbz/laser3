@@ -18,6 +18,10 @@ import org.elasticsearch.search.sort.SortOrder
  */
 @Transactional
 class ESSearchService{
+
+  ESWrapperService ESWrapperService
+
+
 // Map the parameter names we use in the webapp with the ES fields
   def reversemap = ['rectype':'rectype',
                     'endYear':'endYear',
@@ -30,8 +34,6 @@ class ESSearchService{
                     'publisher':'publisher',
                     'publishers':'publishers.name',
                     'name':'name']
-
-  def ESWrapperService
 
   /**
    * Substitution call for requests, fetching the reverse map

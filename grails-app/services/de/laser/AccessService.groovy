@@ -16,7 +16,7 @@ class AccessService {
     static final CHECK_EDIT = 'CHECK_EDIT'
     static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
-    def contextService
+    ContextService contextService
 
     // ---- new stuff here
     // ---- new stuff here

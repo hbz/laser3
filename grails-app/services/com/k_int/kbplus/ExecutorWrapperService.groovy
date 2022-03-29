@@ -12,7 +12,8 @@ import java.util.concurrent.ExecutorService
 class ExecutorWrapperService {
 
 	ExecutorService executorService
-	def genericOIDService
+	GenericOIDService genericOIDService
+
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 
 	/**

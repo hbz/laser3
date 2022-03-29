@@ -16,9 +16,9 @@ import org.codehaus.groovy.syntax.Numbers
 @Transactional
 class AddressbookService {
 
-    def contextService
-    def accessService
-    def propertyService
+    AccessService accessService
+    ContextService contextService
+    PropertyService propertyService
 
     @Deprecated
     List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {

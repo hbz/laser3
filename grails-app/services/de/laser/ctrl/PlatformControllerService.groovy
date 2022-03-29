@@ -20,8 +20,8 @@ class PlatformControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    MessageSource messageSource
     ContextService contextService
+    MessageSource messageSource
 
     //-------------------------------------------- derivation section --------------------------------------------------
 

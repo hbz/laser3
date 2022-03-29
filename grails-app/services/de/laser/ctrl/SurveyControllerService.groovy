@@ -4,7 +4,6 @@ import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.License
-import de.laser.LicenseController
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.SubscriptionService
@@ -14,10 +13,8 @@ import de.laser.SurveyController
 import de.laser.SurveyInfo
 import de.laser.SurveyOrg
 import de.laser.SurveyResult
-import de.laser.Task
 import de.laser.TaskService
 import de.laser.auth.User
-import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -25,11 +22,7 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-
-import java.text.SimpleDateFormat
 
 @Transactional
 class SurveyControllerService {
@@ -37,11 +30,10 @@ class SurveyControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    ContextService contextService
-    TaskService taskService
-    MessageSource messageSource
     AccessService accessService
+    ContextService contextService
     SubscriptionService subscriptionService
+    TaskService taskService
 
     //--------------------------------------------- helper section -------------------------------------------------
 

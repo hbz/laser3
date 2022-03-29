@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.FactService
 import de.laser.base.AbstractCounterApiSource
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
@@ -47,8 +48,8 @@ class StatsSyncService {
     static final SYNC_STATS_FROM = '2012-01-01'
 
     ExecutorService executorService
-    def factService
-    def globalService
+    FactService factService
+    GlobalService globalService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []

@@ -1,8 +1,6 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
-import de.laser.helper.DateUtils
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
@@ -24,8 +22,6 @@ import java.text.SimpleDateFormat
  * @see SubscriptionPackage
  */
 class Package extends AbstractBaseWithCalculatedLastUpdated {
-
-    def accessService
 
     String name
     String sortname

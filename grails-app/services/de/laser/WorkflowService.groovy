@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import de.laser.workflow.*
@@ -14,8 +15,8 @@ import org.springframework.transaction.TransactionStatus
 @Transactional
 class WorkflowService {
 
-    def contextService
-    def genericOIDService
+    ContextService contextService
+    GenericOIDService genericOIDService
 
     static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'

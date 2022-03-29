@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ChangeNotificationService
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
@@ -17,7 +18,7 @@ import javax.persistence.Transient
 @Transactional
 class AuditService {
 
-    def changeNotificationService
+    ChangeNotificationService changeNotificationService
 
     /**
      * Retrieves the list of properties which trigger inheritance for the given object

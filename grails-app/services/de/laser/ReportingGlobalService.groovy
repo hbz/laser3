@@ -15,7 +15,7 @@ import org.apache.commons.lang3.RandomStringUtils
 @Transactional
 class ReportingGlobalService {
 
-    def contextService
+    ContextService contextService
 
     static final String TMPL_PATH_CHART = '/myInstitution/reporting/chart/'
     static final String TMPL_PATH_DETAILS = '/myInstitution/reporting/details/'

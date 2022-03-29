@@ -15,8 +15,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
-    SpringSecurityService springSecurityService
     CacheService cacheService
+    SpringSecurityService springSecurityService
 
     static final USER_SCOPE  = 'USER_SCOPE'
     static final ORG_SCOPE   = 'ORG_SCOPE'

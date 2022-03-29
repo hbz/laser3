@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.ContextService
 import de.laser.Fact
 import de.laser.Org
 import de.laser.Platform
@@ -22,9 +23,7 @@ import java.time.YearMonth
 @Transactional
 class FactService {
 
-  def sessionFactory
-  def contextService
-
+    ContextService contextService
 
     // TODO make this configurable
     Map preferedCostPerUseMetrics = [

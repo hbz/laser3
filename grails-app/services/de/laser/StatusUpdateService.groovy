@@ -1,5 +1,8 @@
 package de.laser
 
+import com.k_int.kbplus.ChangeNotificationService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
@@ -13,10 +16,10 @@ import org.springframework.transaction.TransactionStatus
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
 
-    def globalSourceSyncService
-    def changeNotificationService
-    def genericOIDService
-    def contextService
+    ChangeNotificationService changeNotificationService
+    ContextService contextService
+    GenericOIDService genericOIDService
+    GlobalSourceSyncService globalSourceSyncService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**

@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 @Transactional
 class DataConsistencyService {
 
-    def deletionService
+    DeletionService deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
     /**

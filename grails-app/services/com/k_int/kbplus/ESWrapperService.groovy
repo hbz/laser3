@@ -4,7 +4,6 @@ import de.laser.FTControl
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.system.SystemEvent
-import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
 import org.apache.http.HttpHost
@@ -38,8 +37,6 @@ class ESWrapperService {
     final static String ES_CLUSTER = 'elasticsearch'
 
     static transactional = false
-
-    GrailsApplication grailsApplication
 
     String es_cluster_name
     Map es_indices = [:]

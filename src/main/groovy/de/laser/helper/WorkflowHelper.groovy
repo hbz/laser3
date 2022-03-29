@@ -1,8 +1,6 @@
 package de.laser.helper
 
 import de.laser.RefdataValue
-import de.laser.workflow.WfCondition
-import de.laser.workflow.WfTask
 
 class WorkflowHelper {
 

@@ -50,12 +50,13 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
 
-    ExecutorService executorService
-    PendingChangeService pendingChangeService
-    def genericOIDService
     EscapeService escapeService
-    GlobalRecordSource source
+    ExecutorService executorService
+    GenericOIDService genericOIDService
+    PendingChangeService pendingChangeService
+
     ApiSource apiSource
+    GlobalRecordSource source
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1

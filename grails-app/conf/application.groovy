@@ -2,7 +2,7 @@
 // -- gorm
 
 grails.gorm.default.mapping = {
-    autowire true            // service dependency injection enabled
+    autowire true            // service dependency injection for domain classes
     id generator: 'identity' // postgresql sequences for primary keys
 }
 

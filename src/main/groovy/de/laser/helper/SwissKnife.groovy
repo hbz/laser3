@@ -10,6 +10,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.taglib.GroovyPageAttributes
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 
@@ -19,13 +20,13 @@ class SwissKnife {
 
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
 
         List<String> result = []
         result.add(attrs.text ? attrs.text : '') // plain text
 
         if (attrs.message)
-            if (SwissKnife.checkMessageKey(attrs.message)) {
+            if (checkMessageKey(attrs.message)) {
                 result.add("${messageSource.getMessage(attrs.message, attrs.args, locale)}") // translation via messages_<lang>.properties
             }
             else {
@@ -47,7 +48,7 @@ class SwissKnife {
     static boolean checkMessageKey(String key) {
         if (key) {
             def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
 
             def keys = messageSource.getMergedProperties(locale).getProperties().keySet()
 

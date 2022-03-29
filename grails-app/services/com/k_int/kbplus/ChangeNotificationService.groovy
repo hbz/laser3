@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.GlobalService
 import de.laser.auth.User
 import de.laser.AuditConfig
 import de.laser.ChangeNotificationQueueItem
@@ -12,7 +13,6 @@ import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
-import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -34,8 +34,8 @@ import java.util.concurrent.ExecutorService
 class ChangeNotificationService extends AbstractLockableService {
 
     ExecutorService executorService
-    def genericOIDService
-    def globalService
+    GenericOIDService genericOIDService
+    GlobalService globalService
     ContextService contextService
     PendingChangeService pendingChangeService
 

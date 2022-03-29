@@ -20,13 +20,13 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
-    def accessService
-    def contextService
-    def dashboardDueDatesService
-    def filterService
-    def surveyService
-    def taskService
-    def workflowService
+    AccessService accessService
+    ContextService contextService
+    DashboardDueDatesService dashboardDueDatesService
+    FilterService filterService
+    SurveyService surveyService
+    TaskService taskService
+    WorkflowService workflowService
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1

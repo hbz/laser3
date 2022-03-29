@@ -32,13 +32,13 @@ import java.text.SimpleDateFormat
 
 @Transactional
 class SubscriptionService {
-    def contextService
-    def accessService
-    def subscriptionsQueryService
+    AccessService accessService
+    ContextService contextService
+    SubscriptionsQueryService subscriptionsQueryService
     MessageSource messageSource
-    def escapeService
-    def refdataService
-    def propertyService
+    EscapeService escapeService
+    RefdataService refdataService
+    PropertyService propertyService
     FilterService filterService
     GenericOIDService genericOIDService
     LinksGenerationService linksGenerationService

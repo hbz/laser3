@@ -10,7 +10,7 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class OrgTypeService {
 
-    def contextService
+    ContextService contextService
 
     /**
      * @return List<Org> with orgType 'Agency'; generic

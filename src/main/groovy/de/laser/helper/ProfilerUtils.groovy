@@ -3,7 +3,6 @@ package de.laser.helper
 import de.laser.ContextService
 import grails.util.Holders
 import org.grails.web.servlet.mvc.GrailsWebRequest
-import org.grails.web.util.WebUtils
 
 //@CompileStatic
 class ProfilerUtils {
@@ -17,18 +16,12 @@ class ProfilerUtils {
 
     // for global interceptors; object stored in session caches
     ProfilerUtils(String cacheKeyPrefix) {
-        // String uri = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getForwardURI()
-        // print"DebugUtil [cacheKeyPrefix: ${cacheKeyPrefix}, user: ${contextService.getUser()?.id}, uri: ${uri}]"
-
         benchCache = contextService.getCache(cacheKeyPrefix, ContextService.USER_SCOPE)
     }
 
     // for inner method benches; object not stored
     ProfilerUtils() {
         String cid = BENCHMARK_LOCAL + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString()
-        // String uri = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getForwardURI()
-        // print"DebugUtil [cid: ${cid}, user: ${contextService.getUser()?.id}, uri: ${uri}]"
-
         benchCache = contextService.getCache(cid, ContextService.USER_SCOPE)
     }
 

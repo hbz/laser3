@@ -2,8 +2,6 @@ package de.laser
 
 import groovy.util.logging.Slf4j
 
-import javax.persistence.Transient
-
 /**
  * This domain class keeps track of the inherited properties. Consortial objects may inherit some of their properties to the member objects, those are:
  * <ul>

@@ -23,7 +23,7 @@ import java.nio.file.Path
 @Transactional
 class RenewSubscriptionService extends AbstractLockableService {
 
-    def contextService
+    ContextService contextService
 
     /**
      * Triggered by cronjob

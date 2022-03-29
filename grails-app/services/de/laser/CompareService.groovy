@@ -14,11 +14,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Transactional
 class CompareService {
 
+    AccessService accessService
+    ComparisonService comparisonService
     ContextService contextService
     GenericOIDService genericOIDService
-    ComparisonService comparisonService
-    AccessService accessService
-    SubscriptionService subscriptionService
     FilterService filterService
 
     /**

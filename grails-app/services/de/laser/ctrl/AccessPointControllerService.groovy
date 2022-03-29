@@ -18,9 +18,9 @@ import org.springframework.dao.DataIntegrityViolationException
 @Transactional
 class AccessPointControllerService {
 
-    MessageSource messageSource
-    ContextService contextService
     AccessService accessService
+    ContextService contextService
+    MessageSource messageSource
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1

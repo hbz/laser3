@@ -3,6 +3,7 @@ package de.laser.helper
 import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -20,7 +21,7 @@ class DateUtils {
 
     static SimpleDateFormat getSimpleDateFormatByToken(String token) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
         String format = messageSource.getMessage(token, null, locale)
 
         if (format) {

@@ -9,8 +9,6 @@ import groovyx.net.http.ContentType
 @Slf4j
 class SushiClient {
 
-    def grailsApplication
-
     def clientOptions
     def result
 
