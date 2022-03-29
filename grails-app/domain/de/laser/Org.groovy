@@ -7,6 +7,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.helper.BeanStore
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
@@ -493,7 +494,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
      */
     static def refdataFind(GrailsParameterMap params) {
-        GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 
         genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }

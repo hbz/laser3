@@ -3,6 +3,7 @@ package de.laser.system
 import de.laser.Org
 import de.laser.ContextService
 import de.laser.helper.AppUtils
+import de.laser.helper.BeanStore
 import grails.util.Holders
 
 /**
@@ -62,7 +63,7 @@ class SystemProfiler {
      */
     static void update(long delta, String actionUri) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ContextService contextService = BeanStore.getContextService()
 
         withTransaction {
 

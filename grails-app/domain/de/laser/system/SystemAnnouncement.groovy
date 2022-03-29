@@ -5,11 +5,13 @@ import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.AppUtils
+import de.laser.helper.BeanStore
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
 import grails.util.Holders
 import net.sf.json.JSON
+import org.springframework.context.MessageSource
 
 import java.time.LocalDate
 
@@ -167,7 +169,7 @@ class SystemAnnouncement {
      */
     private void sendMail(User user) throws Exception {
 
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()

@@ -8,7 +8,7 @@ import org.grails.web.servlet.mvc.GrailsWebRequest
 class ProfilerUtils {
 
     //CacheService   cacheService   = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-    ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+    ContextService contextService = BeanStore.getContextService()
     EhcacheWrapper benchCache
 
     final static String SYSPROFILER_SESSION = 'DebugUtil/Session/SystemProfiler'

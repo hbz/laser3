@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.ESSearchService
 import de.laser.auth.User
 import de.laser.helper.SwissKnife
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -16,7 +17,7 @@ class SearchController  {
 
     ContextService contextService
     ESSearchService ESSearchService
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     /**
      * Shows the advanced search page

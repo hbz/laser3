@@ -4,6 +4,7 @@ import de.laser.auth.User
 import de.laser.helper.PasswordUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.core.GrailsApplication
 import org.springframework.security.access.annotation.Secured
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.savedrequest.SavedRequest
 
@@ -27,11 +27,11 @@ import javax.servlet.http.HttpServletResponse
 @Secured('permitAll')
 class LoginController {
 
-  GrailsApplication grailsApplication
-
   def authenticationTrustResolver
-  def springSecurityService
-  def instAdmService
+
+  GrailsApplication grailsApplication
+  InstAdmService instAdmService
+  SpringSecurityService springSecurityService
 
   /**
    * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.

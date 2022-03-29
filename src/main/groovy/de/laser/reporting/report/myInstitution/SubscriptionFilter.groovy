@@ -7,6 +7,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -27,9 +28,8 @@ class SubscriptionFilter extends BaseFilter {
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        ContextService contextService  = mainContext.getBean('contextService')
-        SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+        ContextService contextService = BeanStore.getContextService()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])

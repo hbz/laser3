@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.FactService
 import de.laser.base.AbstractCounterApiSource
+import de.laser.helper.BeanStore
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
@@ -27,6 +28,7 @@ import groovyx.net.http.Method
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 
+import javax.sql.DataSource
 import java.security.MessageDigest
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -223,7 +225,7 @@ class StatsSyncService {
             }
             http.shutdown()
             Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
-            def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+            DataSource dataSource = BeanStore.getDataSource()
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
                 /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :deleted',

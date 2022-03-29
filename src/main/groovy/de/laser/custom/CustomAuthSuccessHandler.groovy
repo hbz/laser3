@@ -1,11 +1,13 @@
 package de.laser.custom
 
+import de.laser.ContextService
+import de.laser.UserService
 import de.laser.auth.User
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import org.springframework.security.core.Authentication
 
 import javax.servlet.ServletException
@@ -14,9 +16,9 @@ import javax.servlet.http.HttpServletResponse
 
 class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandler {
 
-    def springSecurityService = Holders.grailsApplication.mainContext.getBean('springSecurityService')
-    def userService = Holders.grailsApplication.mainContext.getBean('userService')
-    def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
+    SpringSecurityService springSecurityService
+    UserService userService
+    ContextService contextService
 
     @Override
     @Transactional

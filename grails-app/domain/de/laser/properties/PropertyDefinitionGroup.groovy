@@ -4,8 +4,8 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
 import de.laser.CacheService
 import de.laser.I10nTranslation
+import de.laser.helper.BeanStore
 import de.laser.helper.EhcacheWrapper
-import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -140,10 +140,10 @@ class PropertyDefinitionGroup {
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
 
-        GenericOIDService genericOIDService = (GenericOIDService) Holders.applicationContext.getBean('genericOIDService')
+        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
         def currentObject = genericOIDService.resolveOID(params.oid)
 
-        CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+        CacheService cacheService = BeanStore.getCacheService()
         EhcacheWrapper cache
 
         cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${currentObject.id}")

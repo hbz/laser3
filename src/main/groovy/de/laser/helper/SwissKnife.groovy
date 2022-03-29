@@ -10,6 +10,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.taglib.GroovyPageAttributes
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
@@ -19,7 +20,7 @@ class SwissKnife {
     static Log static_logger = LogFactory.getLog(SwissKnife) // TODO
 
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         List<String> result = []
@@ -47,7 +48,7 @@ class SwissKnife {
      */
     static boolean checkMessageKey(String key) {
         if (key) {
-            def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+            MessageSource messageSource = BeanStore.getMessageSource()
             Locale locale = LocaleContextHolder.getLocale()
 
             def keys = messageSource.getMergedProperties(locale).getProperties().keySet()
@@ -102,7 +103,7 @@ class SwissKnife {
 
     static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ContextService contextService = BeanStore.getContextService()
         AccessService accessService   = (AccessService) Holders.grailsApplication.mainContext.getBean('accessService')
 
         boolean check = false

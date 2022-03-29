@@ -2,9 +2,10 @@ package de.laser.reporting.report
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.base.AbstractBase
+import de.laser.helper.BeanStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import grails.util.Holders
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.lang.reflect.Field
@@ -47,7 +48,7 @@ class GenericHelper {
         Map<String, Object> field = getField(objConfig, fieldName)
         String type = field?.type
 
-        Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {

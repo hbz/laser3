@@ -10,9 +10,8 @@ import de.laser.I10nTranslation
 import de.laser.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
-import de.laser.helper.SwissKnife
+import de.laser.helper.BeanStore
 import de.laser.interfaces.CalculatedType
-import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -368,11 +367,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         List<PropertyDefinition> propDefsInCalcGroups = []
 
         if (params.oid) {
-            GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
+            GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
             def obj = genericOIDService.resolveOID(params.oid)
 
             if (obj) {
-                ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+                ContextService contextService = BeanStore.getContextService()
                 Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
 
                 calcPropDefGroups.global.each { it ->

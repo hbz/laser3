@@ -1,8 +1,9 @@
 package de.laser.titles
 
 import de.laser.exceptions.CreationException
+import de.laser.helper.BeanStore
 import de.laser.helper.RDStore
-import grails.util.Holders
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DuplicateKeyException
 
@@ -89,7 +90,7 @@ class BookInstance extends TitleInstance {
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
 
         if(firstEditor && firstAuthor) {

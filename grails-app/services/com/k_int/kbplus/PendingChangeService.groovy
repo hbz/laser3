@@ -17,10 +17,9 @@ import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
+import de.laser.helper.BeanStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
-import de.laser.AuditConfig
 import de.laser.SubscriptionService
 import de.laser.IssueEntitlementCoverage
 import de.laser.PendingChangeConfiguration
@@ -45,6 +44,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
+import javax.sql.DataSource
 import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -540,7 +540,7 @@ class PendingChangeService extends AbstractLockableService {
         Map<String, Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
         List pending = [], notifications = []
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]

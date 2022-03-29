@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
 import de.laser.Subscription
+import de.laser.helper.BeanStore
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -80,8 +81,8 @@ class LicenseExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
 
         License lic = obj as License
         List content = []

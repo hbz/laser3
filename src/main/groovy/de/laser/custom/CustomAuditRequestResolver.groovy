@@ -1,11 +1,12 @@
 package de.laser.custom
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugins.orm.auditable.resolvers.SpringSecurityRequestResolver
 
 class CustomAuditRequestResolver extends SpringSecurityRequestResolver {
 
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     @Override
     String getCurrentActor() {

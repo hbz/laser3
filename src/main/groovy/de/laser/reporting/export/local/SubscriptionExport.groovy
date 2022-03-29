@@ -5,6 +5,7 @@ import de.laser.Identifier
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.helper.BeanStore
 import de.laser.helper.RDStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -102,8 +103,8 @@ class SubscriptionExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
         LinksGenerationService linksGenerationService = (LinksGenerationService) Holders.grailsApplication.mainContext.getBean('linksGenerationService')
 
         Subscription sub = obj as Subscription

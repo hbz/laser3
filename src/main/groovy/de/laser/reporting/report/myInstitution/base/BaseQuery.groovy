@@ -5,6 +5,7 @@ import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
@@ -379,7 +380,7 @@ class BaseQuery {
 
     static String getChartLabel(String token) {
         //println 'getChartLabel(): ' + token
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         messageSource.getMessage('reporting.chart.result.' + token, null, locale)

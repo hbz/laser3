@@ -1,8 +1,8 @@
 package de.laser.reporting.export.local
 
+import de.laser.helper.BeanStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
-import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -27,7 +27,7 @@ class LocalQueryExport extends BaseQueryExport {
         List<String> chart = queryCache.labels.chart
 
         // todo --
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
 
         if ( queryCache.labels.tooltip ) {
             result.cols.add( queryCache.labels.tooltip ) // simple

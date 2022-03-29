@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.finance.CostItem
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
@@ -104,7 +105,7 @@ class DetailsExportManager {
 
     static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
-        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
         List<List<String>> rows = []
         List<Integer> ici = []
@@ -216,7 +217,7 @@ class DetailsExportManager {
 
     static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
-        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
         List<List<List<String>>> rows = []
         List<Integer> ici = []

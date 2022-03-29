@@ -1,5 +1,6 @@
 package de.laser
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -9,7 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class HomeController {
 
     ContextService contextService
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     /**
      * The greeting committee in some kind. The webapp index redirected here as well

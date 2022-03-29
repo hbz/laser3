@@ -5,6 +5,7 @@ import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.MessageService
 import de.laser.helper.AppUtils
+import de.laser.helper.BeanStore
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
@@ -41,6 +42,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
 
+import javax.sql.DataSource
 import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
@@ -570,7 +572,7 @@ class AdminController  {
     def databaseCollations() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         result.table_columns = sql.rows("""
@@ -605,7 +607,7 @@ class AdminController  {
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 

@@ -5,7 +5,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class LaserFilters {
 
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     def filters = {
 

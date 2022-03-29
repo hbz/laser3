@@ -2,19 +2,17 @@ package de.laser.api.v0.special
 
 import de.laser.*
 import de.laser.api.v0.*
+import de.laser.helper.BeanStore
 import de.laser.helper.Constants
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import grails.converters.JSON
-import grails.util.Holders
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import javax.sql.DataSource
 import java.text.SimpleDateFormat
 
 @Slf4j
@@ -154,7 +152,7 @@ class ApiEZB {
             else {
                 log.error("No platform available! Continue without proprietary namespace!")
             }
-            def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+            DataSource dataSource = BeanStore.getDataSource()
             Sql sql = new Sql(dataSource)
             //copy needed because exportService cannot be used in static context! This is a temp solution!
             log.debug("Begin generateTitleExportKBARTSQL")

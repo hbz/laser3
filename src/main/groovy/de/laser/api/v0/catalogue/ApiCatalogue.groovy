@@ -2,6 +2,7 @@ package de.laser.api.v0.catalogue
 
 import de.laser.Org
 import de.laser.RefdataCategory
+import de.laser.helper.BeanStore
 import de.laser.properties.PropertyDefinition
 import de.laser.CacheService
 import de.laser.api.v0.*
@@ -93,7 +94,7 @@ class ApiCatalogue {
      * @see de.laser.RefdataValue
      */
     static Collection<Object> getRefdataCollection(){
-        CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
+        CacheService cacheService = BeanStore.getCacheService()
 
         EhcacheWrapper cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas')
         def result = []

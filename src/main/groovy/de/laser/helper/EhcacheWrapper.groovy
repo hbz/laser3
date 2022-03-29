@@ -14,7 +14,7 @@ class EhcacheWrapper {
 
     final static String SEPARATOR = '_'
 
-    CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+    CacheService cacheService = BeanStore.getCacheService()
 
     private Cache cache // net.sf.ehcache.Cache
     private String keyPrefix

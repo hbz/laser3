@@ -46,6 +46,10 @@ beans = {
     authenticationSuccessHandler( CustomAuthSuccessHandler ) {
         ConfigObject conf = SpringSecurityUtils.securityConfig
 
+        springSecurityService       = ref('springSecurityService')
+        userService                 = ref('userService')
+        contextService              = ref('contextService')
+
         requestCache                = ref('requestCache')
         redirectStrategy            = ref('redirectStrategy')
         defaultTargetUrl            = conf.successHandler.defaultTargetUrl

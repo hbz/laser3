@@ -6,6 +6,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -26,8 +27,7 @@ class PackageFilter extends BaseFilter {
         List<String> whereParts         = [ 'where pkg.id in (:packageIdList)']
         Map<String, Object> queryParams = [ packageIdList: [] ]
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        ContextService contextService  = mainContext.getBean('contextService')
+        ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PACKAGE)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PACKAGE, filterSource)])

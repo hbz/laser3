@@ -4,9 +4,9 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
+import de.laser.helper.BeanStore
 import de.laser.helper.MigrationHelper
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
@@ -19,10 +19,8 @@ import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.SubscriptionProperty
 import de.laser.traits.ShareableTrait
-import grails.util.Holders
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -979,7 +977,7 @@ select distinct oap from OrgAccessPoint oap
      * @return this subscription's name according to the dropdown naming convention
      */
   String dropdownNamingConvention(contextOrg){
-       def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+       MessageSource messageSource = BeanStore.getMessageSource()
        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
 

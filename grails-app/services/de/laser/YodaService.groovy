@@ -4,6 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
 import de.laser.exceptions.SyncException
+import de.laser.helper.BeanStore
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -21,6 +22,8 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
+
+import javax.sql.DataSource
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
@@ -848,7 +851,7 @@ class YodaService {
      */
     @Transactional
     void matchPackageHoldings() {
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
         sql.withTransaction {
             List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +

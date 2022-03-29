@@ -9,6 +9,7 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -189,10 +190,9 @@ class BaseConfig {
 
     static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        ContextService contextService  = mainContext.getBean('contextService')
-        MessageSource messageSource    = mainContext.getBean('messageSource')
-        SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+        ContextService contextService = BeanStore.getContextService()
+        MessageSource messageSource = BeanStore.getMessageSource()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
 
@@ -397,8 +397,7 @@ class BaseConfig {
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        MessageSource messageSource = mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map pkgMap = getCurrentConfigElasticsearchData(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
@@ -420,7 +419,7 @@ class BaseConfig {
 
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
         messageSource.getMessage(token, null, locale)
     }

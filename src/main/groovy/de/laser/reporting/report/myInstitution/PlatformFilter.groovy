@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -21,8 +22,7 @@ class PlatformFilter extends BaseFilter {
         List<String> whereParts         = [ 'where plt.id in (:platformIdList)']
         Map<String, Object> queryParams = [ platformIdList: [] ]
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        ContextService contextService  = mainContext.getBean('contextService')
+        ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PLATFORM, filterSource)])

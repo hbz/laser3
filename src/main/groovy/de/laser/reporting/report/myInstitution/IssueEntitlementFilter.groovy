@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -24,9 +25,8 @@ class IssueEntitlementFilter extends BaseFilter {
         List<String> whereParts         = [ 'where ie.id in (:issueEntitlementIdList)']
         Map<String, Object> queryParams = [ issueEntitlementIdList: [] ]
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        ContextService contextService  = mainContext.getBean('contextService')
-        SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
+        ContextService contextService = BeanStore.getContextService()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_ISSUEENTITLEMENT)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ISSUEENTITLEMENT, filterSource)])

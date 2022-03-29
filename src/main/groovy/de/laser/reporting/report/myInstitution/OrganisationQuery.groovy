@@ -3,9 +3,9 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class OrganisationQuery extends BaseQuery {
@@ -14,9 +14,9 @@ class OrganisationQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        ContextService contextService = BeanStore.getContextService()
 
-        //def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        //MessageSource messageSource = BeanStore.getMessageSource()
         //Locale locale = LocaleContextHolder.getLocale()
 
         //println 'OrganisationQuery.query()'

@@ -55,7 +55,7 @@ class SurveyService {
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
-        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        messageSource = BeanStore.getMessageSource()
     }
 
     /**
