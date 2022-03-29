@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.helper.AppUtils
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
@@ -18,7 +19,7 @@ import java.text.SimpleDateFormat
 class DataConsistencyService {
 
     DeletionService deletionService
-    def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+    ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
     /**
      * Checks the duplicates of organisation, package and platform names

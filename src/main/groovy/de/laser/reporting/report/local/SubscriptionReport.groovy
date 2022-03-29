@@ -216,9 +216,9 @@ class SubscriptionReport {
                 else if (params.query == 'timeline-cost') {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
-                    ApplicationTagLib g = BeanStore.getApplicationTagLib()
-                    FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
-                    FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
+                    // ApplicationTagLib g = BeanStore.getApplicationTagLib()
+                    FinanceService financeService = BeanStore.getFinanceService()
+                    FinanceControllerService financeControllerService = BeanStore.getFinanceControllerService()
 
                     timeline.eachWithIndex { s, i ->
                         clone.setProperty('id', s.id)

@@ -25,9 +25,9 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
+import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
@@ -144,7 +144,7 @@ class MyInstitutionController  {
             cacheMap.filterCache.labels.putAll( result.filterResult.labels )
             cacheMap.filterCache.data.putAll( result.filterResult.data )
 
-            def groovyPageRenderer = Holders.grailsApplication.mainContext.getBean('groovyPageRenderer')
+            PageRenderer groovyPageRenderer = BeanStore.getGroovyPageRenderer()
             cacheMap.filterCache.result = groovyPageRenderer.render(
                     template: '/myInstitution/reporting/query/filterResult',
                     model: [ filter: params.filter, filterResult: result.filterResult ]

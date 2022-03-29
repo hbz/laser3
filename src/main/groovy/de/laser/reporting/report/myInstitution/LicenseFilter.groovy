@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -26,8 +27,7 @@ class LicenseFilter extends BaseFilter {
         List<String> whereParts         = [ 'where lic.id in (:licenseIdList)']
         Map<String, Object> queryParams = [ licenseIdList: [] ]
 
-        ApplicationContext mainContext = Holders.grailsApplication.mainContext
-        LicenseService licenseService = mainContext.getBean('licenseService')
+        LicenseService licenseService = BeanStore.getLicenseService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_LICENSE)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])

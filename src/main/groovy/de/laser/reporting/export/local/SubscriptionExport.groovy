@@ -105,7 +105,7 @@ class SubscriptionExport extends BaseDetailsExport {
 
         ApplicationTagLib g = BeanStore.getApplicationTagLib()
         ContextService contextService = BeanStore.getContextService()
-        LinksGenerationService linksGenerationService = (LinksGenerationService) Holders.grailsApplication.mainContext.getBean('linksGenerationService')
+        LinksGenerationService linksGenerationService = BeanStore.getLinksGenerationService()
 
         Subscription sub = obj as Subscription
         List content = []

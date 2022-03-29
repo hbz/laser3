@@ -1,6 +1,7 @@
 package de.laser.system
 
 import de.laser.SystemService
+import de.laser.helper.BeanStore
 import grails.util.Holders
 
 /**
@@ -25,7 +26,7 @@ class SystemActivityProfiler {
      * This is a cronjob-triggered method to record the next sample of users
      */
     static void update() {
-        SystemService systemService = (SystemService) Holders.grailsApplication.mainContext.getBean('systemService')
+        SystemService systemService = BeanStore.getSystemService()
 
         SystemActivityProfiler.withTransaction {
             int userCount = systemService.getNumberOfActiveUsers()

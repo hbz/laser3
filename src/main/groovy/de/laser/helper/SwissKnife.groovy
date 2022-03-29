@@ -104,7 +104,7 @@ class SwissKnife {
     static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
 
         ContextService contextService = BeanStore.getContextService()
-        AccessService accessService   = (AccessService) Holders.grailsApplication.mainContext.getBean('accessService')
+        AccessService accessService   = BeanStore.getAccessService()
 
         boolean check = false
 

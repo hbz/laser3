@@ -4,7 +4,6 @@ import de.laser.Org
 import de.laser.ContextService
 import de.laser.helper.AppUtils
 import de.laser.helper.BeanStore
-import grails.util.Holders
 
 /**
  * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs

@@ -7,7 +7,7 @@ import org.grails.web.servlet.mvc.GrailsWebRequest
 //@CompileStatic
 class ProfilerUtils {
 
-    //CacheService   cacheService   = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+    //CacheService   cacheService   = BeanStore.getCacheService()
     ContextService contextService = BeanStore.getContextService()
     EhcacheWrapper benchCache
 

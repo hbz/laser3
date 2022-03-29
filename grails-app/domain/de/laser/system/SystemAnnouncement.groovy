@@ -9,7 +9,6 @@ import de.laser.helper.BeanStore
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
-import grails.util.Holders
 import net.sf.json.JSON
 import org.springframework.context.MessageSource
 
