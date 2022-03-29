@@ -69,7 +69,7 @@ class YodaController {
     FormService formService
     GlobalSourceSyncService globalSourceSyncService
     IdentifierService identifierService
-    QuartzScheduler quartzScheduler
+    def quartzScheduler
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService

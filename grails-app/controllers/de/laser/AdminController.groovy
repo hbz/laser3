@@ -38,6 +38,7 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.hibernate.SQLQuery
+import org.hibernate.SessionFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigUtils
@@ -67,7 +68,7 @@ class AdminController  {
     MessageService messageService
     PropertyService propertyService
     RefdataService refdataService
-    def sessionFactory
+    SessionFactory sessionFactory
     StatusUpdateService statusUpdateService
     WorkflowService workflowService
     YodaService yodaService

@@ -2,6 +2,7 @@ package de.laser
 
 import grails.gorm.transactions.Transactional
 import org.hibernate.Session
+import org.hibernate.SessionFactory
 
 /**
  * A container service for methods used widespread in the system
@@ -9,7 +10,7 @@ import org.hibernate.Session
 @Transactional
 class GlobalService {
 
-    def sessionFactory
+    SessionFactory sessionFactory
 
     /**
      * Clears the session from residual objects. Necessary for bulk operations which slow down

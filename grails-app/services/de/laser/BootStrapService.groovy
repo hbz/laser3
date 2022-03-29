@@ -14,9 +14,11 @@ import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
 import org.hibernate.Session
+import org.hibernate.SessionFactory
 import org.hibernate.jdbc.Work
 import org.hibernate.type.TextType
 
+import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.Statement
@@ -30,11 +32,11 @@ class BootStrapService {
 
     ApiService apiService
     CacheService cacheService
-    def dataSource
+    DataSource dataSource
     GrailsApplication grailsApplication
     OrganisationService organisationService
     RefdataReorderService refdataReorderService
-    def sessionFactory
+    SessionFactory sessionFactory
     UserService userService
 
     final static BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
