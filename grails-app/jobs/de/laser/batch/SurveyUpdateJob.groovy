@@ -1,18 +1,17 @@
 package de.laser.batch
 
+import de.laser.SurveyUpdateService
 import de.laser.system.SystemEvent
 import de.laser.quartz.AbstractJob
 
 
 class SurveyUpdateJob extends AbstractJob {
 
-    def surveyUpdateService
+    SurveyUpdateService surveyUpdateService
 /* ----> ENABLED */
     static triggers = {
         cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }
-
-
 
     static List<String> configFlags = []
 

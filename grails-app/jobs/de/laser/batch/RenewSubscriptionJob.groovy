@@ -1,11 +1,12 @@
 package de.laser.batch
 
+import de.laser.RenewSubscriptionService
 import de.laser.quartz.AbstractJob
 import de.laser.system.SystemEvent
 
 class RenewSubscriptionJob extends AbstractJob {
 
-    def renewSubscriptionService
+    RenewSubscriptionService renewSubscriptionService
 
     static triggers = {
        cron name:'RenewSubscriptionTrigger', cronExpression: "0 0 2 * * ?" //Fire at 02:00 every day

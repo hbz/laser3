@@ -1,14 +1,13 @@
 package com.k_int.kbplus.batch
 
+import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.system.SystemEvent
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
-import grails.core.GrailsApplication
 
 class GlobalDataSyncJob extends AbstractJob {
 
-    def globalSourceSyncService
-    GrailsApplication grailsApplication
+    GlobalSourceSyncService globalSourceSyncService
 
     static triggers = {
     // Delay 20 seconds, run every 10 mins.

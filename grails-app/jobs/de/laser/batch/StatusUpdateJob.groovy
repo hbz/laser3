@@ -1,13 +1,14 @@
 package de.laser.batch
 
-
+import de.laser.StatusUpdateService
+import de.laser.SubscriptionService
 import de.laser.system.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class StatusUpdateJob extends AbstractJob {
 
-    def statusUpdateService
-    def subscriptionService
+    StatusUpdateService statusUpdateService
+    SubscriptionService subscriptionService
 
     static triggers = {
        cron name:'StatusUpdateTrigger', cronExpression: "0 0 3 * * ?" //Fire at 03:00 every day

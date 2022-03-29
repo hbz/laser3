@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.ESSearchService
 import de.laser.auth.User
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
@@ -13,9 +14,9 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SearchController  {
 
-    def ESSearchService
+    ContextService contextService
+    ESSearchService ESSearchService
     def springSecurityService
-    def contextService
 
     /**
      * Shows the advanced search page

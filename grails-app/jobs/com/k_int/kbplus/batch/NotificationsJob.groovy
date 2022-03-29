@@ -1,13 +1,12 @@
 package com.k_int.kbplus.batch
 
+import com.k_int.kbplus.ChangeNotificationService
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
-import grails.core.GrailsApplication
 
 class NotificationsJob extends AbstractJob {
 
-    def changeNotificationService
-    GrailsApplication grailsApplication
+    ChangeNotificationService changeNotificationService
 
     /* ----> DISABLED
     

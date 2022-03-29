@@ -1,5 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.ChangeNotificationService
+import com.k_int.kbplus.DataloadService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.MessageService
 import de.laser.helper.AppUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
@@ -49,25 +53,22 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    def cacheService
-    def contextService
-    def dataConsistencyService
-    def dataloadService
-    def deletionService
-    def statsSyncService
-    StatusUpdateService statusUpdateService
-    def messageService
-    def changeNotificationService
-    def workflowService
-    def yodaService
-
+    ApiService apiService
+    CacheService cacheService
+    ChangeNotificationService changeNotificationService
+    ContextService contextService
+    DataConsistencyService dataConsistencyService
+    DataloadService dataloadService
+    DeletionService deletionService
+    FilterService filterService
+    GenericOIDService genericOIDService
+    MessageService messageService
+    PropertyService propertyService
+    RefdataService refdataService
     def sessionFactory
-    def genericOIDService
-    def filterService
-    def refdataService
-    def propertyService
-    def organisationService
-    def apiService
+    StatusUpdateService statusUpdateService
+    WorkflowService workflowService
+    YodaService yodaService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 

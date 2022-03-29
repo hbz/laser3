@@ -1,10 +1,11 @@
 package com.k_int.kbplus.batch
 
+import com.k_int.kbplus.DataloadService
 import de.laser.quartz.AbstractJob
 
 class IndexUpdateJob extends AbstractJob {
 
-    def dataloadService
+    DataloadService dataloadService
 
     static triggers = {
         // Delay 120 seconds, run every 10 mins.

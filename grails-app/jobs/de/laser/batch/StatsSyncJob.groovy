@@ -1,14 +1,13 @@
 package de.laser.batch
 
+import de.laser.StatsSyncService
 import de.laser.system.SystemEvent
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
-import grails.core.GrailsApplication
 
 class StatsSyncJob extends AbstractJob {
 
-    def statsSyncService
-    GrailsApplication grailsApplication
+    StatsSyncService statsSyncService
 
     static triggers = {
         // Delay 20 seconds, run every 10 mins.

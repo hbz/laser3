@@ -12,7 +12,6 @@ import de.laser.annotations.RefdataAnnotation
  */
 class Doc {
 
-    def grailsApplication
     def sessionFactory
 
     static final CONTENT_TYPE_STRING              = 0

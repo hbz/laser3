@@ -7,8 +7,6 @@ import grails.core.GrailsApplication
 class HeartbeatJob extends AbstractJob {
 
     GrailsApplication grailsApplication
-    def cacheService
-    def yodaService
 
     static triggers = {
     // Delay 20 seconds, run every 10 mins.

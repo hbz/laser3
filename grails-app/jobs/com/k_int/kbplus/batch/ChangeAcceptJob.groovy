@@ -1,5 +1,6 @@
 package com.k_int.kbplus.batch
 
+import com.k_int.kbplus.PendingChangeService
 import de.laser.PendingChange
 import de.laser.system.SystemEvent
 import de.laser.helper.RDStore
@@ -7,7 +8,7 @@ import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
 
-  def pendingChangeService
+  PendingChangeService pendingChangeService
 
   /*static triggers = {
    // Delay 20 seconds, run every 10 mins.

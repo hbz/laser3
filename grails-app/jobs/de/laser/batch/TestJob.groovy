@@ -1,14 +1,13 @@
 package de.laser.batch
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.helper.ConfigUtils
 import de.laser.quartz.AbstractJob
-import grails.core.GrailsApplication
 
 class TestJob extends AbstractJob {
 
-    GrailsApplication grailsApplication
-    def contextService
+    ContextService contextService
 
     static triggers = {
 
