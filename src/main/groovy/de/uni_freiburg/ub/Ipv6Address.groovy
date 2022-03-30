@@ -2,13 +2,12 @@ package de.uni_freiburg.ub;
 
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  *
  */
-public class Ipv6Address extends IpAddress {
+class Ipv6Address extends IpAddress {
+
+	// >--- 03-2022 ---> migrated from java source
 
 	protected static final short MAX_CIDR_SUFFIX = 128;
 	
@@ -20,7 +19,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param highBits highest order bits
 	 * @param lowBits lowest order bits
 	 */
-	public Ipv6Address(long highBits, long lowBits) {
+	Ipv6Address(long highBits, long lowBits) {
 		this.highBits = highBits;
 		this.lowBits = lowBits;
 	}
@@ -31,7 +30,7 @@ public class Ipv6Address extends IpAddress {
 	 * @return the host address of the input string
 	 * @throws UnknownHostException if the host is not known
 	 */
-	public static String normalize(String s) throws UnknownHostException {
+	static String normalize(String s) throws UnknownHostException {
 		return InetAddress.getByName(s).getHostAddress();
 	}
 
@@ -40,7 +39,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param s the string to parse
 	 * @return the parsed entity
 	 */
-	public static IpAddress parseIpAddress(String s) {
+	static IpAddress parseIpAddress(String s) {
 		try {
 			s = normalize(s);
 		} catch (UnknownHostException e) {
@@ -105,7 +104,7 @@ public class Ipv6Address extends IpAddress {
 	 * Outputs the address as string, the array of shorts joined by colon
 	 * @return the address string
 	 */
-	public String toString() {
+	String toString() {
 		return String.join(":", toArrayOfZeroPaddedstrings());
 	}
 
@@ -113,7 +112,7 @@ public class Ipv6Address extends IpAddress {
 	 * Outputs the address as hexadecimal string
 	 * @return the address in hexadecimal notation
 	 */
-	public String toHexString() {
+	String toHexString() {
 		return String.format("%016x", highBits) + String.format("%016x", lowBits);
 	}
 
@@ -122,7 +121,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param ipAddr the address to compare against
 	 * @return is the given address greater than this?
 	 */
-	public boolean isGreater(IpAddress ipAddr) {
+	boolean isGreater(IpAddress ipAddr) {
 		Ipv6Address ipv6Addr = (Ipv6Address) ipAddr;
 
 		if (this.highBits == ipv6Addr.highBits) {
@@ -139,7 +138,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param ipAddr the address to compare against
 	 * @return is the given address greater than this or equal?
 	 */
-	public boolean isGreaterEqual(IpAddress ipAddr) {
+	boolean isGreaterEqual(IpAddress ipAddr) {
 		Ipv6Address ipv6Addr = (Ipv6Address) ipAddr;
 		if (this.highBits == ipv6Addr.highBits) {
 			//return this.lowBits >= ipv6Addr.lowBits;
@@ -155,7 +154,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param ipAddr the address to compare against
 	 * @return is the given address less than this?
 	 */
-	public boolean isLesser(IpAddress ipAddr) {
+	boolean isLesser(IpAddress ipAddr) {
 		return ! ipAddr.isGreaterEqual(this);
 	}
 
@@ -164,7 +163,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param ipAddr the address to compare against
 	 * @return is the given address less than this or equal?
 	 */
-	public boolean isLesserEqual(IpAddress ipAddr) {
+	boolean isLesserEqual(IpAddress ipAddr) {
 		return ! ipAddr.isGreater(this);
 	}
 
@@ -172,7 +171,7 @@ public class Ipv6Address extends IpAddress {
 	 * Returns the high bits of the address
 	 * @return the highest 64 bits
 	 */
-	public long highBits() {
+	long highBits() {
 		return highBits;
 	}
 
@@ -180,7 +179,7 @@ public class Ipv6Address extends IpAddress {
 	 * Returns the low bits of the address
 	 * @return the loest 64 bits
 	 */
-	public long lowBits() {
+	long lowBits() {
 		return lowBits;
 	}
 
@@ -189,7 +188,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param cidrSuffix the CIDR suffix
 	 * @return the upper limit of the corresponding range
 	 */
-	public IpAddress getUpperLimit(int cidrSuffix) {
+	IpAddress getUpperLimit(int cidrSuffix) {
 		long lowBitsUpper = -1l;
 		long highBitsUpper = highBits;
 
@@ -212,7 +211,7 @@ public class Ipv6Address extends IpAddress {
 	 * @param cidrSuffix the CIDR suffix
 	 * @return the lower limit of the corresponding range
 	 */
-	public IpAddress getLowerLimit(int cidrSuffix) {
+	IpAddress getLowerLimit(int cidrSuffix) {
 		long lowBitsLower = 0l;
 		long highBitsLower = highBits;
 		
@@ -236,7 +235,7 @@ public class Ipv6Address extends IpAddress {
 	 * @return the parsed CIDR suffix
 	 * @throws NumberFormatException if the short is not between 0 and MAX_CIDR_SUFFIX
 	 */
-	public short parseCidrSuffix(String s) {
+	short parseCidrSuffix(String s) {
 		short cidrSuffix = Short.parseShort(s);
 		if (cidrSuffix < 0 || cidrSuffix > MAX_CIDR_SUFFIX) {
 			throw new NumberFormatException();
@@ -248,7 +247,7 @@ public class Ipv6Address extends IpAddress {
 	 * Retrieves the following IP address
 	 * @return the next IP address
 	 */
-	public Ipv6Address next() {
+	Ipv6Address next() {
 		if (highBits == -1l && lowBits == -1l) {
 			throw new InvalidIpAddressException();
 		} 
@@ -264,7 +263,7 @@ public class Ipv6Address extends IpAddress {
 	 * Retrieves the previous IP address
 	 * @return the previous IP address
 	 */
-	public Ipv6Address prev() {
+	Ipv6Address prev() {
 		if (lowBits == 0l & highBits == 0l) {
 			throw new InvalidIpAddressException();
 		}
@@ -282,7 +281,7 @@ public class Ipv6Address extends IpAddress {
 	 * @return the comparison result (-1, 0, 1)
 	 */
 	@Override
-	public int compareTo(IpAddress o) {
+	int compareTo(IpAddress o) {
 		Ipv6Address ipv6Addr = (Ipv6Address) o;
 		
 		if (highBits == ipv6Addr.highBits) {

@@ -1,9 +1,5 @@
 package de.uni_freiburg.ub;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 import de.uni_freiburg.ub.Exception.InvalidRangeException;
 
@@ -13,14 +9,16 @@ import de.uni_freiburg.ub.Exception.InvalidRangeException;
  * @see Ipv4Address
  * @see Ipv6Address
  */
-public class IpRangeCollection {
+class IpRangeCollection {
+
+	// >--- 03-2022 ---> migrated from java source
 
 	List<IpRange> ipRangeCollection;
 
 	/**
 	 * Constructor to initialise the empty collection of ranges
 	 */
-	public IpRangeCollection() {
+	IpRangeCollection() {
 		this.ipRangeCollection = new LinkedList<IpRange>();
 	}
 
@@ -30,7 +28,7 @@ public class IpRangeCollection {
 	 * @return the collection with the added range
 	 * @throws InvalidIpAddressException if the object is not valid
 	 */
-	public IpRangeCollection add(IpRange ipRange) throws InvalidIpAddressException {
+	IpRangeCollection add(IpRange ipRange) throws InvalidIpAddressException {
 		this.ipRangeCollection.add(ipRange);
 		return this;
 	}
@@ -43,13 +41,13 @@ public class IpRangeCollection {
 	 * @see IpAddress
 	 * @see IpRange
 	 */
-	public IpRangeCollection compact() throws InvalidIpAddressException, InvalidRangeException {
+	IpRangeCollection compact() throws InvalidIpAddressException, InvalidRangeException {
 		IpRangeCollection result = new IpRangeCollection();
 		IpRange currentRange;
 
 		ipRangeCollection.sort(new Comparator<IpRange>() {
 			@Override
-			public int compare(IpRange o1, IpRange o2) {
+			int compare(IpRange o1, IpRange o2) {
 				return o1.getLowerLimit().compareTo(o2.lowerLimit);
 			}
 		});
@@ -89,7 +87,7 @@ public class IpRangeCollection {
 	 * Outputs all ranges in the collection in their CIDR representations
 	 * @return a {@link List} of CIDR representation strings
 	 */
-	public List<String> toCidrStrings() {
+	List<String> toCidrStrings() {
 		List<String> cidr = new LinkedList<String>();
 
 		for (IpRange ipRange : ipRangeCollection) {
@@ -102,7 +100,7 @@ public class IpRangeCollection {
 	 * Outputs all ranges in the collection in range strings
 	 * @return a {@link List} of IP range strings
 	 */
-	public List<String> toRangeStrings() {
+	List<String> toRangeStrings() {
 		List<String> ranges = new LinkedList<String>();
 		
 		for (IpRange ipRange : ipRangeCollection) {
@@ -115,7 +113,7 @@ public class IpRangeCollection {
 	 * Output all input strings in this collection of ranges
 	 * @return a {@link List} of (raw) input strings
 	 */
-	public List<String> toInputStrings() {
+	List<String> toInputStrings() {
 		List<String> ranges = new LinkedList<String>();
 		
 		for (IpRange ipRange : ipRangeCollection) {

@@ -1,12 +1,5 @@
 package de.uni_freiburg.ub;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.commons.lang3.StringUtils;
-
 import de.uni_freiburg.ub.Exception.InvalidBlockException;
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 import de.uni_freiburg.ub.Exception.InvalidRangeException;
@@ -15,7 +8,9 @@ import de.uni_freiburg.ub.Exception.InvalidRangeException;
  * Represents a range of IP addresses. IPv4 and IPv6 are supported. This IP range is used for IP-based access configurations where access control is regulated with IP ranges
  * @see IpAddress
  */
-public class IpRange {
+class IpRange {
+
+	// >--- 03-2022 ---> migrated from java source
 
 	protected IpAddress upperLimit;
 	protected IpAddress lowerLimit;
@@ -29,7 +24,7 @@ public class IpRange {
 	 * @see IpAddress
 	 * @throws InvalidRangeException if the lower limit is above the upper limit
 	 */
-	public IpRange(IpAddress lowerLimit, IpAddress upperLimit) {
+	IpRange(IpAddress lowerLimit, IpAddress upperLimit) {
 		if (lowerLimit.isGreater(upperLimit)) {
 			throw new InvalidRangeException();
 		}
@@ -46,7 +41,7 @@ public class IpRange {
 	 * @see IpAddress
 	 * @throws InvalidRangeException if the lower limit is above the upper limit
 	 */
-	public IpRange(IpAddress lowerLimit, IpAddress upperLimit, String input) {
+	IpRange(IpAddress lowerLimit, IpAddress upperLimit, String input) {
 		this(lowerLimit, upperLimit);
 		inputString = input;
 	}
@@ -59,7 +54,7 @@ public class IpRange {
 	 * @see IpAddress
 	 * @throws InvalidRangeException if the lower limit is above the upper limit
 	 */
-	public IpRange(IpAddress lowerLimit, IpAddress upperLimit, int cidrSuffix) {
+	IpRange(IpAddress lowerLimit, IpAddress upperLimit, int cidrSuffix) {
 		this(lowerLimit, upperLimit);
 		this.cidrSuffix = cidrSuffix;
 	}
@@ -70,7 +65,7 @@ public class IpRange {
 	 * @return the parsed {@link IpRange}
 	 * @throws InvalidRangeException if the string is not valid
 	 */
-	public static IpRange parseIpRange(String s) throws InvalidRangeException {
+	static IpRange parseIpRange(String s) throws InvalidRangeException {
 		// remove all whitespace characters
 		s = s.replaceAll("\\s", ""); //s = StringUtils.removeAll(s, "\\s");
 
@@ -112,7 +107,7 @@ public class IpRange {
 	 */
 	protected static String[] getBlocks(String ipAddr) throws InvalidBlockException, InvalidRangeException {
 		String[] blocks = ipAddr.split("\\.");
- 
+
 		String blockA = "";
 		String blockB = "";
 		String blockC = "";
@@ -195,7 +190,9 @@ public class IpRange {
 			}
 		}
 
-		return new String[] { blockA, blockB, blockC, blockD };
+//		return new String[] { blockA, blockB, blockC, blockD };
+		String[] result = [ blockA, blockB, blockC, blockD ];
+		return result
 	}
 
 	/**
@@ -312,11 +309,9 @@ public class IpRange {
 			}
 		}
 
-		String end = String.valueOf(resA) + "." + String.valueOf(resB) + "." + String.valueOf(resHighC) + "."
-				+ String.valueOf(resHighD);
+		String end = String.valueOf(resA) + "." + String.valueOf(resB) + "." + String.valueOf(resHighC) + "." + String.valueOf(resHighD);
 
-		String start = String.valueOf(resA) + "." + String.valueOf(resB) + "." + String.valueOf(resLowC) + "."
-				+ String.valueOf(resLowD);
+		String start = String.valueOf(resA) + "." + String.valueOf(resB) + "." + String.valueOf(resLowC) + "." + String.valueOf(resLowD);
 
 		try {
 			IpAddress lower = IpAddress.parseIpAddress(start);
@@ -332,7 +327,7 @@ public class IpRange {
 	 * @return the range as string
 	 * @throws InvalidIpAddressException if one of the addresses is not correctly defined
 	 */
-	public String toRangeString() throws InvalidIpAddressException {
+	String toRangeString() throws InvalidIpAddressException {
 		String lower = lowerLimit.toString();
 		String upper = upperLimit.toString();
 		String ipRange = lower + "-" + upper;
@@ -345,7 +340,7 @@ public class IpRange {
 	 * @return the lower {@link IpAddress}
 	 * @throws InvalidIpAddressException if the address is incorrect
 	 */
-	public IpAddress getLowerLimit() throws InvalidIpAddressException {
+	IpAddress getLowerLimit() throws InvalidIpAddressException {
 		return this.lowerLimit;
 	}
 
@@ -354,7 +349,7 @@ public class IpRange {
 	 * @return the upper {@link IpAddress}
 	 * @throws InvalidIpAddressException if the address is incorrect
 	 */
-	public IpAddress getUpperLimit() throws InvalidIpAddressException {
+	IpAddress getUpperLimit() throws InvalidIpAddressException {
 		return this.upperLimit;
 	}
 
@@ -362,7 +357,7 @@ public class IpRange {
 	 * Outputs the range as CIDR strings
 	 * @return the {@link List} of {@link IpAddress}es in CIDR representation
 	 */
-	public List<String> toCidr() {
+	List<String> toCidr() {
 
 		List<String> result = new LinkedList<String>();
 
@@ -449,7 +444,7 @@ public class IpRange {
 	 * Outputs the range between lower and upper as string
 	 * @return the range string
 	 */
-	public String toString() {
+	String toString() {
 		return lowerLimit.toString() +"-"+upperLimit.toString();
 	}
 
@@ -457,7 +452,7 @@ public class IpRange {
 	 * Gets the raw input string of the range
 	 * @return the raw input string
 	 */
-	public String toInputString() {
+	String toInputString() {
 		return inputString;
 	}
 
@@ -465,7 +460,7 @@ public class IpRange {
 	 * Gets the version of the IP range
 	 * @return the IP revision version (v4/v6)
 	 */
-	public String getIpVersion() {
+	String getIpVersion() {
 		if (upperLimit instanceof Ipv4Address) {
 			return "v4";
 		} 

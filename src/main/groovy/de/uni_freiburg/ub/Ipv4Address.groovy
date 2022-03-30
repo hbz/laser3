@@ -2,7 +2,9 @@ package de.uni_freiburg.ub;
 
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 
-public class Ipv4Address extends IpAddress {
+class Ipv4Address extends IpAddress {
+
+	// >--- 03-2022 ---> migrated from java source
 
 	protected static final short MAX_CIDR_SUFFIX = 32;
 	protected long bits;
@@ -11,7 +13,7 @@ public class Ipv4Address extends IpAddress {
 	/**
 	 * Default constructor
 	 */
-	public Ipv4Address() {
+	Ipv4Address() {
 	}
 
 	/**
@@ -19,7 +21,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param ipAddress the bit count of the IP address
 	 * @throws InvalidIpAddressException if the bit number is not between 0 and 2^32
 	 */
-	public Ipv4Address(long ipAddress) throws InvalidIpAddressException {
+	Ipv4Address(long ipAddress) throws InvalidIpAddressException {
 		this.max_cidr_suffix = 32;
 		if (0 <= ipAddress && ipAddress <= 4294967295l) {
 			this.bits = ipAddress;
@@ -35,7 +37,7 @@ public class Ipv4Address extends IpAddress {
 	 * @throws InvalidIpAddressException if there are not exactly four blocks in the address
 	 * @throws NumberFormatException if the number in each block is not between 0 and 255
 	 */
-	public static IpAddress parseIpAddress(String str) throws InvalidIpAddressException, NumberFormatException {
+	static IpAddress parseIpAddress(String str) throws InvalidIpAddressException, NumberFormatException {
 
 		String[] blocks = str.split("\\.");
 
@@ -60,7 +62,7 @@ public class Ipv4Address extends IpAddress {
 	 * Converts the bit representation into four blocks of numbers between 0 and 255 (the known format of IPv4 addresses)
 	 * @return the IPv4 address string
 	 */
-	public String toString() {
+	String toString() {
 		final short[] shorts = new short[4];
 		for (int i = 0; i < 4; i++) {
 			shorts[i] = (short) (((bits << i * 8) >>> 8 * (3)) & 0xFF);
@@ -78,7 +80,7 @@ public class Ipv4Address extends IpAddress {
 	 * Outputs the address bits as hexadecimal string
 	 * @return the hexadecimal string represenation of the address
 	 */
-	public String toHexString() {
+	String toHexString() {
 		return String.format("%08x", bits);
 	}
 
@@ -86,7 +88,7 @@ public class Ipv4Address extends IpAddress {
 	 * Outputs the bit representation of the address
 	 * @return the address as long
 	 */
-	public long longValue() {
+	long longValue() {
 		return this.bits;
 	};
 
@@ -95,7 +97,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param ipAddr the address to check against
 	 * @return is this address greater than the given one?
 	 */
-	public boolean isGreater(IpAddress ipAddr) {
+	boolean isGreater(IpAddress ipAddr) {
 		return this.longValue() > ((Ipv4Address) ipAddr).longValue();
 	}
 
@@ -104,7 +106,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param ipAddr the address to check against
 	 * @return is this address greater than or equal the given one?
 	 */
-	public boolean isGreaterEqual(IpAddress ipAddr) {
+	boolean isGreaterEqual(IpAddress ipAddr) {
 		return this.longValue() >= ((Ipv4Address) ipAddr).longValue();
 	}
 
@@ -113,7 +115,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param ipAddr the address to check against
 	 * @return is this address less than the given one?
 	 */
-	public boolean isLesser(IpAddress ipAddr) {
+	boolean isLesser(IpAddress ipAddr) {
 		return this.longValue() < ((Ipv4Address) ipAddr).longValue();
 	}
 
@@ -122,7 +124,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param ipAddr the address to check against
 	 * @return is this address less than or equal the given one?
 	 */
-	public boolean isLesserEqual(IpAddress ipAddr) {
+	boolean isLesserEqual(IpAddress ipAddr) {
 		return this.longValue() <= ((Ipv4Address) ipAddr).longValue();
 	}
 
@@ -130,7 +132,7 @@ public class Ipv4Address extends IpAddress {
 	 * Retrieves the following address
 	 * @return the next address
 	 */
-	public Ipv4Address next() {
+	Ipv4Address next() {
 		return new Ipv4Address(bits + 1);
 	}
 
@@ -138,7 +140,7 @@ public class Ipv4Address extends IpAddress {
 	 * Retrieves the previous address
 	 * @return the previous address
 	 */
-	public Ipv4Address prev() {
+	Ipv4Address prev() {
 		return new Ipv4Address(bits - 1);
 	}
 
@@ -146,7 +148,7 @@ public class Ipv4Address extends IpAddress {
 	 * irrelevant for IPv4; does the same as {@link #longValue()}
 	 * @return the bit value of the address
 	 */
-	public long highBits() {
+	long highBits() {
 		return bits;
 	}
 
@@ -154,7 +156,7 @@ public class Ipv4Address extends IpAddress {
 	 * irrelevant for IPv4; does the same as {@link #longValue()}
 	 * @return the bit value of the address
 	 */
-	public long lowBits() {
+	long lowBits() {
 		return bits;
 	}
 
@@ -163,7 +165,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param cidrSuffix the CIDR suffix to determine the range to match against
 	 * @return the upper limit with the given CIDR suffix
 	 */
-	public IpAddress getUpperLimit(int cidrSuffix) {
+	IpAddress getUpperLimit(int cidrSuffix) {
 		long lowBlockUpper = (bits | (~(-1l << MAX_CIDR_SUFFIX - cidrSuffix)));
 
 		return new Ipv4Address(lowBlockUpper);
@@ -174,7 +176,7 @@ public class Ipv4Address extends IpAddress {
 	 * @param cidrSuffix the CIDR suffix to determine the range to match against
 	 * @return the lower limit with the given CIDR suffix
 	 */
-	public IpAddress getLowerLimit(int cidrSuffix) {
+	IpAddress getLowerLimit(int cidrSuffix) {
 		long lowBlockLower = (bits & (-1l << MAX_CIDR_SUFFIX - cidrSuffix));
 
 		return new Ipv4Address(lowBlockLower);
@@ -186,7 +188,7 @@ public class Ipv4Address extends IpAddress {
 	 * @return the parsed CIDR suffix
 	 * @throws NumberFormatException if the suffix value is not between 0 and 32 (MAX_CIDR_SUFFIX)
 	 */
-	public short parseCidrSuffix(String s) {
+	short parseCidrSuffix(String s) {
 		short cidrSuffix = Short.parseShort(s);
 		if (cidrSuffix < 0 || cidrSuffix > MAX_CIDR_SUFFIX) {
 			throw new NumberFormatException();
@@ -200,7 +202,7 @@ public class Ipv4Address extends IpAddress {
 	 * @return the comparison result (-1, 0, 1)
 	 */
 	@Override
-	public int compareTo(IpAddress o) {
+	int compareTo(IpAddress o) {
 		Ipv4Address ipv4Addr = (Ipv4Address) o;
 		return Long.signum(bits - ipv4Addr.bits);
 	}
