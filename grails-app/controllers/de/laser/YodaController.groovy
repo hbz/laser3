@@ -1304,41 +1304,40 @@ class YodaController {
     }
 
     /**
-     * Retrieves the underlying packages to all issue entitlements where they exist without a subscription-package link
+     * Checks the subscription-license linkings on member level and reveals those where the participant is not linked directly to the member license
      */
     @Secured(['ROLE_YODA'])
-    Map checkIssueEntitlementPackages() {
-        Map<String,List<IssueEntitlement>> result = [:]
-        result.ieList = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp.pkg tp where not exists (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription and sp.pkg = tp)')
+    Map checkOrgLicRoles() {
+        Map<String,Set> result = [:]
+        Set licenseSubscriptionLinks = Links.executeQuery("select li, ooo from Links li join li.sourceLicense l join li.destinationSubscription s join s.orgRelations ooo where li.linkType = :license and l.instanceOf != null and s.instanceOf != null and not exists(select oo from OrgRole oo where oo.lic = l and oo.roleType = :licCons and oo.org = (select ooo.org from ooo where ooo.sub = s and ooo.roleType = :subCons)) and ooo.roleType = :subCons", [license: RDStore.LINKTYPE_LICENSE, licCons: RDStore.OR_LICENSEE_CONS, subCons: RDStore.OR_SUBSCRIBER_CONS])
+        result.links = licenseSubscriptionLinks
         result
     }
 
     /**
-     * Creates subscription-package linkings everywhere where holdings exist without a direct connection between subscriptions and the underlying packages
+     * Synchronises the linkings between members and member licenses so that members can access the underlying licenses
+     * @return
      */
     @Secured(['ROLE_YODA'])
     @Transactional
-    def createSubscriptionPackagesFromIssueEntitlements() {
-        List<IssueEntitlement> toLink = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp.pkg tp where not exists (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription and sp.pkg = tp)')
-        Set<Map> entries = []
-        toLink.each { issueEntitlement ->
-            entries << [subscription: issueEntitlement.subscription,pkg: issueEntitlement.tipp.pkg]
-        }
-        if(params.doIt == 'true') {
-            List<String> errorMsg = []
-            entries.each { entry ->
-                SubscriptionPackage sp = new SubscriptionPackage(entry)
-                if(!sp.save())
-                    errorMsg << sp.errors
+    def updateOrgLicRoles() {
+        Set licenseSubscriptionLinks = Links.executeQuery("select li, ooo from Links li join li.sourceLicense l join li.destinationSubscription s join s.orgRelations ooo where li.linkType = :license and l.instanceOf != null and s.instanceOf != null and not exists(select oo from OrgRole oo where oo.lic = l and oo.roleType = :licCons and oo.org = (select ooo.org from ooo where ooo.sub = s and ooo.roleType = :subCons)) and ooo.roleType = :subCons", [license: RDStore.LINKTYPE_LICENSE, licCons: RDStore.OR_LICENSEE_CONS, subCons: RDStore.OR_SUBSCRIBER_CONS])
+        licenseSubscriptionLinks.eachWithIndex { row, int i ->
+            log.debug("now processing record ${i} out of ${licenseSubscriptionLinks.size()} entries")
+            License l = row[0].sourceLicense
+            Org o = row[1].org
+            OrgRole oo = OrgRole.findByLicAndOrg(l, o)
+            if(oo && oo.roleType == null) {
+                oo.roleType = RDStore.OR_LICENSEE_CONS
+                log.debug("faulty record corrected")
             }
-            if(errorMsg)
-                flash.error = "Folgende Fehler sind aufgetreten: <ul><li>${errorMsg.join('</li><li>')}</li></ul>"
-            else flash.message = "Lizenzen wurden erfolgreich mit Paketen verknüpft"
+            else {
+                oo = new OrgRole(lic: l, org: o, roleType: RDStore.OR_LICENSEE_CONS)
+                log.debug("new record created")
+            }
+            oo.save()
         }
-        else {
-            flash.message = "Folgende Lizenzen und Pakete hätte es getroffen: <ul><li>${entries.join('</li><li>')}</li></ul>"
-        }
-        redirect(url: request.getHeader('referer'))
+        redirect(action: 'checkOrgLicRoles')
     }
 
     @Deprecated
