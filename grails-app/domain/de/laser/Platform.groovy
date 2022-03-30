@@ -23,10 +23,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
  */
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
-  def grailsApplication
-  def propertyService
-  def deletionService
-
   static Log static_logger = LogFactory.getLog(Platform)
 
   String gokbId
@@ -105,7 +101,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   def afterDelete() {
     super.afterDeleteHandler()
 
-    deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+    BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
   @Override
   def afterInsert() {
@@ -200,7 +196,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @return a {@link Map} of {@link PropertyDefinitionGroup}s, ordered by sorted, global, local and orphaned property definitions
    */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        propertyService.getCalculatedPropDefGroups(this, contextOrg)
+      BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
   /**

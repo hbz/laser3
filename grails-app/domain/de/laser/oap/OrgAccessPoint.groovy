@@ -3,9 +3,9 @@ package de.laser.oap
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.AccessPointData
-import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -26,8 +26,6 @@ class OrgAccessPoint extends AbstractBase {
     Org org
     Date dateCreated
     Date lastUpdated
-
-    def orgTypeService
 
     @RefdataAnnotation(cat = RDConstants.ACCESS_POINT_TYPE)
     RefdataValue accessMethod
@@ -100,7 +98,7 @@ class OrgAccessPoint extends AbstractBase {
 
     def getNotLinkedPlatforms()
     {
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(org)
+        List currentSubIds = BeanStore.getOrgTypeService().getCurrentSubscriptionIds(org)
         // TODO check if this is enough
         if (!currentSubIds){
             return

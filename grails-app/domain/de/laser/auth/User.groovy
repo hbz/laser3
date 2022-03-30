@@ -2,6 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
+import de.laser.helper.BeanStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
@@ -13,12 +14,6 @@ import javax.persistence.Transient
 //@EqualsAndHashCode(includes='username')
 //@ToString(includes='username', includeNames=true, includePackage=false)
 class User {
-
-    def contextService
-    def instAdmService
-    def springSecurityService
-    def userService
-    def yodaService
 
     String username
     String display
@@ -146,7 +141,7 @@ class User {
      * Encodes the submitted password
      */
     protected void encodePassword() {
-        password = springSecurityService.encodePassword(password)
+        password = BeanStore.getSpringSecurityService().encodePassword(password)
     }
 
     // TODO -> rename to getAffiliations() -> remove
@@ -255,7 +250,7 @@ class User {
      * @return does the user have the given INST-role AND ROLE constant granted?
      */
     boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        userService.checkAffiliation(this, userRoleName, globalRoleName, 'AND', contextService.getOrg())
+        BeanStore.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStore.getContextService().getOrg())
     }
 
     /**
@@ -265,7 +260,7 @@ class User {
      * @return does the user have the given INST_-role for the given org?
      */
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        userService.checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+        BeanStore.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
     /**
@@ -276,7 +271,7 @@ class User {
         boolean lia = false
 
         affiliations.each { aff ->
-            if (instAdmService.isUserLastInstAdminForOrg(this, aff.org)) {
+            if (BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, aff.org)) {
                 lia = true
             }
         }
@@ -289,6 +284,6 @@ class User {
      */
     @Override
     String toString() {
-        yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
+        BeanStore.getYodaService().showDebugInfo() ? display + ' (' + id + ')' : display
     }
 }

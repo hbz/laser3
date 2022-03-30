@@ -20,7 +20,6 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.SubscriptionProperty
 import de.laser.traits.ShareableTrait
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -72,15 +71,6 @@ import java.time.LocalDate
  */
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport {
-
-    def contextService
-    def messageSource
-    def pendingChangeService
-    def changeNotificationService
-    def accessService
-    def propertyService
-    def deletionService
-    def auditService
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -256,7 +246,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -311,7 +301,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             }
         }
 
-        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
@@ -690,7 +680,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        Org contextOrg = contextService.getOrg()
+        Org contextOrg = BeanStore.getContextService().getOrg()
         if (user.getAuthorizedOrgsIds().contains(contextOrg?.id)) {
 
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
@@ -707,7 +697,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if (BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }
@@ -731,7 +721,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             log.debug("Send pending change to ${ds.id}")
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             String definedType = 'text'
 
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
@@ -749,7 +739,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     "${description}"
             ]
 
-            PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                     PendingChange.PROP_SUBSCRIPTION,
                     ds,
                     ds.getSubscriber(),
@@ -770,7 +760,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            pendingChangeService.performAccept(spc)
+            BeanStore.getPendingChangeService().performAccept(spc)
         }
     }
 
@@ -789,7 +779,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return the {@link PropertyDefinitionGroup}s for this subscription, defined by the given institution
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        propertyService.getCalculatedPropDefGroups(this, contextOrg)
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -968,7 +958,7 @@ select distinct oap from OrgAccessPoint oap
      * @return this subscription's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
   String dropdownNamingConvention() {
-      dropdownNamingConvention(contextService.getOrg())
+      dropdownNamingConvention(BeanStore.getContextService().getOrg())
   }
 
     /**
@@ -977,7 +967,6 @@ select distinct oap from OrgAccessPoint oap
      * @return this subscription's name according to the dropdown naming convention
      */
   String dropdownNamingConvention(contextOrg){
-       MessageSource messageSource = BeanStore.getMessageSource()
        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
        String period = startDate ? sdf.format(startDate)  : ''
 
@@ -1000,7 +989,7 @@ select distinct oap from OrgAccessPoint oap
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
            else{
-               additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+               additionalInfo = BeanStore.getMessageSource().getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 
 
@@ -1014,7 +1003,7 @@ select distinct oap from OrgAccessPoint oap
 
     @Deprecated
     String dropdownNamingConventionWithoutOrg() {
-        dropdownNamingConventionWithoutOrg(contextService.getOrg())
+        dropdownNamingConventionWithoutOrg(BeanStore.getContextService().getOrg())
     }
 
     @Deprecated

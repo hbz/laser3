@@ -19,9 +19,11 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
+    // [ database migration plugin ..
     migrationCallbacks( CustomMigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
+    // .. ]
 
     // [ user counter ..
     sessionRegistry( SessionRegistryImpl )
@@ -36,9 +38,9 @@ beans = {
     }
 
     sessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
-            ref('concurrentSessionControlAuthenticationStrategy'),
-            ref('sessionFixationProtectionStrategy'),
-            ref('registerSessionAuthenticationStrategy')
+        ref('concurrentSessionControlAuthenticationStrategy'),
+        ref('sessionFixationProtectionStrategy'),
+        ref('registerSessionAuthenticationStrategy')
     ])
     // .. ]
 
@@ -80,16 +82,16 @@ beans = {
 
     securityContextPersistenceFilter( SecurityContextPersistenceFilter )
 
-    // [ password fallback ..
-    passwordEncoder(CustomPasswordEncoderFactories) { bean ->
+    // [ password migration/fallback ..
+    passwordEncoder( CustomPasswordEncoderFactories ) { bean ->
         bean.factoryMethod = "createDelegatingPasswordEncoder"
     }
     // .. ]
 
     // [ wkhtmltopdf ..
     wkhtmltoxService( CustomWkhtmltoxService ) {
-        grailsApplication = ref('grailsApplication')
-        mailMessageContentRenderer = ref('mailMessageContentRenderer')
+        grailsApplication           = ref('grailsApplication')
+        mailMessageContentRenderer  = ref('mailMessageContentRenderer')
     }
     // .. ]
 }

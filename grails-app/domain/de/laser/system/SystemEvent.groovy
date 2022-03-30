@@ -1,5 +1,6 @@
 package de.laser.system
 
+import de.laser.helper.BeanStore
 import de.laser.helper.MigrationHelper
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -14,8 +15,6 @@ import java.time.LocalDate
  */
 @Slf4j
 class SystemEvent {
-
-    def messageSource
 
     @Transient
     private String i18n
@@ -205,7 +204,7 @@ class SystemEvent {
      */
     private void setInfo() {
         if (!i18n) {
-            i18n = messageSource.getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
+            i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
         }
     }
 

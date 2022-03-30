@@ -51,11 +51,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
-    def contextService
-    def accessService
-	def propertyService
-    def deletionService
-
     String name
     String shortname
     String shortcode            // Used to generate friendly semantic URLs
@@ -288,8 +283,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         //ugliest HOTFIX ever #2
         if(!Thread.currentThread().name.contains("Sync")) {
-            if (contextService.getOrg()) {
-                createdBy = contextService.getOrg()
+            if (BeanStore.getContextService().getOrg()) {
+                createdBy = BeanStore.getContextService().getOrg()
             }
         }
 
@@ -300,7 +295,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -441,7 +436,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @see de.laser.properties.PropertyDefinitionGroup
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        propertyService.getCalculatedPropDefGroups(this, contextOrg)
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -569,7 +564,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = contextService.getOrg()
+            Org ctxOrg = BeanStore.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
                     " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -604,7 +599,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = contextService.getOrg()
+            Org ctxOrg = BeanStore.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
                             " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -750,7 +745,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
     String dropdownNamingConvention() {
-        return dropdownNamingConvention(contextService.getOrg())
+        return dropdownNamingConvention(BeanStore.getContextService().getOrg())
     }
 
     /**

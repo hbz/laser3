@@ -5,9 +5,9 @@ import de.laser.Org
 import de.laser.TitleInstancePackagePlatform
 import de.laser.Identifier
 import de.laser.OrgRole
-import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
@@ -33,9 +33,6 @@ import java.util.regex.Pattern
 @Deprecated
 @Slf4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
-
-    def grailsApplication
-    def deletionService
 
     // AuditableTrait
     //static auditable = true
@@ -122,7 +119,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {

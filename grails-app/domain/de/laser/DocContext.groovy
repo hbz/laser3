@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
@@ -12,9 +12,6 @@ import org.grails.datastore.mapping.engine.event.PostUpdateEvent
  * occasionally); but even then, there is a link - in that case, the context org. Technically, this is the same result as attaching a document to the context org (may even be done there).
  */
 class DocContext implements ShareableTrait, Comparable {
-
-    def deletionService
-    def shareService
 
     static belongsTo = [
         owner:          Doc,
@@ -91,7 +88,7 @@ class DocContext implements ShareableTrait, Comparable {
      * Triggers after the database removal of the document context also the ElasticSearch index removal
      */
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     void afterUpdate(PostUpdateEvent event) {

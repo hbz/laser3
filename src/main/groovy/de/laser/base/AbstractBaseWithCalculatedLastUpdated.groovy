@@ -1,5 +1,6 @@
 package de.laser.base
 
+import de.laser.helper.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -15,27 +16,24 @@ import org.apache.commons.logging.LogFactory
 abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
         implements CalculatedLastUpdated {
 
-    //@Autowired
-    def cascadingUpdateService // DO NOT OVERRIDE IN SUB CLASSES
-
     static Log static_logger = LogFactory.getLog(AbstractBaseWithCalculatedLastUpdated)
 
     protected void afterInsertHandler() {
         static_logger.debug("afterInsertHandler()")
 
-        cascadingUpdateService.update(this, dateCreated)
+        BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     protected void afterUpdateHandler() {
         static_logger.debug("afterUpdateHandler()")
 
-        cascadingUpdateService.update(this, lastUpdated)
+        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     protected void afterDeleteHandler() {
         static_logger.debug("afterDeleteHandler()")
 
-        cascadingUpdateService.update(this, new Date())
+        BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
     abstract def afterInsert() /* { afterInsertHandler() } */

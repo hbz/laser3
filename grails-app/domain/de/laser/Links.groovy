@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.exceptions.CreationException
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -10,8 +11,6 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * It is similar to {@link Combo} but with different functionality. The types of links see {@link RDConstants#LINK_TYPE}
  */
 class Links {
-
-    def genericOIDService
 
     Long id
     Subscription sourceSubscription
@@ -94,7 +93,7 @@ class Links {
             context = key
         }
         else if(key instanceof GString || key instanceof String) {
-            context = genericOIDService.resolveOID(key)
+            context = BeanStore.getGenericOIDService().resolveOID(key)
         }
         else {
             log.error("No context key!")

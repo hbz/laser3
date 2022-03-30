@@ -1,7 +1,6 @@
 package de.laser.system
 
 import de.laser.Org
-import de.laser.ContextService
 import de.laser.helper.AppUtils
 import de.laser.helper.BeanStore
 
@@ -62,15 +61,13 @@ class SystemProfiler {
      */
     static void update(long delta, String actionUri) {
 
-        ContextService contextService = BeanStore.getContextService()
-
         withTransaction {
 
             // store current request
             if (delta && delta > 0) {
                 (new SystemProfiler(
                         uri: actionUri,
-                        context: contextService?.getOrg(),
+                        context: BeanStore.getContextService().getOrg(),
                         ms: delta,
                         archive: SystemProfiler.getCurrentArchive()
                 )).save()

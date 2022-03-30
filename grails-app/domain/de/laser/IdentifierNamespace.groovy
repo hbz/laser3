@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.BeanStore
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
@@ -17,8 +17,6 @@ import org.apache.commons.logging.LogFactory
  * Identifier namespaces belong to the internationalisable classes; the name and description strings may be translated to German
  */
 class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated {
-
-    def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
@@ -160,15 +158,15 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     def afterInsert() {
         static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
+        BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
+        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
     Date _getCalculatedLastUpdated() {

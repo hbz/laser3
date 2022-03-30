@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
@@ -14,8 +15,6 @@ import org.apache.commons.logging.LogFactory
  * @see DeweyDecimalClassification
  */
 class Language implements CalculatedLastUpdated, Comparable {
-
-    def cascadingUpdateService
 
     Long id
     Long version
@@ -65,19 +64,19 @@ class Language implements CalculatedLastUpdated, Comparable {
     @Override
     def afterInsert() {
         static_logger.debug("afterInsert")
-        cascadingUpdateService.update(this, dateCreated)
+        BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     @Override
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        cascadingUpdateService.update(this, lastUpdated)
+        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
-        cascadingUpdateService.update(this, new Date())
+        BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
     @Override

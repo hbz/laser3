@@ -2,9 +2,9 @@ package de.laser
 
 import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
+import de.laser.helper.BeanStore
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
@@ -15,8 +15,6 @@ import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -36,16 +34,6 @@ import java.text.SimpleDateFormat
  */
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
-
-    def contextService
-    def accessService
-    //def genericOIDService
-    def messageSource
-    def pendingChangeService
-    def changeNotificationService
-    def propertyService
-    def deletionService
-    def auditService
 
     License instanceOf
 
@@ -183,7 +171,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -209,7 +197,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
@@ -453,6 +441,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the grant for the user is given, false otherwise
      */
     boolean hasPerm(perm, user) {
+        ContextService contextService = BeanStore.getContextService()
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 
@@ -476,7 +465,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || licsee
             }
         }
@@ -538,7 +527,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             log.debug("Send pending change to ${dl.id}")
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            def description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
             def definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
@@ -556,7 +545,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                     "${description}"
             ]
 
-            PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                         PendingChange.PROP_LICENSE,
                         dl,
                         dl.getLicensee(),
@@ -577,7 +566,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            pendingChangeService.performAccept(spc)
+            BeanStore.getPendingChangeService().performAccept(spc)
         }
     }
 
@@ -595,7 +584,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link Map} of {@link PropertyDefinitionGroup}s; ordered by sorted, global, local or orphaned ones
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        propertyService.getCalculatedPropDefGroups(this, contextOrg)
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -632,7 +621,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         String result = ''
         result += reference + " - " + statusString + " " + period
         if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
-            result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
+            result += " - " + BeanStore.getMessageSource().getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 
         return result

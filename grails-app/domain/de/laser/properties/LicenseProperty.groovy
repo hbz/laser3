@@ -7,9 +7,12 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.BeanStore
 import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * The class's name is what it does: a property (general / custom or private) to a {@link de.laser.License}.
@@ -18,13 +21,6 @@ import org.grails.web.json.JSONElement
  * Next to the property value, it may continue a {@link #paragraph} of an underlying contract text.
  */
 class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implements Auditable {
-
-    def genericOIDService
-    def changeNotificationService
-    def messageSource
-    def pendingChangeService
-    def deletionService
-    def auditService
 
     PropertyDefinition type
     boolean isPublic = false
@@ -118,7 +114,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def beforeUpdate(){
         Map<String, Object> changes = super.beforeUpdateHandler()
 
-        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -128,13 +124,13 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def beforeDelete() {
         super.beforeDeleteHandler()
 
-        auditService.beforeDeleteHandler(this)
+        BeanStore.getAuditService().beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this), this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(BeanStore.getGenericOIDService().getOID(this), this.class.simpleName)
     }
 
     /**
@@ -156,11 +152,12 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      */
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
+        MessageSource messageSource = BeanStore.getMessageSource()
 
         if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
             // legacy ++
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = messageSource.getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
@@ -214,7 +211,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                         "${description}"
                 ]
 
-                PendingChange newPendingChange =  changeNotificationService.registerPendingChange(
+                PendingChange newPendingChange =  BeanStore.getChangeNotificationService().registerPendingChange(
                         PendingChange.PROP_LICENSE,
                         lcp.owner,
                         lcp.owner.getLicensee(),
@@ -234,7 +231,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                pendingChangeService.performAccept(spc)
+                BeanStore.getPendingChangeService().performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('LicenseProperty.deleted')) {
@@ -245,7 +242,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                 if (pc.payload) {
                     JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
-                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        def scp = BeanStore.getGenericOIDService().resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
                             pc.delete()
                         }

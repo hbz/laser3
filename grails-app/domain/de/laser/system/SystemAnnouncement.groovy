@@ -20,10 +20,6 @@ import java.time.LocalDate
  */
 class SystemAnnouncement {
 
-    def grailsApplication
-    def mailService
-    def escapeService
-
     User    user
     String  title
     String  content
@@ -99,7 +95,7 @@ class SystemAnnouncement {
      * @return the sanitized title string
      */
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(title))
+        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(title))
     }
 
     /**
@@ -107,7 +103,7 @@ class SystemAnnouncement {
      * @return the sanitized content string
      */
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(content))
+        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(content))
     }
 
     /**
@@ -184,7 +180,7 @@ class SystemAnnouncement {
         }
 
         if (isRemindCCbyEmail && ccAddress) {
-            mailService.sendMail {
+            BeanStore.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigUtils.getNotificationsEmailFrom()
                 cc      ccAddress
@@ -194,7 +190,7 @@ class SystemAnnouncement {
             }
         }
         else {
-            mailService.sendMail {
+            BeanStore.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigUtils.getNotificationsEmailFrom()
                 replyTo ConfigUtils.getNotificationsEmailReplyTo()

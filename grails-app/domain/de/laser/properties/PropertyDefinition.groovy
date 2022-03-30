@@ -5,7 +5,6 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -126,8 +125,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     Date dateCreated
     Date lastUpdated
 
-    @Transient
-    def contextService
+//    @Transient
+//    def contextService
 
     @Transient
     static def validTypes = [
@@ -371,8 +370,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             def obj = genericOIDService.resolveOID(params.oid)
 
             if (obj) {
-                ContextService contextService = BeanStore.getContextService()
-                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(contextService.getOrg())
+                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(BeanStore.getContextService().getOrg())
 
                 calcPropDefGroups.global.each { it ->
                     List<PropertyDefinition> tmp = it.getPropertyDefinitions()
@@ -468,7 +466,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     int countOwnUsages() {
         String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
-        Map<String,Long> filterParams = [type:this.id,ctx:contextService.getOrg().id]
+        Map<String,Long> filterParams = [type:this.id,ctx:BeanStore.getContextService().getOrg().id]
         if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
         } else if(this.descr == PropertyDefinition.SVY_PROP) {

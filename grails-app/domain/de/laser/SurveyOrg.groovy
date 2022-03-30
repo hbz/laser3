@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.BeanStore
 import de.laser.helper.RDStore
 
 /**
@@ -9,8 +10,6 @@ import de.laser.helper.RDStore
  * @see SurveyConfig
  */
 class SurveyOrg {
-
-    def deletionService
 
     SurveyConfig surveyConfig
     Org org
@@ -43,7 +42,7 @@ class SurveyOrg {
     }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     /**

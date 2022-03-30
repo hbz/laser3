@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
@@ -18,8 +19,6 @@ import de.laser.annotations.RefdataAnnotation
  * Tasks have a status and can be assigned either to a single {@link User} or to the institution {@link Org} as a whole
  */
 class Task {
-
-    def deletionService
 
     License         license
     Org             org
@@ -90,7 +89,7 @@ class Task {
     }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     /**

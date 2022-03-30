@@ -2,6 +2,7 @@ package de.laser.custom
 
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
+import grails.core.GrailsApplication
 import liquibase.Liquibase
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.RanChangeSet
@@ -11,7 +12,7 @@ import java.text.SimpleDateFormat
 
 class CustomMigrationCallbacks {
 
-	def grailsApplication
+	GrailsApplication grailsApplication
 
 	void beforeStartMigration(Database database) {
 	}

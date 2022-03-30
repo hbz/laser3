@@ -7,6 +7,7 @@ import de.laser.Subscription
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.BeanStore
 import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
@@ -17,13 +18,6 @@ import org.grails.web.json.JSONElement
  * As its parent object ({@link #owner}), it may be passed through member subscriptions (inheritance / auditable); the parent property is represented by {@link #instanceOf}.
  */
 class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated implements Auditable {
-
-    def genericOIDService
-    def changeNotificationService
-    def messageSource
-    def pendingChangeService
-    def deletionService
-    def auditService
 
     PropertyDefinition type
     boolean isPublic = false
@@ -114,7 +108,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def beforeUpdate(){
         Map<String, Object> changes = super.beforeUpdateHandler()
 
-        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -124,13 +118,13 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def beforeDelete() {
         super.beforeDeleteHandler()
 
-        auditService.beforeDeleteHandler(this)
+        BeanStore.getAuditService().beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this), this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(BeanStore.getGenericOIDService().getOID(this), this.class.simpleName)
     }
 
     /**
@@ -146,7 +140,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }
@@ -185,7 +179,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                         "${description}"
                 ]
 
-                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+                PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                         PendingChange.PROP_SUBSCRIPTION,
                         scp.owner,
                         scp.owner.getSubscriber(),
@@ -205,7 +199,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                pendingChangeService.performAccept(spc)
+                BeanStore.getPendingChangeService().performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.deleted')) {
@@ -216,7 +210,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                 if (pc.payload) {
                     JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
-                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        def scp = BeanStore.getGenericOIDService().resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
                             pc.delete()
                         }

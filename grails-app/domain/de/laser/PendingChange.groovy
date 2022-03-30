@@ -1,10 +1,9 @@
 package de.laser
 
-import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
-import de.laser.exceptions.ChangeAcceptException
 import de.laser.exceptions.CreationException
 import de.laser.finance.PriceItem
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -24,9 +23,6 @@ import java.text.SimpleDateFormat
  */
 @Slf4j
 class PendingChange {
-
-    def genericOIDService
-    def messageSource
 
     final static Set<String> PRICE_FIELDS = ['listPrice']
     final static Set<String> DATE_FIELDS = ['accessStartDate', 'accessEndDate', 'startDate', 'endDate']
@@ -350,7 +346,7 @@ class PendingChange {
      * @return the resolved object
      */
     def resolveOID() {
-        genericOIDService.resolveOID(oid)
+        BeanStore.getGenericOIDService().resolveOID(oid)
     }
 
     /**
@@ -411,11 +407,11 @@ class PendingChange {
         if (prefix) {
             def parsed
             try {
-                parsed = messageSource.getMessage(prefix + parsedParams[0], null, locale)
+                parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0], null, locale)
             }
             catch (Exception e1) {
                 try {
-                    parsed = messageSource.getMessage(prefix + parsedParams[0] + '.label', null, locale)
+                    parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0] + '.label', null, locale)
                 }
                 catch (Exception e2) {
                     parsed = prefix + parsedParams[0]
@@ -428,7 +424,7 @@ class PendingChange {
 
         if (msgToken in ['pendingChange.message_LI02', 'pendingChange.message_SU02']) {
 
-            def pd = genericOIDService.resolveOID(parsedParams[0])
+            def pd = resolveOID(parsedParams[0])
             if (pd) {
                 parsedParams[0] = pd.getI10n('name')
             }
@@ -437,13 +433,13 @@ class PendingChange {
         // parse values
 
         if (type == 'rdv') {
-            def rdv1 = genericOIDService.resolveOID(parsedParams[1])
-            def rdv2 = genericOIDService.resolveOID(parsedParams[2])
+            def rdv1 = resolveOID(parsedParams[1])
+            def rdv2 = resolveOID(parsedParams[2])
 
             parsedParams[1] = rdv1.getI10n('value')
             parsedParams[2] = rdv2.getI10n('value')
         } else if (type == 'date') {
-            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(messageSource.getMessage('default.date.format', null, locale))
+            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(BeanStore.getMessageSource().getMessage('default.date.format', null, locale))
             //TODO JSON @ Wed Jan 03 00:00:00 CET 2018
 
             //def date1 = parsedParams[1] ? sdf.parse(parsedParams[1]) : null

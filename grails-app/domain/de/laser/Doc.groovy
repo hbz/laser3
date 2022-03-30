@@ -12,14 +12,10 @@ import de.laser.annotations.RefdataAnnotation
  */
 class Doc {
 
-    def sessionFactory
-
     static final CONTENT_TYPE_STRING              = 0
     @Deprecated
     static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
     static final CONTENT_TYPE_FILE                = 3
-
-  static transients = [ 'sessionFactory' ]
 
     @RefdataAnnotation(cat = 'Document Status')
     RefdataValue status

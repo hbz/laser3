@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.finance.CostItem
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -31,9 +32,6 @@ import java.text.SimpleDateFormat
  * @see SurveyOrg
  */
 class SurveyConfig {
-
-    def deletionService
-
 
     public static final ALL_RESULTS_PROCESSED_BY_ORG = "All Processed"
     public static final ALL_RESULTS_NOT_PROCESSED_BY_ORG = "Not Processed"
@@ -148,7 +146,7 @@ class SurveyConfig {
     }
 
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     @Transient

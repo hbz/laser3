@@ -4,6 +4,7 @@ package de.laser
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.helper.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -36,8 +37,6 @@ import java.text.Normalizer
  * @see Subscription
  */
 class IssueEntitlement extends AbstractBase implements Comparable {
-
-    def deletionService
 
     Date coreStatusStart
     Date coreStatusEnd
@@ -210,7 +209,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
   void afterDelete() {
-    deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+      BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
     /**

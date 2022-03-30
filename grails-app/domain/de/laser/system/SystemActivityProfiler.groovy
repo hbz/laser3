@@ -2,7 +2,6 @@ package de.laser.system
 
 import de.laser.SystemService
 import de.laser.helper.BeanStore
-import grails.util.Holders
 
 /**
  * This class keeps track of the active users for a given time point.

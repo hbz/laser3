@@ -9,8 +9,6 @@ import de.laser.helper.RDStore
  */
 class WfTaskPrototype extends WfTaskBase {
 
-    def contextService
-
     static final String KEY = 'WF_TASK_PROTOTYPE'
 
     WfConditionPrototype condition

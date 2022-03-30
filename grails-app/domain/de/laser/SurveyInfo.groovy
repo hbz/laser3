@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
@@ -16,9 +17,6 @@ import de.laser.annotations.RefdataAnnotation
  * @see SurveyOrg
  */
 class SurveyInfo {
-
-    def contextService
-    def accessService
 
     String name
     Date startDate
@@ -149,7 +147,7 @@ class SurveyInfo {
      * @return true if the user belongs to the institution which created (= owns) this survey and if it is at least an editor or general admin, false otherwise
      */
     boolean isEditable() {
-        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg().id)
+        if(BeanStore.getAccessService().checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == BeanStore.getContextService().getOrg().id)
         {
             return true
         }
@@ -163,7 +161,7 @@ class SurveyInfo {
      * and the viewing user belongs to the survey tenant institution, false otherwise
      */
     boolean isCompletedforOwner() {
-        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg().id)
+        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == BeanStore.getContextService().getOrg().id)
         {
             return true
         }else{

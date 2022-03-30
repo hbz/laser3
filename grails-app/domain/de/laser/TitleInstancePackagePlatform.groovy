@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
+import de.laser.helper.BeanStore
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDStore
@@ -39,8 +40,8 @@ import java.util.regex.Pattern
  */
 class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
 
-  @Transient
-  def messageSource
+//  @Transient
+//  def messageSource
 
     // AuditableTrait
     //static auditable = true
@@ -318,7 +319,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }

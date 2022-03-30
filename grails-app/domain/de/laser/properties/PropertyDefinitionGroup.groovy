@@ -32,8 +32,6 @@ class PropertyDefinitionGroup {
     Date dateCreated
     Date lastUpdated
 
-    def contextService
-
     static hasMany = [
             items: PropertyDefinitionGroupItem,
             bindings: PropertyDefinitionGroupBinding
