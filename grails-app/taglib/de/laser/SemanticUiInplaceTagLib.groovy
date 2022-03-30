@@ -182,6 +182,10 @@ class SemanticUiInplaceTagLib {
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${attrs.field}"
+                String cssClass = attrs.cssClass
+                String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
+                String data_confirm_term_how = attrs.data_confirm_term_how
+                String data_confirm_value = attrs.data_confirm_value
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
@@ -196,13 +200,23 @@ class SemanticUiInplaceTagLib {
                 }
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne ${cssClass}\" "
                 if(attrs.owner instanceof SurveyResult){
                     out << "data-onblur=\"submit\" "
                 }else {
                     out << "data-onblur=\"ignore\" "
                 }
-                out << dataValue + "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
+                out << dataValue + "data-pk=\"${oid}\"  "
+                if(attrs.data_confirm_term_how) {
+                    out << "data-confirm-term-how=\"${data_confirm_term_how}\" "
+                }
+                if(attrs.data_confirm_tokenMsg) {
+                    out << "data-confirm-tokenmsg=\"${data_confirm_tokenMsg}\" "
+                }
+                if(attrs.data_confirm_value) {
+                    out << "data-confirm-value=\"${data_confirm_value}\" "
+                }
+                out << "data-type=\"select\" data-name=\"${attrs.field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be

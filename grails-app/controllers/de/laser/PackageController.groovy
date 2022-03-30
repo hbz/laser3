@@ -25,6 +25,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 /**
  * This controller manages display calls to packages
@@ -38,8 +39,9 @@ class PackageController {
     ContextService contextService
     DocstoreService docstoreService
     EscapeService escapeService
-    ExportService exportService
+    ExecutorService executorService
     ExecutorWrapperService executorWrapperService
+    ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -909,23 +911,30 @@ class PackageController {
             Locale locale = LocaleContextHolder.getLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            boolean bulkProcessRunning = false
             threadArray.each { Thread thread ->
                 if (thread.name == 'PackageSync_' + result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+                    bulkProcessRunning = true
                 }
             }
             //to be deployed in parallel thread
             if (result.pkg) {
-                String addType = params.addType
-                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                if (addType == 'With') {
-                    subscriptionService.addToSubscription(result.subscription, result.pkg, true)
-                } else if (addType == 'Without') {
-                    subscriptionService.addToSubscription(result.subscription, result.pkg, false)
-                }
+                if(!bulkProcessRunning) {
+                    executorService.execute({
+                        Thread.currentThread().setName('PackageSync_' + result.subscription.id)
+                        String addType = params.addType
+                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                        if (addType == 'With') {
+                            subscriptionService.addToSubscription(result.subscription, result.pkg, true)
+                        } else if (addType == 'Without') {
+                            subscriptionService.addToSubscription(result.subscription, result.pkg, false)
+                        }
 
-                if (addType != null && addType != '') {
-                    subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        if (addType != null && addType != '') {
+                            subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        }
+                    })
                 }
             }
             switch (params.addType) {

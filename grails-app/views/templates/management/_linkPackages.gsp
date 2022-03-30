@@ -60,12 +60,12 @@
             <h4 class="ui header">${message(code: 'subscriptionsManagement.unlinkInfo')}</h4>
 
             <div class="ui buttons">
-                <g:link class="ui button negative js-open-confirm-modal"
+                <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
                         data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage.confirm')}"
                         data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                         params="[processOption: 'allWithoutTitle', tab: params.tab]">${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage')}</g:link>
                 <div class="or" data-text="${message(code: 'default.or')}"></div>
-                <g:link class="ui button negative js-open-confirm-modal"
+                <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
                         data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
                         data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                         params="[processOption: 'allWithTitle', tab: params.tab]">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</g:link>
@@ -115,12 +115,12 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui button" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>
@@ -130,7 +130,7 @@
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage.confirm')}"
-                                data-confirm-term-how="ok" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                data-confirm-term-how="ok" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkwithoutIE">${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage')}</button>
@@ -138,7 +138,7 @@
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
-                                data-confirm-term-how="ok" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                data-confirm-term-how="ok" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</button>

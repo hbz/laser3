@@ -1597,8 +1597,6 @@ class ExportService {
 					row.add(' ')
 					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
 					row.add(' ')
-					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(tipp.accessType ? tipp.accessType.value : ' ')
 					/*
                     switch(entitlement.tipp.payment) {
                         case RDStore.TIPP_PAYMENT_OA: row.add('F')
@@ -1648,7 +1646,7 @@ class ExportService {
 					row.add(tipp.subjectReference ?: '')
 					//status
 					row.add(tipp.status.value ?: '')
-					//access_type
+					//access_type (no values defined for LAS:eR, must await GOKb)
 					row.add(tipp.accessType ? tipp.accessType.value : '')
 					//oa_type
 					row.add(tipp.openAccess ? tipp.openAccess.value : '')
@@ -2335,7 +2333,6 @@ class ExportService {
 		 'first_editor',
 		 'parent_publication_title_id',
 		 'preceding_publication_title_id',
-		 'access_type',
 		 'package_name',
 		 'package_id',
 		 'last_changed',

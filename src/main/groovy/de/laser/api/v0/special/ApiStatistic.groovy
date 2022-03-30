@@ -122,7 +122,7 @@ class ApiStatistic {
 
             // References
             result.contentProvider  = getPkgOrganisationCollection(pkg.orgs)
-            result.license          = getPkgLicense(pkg.license)
+            //result.license          = getPkgLicense(pkg.license)
             result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)

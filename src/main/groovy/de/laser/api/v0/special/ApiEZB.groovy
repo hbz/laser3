@@ -282,8 +282,6 @@ class ApiEZB {
         outRow.add(' ')
         //preceding_publication_title_id (no values defined for LAS:eR, must await we:kb)
         outRow.add(' ')
-        //access_type (no values defined for LAS:eR, must await we:kb)
-        outRow.add(row['tipp_access_type_rv_fk'] ? RefdataValue.get(row['tipp_access_type_rv_fk'])?.value : ' ')
         //package_name
         outRow.add(row['pkg_name'] ?: ' ')
         //package_id
@@ -318,7 +316,7 @@ class ApiEZB {
         outRow.add(row['tipp_subject_reference'] ?: '')
         //status
         outRow.add(row['ie_status_rv_fk'] ? RefdataValue.get(row['ie_status_rv_fk'])?.value : '')
-        //access_type
+        //access_type (no values defined for LAS:eR, must await we:kb)
         outRow.add(row['tipp_access_type_rv_fk'] ? RefdataValue.get(row['tipp_access_type_rv_fk'])?.value : '')
         //oa_type
         outRow.add(row['tipp_open_access_rv_fk'] ? RefdataValue.get(row['tipp_open_access_rv_fk'])?.value : '')
@@ -376,7 +374,6 @@ class ApiEZB {
          'first_editor',
          'parent_publication_title_id',
          'preceding_publication_title_id',
-         'access_type',
          'package_name',
          'package_id',
          'last_changed',
@@ -397,6 +394,10 @@ class ApiEZB {
          'access_type',
          'oa_type',
          'zdb_ppn',
+         'ezb_anchor',
+         'ezb_collection_id',
+         'subscription_isil',
+         'subscription_isci',
          'listprice_eur',
          'listprice_gbp',
          'listprice_usd',

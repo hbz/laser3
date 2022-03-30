@@ -14,6 +14,11 @@
     </semui:breadcrumbs>
 
     <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
         <%--<semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls')}</g:link>
@@ -56,5 +61,6 @@
 
     <semui:paginate action="listInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaMemberTotal}" />
 
+    <g:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
   </body>
 </html>
