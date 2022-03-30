@@ -278,54 +278,55 @@
         <div class="ui card">
             <div class="content">
                 <g:if test="${!subscription}">
-                    <semui:headerTitleIcon type="Subscription"/>
-                    <h2 class="ui icon header">
-                        <g:link controller="public" action="gasco"
+                    <div>%{-- needed for css --}%
+                        <semui:headerTitleIcon type="Subscription"/>
+                        <g:link class="ui button right floated" controller="public" action="gasco"
                                 params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                            ${surveyConfig.subscription.name}
+                            GASCO-Monitor
                         </g:link>
-                    </h2>
-
-
-                    <g:link class="ui button right floated" controller="public" action="gasco"
-                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                        GASCO-Monitor
-                    </g:link>
+                        <h2 class="ui icon header">
+                            <g:link controller="public" action="gasco"
+                                    params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                                ${surveyConfig.subscription.name}
+                            </g:link>
+                        </h2>
+                    </div>
                 </g:if>
-                <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
-                    <div class="item">
-                        <div class="title">
-                            <button
-                                    class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
-                                    data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
-                                <i class="ui angle double down large icon"></i>
-                            </button>
-                            <laser:script file="${this.getGroovyPageFileName()}">
-                                $('.js-subscription-info-accordion')
-                                  .accordion({
-                                    onOpen: function() {
-                                      $(this).siblings('.title').children('.button').attr('data-content','<g:message
-                                    code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
+                <g:else>
+                    <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
+                        <div class="item">
+                            <div class="title">
+                                <button
+                                        class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                        data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
+                                    <i class="ui angle double down large icon"></i>
+                                </button>
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    $('.js-subscription-info-accordion')
+                                      .accordion({
+                                        onOpen: function() {
+                                          $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                        code="surveyConfigsInfo.subscriptionInfo.hide"/> ')
                                         },
                                         onClose: function() {
                                           $(this).siblings('.title').children('.button').attr('data-content','<g:message
-                                    code="surveyConfigsInfo.subscriptionInfo.show"/> ')
+                                        code="surveyConfigsInfo.subscriptionInfo.show"/> ')
                                         }
                                       })
                                     ;
-                            </laser:script>
+                                </laser:script>
 
-                            <g:if test="${subscription}">
-                                <semui:headerTitleIcon type="Subscription"/>
-                                <h2 class="ui icon header">
-                                    <g:link controller="subscription" action="show" id="${subscription.id}">
-                                        ${subscription.name}
-                                    </g:link>
-                                </h2>
-                                <semui:auditInfo auditable="[subscription, 'name']"/>
-                            </g:if>
-                        </div>
-                        <g:if test="${subscription}">
+                                <g:if test="${subscription}">
+                                    <semui:headerTitleIcon type="Subscription"/>
+                                    <h2 class="ui icon header">
+                                        <g:link controller="subscription" action="show" id="${subscription.id}">
+                                            ${subscription.name}
+                                        </g:link>
+                                    </h2>
+                                    <semui:auditInfo auditable="[subscription, 'name']"/>
+                                </g:if>
+                            </div>
+
                             <div class="content" id="subscription-info">
                                 <div class="ui two column stackable grid container">
                                     <div class="column">
@@ -483,13 +484,13 @@
                                             </table>
                                         </g:if>
 
-                                    </div><!-- .content -->
+                                    </div>%{-- .content --}%
                                 </div>
 
                             </div>
-                        </g:if>
-                    </div>
-                </div>
+                        </div>
+                    </div>%{-- Accordion --}%
+                </g:else>
             </div>
         </div>
 
