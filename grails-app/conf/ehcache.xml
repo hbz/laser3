@@ -6,7 +6,8 @@
     The diskStore element is optional. It must be configured if you have overflowToDisk or diskPersistent enabled
     for any cache. If it is not configured, a warning will be issues and java.io.tmpdir will be used.
 
-    diskStore has only one attribute - "path". It is the path to the directory where .data and .index files will be created.
+    diskStore has only one attribute - "path". It is the path to the directory where .data and .index files
+    will be created.
 
     If the path is a Java System Property it is replaced by its value in the
     running VM.
@@ -49,8 +50,8 @@
     <!--
     (Enable for distributed operation)
 
-    Specifies a CacheManagerPeerProviderFactory which will be used to create a
-    CacheManagerPeerProvider, which discovers other CacheManagers in the cluster.
+    Specifies a CacheManagerPeerProviderFactory which will be used to create a CacheManagerPeerProvider,
+    which discovers other CacheManagers in the cluster.
 
     The attributes of cacheManagerPeerProviderFactory are:
     * class - a fully qualified factory class name
@@ -111,9 +112,8 @@
     <!--
     (Enable for distributed operation)
 
-    Specifies a CacheManagerPeerListenerFactory which will be used to create a
-    CacheManagerPeerListener, which
-    listens for messages from cache replicators participating in the cluster.
+    Specifies a CacheManagerPeerListenerFactory which will be used to create a CacheManagerPeerListener,
+    which listens for messages from cache replicators participating in the cluster.
 
     The attributes of cacheManagerPeerListenerFactory are:
     class - a fully qualified factory class name
@@ -159,12 +159,10 @@
 	The default value is zero, meaning unlimited.
 
     eternal:
-    Sets whether elements are eternal. If eternal,  timeouts are ignored and the
-    element is never expired.
+    Sets whether elements are eternal. If eternal, timeouts are ignored and the element is never expired.
 
     overflowToDisk:
-    Sets whether elements can overflow to disk when the in-memory cache
-    has reached the maxInMemory limit.
+    Sets whether elements can overflow to disk when the in-memory cache has reached the maxInMemory limit.
 
     The following attributes are optional.
 
@@ -226,8 +224,8 @@
 
     The RMICacheReplicatorFactory recognises the following properties:
 
-    * replicatePuts=true|false - whether new elements placed in a cache are
-      replicated to others. Defaults to true.
+    * replicatePuts=true|false - whether new elements placed in a cache are replicated to others.
+      Defaults to true.
 
     * replicateUpdates=true|false - whether new elements which override an
       element already existing with the same key are replicated. Defaults to true.
@@ -237,20 +235,20 @@
     * replicateAsynchronously=true | false - whether replications are
       asynchronous (true) or synchronous (false). Defaults to true.
 
-    * replicateUpdatesViaCopy=true | false - whether the new elements are
-      copied to other caches (true), or whether a remove message is sent. Defaults to true.
+    * replicateUpdatesViaCopy=true | false - whether the new elements are copied to other caches (true),
+      or whether a remove message is sent. Defaults to true.
 
 
     * asynchronousReplicationIntervalMillis=<number of milliseconds> - The asynchronous
-      replicator runs at a set interval of milliseconds. The default is 1000. The minimum
-      is 10. This property is only applicable if replicateAsynchronously=true
+      replicator runs at a set interval of milliseconds. The default is 1000. The minimum is 10.
+      This property is only applicable if replicateAsynchronously=true
 
     * asynchronousReplicationMaximumBatchSize=<number of operations> - The maximum
-      number of operations that will be batch within a single RMI message.  The default
-      is 1000. This property is only applicable if replicateAsynchronously=true
+      number of operations that will be batch within a single RMI message.  The default is 1000.
+      This property is only applicable if replicateAsynchronously=true
 
-    The RMIBootstrapCacheLoader bootstraps caches in clusters where RMICacheReplicators are
-    used. It is configured as per the following example:
+    The RMIBootstrapCacheLoader bootstraps caches in clusters where RMICacheReplicators are used.
+    It is configured as per the following example:
 
     <bootstrapCacheLoaderFactory
         class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
@@ -276,11 +274,11 @@
     <defaultCache
             maxElementsInMemory="10000"
             eternal="false"
-            timeToIdleSeconds="123"
-            timeToLiveSeconds="123"
-            maxElementsOnDisk="10000000"
-            diskExpiryThreadIntervalSeconds="123"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
             overflowToDisk="false"
+            maxElementsOnDisk="10000000"
+            diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU">
         <persistence strategy="none" />
     </defaultCache>

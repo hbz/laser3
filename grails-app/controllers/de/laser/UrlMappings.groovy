@@ -28,16 +28,16 @@ class UrlMappings {
         "/api/$version/statistic/$obj/$cmd" (controller: 'api', action: 'dispatch') { section = "statistic" }
         "/api/$version/$obj"                (controller: 'api', action: 'dispatch')
 
-        "/lic/$action?/$id?"        (controller: 'license')
-        "/org/$action?/$id?"        (controller: 'organisation')
+        "/lic/$action?/$id?"                (controller: 'license')
+        "/org/$action?/$id?"                (controller: 'organisation')
 
-        "/surveyconfig/show/$id"        (controller: 'survey', action: 'redirectSurveyConfig')
+        "/myInstitution/finance"            (controller: 'finance', action: 'index')
 
-        //"/myInstitution/tipview/$id"    (controller: 'myInstitution', action: 'tip')
-        "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance:                "/subscription/$sub/finance/"   (controller: 'finance', action: 'subFinancialData')
         name subfinanceEditCI:          "/subscription/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:          "/subscription/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
+
+        "/surveyconfig/show/$id"            (controller: 'survey', action: 'redirectSurveyConfig')
 
         // serverCodes
 

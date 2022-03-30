@@ -6,13 +6,14 @@ import javax.servlet.http.HttpServletRequest
 
 class BootStrap {
 
-    def bootStrapService
+    BootStrapService bootStrapService
 
     def init = { servletContext ->
 
         HttpServletRequest.metaClass.isXhr = { ->
             'XMLHttpRequest' == delegate.getHeader('X-Requested-With')
         }
+
         bootStrapService.init( AppUtils.isRestartedByDevtools() )
     }
 

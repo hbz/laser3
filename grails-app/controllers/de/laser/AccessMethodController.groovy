@@ -45,7 +45,6 @@ class AccessMethodController  {
         } else {
 
             accessMethod.platf = Platform.get(params.platfId)
-
             accessMethod.accessMethod = RefdataValue.get(params.accessMethod)
 
             accessMethod.save()

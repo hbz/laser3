@@ -347,7 +347,7 @@
                         ${message(code: 'profile.password.label')}
                     </h2>
 
-                    <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_YODA'))}">
+                    <g:if test="${user.getAuthorities().id.contains(Role.findByAuthority('ROLE_YODA').id)}">
                         <div id="profile-image">
                             <g:if test="${user.image}">
                                 <g:img dir="images" file="profile/${user.image}" />

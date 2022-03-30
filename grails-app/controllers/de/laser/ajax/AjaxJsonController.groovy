@@ -2,11 +2,16 @@ package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.AccessService
+import de.laser.CompareService
 import de.laser.ContextService
+import de.laser.ControlledListService
 import de.laser.DataConsistencyService
 import de.laser.IssueEntitlement
 import de.laser.License
+import de.laser.LicenseService
+import de.laser.LinksGenerationService
 import de.laser.ReportingGlobalService
+import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
@@ -58,15 +63,15 @@ import java.text.SimpleDateFormat
 class AjaxJsonController {
 
     AccessService accessService
-    def compareService
+    CompareService compareService
     ContextService contextService
-    def controlledListService
+    ControlledListService controlledListService
     DataConsistencyService dataConsistencyService
     GenericOIDService genericOIDService
-    def licenseService
-    def linksGenerationService
+    LicenseService licenseService
+    LinksGenerationService linksGenerationService
     ReportingGlobalService reportingGlobalService
-    def reportingLocalService
+    ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
 
     /**

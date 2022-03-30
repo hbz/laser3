@@ -14,11 +14,13 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static Log static_logger = LogFactory.getLog(Application)
 
     static void main(String[] args) {
+
         GrailsApp.run(Application, args)
     }
 
     @Override
     void setEnvironment(Environment environment) {
+
         File externalConfig = ConfigUtils.getConfigFile(environment)
 
         if (externalConfig.exists()) {
