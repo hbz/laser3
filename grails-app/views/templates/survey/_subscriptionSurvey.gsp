@@ -328,8 +328,8 @@
                             </div>
 
                             <div class="content" id="subscription-info">
-                                <div class="ui two column stackable grid container">
-                                    <div class="column">
+                                <div class="ui stackable grid container">
+                                    <div class="ten wide column ">
                                         <dl>
                                             <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                             <dd>${subscription.status.getI10n('value')}</dd>
@@ -362,7 +362,7 @@
                                             <dd>
                                                 <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                         var="id">
-                                                    <span class="ui small basic image label">
+                                                    <span class="ui small  label">
                                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                                     </span>
                                                 </g:each>
@@ -371,7 +371,7 @@
                                     </div>
 
 
-                                    <div class="column">
+                                    <div class="six wide column">
                                         %{--<g:if test="${subscription.packages}">
                                             <table class="ui three column la-selectable table">
                                                 <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
