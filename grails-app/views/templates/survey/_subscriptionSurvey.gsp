@@ -277,6 +277,21 @@
 
         <div class="ui card">
             <div class="content">
+                <g:if test="${!subscription}">
+                    <semui:headerTitleIcon type="Subscription"/>
+                    <h2 class="ui icon header">
+                        <g:link controller="public" action="gasco"
+                                params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                            ${surveyConfig.subscription.name}
+                        </g:link>
+                    </h2>
+
+
+                    <g:link class="ui button right floated" controller="public" action="gasco"
+                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                        GASCO-Monitor
+                    </g:link>
+                </g:if>
                 <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
@@ -300,24 +315,7 @@
                                     ;
                             </laser:script>
 
-
-                            <g:if test="${!subscription}">
-                                <semui:headerTitleIcon type="Subscription"/>
-                                <h2 class="ui icon header">
-                                    <g:link controller="public" action="gasco"
-                                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                        ${surveyConfig.subscription.name}
-                                    </g:link>
-                                </h2>
-
-                                <div class="field" style="text-align: right;">
-                                    <g:link class="ui button" controller="public" action="gasco"
-                                            params="${[q: '"' + surveyConfig.subscription.name + '"']}">
-                                        GASCO-Monitor
-                                    </g:link>
-                                </div>
-                            </g:if>
-                            <g:else>
+                            <g:if test="${subscription}">
                                 <semui:headerTitleIcon type="Subscription"/>
                                 <h2 class="ui icon header">
                                     <g:link controller="subscription" action="show" id="${subscription.id}">
@@ -325,7 +323,7 @@
                                     </g:link>
                                 </h2>
                                 <semui:auditInfo auditable="[subscription, 'name']"/>
-                            </g:else>
+                            </g:if>
                         </div>
                         <g:if test="${subscription}">
                             <div class="content" id="subscription-info">
