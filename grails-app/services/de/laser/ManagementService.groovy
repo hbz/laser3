@@ -297,20 +297,21 @@ class ManagementService {
                 Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
                 Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
                 threadArray.each {
-                    if (it.name == 'processLinkPackages'+result.subscription.id) {
+                    if (it.name == 'PackageTransfer_'+result.subscription.id) {
                         result.isLinkingRunning = true
                     }
                 }
                 result.validPackages = result.subscription.packages
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
-                result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
+                if(result.filteredSubscriptions)
+                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
             if(controller instanceof MyInstitutionController) {
                 Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
                 Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
                 threadArray.each {
-                    if (it.name == 'processLinkPackages'+result.user.id) {
+                    if (it.name == 'PackageTransfer_'+result.user.id) {
                         result.isLinkingRunning = true
                     }
                 }
@@ -319,7 +320,8 @@ class ManagementService {
                 result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
                 result.filteredSubscriptions = result.subscriptions
-                result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
+                if(result.filteredSubscriptions)
+                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
             }
 
             [result:result,status:STATUS_OK]
@@ -373,12 +375,12 @@ class ManagementService {
                 if(controller instanceof SubscriptionController) {
                     subscriptionPackage = SubscriptionPackage.get(params.selectedPackage)
                     pkg_to_link = subscriptionPackage.pkg
-                    threadName = "processLinkPackages${result.subscription.id}"
+                    threadName = "PackageTransfer_${result.subscription.id}"
                 }
 
                 if(controller instanceof MyInstitutionController) {
                     pkg_to_link = Package.get(params.selectedPackage)
-                    threadName = "processLinkPackages${result.user.id}"
+                    threadName = "PackageTransfer_${result.user.id}"
                 }
 
                 if (pkg_to_link) {
@@ -390,38 +392,44 @@ class ManagementService {
                         }
                     }
                     executorService.execute({
-                            Thread.currentThread().setName(threadName)
-                            editableSubs.each { Subscription subscription ->
-                                    if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                                        if (!(subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id))) {
-                                            if (params.processOption == 'linkwithIE') {
-                                                if (result.subscription) {
-                                                    subscriptionService.addToSubscriptionCurrentStock(subscription, result.subscription, pkg_to_link)
-                                                } else {
-                                                    subscriptionService.addToSubscription(subscription, pkg_to_link, true)
-                                                }
-                                            } else {
-                                                subscriptionService.addToSubscription(subscription, pkg_to_link, false)
-                                            }
+                        Thread.currentThread().setName(threadName)
+                        List<Subscription> memberSubsToLink = []
+                        editableSubs.each { Subscription subscription ->
+                            if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                                if (!(subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id))) {
+                                    if (params.processOption == 'linkwithIE') {
+                                        if (result.subscription) {
+                                            //subscriptionService.addToSubscriptionCurrentStock(subscription, result.subscription, pkg_to_link)
+                                            memberSubsToLink << subscription
+                                        } else {
+                                            subscriptionService.addToSubscription(subscription, pkg_to_link, true)
                                         }
+                                    } else {
+                                        subscriptionService.addToSubscription(subscription, pkg_to_link, false)
                                     }
-                                    if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                                        if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
-                                            SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
-                                            if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                                                if (params.processOption == 'unlinkwithIE') {
-                                                    pkg_to_link.unlinkFromSubscription(subscription, result.institution, true)
-                                                } else {
-                                                    pkg_to_link.unlinkFromSubscription(subscription, result.institution, false)
-                                                }
-                                            } else {
-                                                Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
-                                                result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
-                                            }
-                                        }
-                                    }
+                                }
                             }
+                            if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                                if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
+                                    SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
+                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                        if (params.processOption == 'unlinkwithIE') {
+                                            pkg_to_link.unlinkFromSubscription(subscription, result.institution, true)
+                                        } else {
+                                            pkg_to_link.unlinkFromSubscription(subscription, result.institution, false)
+                                        }
+                                    } else {
+                                        Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
+                                        result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                                    }
+                                }
+                            }
+                        }
+                        if(memberSubsToLink && result.subscription) {
+                            subscriptionService.addToMemberSubscription(result.subscription, memberSubsToLink, pkg_to_link, params.processOption == 'linkwithIE')
+                        }
                     })
+                    executorService.shutdown()
                 }
             } else {
                 if (selectedSubs.size() < 1) {

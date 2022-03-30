@@ -873,8 +873,7 @@ class YodaService {
                 if(pkgCount > 0 && pkgCount > subCount) {
                     subIds.each { Long subId ->
                         log.debug("now processing package ${subId}:${pkgId}, counts: ${subCount} vs. ${pkgCount}")
-                        List missingTippRows = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_id not in(select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :subId) and tipp_status_rv_fk = :current", [pkgId: pkgId, subId: subId, current: RDStore.TIPP_STATUS_CURRENT.id])
-                        packageService.bulkAddHolding(sql, subId, missingTippRows, perpetualAccess)
+                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
                     }
                 }
             }
