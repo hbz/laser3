@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.system.SystemActivityProfiler; de.laser.helper.AppUtils; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -555,7 +555,7 @@
                                     <div class="divider"></div>
                                     <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
                                     <div class="header">
-                                        ${systemService.getNumberOfActiveUsers()} Benutzer online
+                                        ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
                                     </div>
                                 </div>
                             </div>

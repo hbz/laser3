@@ -3,6 +3,7 @@ package de.laser.interceptors
 import de.laser.ContextService
 import de.laser.helper.ProfilerUtils
 import de.laser.helper.SessionCacheWrapper
+import de.laser.system.SystemActivityProfiler
 
 class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
@@ -10,6 +11,8 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
     SystemProfilerInterceptor() {
         matchAll().excludes(controller: 'ajax')
+                  .excludes(controller: 'ajaxHtml')
+                  .excludes(controller: 'ajaxJson')
     }
 
     boolean before() {
@@ -23,7 +26,14 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
     }
 
     boolean after() {
-        // triggered via AjaxController.notifyProfiler()
+        // triggered via AjaxOpenController.profiler()
+        // triggered via AjaxOpenController.status()
+
+        println request.requestURL
+
+        if (contextService.getUser()) {
+            SystemActivityProfiler.flagActiveUser(contextService.getUser())
+        }
 
         true
     }

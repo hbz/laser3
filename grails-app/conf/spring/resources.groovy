@@ -6,13 +6,8 @@ import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
 import de.laser.custom.CustomWkhtmltoxService
-import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
-import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy
-import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -23,25 +18,6 @@ beans = {
     migrationCallbacks( CustomMigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
-    // .. ]
-
-    // [ user counter ..
-    sessionRegistry( SessionRegistryImpl )
-
-    registerSessionAuthenticationStrategy( RegisterSessionAuthenticationStrategy, ref('sessionRegistry') )
-
-    sessionFixationProtectionStrategy( SessionFixationProtectionStrategy )
-
-    concurrentSessionControlAuthenticationStrategy( ConcurrentSessionControlAuthenticationStrategy, ref('sessionRegistry') ){
-        maximumSessions = -1
-        // exceptionIfMaximumExceeded = true
-    }
-
-    sessionAuthenticationStrategy( CompositeSessionAuthenticationStrategy, [
-        ref('concurrentSessionControlAuthenticationStrategy'),
-        ref('sessionFixationProtectionStrategy'),
-        ref('registerSessionAuthenticationStrategy')
-    ])
     // .. ]
 
     // [ supporting initMandatorySettings for users ..
