@@ -8,7 +8,7 @@
 </g:if>
 <g:elseif test="${actionName in ['listInstitution']}">
     <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
-</g:if>
+</g:elseif>
 <g:else>
     <g:set var="exportFileName" value="${message(code: 'subscription.details.consortiaMembers.label')}"/>
 </g:else>
