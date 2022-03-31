@@ -12,7 +12,6 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {
 
-    EscapeService escapeService
     SurveyService surveyService
 
     /**

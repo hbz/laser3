@@ -25,9 +25,9 @@ class LinksGenerationService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource
-    ContextService contextService
 
     /**
      * Generates a map for the navigation between two linked objects

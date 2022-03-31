@@ -37,17 +37,17 @@ class ManagementService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    AuditService auditService
     AccessService accessService
-    FormService formService
     AddressbookService addressbookService
-    SubscriptionService subscriptionService
     ContextService contextService
     ExecutorService executorService
-    AuditService auditService
+    FormService formService
     GenericOIDService genericOIDService
     MessageSource messageSource
-    SubscriptionControllerService subscriptionControllerService
     MyInstitutionControllerService myInstitutionControllerService
+    SubscriptionControllerService subscriptionControllerService
+    SubscriptionService subscriptionService
 
     /**
      * The overall menu of the calls - determines which data should be processed and which tab should be opened as next

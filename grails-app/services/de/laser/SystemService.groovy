@@ -4,6 +4,7 @@ import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.springframework.security.core.session.SessionRegistryImpl
 
 /**
  * This service checks the system health
@@ -12,7 +13,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class SystemService {
 
     ContextService contextService
-    def sessionRegistry
+    SessionRegistryImpl sessionRegistry
 
     /**
      * Dumps the state of currently active services

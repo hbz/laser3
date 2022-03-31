@@ -34,17 +34,17 @@ import java.text.SimpleDateFormat
 @Transactional
 class SubscriptionService {
     AccessService accessService
+    ComparisonService comparisonService
     ContextService contextService
-    SubscriptionsQueryService subscriptionsQueryService
-    MessageSource messageSource
     EscapeService escapeService
-    RefdataService refdataService
-    PropertyService propertyService
     FilterService filterService
     GenericOIDService genericOIDService
     LinksGenerationService linksGenerationService
-    ComparisonService comparisonService
+    MessageSource messageSource
     PackageService packageService
+    PropertyService propertyService
+    RefdataService refdataService
+    SubscriptionsQueryService subscriptionsQueryService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()

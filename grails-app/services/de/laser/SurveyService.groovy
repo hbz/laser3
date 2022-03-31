@@ -2,7 +2,6 @@ package de.laser
 
 
 import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
@@ -13,10 +12,8 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.system.SystemEvent
-import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -38,8 +35,6 @@ class SurveyService {
     EscapeService escapeService
     ExportService exportService
     FilterService filterService
-    GenericOIDService genericOIDService
-    GrailsApplication grailsApplication
     MailService mailService
     MessageSource messageSource
     SubscriptionService subscriptionService

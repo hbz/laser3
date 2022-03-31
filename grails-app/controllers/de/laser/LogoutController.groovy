@@ -2,6 +2,7 @@ package de.laser
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.access.annotation.Secured
+import org.springframework.security.core.session.SessionRegistryImpl
 
 // 2.0
 
@@ -11,7 +12,7 @@ import org.springframework.security.access.annotation.Secured
 @Secured('permitAll')
 class LogoutController {
 
-	def sessionRegistry
+	SessionRegistryImpl sessionRegistry
 
 	/**
 	 * Index action. Redirects to the Spring security logout uri.
