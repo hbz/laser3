@@ -1,4 +1,6 @@
 ---
+# ---[ grails, info, spring, server, management
+
 grails:
     assets:
         bundle: true
@@ -55,11 +57,18 @@ spring:
             enabled: true
             trigger-file: 'restart.trigger'
 
+server:
+    servlet:
+        session:
+            timeout: 300 # seconds
+
 management:
     endpoints:
         enabled-by-default: false
 
 ---
+# ---[ grails ---
+
 grails:
     mime:
         disable:
@@ -116,6 +125,8 @@ grails:
                 staticparts: none
 
 ---
+# ---[ plugins ---
+
 grails:
     plugin:
         auditLog:
@@ -145,6 +156,10 @@ grails:
                         access: [ 'permitAll' ]
                     -   pattern: '/static/**'
                         access: [ 'permitAll' ]
+                    -   pattern: '/stomp/**'
+                        access: [ 'permitAll' ]
+                    -   pattern: '/topic/**'
+                        access: [ 'permitAll' ]
                     -   pattern: '/**/js/**'
                         access: [ 'permitAll' ]
                     -   pattern: '/**/css/**'
@@ -169,6 +184,8 @@ grails:
                         filters: 'JOINED_FILTERS'
 
 ---
+# ---[ hibernate, dataSource, environments ---
+
 hibernate:
     allow_update_outside_transaction: true # fallback // TODO: hibernate 5.1 behavior
     cache:

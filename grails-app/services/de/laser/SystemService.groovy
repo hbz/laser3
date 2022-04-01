@@ -2,8 +2,12 @@ package de.laser
 
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
+import de.laser.system.SystemMessage
+import de.laser.system.SystemSetting
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.json.JsonBuilder
 
 /**
  * This service checks the system health
@@ -53,5 +57,21 @@ class SystemService {
         }
 
         return checks
+    }
+
+    Map getStatus() {
+        Map result = [ status: 'error' ]
+
+        try {
+            result = [
+                    status:      'ok',
+                    maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
+                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false
+            ]
+        } catch(Exception e) {
+            log.error( e.getMessage() )
+        }
+
+        result
     }
 }

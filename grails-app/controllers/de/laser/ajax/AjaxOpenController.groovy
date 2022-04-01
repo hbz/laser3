@@ -14,22 +14,6 @@ class AjaxOpenController {
     ContextService contextService
 
     @Secured(['permitAll'])
-    def status() {
-        Map result = [ status: 'error' ]
-        try {
-            result = [
-                    status: 'ok',
-                    maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
-                    messages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false,
-                    interval: Integer.parseInt(SystemSetting.findByName('StatusUpdateInterval').value)
-            ]
-        } catch(Exception e) {
-            log.error( e.getMessage() )
-        }
-        render result as JSON
-    }
-
-    @Secured(['permitAll'])
     def profiler() {
         Map<String, Object> result = [status: 'failed']
         SessionCacheWrapper cache = contextService.getSessionCache()

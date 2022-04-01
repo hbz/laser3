@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -29,7 +29,6 @@
             <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
             <tr><td>Last quartz heartbeat</td><td>${ConfigUtils.getQuartzHeartbeat()}</td></tr>
-            <tr><td>Reloading active</td><td> ${Environment.reloadingAgentEnabled}</td></tr>
         </tbody>
     </table>
 

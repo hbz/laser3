@@ -13,6 +13,7 @@
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
 //= require modules/sys.js
+//= require spring-websocket.js
 
 console.log('+ laser.js')
 

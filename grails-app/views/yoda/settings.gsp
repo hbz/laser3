@@ -86,7 +86,6 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${s.name == 'StatusUpdateInterval'}">Sekunden</g:if>
                 </td>
             </tr>
         </g:each>

@@ -133,6 +133,8 @@ dependencies {
     compile 'org.grails.plugins:mail:3.0.0'                             // from 2.0.0
     // https://github.com/grails-plugins/grails-quartz
     compile 'org.grails.plugins:quartz:2.0.13'
+    // https://github.com/zyro23/grails-spring-websocket
+    compile "org.grails.plugins:grails-spring-websocket:2.5.0.RC1"
 
     compile 'org.hibernate:hibernate-ehcache:5.4.33.Final'    // from 5.1.16.Final
     compile 'net.sf.ehcache:ehcache:2.10.9.2'                 // from 2.10.6

@@ -10,9 +10,10 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
     ContextService contextService
 
     SystemProfilerInterceptor() {
-        matchAll().excludes(controller: 'ajax')
-                  .excludes(controller: 'ajaxHtml')
-                  .excludes(controller: 'ajaxJson')
+        matchAll().excludes(controller:  ~/(ajax|ajaxHtml|ajaxJson)/)
+                  .excludes(uri: '/stomp/**') // websockets
+                  .excludes(uri: '/topic/**') // websockets
+
     }
 
     boolean before() {
@@ -27,12 +28,10 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
     boolean after() {
         // triggered via AjaxOpenController.profiler()
-        // triggered via AjaxOpenController.status()
-
-        println request.requestURL
+        // println request.requestURL
 
         if (contextService.getUser()) {
-            SystemActivityProfiler.flagActiveUser(contextService.getUser())
+            SystemActivityProfiler.addActiveUser(contextService.getUser())
         }
 
         true
