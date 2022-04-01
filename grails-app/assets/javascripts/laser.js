@@ -12,7 +12,7 @@
 //= require modules/jsqtk.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
-//= require modules/sys.js
+//= require modules/system.js
 //= require spring-websocket.js
 
 console.log('+ laser.js')
@@ -27,7 +27,7 @@ $(function () {
     a11yIcon.go();
     verticalNavi.go();
     responsiveTables.go();
-    sys.go();
+    system.go();
 
     $('main.ui.main').removeClass('hidden');
 })

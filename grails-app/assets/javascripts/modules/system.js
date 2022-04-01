@@ -1,14 +1,14 @@
 
-// modules/sys.js
+// modules/system.js
 
-sys = {
+system = {
 
     go: function () {
-        sys.init()
+        system.init()
     },
 
     init: function () {
-        sys.status()
+        system.status()
     },
 
     status: function () {
@@ -39,7 +39,7 @@ sys = {
     //         url: JSPC.vars.ajaxStatusUrl,
     //         success: function (data) {
     //             if (data.status && data.status == 'ok') {
-    //                 setTimeout(sys.status, data.interval * 1000)
+    //                 setTimeout(system.status, data.interval * 1000)
     //
     //                 if (data.maintenance) {
     //                     $('#maintenance').removeClass('hidden')

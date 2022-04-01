@@ -9,9 +9,7 @@ import de.laser.helper.PasswordUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.system.SystemTicket
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -44,30 +42,6 @@ class ProfileController {
         result.isOrgBasicMember = contextService.getOrg().getCustomerType() == 'ORG_BASIC_MEMBER'
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
-
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def errorReport() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.title = params.title
-        result.described = params.described
-        result.expected = params.expected
-        result.info = params.info
-
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def errorOverview() {
-        Map<String, Object> result = [:]
-        result.user     = contextService.getUser()
-        result.tickets  = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
-        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_TICKET_EDITOR")
 
         result
     }

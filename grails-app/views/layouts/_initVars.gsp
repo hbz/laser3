@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.system.SystemTicket; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.helper.RDStore; de.laser.helper.RDConstants;" %>
 <%@ page import="org.grails.web.util.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
 <laser:serviceInjection />
@@ -33,10 +33,5 @@
     contextOrg          = contextService.getOrg()
     contextUser         = contextService.getUser()
     contextMemberships  = contextService.getMemberships()
-
-    // -- part 3
-    // -- set in semanticUI.gsp (scope: page)
-
-    newTickets      = SystemTicket.getNew()
 
 %>

@@ -4,10 +4,8 @@ import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.system.SystemMessage
 import de.laser.system.SystemSetting
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import groovy.json.JsonBuilder
 
 /**
  * This service checks the system health

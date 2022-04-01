@@ -60,7 +60,7 @@ spring:
 server:
     servlet:
         session:
-            timeout: 300 # seconds
+            timeout: 1800 # 1800 seconds - 30 minutes
 
 management:
     endpoints:

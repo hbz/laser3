@@ -8,7 +8,6 @@ import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.system.SystemProfiler
-import de.laser.system.SystemTicket
 import de.laser.titles.TitleHistoryEventParticipant
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -711,8 +710,6 @@ class DeletionService {
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
-        List systemTickets = SystemTicket.findAllByAuthor(user)
-
         List tasks = Task.executeQuery(
                 'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
 
@@ -725,7 +722,6 @@ class DeletionService {
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['DashboardDueDate', ddds]
-        result.info << ['Tickets', systemTickets]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
@@ -765,8 +761,6 @@ class DeletionService {
 
                     // user settings
                     userSettings.each { tmp -> tmp.delete() }
-
-                    systemTickets.each { tmp ->tmp.delete() }
 
                     ddds.each { tmp -> tmp.delete() }
 

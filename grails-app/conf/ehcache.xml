@@ -9,8 +9,7 @@
     diskStore has only one attribute - "path". It is the path to the directory where .data and .index files
     will be created.
 
-    If the path is a Java System Property it is replaced by its value in the
-    running VM.
+    If the path is a Java System Property it is replaced by its value in the running VM.
 
     The following properties are translated:
     * user.home - User's home directory
@@ -185,8 +184,7 @@
     The default value is false.
 
     diskExpiryThreadIntervalSeconds:
-    The number of seconds between runs of the disk expiry thread. The default value
-    is 120 seconds.
+    The number of seconds between runs of the disk expiry thread. The default value is 120 seconds.
 
     diskSpoolBufferSizeMB:
     This is the size to allocate the DiskStore for a spool buffer. Writes are made

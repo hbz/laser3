@@ -9,7 +9,6 @@
 <g:set var="contextOrg" scope="page" />
 <g:set var="contextUser" scope="page" />
 <g:set var="contextMemberships" scope="page" />
-<g:set var="newTickets" scope="page" />
 <tmpl:/layouts/initVars />
 
 <html lang="${currentLang}">
@@ -243,13 +242,6 @@
                             </a>
 
                             <div class="menu" role="menu">
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="errorOverview">
-                                    ${message(code: "menu.user.errorReport")}
-                                    <g:if test="${newTickets.size() > 0}">
-                                        <div class="ui floating red circular label">${newTickets.size()}</div>
-                                    </g:if>
-                                </semui:link>
-
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
                                         ${message(code:'menu.admin.sysAdmin')}
@@ -774,7 +766,7 @@
 
         <script data-type="fix">
             $(document).ready(function() {
-                sys.profiler("${ ProfilerUtils.generateKey( webRequest )}");
+                system.profiler("${ ProfilerUtils.generateKey( webRequest )}");
 
                 <g:if test="${AppUtils.getCurrentServer() != AppUtils.PROD}">
                     jsqtk.go();
