@@ -7,7 +7,7 @@ import de.laser.Identifier
 import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
@@ -119,7 +119,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {

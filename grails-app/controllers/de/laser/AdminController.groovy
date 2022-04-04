@@ -5,7 +5,7 @@ import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.MessageService
 import de.laser.helper.AppUtils
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
@@ -572,7 +572,7 @@ class AdminController  {
     def databaseCollations() {
         Map<String, Object> result = [:]
 
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
 
         result.table_columns = sql.rows("""
@@ -607,7 +607,7 @@ class AdminController  {
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 

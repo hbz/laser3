@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.storage
 
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GenericOIDService
@@ -31,7 +31,7 @@ import org.springframework.context.MessageSource
 
 import javax.sql.DataSource
 
-class BeanStore {
+class BeanStorage {
 
     static def get(String bean) {
         Holders.grailsApplication.mainContext.getBean(bean)

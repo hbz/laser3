@@ -4,14 +4,13 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.system.SystemEvent
 import de.laser.helper.SqlDateUtils
 import grails.plugins.mail.MailService
-import grails.util.Holders
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -50,7 +49,7 @@ class DashboardDueDatesService {
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
         replyTo = ConfigUtils.getNotificationsEmailReplyTo()
-        messageSource = BeanStore.getMessageSource()
+        messageSource = BeanStorage.getMessageSource()
         locale = LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")
     }

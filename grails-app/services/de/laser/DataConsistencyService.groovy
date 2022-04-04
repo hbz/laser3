@@ -2,12 +2,11 @@ package de.laser
 
 
 import de.laser.helper.AppUtils
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
@@ -19,7 +18,7 @@ import java.text.SimpleDateFormat
 class DataConsistencyService {
 
     DeletionService deletionService
-    ApplicationTagLib g = BeanStore.getApplicationTagLib()
+    ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
     /**
      * Checks the duplicates of organisation, package and platform names

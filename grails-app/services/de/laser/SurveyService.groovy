@@ -11,6 +11,7 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
+import de.laser.storage.BeanStorage
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
@@ -50,7 +51,7 @@ class SurveyService {
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
-        messageSource = BeanStore.getMessageSource()
+        messageSource = BeanStorage.getMessageSource()
     }
 
     /**

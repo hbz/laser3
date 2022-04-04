@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
@@ -158,15 +158,15 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     def afterInsert() {
         static_logger.debug("afterInsert")
-        BeanStore.getCascadingUpdateService().update(this, dateCreated)
+        BeanStorage.getCascadingUpdateService().update(this, dateCreated)
     }
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
+        BeanStorage.getCascadingUpdateService().update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")
-        BeanStore.getCascadingUpdateService().update(this, new Date())
+        BeanStorage.getCascadingUpdateService().update(this, new Date())
     }
 
     Date _getCalculatedLastUpdated() {

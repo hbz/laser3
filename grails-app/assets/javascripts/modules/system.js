@@ -18,6 +18,7 @@ system = {
         client.connect({}, function() {
             client.subscribe('/topic/status', function(message) {
                 var body = JSON.parse(message.body)
+                console.log( body )
                 if (body && body.status && body.status === 'ok') {
                     if (body.maintenance) {
                         $('#maintenance').removeClass('hidden')
@@ -33,28 +34,6 @@ system = {
             });
         });
     },
-
-    // status_old: function () {
-    //     $.ajax({
-    //         url: JSPC.vars.ajaxStatusUrl,
-    //         success: function (data) {
-    //             if (data.status && data.status == 'ok') {
-    //                 setTimeout(system.status, data.interval * 1000)
-    //
-    //                 if (data.maintenance) {
-    //                     $('#maintenance').removeClass('hidden')
-    //                 } else {
-    //                     $('#maintenance').addClass('hidden')
-    //                 }
-    //                 if (data.messages) {
-    //                     $('#systemMessages').load( JSPC.vars.ajaxMessagesUrl, function() { $('#systemMessages').removeClass('hidden') })
-    //                 } else {
-    //                     $('#systemMessages').addClass('hidden').empty()
-    //                 }
-    //             }
-    //         }
-    //     })
-    // },
 
     profiler: function (uri) {
         $.ajax({

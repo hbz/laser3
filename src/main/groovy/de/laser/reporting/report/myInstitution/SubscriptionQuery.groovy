@@ -5,11 +5,10 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionQuery extends BaseQuery {
@@ -18,7 +17,7 @@ class SubscriptionQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 

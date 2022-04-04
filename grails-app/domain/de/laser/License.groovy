@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -171,7 +171,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -197,7 +197,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStorage.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
@@ -441,7 +441,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the grant for the user is given, false otherwise
      */
     boolean hasPerm(perm, user) {
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 
@@ -465,7 +465,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(BeanStorage.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || licsee
             }
         }
@@ -527,7 +527,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             log.debug("Send pending change to ${dl.id}")
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            def description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
+            def description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
             def definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
@@ -545,7 +545,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                     "${description}"
             ]
 
-            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
+            PendingChange newPendingChange = BeanStorage.getChangeNotificationService().registerPendingChange(
                         PendingChange.PROP_LICENSE,
                         dl,
                         dl.getLicensee(),
@@ -566,7 +566,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            BeanStore.getPendingChangeService().performAccept(spc)
+            BeanStorage.getPendingChangeService().performAccept(spc)
         }
     }
 
@@ -584,7 +584,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link Map} of {@link PropertyDefinitionGroup}s; ordered by sorted, global, local or orphaned ones
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+        BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -621,7 +621,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         String result = ''
         result += reference + " - " + statusString + " " + period
         if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
-            result += " - " + BeanStore.getMessageSource().getMessage('license.member', null, LocaleContextHolder.getLocale())
+            result += " - " + BeanStorage.getMessageSource().getMessage('license.member', null, LocaleContextHolder.getLocale())
         }
 
         return result

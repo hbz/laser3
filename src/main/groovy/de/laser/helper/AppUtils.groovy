@@ -70,7 +70,7 @@ class AppUtils {
 
     static GrailsClass getDomainClass(String qualifiedName) {
         // fallback
-        String fallback = qualifiedName.replace("class ", "")
+        String fallback = qualifiedName.replace('class ', '')
         GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
 
         if (! dc) {
@@ -94,6 +94,6 @@ class AppUtils {
     }
 
     static List<GrailsClass> getAllDomainClasses() {
-        Holders.grailsApplication.getArtefacts("Domain").toList()
+        Holders.grailsApplication.getArtefacts('Domain').toList()
     }
 }

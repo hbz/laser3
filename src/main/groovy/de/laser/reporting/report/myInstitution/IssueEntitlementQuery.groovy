@@ -7,7 +7,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -22,8 +22,8 @@ class IssueEntitlementQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStore.getContextService()
-        MessageSource messageSource = BeanStore.getMessageSource()
+        ContextService contextService = BeanStorage.getContextService()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )

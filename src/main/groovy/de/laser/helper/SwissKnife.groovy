@@ -4,8 +4,8 @@ import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.User
+import de.laser.storage.BeanStorage
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -20,7 +20,7 @@ class SwissKnife {
     static Log static_logger = LogFactory.getLog(SwissKnife) // TODO
 
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         List<String> result = []
@@ -48,7 +48,7 @@ class SwissKnife {
      */
     static boolean checkMessageKey(String key) {
         if (key) {
-            MessageSource messageSource = BeanStore.getMessageSource()
+            MessageSource messageSource = BeanStorage.getMessageSource()
             Locale locale = LocaleContextHolder.getLocale()
 
             def keys = messageSource.getMergedProperties(locale).getProperties().keySet()
@@ -103,8 +103,8 @@ class SwissKnife {
 
     static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
 
-        ContextService contextService = BeanStore.getContextService()
-        AccessService accessService   = BeanStore.getAccessService()
+        ContextService contextService = BeanStorage.getContextService()
+        AccessService accessService   = BeanStorage.getAccessService()
 
         boolean check = false
 

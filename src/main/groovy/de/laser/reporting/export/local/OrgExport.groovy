@@ -1,14 +1,13 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper
-import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -79,8 +78,8 @@ class OrgExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
-        MessageSource messageSource = BeanStore.getMessageSource()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        MessageSource messageSource = BeanStorage.getMessageSource()
 
         Org org = obj as Org
         List content = []
@@ -206,7 +205,7 @@ class OrgExport extends BaseDetailsExport {
                 }
                 else if (key == '@-org-readerNumber') {
 
-                    OrganisationService organisationService = BeanStore.getOrganisationService()
+                    OrganisationService organisationService = BeanStorage.getOrganisationService()
 
                     List entries = []
                     List<Long> semIdList = f.value.findAll{ it.startsWith('sem-') }.collect{ Long.parseLong( it.replace('sem-', '') ) }

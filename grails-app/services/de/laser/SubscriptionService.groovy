@@ -15,13 +15,12 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.titles.TitleInstance
+import de.laser.storage.BeanStorage
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.Sql
-import groovyx.gpars.GParsPool
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -972,7 +971,7 @@ class SubscriptionService {
      * @param createEntitlements should entitlements be created as well?
      */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
         /*
@@ -1030,7 +1029,7 @@ class SubscriptionService {
      * @param pkg the package to be linked
      */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])

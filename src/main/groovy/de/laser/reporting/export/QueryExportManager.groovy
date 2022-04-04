@@ -1,13 +1,12 @@
 package de.laser.reporting.export
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.export.local.LocalQueryExport
 import de.laser.reporting.export.myInstitution.GlobalQueryExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Row
@@ -56,7 +55,7 @@ class QueryExportManager {
     }
 
     static String buildRowCSV(List<Object> row) {
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
         row.collect{ col ->
             boolean enclose = false
@@ -84,7 +83,7 @@ class QueryExportManager {
     }
 
     static List<String> buildRowPDF(List<Object> row) {
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
         row.collect{ col ->
             if (! col) {

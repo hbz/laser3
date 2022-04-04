@@ -1,7 +1,7 @@
 package de.laser.base
 
 import de.laser.RefdataValue
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
@@ -59,7 +59,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     protected void afterInsertHandler() {
         static_logger.debug("afterInsertHandler()")
 
-        BeanStore.getCascadingUpdateService().update(this, dateCreated)
+        BeanStorage.getCascadingUpdateService().update(this, dateCreated)
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     protected void afterUpdateHandler() {
         static_logger.debug("afterUpdateHandler()")
 
-        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
+        BeanStorage.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     protected void beforeDeleteHandler() {
@@ -94,7 +94,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     protected void afterDeleteHandler() {
         static_logger.debug("afterDeleteHandler()")
 
-        BeanStore.getCascadingUpdateService().update(this, new Date())
+        BeanStorage.getCascadingUpdateService().update(this, new Date())
     }
 
     abstract def beforeInsert()     /* { beforeInsertHandler() } */

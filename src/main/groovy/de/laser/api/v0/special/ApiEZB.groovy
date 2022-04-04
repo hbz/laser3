@@ -2,7 +2,7 @@ package de.laser.api.v0.special
 
 import de.laser.*
 import de.laser.api.v0.*
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.Constants
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
@@ -152,7 +152,7 @@ class ApiEZB {
             else {
                 log.error("No platform available! Continue without proprietary namespace!")
             }
-            DataSource dataSource = BeanStore.getDataSource()
+            DataSource dataSource = BeanStorage.getDataSource()
             Sql sql = new Sql(dataSource)
             //copy needed because exportService cannot be used in static context! This is a temp solution!
             log.debug("Begin generateTitleExportKBARTSQL")

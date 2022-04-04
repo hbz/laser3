@@ -4,7 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
 import de.laser.exceptions.SyncException
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -13,7 +13,6 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.util.Holders
 import grails.web.mapping.LinkGenerator
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -851,7 +850,7 @@ class YodaService {
      */
     @Transactional
     void matchPackageHoldings() {
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
         sql.withTransaction {
             List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +

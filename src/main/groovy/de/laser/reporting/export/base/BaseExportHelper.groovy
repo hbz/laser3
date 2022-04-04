@@ -1,6 +1,6 @@
 package de.laser.reporting.export.base
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -31,7 +31,7 @@ class BaseExportHelper {
 
         CreationHelper createHelper = workbook.getCreationHelper()
         Locale locale = LocaleContextHolder.getLocale()
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
 
         short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )
         short currFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( 'default.decimal.format', null, locale ) ) // ? todo check format

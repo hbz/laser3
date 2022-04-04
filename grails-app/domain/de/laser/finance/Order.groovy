@@ -2,7 +2,7 @@ package de.laser.finance
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -44,7 +44,7 @@ class Order {
         if (! owner) {
             return []
         }
-        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
+        GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
 
         genericOIDService.getOIDMapList(
                 Order.findAllByOwnerAndOrderNumberIlike(owner,"%${params.q}%", params),

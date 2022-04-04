@@ -9,7 +9,7 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -24,8 +24,6 @@ import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
-import grails.util.Holders
-import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -190,9 +188,9 @@ class BaseConfig {
 
     static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
 
-        ContextService contextService = BeanStore.getContextService()
-        MessageSource messageSource = BeanStore.getMessageSource()
-        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
+        ContextService contextService = BeanStorage.getContextService()
+        MessageSource messageSource = BeanStorage.getMessageSource()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStorage.getSubscriptionsQueryService()
 
         // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
 
@@ -397,7 +395,7 @@ class BaseConfig {
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map pkgMap = getCurrentConfigElasticsearchData(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
@@ -419,7 +417,7 @@ class BaseConfig {
 
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
         messageSource.getMessage(token, null, locale)
     }

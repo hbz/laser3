@@ -9,7 +9,7 @@ import de.laser.I10nTranslation
 import de.laser.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.interfaces.CalculatedType
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
@@ -366,11 +366,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         List<PropertyDefinition> propDefsInCalcGroups = []
 
         if (params.oid) {
-            GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
+            GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
             def obj = genericOIDService.resolveOID(params.oid)
 
             if (obj) {
-                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(BeanStore.getContextService().getOrg())
+                Map<String, Object> calcPropDefGroups = obj.getCalculatedPropDefGroups(BeanStorage.getContextService().getOrg())
 
                 calcPropDefGroups.global.each { it ->
                     List<PropertyDefinition> tmp = it.getPropertyDefinitions()
@@ -466,7 +466,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     int countOwnUsages() {
         String table = this.descr.replace(" ","")
         String tenantFilter = 'and c.tenant.id = :ctx'
-        Map<String,Long> filterParams = [type:this.id,ctx:BeanStore.getContextService().getOrg().id]
+        Map<String,Long> filterParams = [type:this.id,ctx:BeanStorage.getContextService().getOrg().id]
         if (this.descr == PropertyDefinition.ORG_PROP) {
             table = "OrgProperty"
         } else if(this.descr == PropertyDefinition.SVY_PROP) {

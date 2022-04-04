@@ -5,13 +5,12 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.GenericHelper
-import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 
@@ -81,7 +80,7 @@ class BaseDetails {
 
     static String getFieldLabelforColumn(String key, String field) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
         Map<String, Map> esdConfig = BaseConfig.getCurrentConfigElasticsearchData(key)
 
         // println ' > BaseDetails.getFieldLabelforColumn() ' + key + ' + ' + field

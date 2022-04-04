@@ -1,6 +1,6 @@
 package de.laser.system
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.MigrationHelper
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -204,7 +204,7 @@ class SystemEvent {
      */
     private void setInfo() {
         if (!i18n) {
-            i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
+            i18n = BeanStorage.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
         }
     }
 

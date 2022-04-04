@@ -9,13 +9,11 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -216,9 +214,9 @@ class SubscriptionReport {
                 else if (params.query == 'timeline-cost') {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
-                    // ApplicationTagLib g = BeanStore.getApplicationTagLib()
-                    FinanceService financeService = BeanStore.getFinanceService()
-                    FinanceControllerService financeControllerService = BeanStore.getFinanceControllerService()
+                    // ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+                    FinanceService financeService = BeanStorage.getFinanceService()
+                    FinanceControllerService financeControllerService = BeanStorage.getFinanceControllerService()
 
                     timeline.eachWithIndex { s, i ->
                         clone.setProperty('id', s.id)
@@ -547,7 +545,7 @@ class SubscriptionReport {
     }
 
     static String getMessage(String token) {
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         messageSource.getMessage('reporting.local.subscription.' + token, null, locale)
@@ -555,7 +553,7 @@ class SubscriptionReport {
 
     static String getQueryLabel(String qKey, List qValues) {
         //println 'getQueryLabel(): ' + qKey + ' - ' + qValues
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         if (qValues[0].startsWith('generic')) {

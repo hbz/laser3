@@ -1,14 +1,13 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -19,8 +18,8 @@ class PlatformQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStore.getContextService()
-        MessageSource messageSource = BeanStore.getMessageSource()
+        ContextService contextService = BeanStorage.getContextService()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( BaseConfig.KEY_PLATFORM )

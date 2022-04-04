@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.finance.CostItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
@@ -18,7 +18,6 @@ import de.laser.reporting.export.myInstitution.PackageExport
 import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import grails.util.Holders
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Row
@@ -105,7 +104,7 @@ class DetailsExportManager {
 
     static List buildCSV(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
         List<List<String>> rows = []
         List<Integer> ici = []
@@ -217,7 +216,7 @@ class DetailsExportManager {
 
     static List buildPDF(BaseDetailsExport export, List objList, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
         List<List<List<String>>> rows = []
         List<Integer> ici = []

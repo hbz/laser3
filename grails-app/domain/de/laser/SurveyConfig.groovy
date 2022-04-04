@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.finance.CostItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -146,7 +146,7 @@ class SurveyConfig {
     }
 
     def afterDelete() {
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     @Transient

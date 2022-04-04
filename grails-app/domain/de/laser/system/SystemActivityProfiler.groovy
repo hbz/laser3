@@ -1,7 +1,7 @@
 package de.laser.system
 
 import de.laser.auth.User
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 
 /**
@@ -37,21 +37,24 @@ class SystemActivityProfiler {
     }
 
     static void addActiveUser(User user) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
+        EhcacheWrapper cache = BeanStorage.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
         cache.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
     }
     static void removeActiveUser(User user) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
+        EhcacheWrapper cache = BeanStorage.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
         cache.remove(user.id.encodeAsMD5() as String)
     }
 
     static List<String> getActiveUsers(long ms) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
+        EhcacheWrapper cache = BeanStorage.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
         List result = []
         cache.getKeys().each{ k ->
-            String key = k.replaceFirst( CACHE_KEY_ACTIVE_USER + EhcacheWrapper.SEPARATOR, '' )
-            if (System.currentTimeMillis() - (cache.get(key) as Long) <= ms) {
-                result.add( key )
+            try {
+                String key = k.replaceFirst( CACHE_KEY_ACTIVE_USER + EhcacheWrapper.SEPARATOR, '' )
+                if (System.currentTimeMillis() - (cache.get(key) as Long) <= ms) {
+                    result.add( key )
+                }
+            } catch (Exception e) {
             }
         }
         result

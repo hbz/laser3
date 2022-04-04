@@ -1,7 +1,7 @@
 package de.laser.titles
 
 import de.laser.exceptions.CreationException
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDStore
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -90,7 +90,7 @@ class BookInstance extends TitleInstance {
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
 
         if(firstEditor && firstAuthor) {

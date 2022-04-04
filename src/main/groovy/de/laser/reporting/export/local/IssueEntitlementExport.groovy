@@ -2,12 +2,11 @@ package de.laser.reporting.export.local
 
 import de.laser.Identifier
 import de.laser.IssueEntitlement
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper
-import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
@@ -67,7 +66,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
 
         IssueEntitlement ie = obj as IssueEntitlement
         List content = []

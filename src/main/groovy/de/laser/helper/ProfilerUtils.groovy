@@ -1,14 +1,14 @@
 package de.laser.helper
 
 import de.laser.ContextService
-import grails.util.Holders
+import de.laser.storage.BeanStorage
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
 //@CompileStatic
 class ProfilerUtils {
 
-    //CacheService   cacheService   = BeanStore.getCacheService()
-    ContextService contextService = BeanStore.getContextService()
+    //CacheService   cacheService   = BeanStorage.getCacheService()
+    ContextService contextService = BeanStorage.getContextService()
     EhcacheWrapper benchCache
 
     final static String SYSPROFILER_SESSION = 'DebugUtil/Session/SystemProfiler'

@@ -1,16 +1,14 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.ApplicationContext
 
 class PlatformFilter extends BaseFilter {
 
@@ -22,7 +20,7 @@ class PlatformFilter extends BaseFilter {
         List<String> whereParts         = [ 'where plt.id in (:platformIdList)']
         Map<String, Object> queryParams = [ platformIdList: [] ]
 
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PLATFORM, filterSource)])

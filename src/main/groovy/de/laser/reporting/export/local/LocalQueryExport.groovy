@@ -1,6 +1,6 @@
 package de.laser.reporting.export.local
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import org.springframework.context.MessageSource
@@ -27,7 +27,7 @@ class LocalQueryExport extends BaseQueryExport {
         List<String> chart = queryCache.labels.chart
 
         // todo --
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
 
         if ( queryCache.labels.tooltip ) {
             result.cols.add( queryCache.labels.tooltip ) // simple

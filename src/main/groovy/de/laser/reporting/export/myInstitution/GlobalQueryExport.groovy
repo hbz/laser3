@@ -1,6 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
 import org.springframework.context.MessageSource
@@ -26,7 +26,7 @@ class GlobalQueryExport extends BaseQueryExport {
         List<String> chart = queryCache.labels.chart
 
         if ( ! chart) {
-            MessageSource messageSource = BeanStore.getMessageSource()
+            MessageSource messageSource = BeanStorage.getMessageSource()
 
             result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) )
             result.rows = data.collect{ e ->

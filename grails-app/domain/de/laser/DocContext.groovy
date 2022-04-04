@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
@@ -88,7 +88,7 @@ class DocContext implements ShareableTrait, Comparable {
      * Triggers after the database removal of the document context also the ElasticSearch index removal
      */
     def afterDelete() {
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     void afterUpdate(PostUpdateEvent event) {

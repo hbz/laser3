@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.AppUtils
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
 import de.laser.helper.RDStore
@@ -95,7 +95,7 @@ class SystemAnnouncement {
      * @return the sanitized title string
      */
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(title))
+        SystemAnnouncement.cleanUp(BeanStorage.getEscapeService().replaceUmlaute(title))
     }
 
     /**
@@ -103,7 +103,7 @@ class SystemAnnouncement {
      * @return the sanitized content string
      */
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(content))
+        SystemAnnouncement.cleanUp(BeanStorage.getEscapeService().replaceUmlaute(content))
     }
 
     /**
@@ -164,7 +164,7 @@ class SystemAnnouncement {
      */
     private void sendMail(User user) throws Exception {
 
-        MessageSource messageSource = BeanStore.getMessageSource()
+        MessageSource messageSource = BeanStorage.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
@@ -180,7 +180,7 @@ class SystemAnnouncement {
         }
 
         if (isRemindCCbyEmail && ccAddress) {
-            BeanStore.getMailService().sendMail {
+            BeanStorage.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigUtils.getNotificationsEmailFrom()
                 cc      ccAddress
@@ -190,7 +190,7 @@ class SystemAnnouncement {
             }
         }
         else {
-            BeanStore.getMailService().sendMail {
+            BeanStorage.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigUtils.getNotificationsEmailFrom()
                 replyTo ConfigUtils.getNotificationsEmailReplyTo()

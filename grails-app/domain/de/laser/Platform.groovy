@@ -1,17 +1,15 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
-import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -101,7 +99,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   def afterDelete() {
     super.afterDeleteHandler()
 
-    BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+    BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
   @Override
   def afterInsert() {
@@ -196,7 +194,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @return a {@link Map} of {@link PropertyDefinitionGroup}s, ordered by sorted, global, local and orphaned property definitions
    */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-      BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+      BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
   /**
@@ -242,7 +240,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @return a {@link List} of {@link Map}s in the format [id: id, text: text], containing the selectable records
    */
   static def refdataFind(GrailsParameterMap params) {
-    GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
+    GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
 
     genericOIDService.getOIDMapList( Platform.findAllByNameIlike("${params.q}%", params), 'name' )
   }

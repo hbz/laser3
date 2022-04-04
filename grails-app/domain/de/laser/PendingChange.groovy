@@ -3,14 +3,13 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.exceptions.CreationException
 import de.laser.finance.PriceItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
-import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
 import java.text.SimpleDateFormat
 
@@ -346,7 +345,7 @@ class PendingChange {
      * @return the resolved object
      */
     def resolveOID() {
-        BeanStore.getGenericOIDService().resolveOID(oid)
+        BeanStorage.getGenericOIDService().resolveOID(oid)
     }
 
     /**
@@ -407,11 +406,11 @@ class PendingChange {
         if (prefix) {
             def parsed
             try {
-                parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0], null, locale)
+                parsed = BeanStorage.getMessageSource().getMessage(prefix + parsedParams[0], null, locale)
             }
             catch (Exception e1) {
                 try {
-                    parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0] + '.label', null, locale)
+                    parsed = BeanStorage.getMessageSource().getMessage(prefix + parsedParams[0] + '.label', null, locale)
                 }
                 catch (Exception e2) {
                     parsed = prefix + parsedParams[0]
@@ -439,7 +438,7 @@ class PendingChange {
             parsedParams[1] = rdv1.getI10n('value')
             parsedParams[2] = rdv2.getI10n('value')
         } else if (type == 'date') {
-            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(BeanStore.getMessageSource().getMessage('default.date.format', null, locale))
+            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(BeanStorage.getMessageSource().getMessage('default.date.format', null, locale))
             //TODO JSON @ Wed Jan 03 00:00:00 CET 2018
 
             //def date1 = parsedParams[1] ? sdf.parse(parsedParams[1]) : null

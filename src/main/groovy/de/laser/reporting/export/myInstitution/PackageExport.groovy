@@ -8,7 +8,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -17,7 +17,6 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
-import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 class PackageExport extends BaseDetailsExport {
@@ -84,8 +83,8 @@ class PackageExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStore.getApplicationTagLib()
-        ContextService contextService = BeanStore.getContextService()
+        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        ContextService contextService = BeanStorage.getContextService()
 
         Package pkg = obj as Package
         List content = []

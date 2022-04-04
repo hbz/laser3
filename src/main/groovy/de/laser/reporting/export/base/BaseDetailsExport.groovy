@@ -9,7 +9,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.LocalExportHelper
@@ -25,7 +25,6 @@ import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -163,11 +162,11 @@ abstract class BaseDetailsExport {
         clazz.class.package.toString().endsWith('.myInstitution')
     }
     static boolean ctxConsortium() {
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
         contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'
     }
     static boolean ctxInst() {
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
         contextService.getOrg().getCustomerType() == 'ORG_INST'
     }
 
@@ -300,7 +299,7 @@ abstract class BaseDetailsExport {
     static String getExportLabel(String token) {
         String msg = '[reporting.export.custom.' + token + ']'
         try {
-            MessageSource messageSource = BeanStore.getMessageSource()
+            MessageSource messageSource = BeanStorage.getMessageSource()
             Locale locale = LocaleContextHolder.getLocale()
             msg = messageSource.getMessage('reporting.export.custom.' + token, null, locale)
         }

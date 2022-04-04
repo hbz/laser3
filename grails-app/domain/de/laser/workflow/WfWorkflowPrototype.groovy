@@ -3,7 +3,7 @@ package de.laser.workflow
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 
@@ -68,7 +68,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 title:       this.title,
                 description: this.description,
                 prototype:   this,
-                owner:       BeanStore.getContextService().getOrg(),
+                owner:       BeanStorage.getContextService().getOrg(),
                 status:      RDStore.WF_WORKFLOW_STATUS_OPEN,
                 subscription: Subscription.get(subId)
         )

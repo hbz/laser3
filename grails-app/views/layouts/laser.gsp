@@ -675,7 +675,14 @@
 
                 %{-- system messages --}%
 
-                <div id="systemMessages" class="ui message warning hidden"></div>
+                <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
+                    <div id="systemMessages" class="ui message warning">
+                        <g:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
+                    </div>
+                </g:if>
+                <g:else>
+                    <div id="systemMessages" class="ui message warning hidden"></div>
+                </g:else>
 
                 %{-- content --}%
 

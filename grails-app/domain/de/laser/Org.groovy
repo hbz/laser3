@@ -7,21 +7,16 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.properties.OrgProperty
-import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
@@ -283,8 +278,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         //ugliest HOTFIX ever #2
         if(!Thread.currentThread().name.contains("Sync")) {
-            if (BeanStore.getContextService().getOrg()) {
-                createdBy = BeanStore.getContextService().getOrg()
+            if (BeanStorage.getContextService().getOrg()) {
+                createdBy = BeanStorage.getContextService().getOrg()
             }
         }
 
@@ -295,7 +290,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -436,7 +431,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @see de.laser.properties.PropertyDefinitionGroup
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+        BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -489,7 +484,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
      */
     static def refdataFind(GrailsParameterMap params) {
-        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
+        GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
 
         genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
@@ -564,7 +559,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = BeanStore.getContextService().getOrg()
+            Org ctxOrg = BeanStorage.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
                     " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -599,7 +594,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = BeanStore.getContextService().getOrg()
+            Org ctxOrg = BeanStorage.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
                             " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -745,7 +740,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
     String dropdownNamingConvention() {
-        return dropdownNamingConvention(BeanStore.getContextService().getOrg())
+        return dropdownNamingConvention(BeanStorage.getContextService().getOrg())
     }
 
     /**

@@ -3,12 +3,11 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDStore
 import de.laser.titles.TitleHistoryEvent
-import de.laser.titles.TitleHistoryEventParticipant
 import groovy.time.TimeCategory
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -319,7 +318,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = BeanStorage.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }

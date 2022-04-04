@@ -53,9 +53,10 @@ class BootStrapService {
 
         log.info '--------------------------------------------------------------------------------'
 
-        log.info("SystemId: ${ConfigUtils.getLaserSystemId()}")
-        log.info("Server: ${AppUtils.getCurrentServer()}")
-        log.info("Database: ${AppUtils.getConfig('dataSource.url')}")
+        log.info("SystemId:  ${ConfigUtils.getLaserSystemId()}")
+        log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
+        log.info("Server:    ${AppUtils.getCurrentServer()}")
+        log.info("Database:  ${AppUtils.getConfig('dataSource.url')}")
         log.info("Database datasource dbCreate: ${AppUtils.getConfig('dataSource.dbCreate')}")
         log.info("Database migration plugin updateOnStart: ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}")
         log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")

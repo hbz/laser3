@@ -7,7 +7,7 @@ import de.laser.Subscription
 import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
@@ -108,7 +108,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def beforeUpdate(){
         Map<String, Object> changes = super.beforeUpdateHandler()
 
-        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStorage.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def afterUpdate() {
@@ -118,13 +118,13 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     def beforeDelete() {
         super.beforeDeleteHandler()
 
-        BeanStore.getAuditService().beforeDeleteHandler(this)
+        BeanStorage.getAuditService().beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(BeanStore.getGenericOIDService().getOID(this), this.class.simpleName)
+        BeanStorage.getDeletionService().deleteDocumentFromIndex(BeanStorage.getGenericOIDService().getOID(this), this.class.simpleName)
     }
 
     /**
@@ -140,7 +140,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
+            String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }
@@ -179,7 +179,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                         "${description}"
                 ]
 
-                PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
+                PendingChange newPendingChange = BeanStorage.getChangeNotificationService().registerPendingChange(
                         PendingChange.PROP_SUBSCRIPTION,
                         scp.owner,
                         scp.owner.getSubscriber(),
@@ -199,7 +199,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                BeanStore.getPendingChangeService().performAccept(spc)
+                BeanStorage.getPendingChangeService().performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.deleted')) {
@@ -210,7 +210,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                 if (pc.payload) {
                     JSONElement payload = JSON.parse(pc.payload)
                     if (payload.changeDoc) {
-                        def scp = BeanStore.getGenericOIDService().resolveOID(payload.changeDoc.OID)
+                        def scp = BeanStorage.getGenericOIDService().resolveOID(payload.changeDoc.OID)
                         if (scp?.id == id) {
                             pc.delete()
                         }

@@ -17,7 +17,7 @@ import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import de.laser.SubscriptionService
@@ -32,14 +32,11 @@ import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.core.GrailsClass
-import grails.util.Holders
 import grails.web.databinding.DataBindingUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
-import grails.web.mapping.LinkGenerator
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
@@ -540,7 +537,7 @@ class PendingChangeService extends AbstractLockableService {
         Map<String, Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
-        DataSource dataSource = BeanStore.getDataSource()
+        DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
         List pending = [], notifications = []
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]

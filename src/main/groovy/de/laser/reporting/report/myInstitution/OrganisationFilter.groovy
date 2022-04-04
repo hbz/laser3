@@ -5,16 +5,14 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.helper.BeanStore
+import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.ApplicationContext
 
 class OrganisationFilter extends BaseFilter {
 
@@ -26,7 +24,7 @@ class OrganisationFilter extends BaseFilter {
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
         Map<String, Object> queryParams = [ orgIdList: [] ]
 
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
 
         String filterSource = getCurrentFilterSource(params, 'org')
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ORGANISATION, filterSource)])
@@ -231,7 +229,7 @@ where (consOr.roleType = :consRoleType)
 
     static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
 
-        ContextService contextService = BeanStore.getContextService()
+        ContextService contextService = BeanStorage.getContextService()
 
         List<Long> idList = Org.executeQuery( '''
             select distinct(prov.org.id) from OrgRole prov 
