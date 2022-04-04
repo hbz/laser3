@@ -2,7 +2,7 @@ package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.ChangeNotificationService
 import de.laser.helper.ConfigUtils
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 
 class NotificationsJob extends AbstractJob {
 

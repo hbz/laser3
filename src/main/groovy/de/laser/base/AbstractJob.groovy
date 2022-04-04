@@ -1,4 +1,4 @@
-package de.laser.quartz
+package de.laser.base
 
 abstract class AbstractJob {
     private Date job_start

@@ -12,7 +12,7 @@ system = {
     },
 
     status: function () {
-        var socket = new SockJS(JSPC.vars.wsStompUrl)
+        var socket = new SockJS(JSPC.vars.socketStompUrl)
         var client = webstomp.over(socket, { debug: false })
 
         client.connect({}, function() {

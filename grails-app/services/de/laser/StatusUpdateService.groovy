@@ -4,7 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.helper.RDStore
-import de.laser.interfaces.AbstractLockableService
+import de.laser.base.AbstractLockableService
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import org.springframework.transaction.TransactionStatus

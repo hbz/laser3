@@ -5,7 +5,7 @@ import de.laser.finance.PriceItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.AbstractLockableService
+import de.laser.base.AbstractLockableService
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.SubscriptionProperty

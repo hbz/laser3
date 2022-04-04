@@ -1,7 +1,7 @@
 package de.laser.batch
 
 import de.laser.RenewSubscriptionService
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 import de.laser.system.SystemEvent
 
 class RenewSubscriptionJob extends AbstractJob {

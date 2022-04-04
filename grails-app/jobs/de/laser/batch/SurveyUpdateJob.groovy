@@ -2,7 +2,7 @@ package de.laser.batch
 
 import de.laser.SurveyUpdateService
 import de.laser.system.SystemEvent
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 
 
 class SurveyUpdateJob extends AbstractJob {

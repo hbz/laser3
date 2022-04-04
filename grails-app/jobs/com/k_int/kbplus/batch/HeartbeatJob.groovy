@@ -2,7 +2,7 @@ package com.k_int.kbplus.batch
 
 import de.laser.SystemService
 import de.laser.system.SystemActivityProfiler
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import org.springframework.messaging.simp.SimpMessageSendingOperations

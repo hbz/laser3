@@ -15,7 +15,7 @@ import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.AbstractLockableService
+import de.laser.base.AbstractLockableService
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import org.grails.web.json.JSONElement

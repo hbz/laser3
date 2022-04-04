@@ -3,7 +3,7 @@ package de.laser.batch
 import de.laser.DashboardDueDatesService
 import de.laser.system.SystemEvent
 import de.laser.helper.ConfigUtils
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 
 class DashboardDueDatesJob extends AbstractJob {
 

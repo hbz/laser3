@@ -31,7 +31,7 @@ import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.AbstractLockableService
+import de.laser.base.AbstractLockableService
 import de.laser.titles.TitleHistoryEvent
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional

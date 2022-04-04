@@ -28,7 +28,7 @@ import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.interfaces.AbstractLockableService
+import de.laser.base.AbstractLockableService
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.core.GrailsClass

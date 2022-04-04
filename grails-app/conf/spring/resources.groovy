@@ -5,6 +5,7 @@ import de.laser.custom.CustomPasswordEncoderFactories
 import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
+import de.laser.custom.CustomWebSocketConfig
 import de.laser.custom.CustomWkhtmltoxService
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
@@ -14,9 +15,32 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
+    // [ audit logging ..
+    auditRequestResolver( CustomAuditRequestResolver ) {
+        springSecurityService = ref('springSecurityService')
+    }
+    // .. ]
+
     // [ database migration plugin ..
     migrationCallbacks( CustomMigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
+    }
+    // .. ]
+
+    // [ password migration/fallback ..
+    passwordEncoder( CustomPasswordEncoderFactories ) { bean ->
+        bean.factoryMethod = "createDelegatingPasswordEncoder"
+    }
+    // .. ]
+
+    // [ websockets ..
+    webSocketConfig( CustomWebSocketConfig )
+    // .. ]
+
+    // [ wkhtmltopdf ..
+    wkhtmltoxService( CustomWkhtmltoxService ) {
+        grailsApplication           = ref('grailsApplication')
+        mailMessageContentRenderer  = ref('mailMessageContentRenderer')
     }
     // .. ]
 
@@ -38,12 +62,7 @@ beans = {
     }
     // .. ]
 
-    // [ audit logging ..
-    auditRequestResolver( CustomAuditRequestResolver ) {
-        springSecurityService = ref('springSecurityService')
-    }
-    // .. ]
-
+    // [ spring ..
     userDetailsService( CustomUserDetailsService ) {
         grailsApplication = ref('grailsApplication')
     }
@@ -57,17 +76,6 @@ beans = {
     }
 
     securityContextPersistenceFilter( SecurityContextPersistenceFilter )
-
-    // [ password migration/fallback ..
-    passwordEncoder( CustomPasswordEncoderFactories ) { bean ->
-        bean.factoryMethod = "createDelegatingPasswordEncoder"
-    }
     // .. ]
 
-    // [ wkhtmltopdf ..
-    wkhtmltoxService( CustomWkhtmltoxService ) {
-        grailsApplication           = ref('grailsApplication')
-        mailMessageContentRenderer  = ref('mailMessageContentRenderer')
-    }
-    // .. ]
 }

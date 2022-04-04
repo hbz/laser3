@@ -156,9 +156,7 @@ grails:
                         access: [ 'permitAll' ]
                     -   pattern: '/static/**'
                         access: [ 'permitAll' ]
-                    -   pattern: '/stomp/**'
-                        access: [ 'permitAll' ]
-                    -   pattern: '/topic/**'
+                    -   pattern: '/socket/**'
                         access: [ 'permitAll' ]
                     -   pattern: '/**/js/**'
                         access: [ 'permitAll' ]

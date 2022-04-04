@@ -1,4 +1,4 @@
-package de.laser.interfaces
+package de.laser.base
 
 abstract class AbstractLockableService {
 

@@ -10,7 +10,7 @@ JSPC = {
         ajaxMessagesUrl: "<g:createLink controller='ajaxOpen' action='messages'/>",
         ajaxJsonLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",
         spotlightSearchUrl: "<g:createLink controller='search' action='spotlightSearch'/>",
-        wsStompUrl: "${createLink(uri: '/stomp')}"
+        socketStompUrl: "${createLink(uri: '/socket/stomp')}"
     },
 
     app : { // -- logic container

@@ -3,7 +3,7 @@ package de.laser.batch
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.helper.ConfigUtils
-import de.laser.quartz.AbstractJob
+import de.laser.base.AbstractJob
 
 class TestJob extends AbstractJob {
 
