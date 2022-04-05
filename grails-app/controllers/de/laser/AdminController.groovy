@@ -572,8 +572,7 @@ class AdminController  {
     def databaseCollations() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
 
         result.table_columns = sql.rows("""
             SELECT table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
@@ -607,8 +606,7 @@ class AdminController  {
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result

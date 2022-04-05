@@ -2,15 +2,21 @@ package de.laser.api.v0
 
 
 import de.laser.DocContext
+import de.laser.GlobalService
 import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
+import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
+import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
+import de.laser.helper.DateUtils
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
@@ -20,7 +26,11 @@ import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
 import de.laser.helper.RDStore
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+
+import java.text.SimpleDateFormat
 
 /**
  * This class delivers given lists as maps of stubs or full objects
@@ -83,7 +93,7 @@ class ApiCollectionReader {
 
             // RefdataValues
             tmp.category        = it.contentType?.value
-            tmp.type            = it.type?.value
+            tmp.language        = it.language?.value
 
             tmp = ApiToolkit.cleanUp(tmp, true, false)
 
@@ -99,7 +109,7 @@ class ApiCollectionReader {
      * @param filteredList a pre-filtered and cleared list of public {@link CostItem}s
      * @return a {@link Collection} of {@link Map}s of cost item records for API output
      */
-    static Collection<Object> getCostItemCollection(Collection<CostItem> filteredList) {
+    static Collection<Object> getCostItemCollection(Collection<CostItem> filteredList, Org context) {
         Collection<Object> result = []
 
         filteredList.each { it ->
@@ -121,7 +131,7 @@ class ApiCollectionReader {
             tmp.calculatedType      = it._getCalculatedType()
             tmp.datePaid            = ApiToolkit.formatInternalDate(it.datePaid)
             tmp.invoiceDate         = ApiToolkit.formatInternalDate(it.invoiceDate)
-            tmp.financialYear       = it.financialYear
+            tmp.financialYear       = it.financialYear?.value
             tmp.startDate           = ApiToolkit.formatInternalDate(it.startDate)
             tmp.endDate             = ApiToolkit.formatInternalDate(it.endDate)
             tmp.dateCreated         = ApiToolkit.formatInternalDate(it.dateCreated)
@@ -138,14 +148,14 @@ class ApiCollectionReader {
 
             // References
             //def context = null // TODO: use context
-            tmp.budgetCodes         = CostItemGroup.findAllByCostItem(it).collect{ it.budgetCode?.value }.unique()
+            tmp.budgetCodes         = it.budgetcodes.collect{ BudgetCode bc -> bc.value }.unique()
             tmp.copyBase            = it.copyBase?.globalUID
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // de.laser.finance.Invoice
             // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
             // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            // tmp.package             = ApiStubReader.retrieveSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+            tmp.package             = ApiStubReader.requestSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
 
@@ -249,13 +259,15 @@ class ApiCollectionReader {
     static Collection<Object> getIdentifierCollection(Collection<Identifier> list) {
         Collection<Object> result = []
         list.each { it ->   // de.laser.Identifier
-            Map<String, Object> tmp = [:]
+            if(it.value != IdentifierNamespace.UNKNOWN) {
+                Map<String, Object> tmp = [:]
 
-            tmp.put( 'namespace', it.ns?.ns )
-            tmp.put( 'value', it.value )
+                tmp.put( 'namespace', it.ns?.ns )
+                tmp.put( 'value', it.value )
 
-            tmp = ApiToolkit.cleanUp(tmp, true, true)
-            result << tmp
+                tmp = ApiToolkit.cleanUp(tmp, true, true)
+                result << tmp
+            }
         }
         result
     }
@@ -277,6 +289,111 @@ class ApiCollectionReader {
         )
         ieList.each{ ie ->
             result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
+        }
+
+        return ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Puts together a collection of issue entitlement stubs which belong to the given subscription package, using native SQL to retrieve data
+     * @param subPkg the {@link de.laser.SubscriptionPackage} to process
+     * @param ignoreRelation should relations followed up (and stubs returned) or not?
+     * @param context the requesting institution ({@link Org}) whose perspective should be taken
+     * @return a {@link Collection<Object>} reflecting the result
+     */
+    static Collection<Object> getIssueEntitlementCollectionWithSQL(SubscriptionPackage subPkg, ignoreRelation, Org context){
+        Collection<Object> result = []
+        SimpleDateFormat formatter = DateUtils.getSDF_NoZ()
+        Sql sql = GlobalService.obtainSqlConnection()
+        /*
+        List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
+                'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
+                        ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
+                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
+        )
+        */
+        //missing are names etc., verify output - continue here!
+        List ieRows = sql.rows("select ie_id, ie_name, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = ie_status_rv_fk) as ie_status, (select rdv_value from refdata_value where (rdv_id = ie_medium_rv_fk and ie_medium_rv_fk is not null) or (ie_medium_rv_fk is null and rdv_id = tipp_medium_rv_fk)) as ie_medium, ie_perpetual_access_by_sub_fk, " +
+                "tipp_guid, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_plat_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
+                "tipp_publisher_name, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
+                "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
+                "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
+                "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :statusIe order by ie_sortname",
+                [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, statusTipp: RDStore.TIPP_STATUS_DELETED.id, statusIe: RDStore.TIPP_STATUS_DELETED.id])
+        log.debug("now fetching additional params ...")
+        Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id]
+        List<GroovyRowResult> priceItemRows = sql.rows('select pi_ie_fk, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId', subParams),
+        coverageRows = sql.rows('select ic_ie_fk, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_last_updated from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id where ie_subscription_fk = :subId order by ic_start_date, ic_start_volume, ic_start_issue', subParams),
+        idRows = sql.rows('select idns_ns, id_value, id_tipp_fk from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
+        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
+        packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name from package where pkg_id = :pkgId', pkgParams),
+        packageIDs = sql.rows('select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId', pkgParams)
+        Map<Long, Map<String, GroovyRowResult>> priceItemMap = ApiToolkit.preprocessPriceItemRows(priceItemRows)
+        Map<Long, List<GroovyRowResult>> identifierMap = ApiToolkit.preprocessIdentifierRows(idRows)
+        Map<String, Object> pkgData = packageOfSubscription.get(0)
+        pkgData.ids = packageIDs
+        ieRows.eachWithIndex{ GroovyRowResult row, int i ->
+            println "now processing row ${i}"
+            //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
+            Map<String, Object> ie = [globalUID: row['ie_guid']]
+            ie.name = row['ie_name']
+            ie.accessStartDate = row['ie_access_start_date'] ? formatter.format(row['ie_access_start_date']) : null
+            ie.accessEndDate = row['ie_access_end_date'] ? formatter.format(row['ie_access_end_date']) : null
+            ie.lastUpdated = row['ie_last_updated'] ? formatter.format(row['ie_last_updated']) : null
+            //RefdataValues
+            ie.medium = row['ie_medium'] //fallback tipp_medium already in query
+            ie.status = row['ie_status']
+            ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
+            List coverages = [], priceItems = []
+            coverageRows.findAll{ GroovyRowResult covRow -> covRow['ic_ie_fk'] == row['ie_id'] }.eachWithIndex { GroovyRowResult covRow, int j ->
+                println "processing coverage ${j}"
+                Map<String, Object> ieCov = [:]
+                ieCov.startDate        = covRow.containsKey('ic_start_date') && covRow['ic_start_date'] != null ? formatter.format(covRow['ic_start_date']) : null
+                ieCov.startVolume      = covRow['ic_start_volume']
+                ieCov.startIssue       = covRow['ic_start_issue']
+                ieCov.endDate          = covRow.containsKey('ic_end_date') && covRow['ic_end_date'] != null ? formatter.format(covRow['ic_end_date']) : null
+                ieCov.endVolume        = covRow['ic_end_volume']
+                ieCov.endIssue         = covRow['ic_end_issue']
+                ieCov.embargo          = covRow['ic_embargo']
+                ieCov.coverageDepth    = covRow['ic_coverage_depth']
+                ieCov.coverageNote     = covRow['ic_coverage_note']
+                ieCov.lastUpdated      = covRow['ic_last_updated'] ? formatter.format(covRow['ic_last_updated']) : null
+                coverages << ieCov
+            }
+            ie.coverages = coverages
+            priceItemMap.get(row['ie_id']).eachWithIndex { String currency, GroovyRowResult piRow, int p ->
+                println "processing price item ${p}"
+                Map<String, Object> pi = [:]
+                pi.listCurrency = piRow['pi_list_currency']
+                pi.listPrice = piRow['pi_list_price']
+                pi.localCurrency = piRow['pi_local_currency']
+                pi.localPrice = piRow['pi_local_price']
+                priceItems << pi
+            }
+            ie.priceItems = priceItems
+            //References
+            if(ignoreRelation != ApiReader.IGNORE_ALL) {
+                println "processing references"
+                if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
+                    row.ids = identifierMap.get(row['tipp_id'])
+                    row.platform = platformsOfSubscription.find { GroovyRowResult platRow -> platRow['plat_id'] == row['tipp_plat_fk'] } //preprocess!
+                    row.pkg = pkgData
+                    ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
+                }
+                else {
+                    if(ignoreRelation != ApiReader.IGNORE_TIPP) {
+                        row.ids = identifierMap.get(row['tipp_id'])
+                        row.platform = platformsOfSubscription.find { GroovyRowResult platRow -> platRow['plat_id'] == row['tipp_plat_fk'] }
+                        row.pkg = pkgData
+                        ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_NONE, context) // de.laser.TitleInstancePackagePlatform
+                    }
+                    if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
+                        ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.TitleInstancePackagePlatform
+                    }
+                }
+            }
+            result << ie
         }
 
         return ApiToolkit.cleanUp(result, true, true)
@@ -311,7 +428,8 @@ class ApiCollectionReader {
             result << pkg
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
-                pkg.issueEntitlements = getIssueEntitlementCollection(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
+            //IGNORE_ALL -> IGNORE_SUBSCRIPTION_AND_PACKAGE (bottleneck one)
+                pkg.issueEntitlements = getIssueEntitlementCollectionWithSQL(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
             //}
         }
 

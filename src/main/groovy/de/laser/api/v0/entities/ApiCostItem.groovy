@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.Org
 import de.laser.api.v0.*
@@ -157,19 +158,21 @@ class ApiCostItem {
         result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax
         result.costInLocalCurrency              = costItem.costInLocalCurrency
         result.costInLocalCurrencyAfterTax      = costItem.costInLocalCurrencyAfterTax
+        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
+        result.billingSumRounding  = costItem.billingSumRounding ? 'Yes' : 'No'
 
         result.costTitle           = costItem.costTitle
         result.costDescription     = costItem.costDescription
         result.currencyRate        = costItem.currencyRate
-        result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
-        result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
+        result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.endDate             = ApiToolkit.formatInternalDate(costItem.endDate)
-        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
+        result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
         result.invoiceDate         = ApiToolkit.formatInternalDate(costItem.invoiceDate)
+        result.financialYear       = costItem.financialYear?.value
+        result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
         result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
         result.reference           = costItem.reference
-        result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
 
         result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
@@ -188,13 +191,16 @@ class ApiCostItem {
 
         // References
 
-        result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // com.k_int.kbplus.Org
-        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // com.k_int.kbplus.Subscription // RECURSION ???
-        //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
-        result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
+        result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // de.laser.Org
+        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // de.laser.Subscription // RECURSION ???
+        result.subPkg   = ApiStubReader.requestSubscriptionPackageStubMixed(costItem.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+        result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context) // de.laser.IssueEntitlement
+        if(costItem.issueEntitlementGroup)
+            result.titleGroup = ApiIssueEntitlement.getTitleGroupMap(costItem.issueEntitlementGroup, context) //de.laser.IssueEntitlementGroup
+        result.budgetCodes = costItem.budgetcodes.collect { BudgetCode bc -> bc.value }.unique()
         result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // de.laser.finance.Order
-        result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice)
-        result.surveyOrg = costItem?.surveyOrg ?: null
+        result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice) //de.laser.finance.Invoice
+        result.surveyOrg = costItem.surveyOrg ?: null
 
         ApiToolkit.cleanUp(result, true, true)
     }

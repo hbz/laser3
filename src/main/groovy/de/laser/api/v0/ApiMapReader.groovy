@@ -3,7 +3,9 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.Person
+import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
+import groovy.sql.GroovyRowResult
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -64,24 +66,15 @@ class ApiMapReader {
 
         // RefdataValues
         result.status           = tipp.status?.value
-        result.option           = tipp.option?.value
-        result.delayedOA        = tipp.delayedOA?.value
-        result.hybridOA         = tipp.hybridOA?.value
-        result.statusReason     = tipp.statusReason?.value
-        result.payment          = tipp.payment?.value
 
         // References
         //result.additionalPlatforms  = getPlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
         result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
         result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = ApiUnsecuredMapReader.getTitleStubMap(tipp)       // de.laser.titles.TitleInstance
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
                 result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // com.k_int.kbplus.Package
-            }
-            if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                result.subscription = ApiStubReader.requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
             }
         }
         //result.derivedFrom      = ApiStubReader.resolveTippStub(tipp.derivedFrom)  // de.laser.TitleInstancePackagePlatform
@@ -90,38 +83,43 @@ class ApiMapReader {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    /*
-
-    // not used ??
-    def resolveLink(Link link) {
+    /**
+     * Assembles the given title details into a {@link Map}. The schema may be viewed in schemas.gsp.
+     * Access rights due wrapping object. Some relations may be blocked
+     * @param tipp the {@link TitleInstancePackagePlatform} subject of output
+     * @param ignoreRelation which relations should be blocked
+     * @param context the institution ({@link Org}) requesting
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> getTippMapWithSQL(GroovyRowResult row, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
-        if (!link) {
+
+        if (! row) {
             return null
         }
-        result.id   = link.id
+
+        result.globalUID        = row['tipp_guid']
+        result.hostPlatformURL  = row['tipp_host_platform_url']
+        result.gokbId           = row['tipp_gokb_id']
+        result.lastUpdated      = ApiToolkit.formatInternalDate(row['tipp_last_updated'])
 
         // RefdataValues
-        result.status   = link.status?.value
-        result.type     = link.type?.value
-        result.isSlaved = link.isSlaved?.value
+        result.status           = row['tipp_status']
 
-        def context = null // TODO: use context
-        result.fromLic  = ApiStubReader.resolveLicenseStub(link.fromLic, context) // com.k_int.kbplus.License
-        result.toLic    = ApiStubReader.resolveLicenseStub(link.toLic, context) // com.k_int.kbplus.License
+        // References
+        List<Map<String, Object>> identifiers = []
+        row['ids'].each { idRow ->
+            identifiers << [namespace: idRow['idns_ns'], value: idRow['id_value']]
+        }
+        result.identifiers          = identifiers       // de.laser.Identifier
+        result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // com.k_int.kbplus.Platform
+
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
+                result.package = ApiUnsecuredMapReader.getPackageStubMapWithSQL(row['pkg']) // com.k_int.kbplus.Package
+            }
+        }
 
         return ApiToolkit.cleanUp(result, true, true)
     }
-
-    // not used ??
-    def resolveLinks(list) {
-        def result = []
-        if(list) {
-            list.each { it -> // com.k_int.kbplus.Link
-                result << resolveLink(it)
-            }
-        }
-        result
-    }
-
-    */
 }

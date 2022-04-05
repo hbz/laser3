@@ -239,7 +239,7 @@ class ApiOAMonitor {
             else {
                 filtered = sub.costItems
             }
-            result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
+            result.costItems = ApiCollectionReader.getCostItemCollection(filtered, context)
 
             ApiToolkit.cleanUp(result, true, true)
         }

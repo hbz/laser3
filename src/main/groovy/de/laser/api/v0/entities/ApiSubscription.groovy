@@ -140,28 +140,24 @@ class ApiSubscription {
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
 		result.globalUID            	= sub.globalUID
-		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
-		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
-		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 		result.calculatedType       	= sub._getCalculatedType()
 
 		// RefdataValues
 
 		result.form         		= sub.form?.value
-		result.isSlaved     		= sub.isSlaved ? 'Yes' : 'No'
         result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
 		result.resource     		= sub.resource?.value
 		result.status       		= sub.status?.value
-		result.type         		= sub.type?.value
 		result.kind         		= sub.kind?.value
 		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
 		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.hasPublishComponent 	= sub.hasPublishComponent ? 'Yes' : 'No'
 
 		// References
 
@@ -210,12 +206,12 @@ class ApiSubscription {
 		}
 
 		if (isInvoiceTool) {
-			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems)
+			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems, context)
 		}
 		else {
 			Collection<CostItem> filtered = sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
 
-			result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
+			result.costItems = ApiCollectionReader.getCostItemCollection(filtered, context)
 		}
 
 		ApiToolkit.cleanUp(result, true, true)

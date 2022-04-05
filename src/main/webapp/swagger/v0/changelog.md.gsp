@@ -2,6 +2,46 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.134
+
+- updating outdated schemata
+- added new object: `Package_in_CostItem`
+- added new object: `PriceItemCollection` <%-- to implement --%>
+- added new object: `TitleGroup`
+- added new attribute: `Contact.language`
+- added new attribute: `CostItem.billingSumRounding`
+- added new attribute: `CostItem.subPkg`
+- added new attribute: `CostItem.titleGroups`
+- added new attribute: `IssueEntitlement_in_CostItem.priceItems` <%-- to implement --%>
+- added new attribute: `IssueEntitlement_in_CostItem.status`
+- added new attribute: `Subscription.hasPublishComponent`
+- added new attribute: `TitleInstancePackagePlatform.priceItems` <%-- to implement --%>
+- modified attribute: `CostItem.financialYear`: removed overhead structure
+- removed object: `TitleStub`
+- removed attribute: `Contact.type`
+- removed attribute: `IssueEntitlement.coreStatusStart`
+- removed attribute: `IssueEntitlement.coreStatusEnd`
+- removed attribute: `IssueEntitlement.coreStatus`
+- removed attribute: `IssueEntitlement.ieReason`
+- removed attribute: `Order.id`
+- removed attribute: `Package.vendorURL`
+- removed attribute: `Package_in_Subscription.vendorURL`
+- removed attribute: `Platform.normname`
+- removed attribute: `Subscription.cancellationAllowances`
+- removed attribute: `Subscription.isSlaved`
+- removed attribute: `Subscription.manualRenewalDate`
+- removed attribute: `Subscription.noticePeriod`
+- removed attribute: `Subscription.type`
+- removed attribute: `TitleInstancePackagePlatform.option`
+- removed attribute: `TitleInstancePackagePlatform.delayedOA`
+- removed attribute: `TitleInstancePackagePlatform.hybridOA`
+- removed attribute: `TitleInstancePackagePlatform.statusReason`
+- removed attribute: `TitleInstancePackagePlatform.payment`
+- removed attribute: `TitleInstancePackagePlatform.subscription`
+- removed attribute: `TitleInstancePackagePlatform.title`
+- internal refactoring
+- identifier value "Unknown" not rendered (= considered as empty)
+
 #### 0.133
 
 - removed duplicate column access_type from __/ezb/subscription__

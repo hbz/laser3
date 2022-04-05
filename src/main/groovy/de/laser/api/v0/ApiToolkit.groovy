@@ -2,7 +2,9 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.OrgSetting
+import de.laser.RefdataValue
 import de.laser.helper.Constants
+import groovy.sql.GroovyRowResult
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.RandomStringUtils
 import org.springframework.web.context.request.RequestAttributes
@@ -231,5 +233,31 @@ class ApiToolkit {
         }
 
         [identifier, timestamp]
+    }
+
+    static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows) {
+        Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
+        priceItemRows.each { GroovyRowResult piRow ->
+            Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
+            if(!priceItemMap)
+                priceItemMap = [:]
+            if(piRow['pi_list_currency']) {
+                priceItemMap.put(piRow['pi_list_currency'], piRow)
+                priceItems.put(piRow['pi_ie_fk'], priceItemMap)
+            }
+        }
+        priceItems
+    }
+
+    static Map<Long, List<GroovyRowResult>> preprocessIdentifierRows(List<GroovyRowResult> identifierRows) {
+        Map<Long, List<GroovyRowResult>> identifiers = [:]
+        identifierRows.each { GroovyRowResult idRow ->
+            List<GroovyRowResult> idList = identifiers.get(idRow['id_tipp_fk'])
+            if(!idList)
+                idList = []
+            idList << idRow
+            identifiers.put(idRow['id_tipp_fk'], idList)
+        }
+        identifiers
     }
 }

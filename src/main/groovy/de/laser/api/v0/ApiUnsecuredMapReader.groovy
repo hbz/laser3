@@ -12,6 +12,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
 import de.laser.titles.TitleInstance
+import groovy.sql.GroovyRowResult
 import groovy.util.logging.Slf4j
 
 /**
@@ -108,6 +109,31 @@ class ApiUnsecuredMapReader {
     }
 
     /**
+     * Returns the essential information for the given package for API output
+     * @param pkg the {@link Package} called for API
+     * @return Map<String, Object> reflecting the package details
+     */
+    static Map<String, Object> getPackageStubMapWithSQL(GroovyRowResult pkg) {
+        if (!pkg) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = pkg['pkg_guid']
+        result.name         = pkg['pkg_name']
+        result.gokbId       = pkg['pkg_gokb_id']
+
+        // References
+        List<Map<String, Object>> identifiers = []
+        pkg['ids'].each { idRow ->
+            identifiers << [namespace: idRow['idns_ns'], value: idRow['id_value']]
+        }
+        result.identifiers          = identifiers       // de.laser.Identifier
+
+        return ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
      * Returns the essential information for the given platform for API output
      * @param pform the {@link Platform} called for API
      * @return Map<String, Object> reflecting the platform details
@@ -121,8 +147,26 @@ class ApiUnsecuredMapReader {
         result.globalUID    = pform.globalUID
         result.gokbId       = pform.gokbId
         result.name         = pform.name
-        result.normname     = pform.normname
         result.primaryUrl   = pform.primaryUrl
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Returns the essential information for the given platform for API output
+     * @param pform the {@link Platform} called for API
+     * @return Map<String, Object> reflecting the platform details
+     */
+    static Map<String, Object> getPlatformStubMapWithSQL(GroovyRowResult pform) {
+        if (!pform) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = pform['plat_guid']
+        result.gokbId       = pform['plat_gokb_id']
+        result.name         = pform['plat_name']
+        result.primaryUrl   = pform['plat_primary_url']
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -144,6 +188,7 @@ class ApiUnsecuredMapReader {
         result.startDate        = ApiToolkit.formatInternalDate(sub.startDate)
         result.endDate          = ApiToolkit.formatInternalDate(sub.endDate)
 
+
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
 
@@ -155,6 +200,7 @@ class ApiUnsecuredMapReader {
      * @param tipp the {@link TitleInstancePackagePlatform} called for API
      * @return Map<String, Object> reflecting the title details
      */
+    @Deprecated
     static Map<String, Object> getTitleStubMap(TitleInstancePackagePlatform tipp) {
         if (!tipp) {
             return null
@@ -187,13 +233,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.id                  = invoice.id
-        result.dateOfPayment       = ApiToolkit.formatInternalDate(invoice.dateOfPayment)
-        result.dateOfInvoice       = ApiToolkit.formatInternalDate(invoice.dateOfInvoice)
-        result.datePassedToFinance = ApiToolkit.formatInternalDate(invoice.datePassedToFinance)
-        result.endDate             = ApiToolkit.formatInternalDate(invoice.endDate)
         result.invoiceNumber       = invoice.invoiceNumber
-        result.startDate           = ApiToolkit.formatInternalDate(invoice.startDate)
         result.lastUpdated         = ApiToolkit.formatInternalDate(invoice.lastUpdated)
 
         // References
@@ -238,7 +278,6 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.id           = order.id
         result.orderNumber  = order.orderNumber
         result.lastUpdated  = ApiToolkit.formatInternalDate(order.lastUpdated)
 
