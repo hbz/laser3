@@ -3,7 +3,6 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.MessageService
 import de.laser.helper.AppUtils
 import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
@@ -64,7 +63,6 @@ class AdminController  {
     DeletionService deletionService
     FilterService filterService
     GenericOIDService genericOIDService
-    MessageService messageService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
@@ -212,16 +210,6 @@ class AdminController  {
             }
         }
         result
-    }
-
-    /**
-     * Lists the differences in the implementation among the servers. The differences are written in the Groovy
-     * server page directly
-     */
-    @Secured(['ROLE_ADMIN'])
-    def serverDifferences() {
-      Map<String, Object> result = [:]
-      result
     }
 
     @Deprecated
@@ -841,7 +829,6 @@ class AdminController  {
     @Deprecated
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {
-    Map<String, Object> result = [:]
     if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
 
             String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
@@ -855,8 +842,7 @@ class AdminController  {
         }
 
         redirect(action:'manageContentItems')
-
-        result
+        return
     }
 
     @Deprecated
@@ -879,7 +865,6 @@ class AdminController  {
             if ( request.method.equalsIgnoreCase("post")) {
                 contentItem.content = params.content
                 contentItem.save()
-                messageService.update(key,locale) // TODO: refactoring legacy
                 redirect(action:'manageContentItems')
             }
         }

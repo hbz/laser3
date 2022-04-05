@@ -10,6 +10,7 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
 
+// not ready for use
 @Deprecated
 class IssueEntitlementFilter extends BaseFilter {
 

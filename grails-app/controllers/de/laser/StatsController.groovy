@@ -22,7 +22,7 @@ select distinct(o), count(u)
 from Org as o, User as u, UserOrg as uo 
 where uo.user = u 
 and uo.org = o
-group by o
+group by o order by o.sortname, o.shortname
 ''');
 
     result.instStats.each { r ->
@@ -35,7 +35,7 @@ from Org as o, Subscription as s, OrgRole as orl
 where orl.org = o 
 and orl.sub = s 
 and orl.roleType.value = 'Subscriber'
-group by o
+group by o order by o.sortname, o.shortname
 ''');
 
     result.soStats.each { r ->
@@ -48,7 +48,7 @@ from Org as o, Subscription as s, OrgRole as orl
 where orl.org = o 
 and orl.sub = s 
 and orl.roleType.value = 'Subscriber'
-group by o
+group by o order by o.sortname, o.shortname
 ''');
     result.currentsoStats.each { r ->
       storeOrgInfo(result.orginfo, r[0], 'currentSoCount', r[1]);
@@ -62,7 +62,7 @@ from Org as o, License as l, OrgRole as orl
 where orl.org = o 
 and orl.lic = l 
 and orl.roleType.value = 'Licensee'
-group by o
+group by o order by o.sortname, o.shortname
 ''');
     result.lStats.each { r ->
       storeOrgInfo(result.orginfo, r[0], 'licCount', r[1]);
@@ -75,7 +75,7 @@ from Org as o, License as l, OrgRole as orl
 where orl.org = o 
 and orl.lic = l 
 and orl.roleType.value = 'Licensee'
-group by o
+group by o order by o.sortname, o.shortname
 ''');
     result.currentlStats.each { r ->
       storeOrgInfo(result.orginfo, r[0], 'currentLicCount', r[1]);

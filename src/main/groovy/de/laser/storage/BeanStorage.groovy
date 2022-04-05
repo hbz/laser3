@@ -1,6 +1,7 @@
 package de.laser.storage
 
 import com.k_int.kbplus.ChangeNotificationService
+import com.k_int.kbplus.ESWrapperService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
@@ -81,6 +82,9 @@ class BeanStorage {
     }
     static EscapeService getEscapeService() {
         Holders.grailsApplication.mainContext.getBean('escapeService') as EscapeService
+    }
+    static ESWrapperService getESWrapperService() {
+        Holders.grailsApplication.mainContext.getBean('ESWrapperService') as ESWrapperService
     }
     static FinanceControllerService getFinanceControllerService() {
         Holders.grailsApplication.mainContext.getBean('financeControllerService') as FinanceControllerService

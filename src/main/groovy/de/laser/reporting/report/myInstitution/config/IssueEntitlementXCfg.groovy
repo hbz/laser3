@@ -6,6 +6,7 @@ import de.laser.Platform
 import de.laser.Subscription
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
+// not ready for use
 @Deprecated
 class IssueEntitlementXCfg extends BaseConfig {
 

@@ -15,6 +15,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+// not ready for use
 @Deprecated
 class IssueEntitlementQuery extends BaseQuery {
 

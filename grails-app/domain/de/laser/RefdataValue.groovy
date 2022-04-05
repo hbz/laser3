@@ -244,7 +244,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             semesterKey = "w${sdf.format(now.getTime())}/${sdf.format(adjacentYear.getTime())}"
         }
         else {
-            semesterKey = "s${now.getTime().format("yy")}"
+            semesterKey = "s${sdf.format(now.getTime())}"
         }
         RefdataValue.getByValue(semesterKey)
     }
