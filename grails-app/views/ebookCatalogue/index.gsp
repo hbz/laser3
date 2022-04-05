@@ -41,13 +41,13 @@
                     <div class="field is-grouped">
                         <g:each in="${subkinds}" var="subKind">
 
-                            <g:if test="${subKind.value == 'National Licence'}">
+                            <g:if test="${subKind.value == RDStore.SUBSCRIPTION_KIND_NATIONAL.value}">
                                 <div class="control js-natLic">
                             </g:if>
-                            <g:elseif test="${subKind.value == 'Alliance Licence'}">
+                            <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_ALLIANCE.value}">
                                 <div class="control js-allLic">
                             </g:elseif>
-                            <g:elseif test="${subKind.value == 'Consortial Licence'}">
+                            <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_CONSORTIAL.value}">
                                 <div class="control js-consLic">
                             </g:elseif>
                             <g:else>

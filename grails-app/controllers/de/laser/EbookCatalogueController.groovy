@@ -39,7 +39,7 @@ class EbookCatalogueController {
 
             String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
-            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and lower(s.type.value) != 'local subscription'"
             query += "      and exists "
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
@@ -207,7 +207,7 @@ class EbookCatalogueController {
             session.setAttribute('ebc_allSubscriptions',
                     Subscription.executeQuery(
                     """select distinct s from Subscription as s where (
-                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local licence'
+                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local subscription'
                             and exists 
                                 ( select scp from s.propertySet as scp where
                                     scp.type = :gasco and lower(scp.refValue.value) = 'yes' )

@@ -8,11 +8,10 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://repo.grails.org/grails/core' }
-
-        // https://github.com/n0mer/gradle-git-properties/issues/195
-        configurations.all {
-            resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
-        }
+    }
+    // https://github.com/n0mer/gradle-git-properties/issues/195
+    configurations.all {
+        resolutionStrategy.force "org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r"
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsVersion

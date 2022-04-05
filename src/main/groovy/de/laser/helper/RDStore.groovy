@@ -177,14 +177,14 @@ class RDStore {
     public static final SURVEY_TYPE_TITLE_SELECTION         = getRefdataValue('selection', RDConstants.SURVEY_TYPE)
     public static final SURVEY_TYPE_SUBSCRIPTION            = getRefdataValue('subscription survey', RDConstants.SURVEY_TYPE)
 
-    public static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_TYPE)
-    public static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_TYPE)
+    public static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Subscription', RDConstants.SUBSCRIPTION_TYPE)
+    public static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Subscription', RDConstants.SUBSCRIPTION_TYPE)
     public static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription', RDConstants.SUBSCRIPTION_TYPE)
 
-    public static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Licence', RDConstants.SUBSCRIPTION_KIND)
-    public static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Licence', RDConstants.SUBSCRIPTION_KIND)
-    public static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Licence', RDConstants.SUBSCRIPTION_KIND)
-    public static final SUBSCRIPTION_KIND_LOCAL            = getRefdataValue('Local Licence', RDConstants.SUBSCRIPTION_KIND)
+    public static final SUBSCRIPTION_KIND_CONSORTIAL       = getRefdataValue('Consortial Subscription', RDConstants.SUBSCRIPTION_KIND)
+    public static final SUBSCRIPTION_KIND_ALLIANCE   		= getRefdataValue('Alliance Subscription', RDConstants.SUBSCRIPTION_KIND)
+    public static final SUBSCRIPTION_KIND_NATIONAL   		= getRefdataValue('National Subscription', RDConstants.SUBSCRIPTION_KIND)
+    public static final SUBSCRIPTION_KIND_LOCAL            = getRefdataValue('Local Subscription', RDConstants.SUBSCRIPTION_KIND)
 
     public static final TASK_STATUS_OPEN            = getRefdataValue('Open', RDConstants.TASK_STATUS)
     public static final TASK_STATUS_DONE            = getRefdataValue('Done', RDConstants.TASK_STATUS)

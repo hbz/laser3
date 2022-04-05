@@ -108,7 +108,7 @@ class PublicController {
 
             String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
-            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and lower(s.type.value) != 'local subscription'"
             query += "      and exists "
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"

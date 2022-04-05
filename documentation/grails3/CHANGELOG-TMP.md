@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      01.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen-500er korrigiert
+
+--      01.04.2022  dev     2.3         Andreas Feature     Glattziehen der Referenzwert-Schlüssel
+
 --      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel
 
 4171    28.03.2022  rc-2.2  2.2.12      Moe     Bug         Umfragen auch bei abgelaufener Lizenz
