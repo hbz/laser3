@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.storage.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 
 <laser:serviceInjection />
 <div id="addressFields1">

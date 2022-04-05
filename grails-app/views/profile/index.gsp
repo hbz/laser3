@@ -1,5 +1,5 @@
 <%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS" %>
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

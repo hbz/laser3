@@ -6,7 +6,7 @@ import de.laser.ctrl.DocstoreControllerService
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.springframework.context.MessageSource

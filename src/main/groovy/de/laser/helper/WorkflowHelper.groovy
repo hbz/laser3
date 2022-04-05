@@ -1,6 +1,7 @@
 package de.laser.helper
 
 import de.laser.RefdataValue
+import de.laser.storage.RDStore
 
 class WorkflowHelper {
 

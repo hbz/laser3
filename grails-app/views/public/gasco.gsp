@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.helper.RDConstants;" %>
+<%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <!doctype html>
 <html>

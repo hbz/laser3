@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.storage.RDStore; java.text.SimpleDateFormat" %>
 <%
     def result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")

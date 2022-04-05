@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.storage.RDStore;" %>
 <div class="la-icon-list">
 <semui:listIcon type="${tipp.titleType}"/>
 <g:if test="${ie}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
 <semui:actionsDropdown>

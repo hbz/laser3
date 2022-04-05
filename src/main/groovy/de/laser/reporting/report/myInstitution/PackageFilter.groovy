@@ -8,7 +8,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig

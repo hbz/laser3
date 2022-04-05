@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient

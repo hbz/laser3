@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.Role
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.NumberFormat

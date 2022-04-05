@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.DocContext" %>
 <!doctype html>
 <html>
 <head>

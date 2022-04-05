@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders

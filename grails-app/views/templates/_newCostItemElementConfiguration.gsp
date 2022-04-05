@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.RefdataValue" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.RefdataValue" %>
 <semui:modal id="ciecModal" message="costItemElementConfiguration.create_new.label">
 
     <g:form class="ui form" url="${formUrl}" method="POST">

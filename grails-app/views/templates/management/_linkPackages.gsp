@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">

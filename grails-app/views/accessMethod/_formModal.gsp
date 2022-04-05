@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Address;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Address;de.laser.PlatformAccessMethod;de.laser.storage.RDConstants" %>
 
 <semui:modal id="accessMethodFormModal" text="${message(code: 'default.add.label', args: [message(code: 'accessMethod.label')])}">
     <g:form class="ui form" url="[controller: 'accessMethod', action: 'create']" method="POST">

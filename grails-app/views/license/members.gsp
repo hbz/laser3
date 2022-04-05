@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.Person; de.laser.Subscription" %>
+<%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
 <laser:serviceInjection />
 
 <!doctype html>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>

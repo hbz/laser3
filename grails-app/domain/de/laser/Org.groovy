@@ -11,8 +11,8 @@ import de.laser.storage.BeanStorage
 import de.laser.properties.OrgProperty
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.annotations.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import groovy.util.logging.Slf4j

@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 

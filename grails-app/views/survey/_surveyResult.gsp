@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.storage.RDStore;" %>
 <g:if test="${surResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
     <g:message code="surveyOrg.perennialTerm.available"/>

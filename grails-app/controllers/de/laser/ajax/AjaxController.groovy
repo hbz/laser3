@@ -13,12 +13,13 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver

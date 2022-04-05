@@ -3,8 +3,8 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink

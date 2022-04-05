@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.*
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
 import org.springframework.web.context.request.RequestContextHolder
 

@@ -1,7 +1,7 @@
 package de.laser.titles
 
 import de.laser.exceptions.CreationException
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import org.springframework.dao.DuplicateKeyException
 
 /**

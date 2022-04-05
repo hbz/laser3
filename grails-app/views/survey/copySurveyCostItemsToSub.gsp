@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 
 <g:set var="surveyService" bean="surveyService"/>
@@ -97,7 +97,7 @@ ${surveyInfo.name}
             <tbody>
             <g:each in="${participantsList}" var="participant" status="i">
                 <g:set var="costElement"
-                       value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.helper.RDConstants.COST_ITEM_ELEMENT)}"/>
+                       value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.storage.RDConstants.COST_ITEM_ELEMENT)}"/>
 
                 <g:if test="${participant.surveyCostItem}">
                     <g:set var="costElement"

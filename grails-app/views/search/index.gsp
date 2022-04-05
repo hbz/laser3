@@ -1,4 +1,4 @@
-<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.helper.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 

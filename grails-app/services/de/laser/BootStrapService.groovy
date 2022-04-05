@@ -4,7 +4,7 @@ import com.opencsv.CSVReader
 import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting

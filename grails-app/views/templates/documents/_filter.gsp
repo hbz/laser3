@@ -1,4 +1,4 @@
-<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
+<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <%
     List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
     List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable

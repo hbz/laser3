@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore;" %>
 <laser:serviceInjection />
 
 <semui:subNav actionName="${actionName}">
@@ -30,7 +30,7 @@
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']) && subscription.instanceOf)}">
         <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
-    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == de.laser.storage.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">

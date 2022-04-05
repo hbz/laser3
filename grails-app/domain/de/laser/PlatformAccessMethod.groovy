@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractBase
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 

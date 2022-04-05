@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<%@page import="de.laser.helper.RDStore;de.laser.finance.CostItem"%>
+<%@page import="de.laser.storage.RDStore;de.laser.finance.CostItem"%>
 <laser:serviceInjection />
 <%
     int colspan = 2
@@ -137,7 +137,7 @@
                         </g:elseif>
                     </td>
                     <td>
-                        <semui:xEditableRefData config="${de.laser.helper.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
+                        <semui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>

@@ -6,8 +6,8 @@ import com.k_int.kbplus.PackageService
 import de.laser.exceptions.SyncException
 import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
 import de.laser.titles.TitleInstance

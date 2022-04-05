@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <semui:form>
     <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">

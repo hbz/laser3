@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform;de.laser.RefdataCategory;de.laser.helper.RDConstants;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.Platform;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.TitleInstancePackagePlatform" %>
 
 <div class="field ${hasErrors(bean: platformInstance, field: 'name', 'error')} ">
 	<label for="name">

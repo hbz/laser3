@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>

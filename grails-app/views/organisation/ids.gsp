@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 

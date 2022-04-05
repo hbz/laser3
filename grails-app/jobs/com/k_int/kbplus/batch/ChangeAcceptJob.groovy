@@ -3,7 +3,7 @@ package com.k_int.kbplus.batch
 import com.k_int.kbplus.PendingChangeService
 import de.laser.PendingChange
 import de.laser.system.SystemEvent
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.base.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {

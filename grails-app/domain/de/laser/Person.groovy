@@ -4,8 +4,8 @@ package de.laser
 import de.laser.properties.PersonProperty
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log

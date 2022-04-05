@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">

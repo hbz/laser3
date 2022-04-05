@@ -4,8 +4,8 @@ import com.k_int.kbplus.ExportService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.helper.AppUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource

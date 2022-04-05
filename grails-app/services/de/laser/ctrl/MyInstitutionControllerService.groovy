@@ -4,7 +4,7 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.helper.ProfilerUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.system.SystemAnnouncement
 import de.laser.workflow.WfWorkflow

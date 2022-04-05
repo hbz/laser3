@@ -12,7 +12,7 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.helper.ConfigUtils
 
 import grails.gorm.transactions.Transactional

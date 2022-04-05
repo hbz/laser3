@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.RefdataCategory; de.laser.Person;de.laser.Contact;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Org;de.laser.RefdataCategory; de.laser.Person;de.laser.Contact;de.laser.storage.RDConstants" %>
 
 <semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">

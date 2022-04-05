@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.storage.RDConstants; de.laser.properties.PropertyDefinition" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''

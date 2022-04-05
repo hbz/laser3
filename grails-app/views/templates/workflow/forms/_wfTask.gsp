@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 

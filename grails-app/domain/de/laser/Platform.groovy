@@ -7,8 +7,8 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.annotations.RefdataAnnotation
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

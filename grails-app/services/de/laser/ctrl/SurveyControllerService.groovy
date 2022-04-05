@@ -15,7 +15,7 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.TaskService
 import de.laser.auth.User
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.converters.JSON

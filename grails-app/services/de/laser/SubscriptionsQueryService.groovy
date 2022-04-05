@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder

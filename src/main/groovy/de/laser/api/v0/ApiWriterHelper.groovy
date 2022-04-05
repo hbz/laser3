@@ -16,7 +16,7 @@ import de.laser.Contact
 import de.laser.Person
 import de.laser.api.v0.entities.ApiOrg
 import de.laser.helper.Constants
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 
 @Deprecated

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Address" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Address" %>
 <!doctype html>
 <html>
 	<head>

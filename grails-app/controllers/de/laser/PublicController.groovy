@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.ConfigUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 

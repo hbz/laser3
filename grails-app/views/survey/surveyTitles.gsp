@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -161,7 +161,7 @@
 
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium"
-                                                            config="${de.laser.helper.RDConstants.IE_MEDIUM}"
+                                                            config="${de.laser.storage.RDConstants.IE_MEDIUM}"
                                                             overwriteEditable="${false}"/>
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">

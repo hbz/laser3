@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.storage.RDStore;" %>
 <semui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 

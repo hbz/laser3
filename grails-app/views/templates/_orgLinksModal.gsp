@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <semui:modal id="osel_add_modal" message="template.orgLinksModal">
 
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return JSPC.app.validateAddOrgRole();">

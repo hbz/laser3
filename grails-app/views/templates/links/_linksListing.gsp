@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.License" %>
+<%@page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
     <h2 class="ui header">

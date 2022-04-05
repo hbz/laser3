@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.gorm.transactions.Transactional

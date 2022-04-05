@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">

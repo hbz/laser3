@@ -16,13 +16,15 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
-import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
+import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -2188,7 +2190,8 @@ class SubscriptionControllerService {
                         String unidentifiedTitles = result.identifiers.unidentified.join(", ")
                         String escapedFileName
                         try {
-                            escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                            // escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                            escapedFileName = StringEscapeUtils.escapeHtml(result.identifiers.filename)
                         }
                         catch (Exception | Error e) {
                             log.error(e.printStackTrace())

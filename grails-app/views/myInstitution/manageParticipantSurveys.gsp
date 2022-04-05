@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.SurveyInfo; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.SurveyResult" %>
+<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.SurveyInfo; de.laser.SurveyConfig; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -67,7 +67,7 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
+                              from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.type}"

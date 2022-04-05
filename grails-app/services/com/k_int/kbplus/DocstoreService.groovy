@@ -7,7 +7,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.SurveyConfig
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import org.apache.commons.io.IOUtils

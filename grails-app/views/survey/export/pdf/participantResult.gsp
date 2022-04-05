@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org; de.laser.DocContext; de.laser.SurveyOrg;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org; de.laser.DocContext; de.laser.SurveyOrg;" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>

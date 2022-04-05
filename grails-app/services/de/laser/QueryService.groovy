@@ -3,7 +3,7 @@ package de.laser
 import de.laser.UserSetting
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.*

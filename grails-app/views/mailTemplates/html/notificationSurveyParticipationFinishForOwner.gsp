@@ -15,7 +15,7 @@
 
 <g:set var="userName" value="${raw(user.getDisplayName())}"/>
 <g:set var="orgName" value="${raw(org.name)}"/>
-<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value}"/>
+<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl" value="${"/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 

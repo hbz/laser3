@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowService" %>
 
 <semui:modal id="modalInstantiateWorkflow" text="Workflow für '${subscription.name}' erstellen">
 

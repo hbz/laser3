@@ -15,14 +15,14 @@ import de.laser.base.AbstractReport
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource

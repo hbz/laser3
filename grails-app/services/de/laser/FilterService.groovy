@@ -3,8 +3,8 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

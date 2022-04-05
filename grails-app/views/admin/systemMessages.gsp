@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage" %>
 <!doctype html>
 <html>
 <head>

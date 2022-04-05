@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 

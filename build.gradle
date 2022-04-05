@@ -40,6 +40,7 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
+apply plugin: 'org.grails.grails-doc'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'com.bertramlabs.asset-pipeline'
 // apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
@@ -112,7 +113,6 @@ dependencies {
 //    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:3.14.0"  // -- nn --
 
     // --------------------------------------------------
-    compile 'org.grails:grails-docs:4.0.13'
 
     // https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client
     compile 'org.elasticsearch:elasticsearch:7.4.2'
@@ -137,7 +137,9 @@ dependencies {
     // https://github.com/rlovtangen/wkhtmltopdf
     compile 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache
     compile 'org.hibernate:hibernate-ehcache:5.4.33.Final'    // from 5.1.16.Final
+    // https://mvnrepository.com/artifact/net.sf.ehcache/ehcache
     compile 'net.sf.ehcache:ehcache:2.10.9.2'                 // from 2.10.6
 //    compile 'org.hibernate:hibernate-jcache:5.4.33.Final'       // instead of hibernate-ehcache:5.1.16.Final
 //    compile 'org.ehcache:ehcache:3.9.9'                         // instead of net.sf.ehcache:ehcache:2.10.9.2

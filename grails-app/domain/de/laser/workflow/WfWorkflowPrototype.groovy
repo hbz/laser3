@@ -4,8 +4,8 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataAnnotation
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 
 /**
  * Represents a prototype of a workflow which may be implemented in different contexts (for different {@link de.laser.Org}s and {@link Subscription}s)

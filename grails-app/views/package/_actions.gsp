@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="user" value="${contextService.getUser()}"/>

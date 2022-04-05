@@ -2,7 +2,7 @@ package de.laser.workflow
 
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 
 /**
  * Represents a task in a workflow, containing a {@link WfCondition} to solve it. A task may be in one of the following status ({@link RDConstants#WF_TASK_STATUS}):

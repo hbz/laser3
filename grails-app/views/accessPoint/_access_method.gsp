@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 <div class="field required">
     <label for="accessMethod">${message(code: 'accessMethod.label')} ${message(code: 'messageRequiredField')}</label>
     <laser:select class="ui dropdown" id="accessMethod" name="accessMethod"

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <table class="ui table">
     <g:each in="${roleLinks}" var="role">

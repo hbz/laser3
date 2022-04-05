@@ -6,7 +6,7 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper

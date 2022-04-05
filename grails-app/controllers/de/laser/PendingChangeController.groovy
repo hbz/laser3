@@ -5,7 +5,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.annotations.DebugAnnotation
 import de.laser.exceptions.ChangeAcceptException
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 

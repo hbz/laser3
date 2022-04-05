@@ -1,7 +1,7 @@
 package de.laser.workflow
 
 
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 
 /**
  * Represents a prototype task of a workflow. For the concrete representation (= the actual task to solve), see {@link WfTask}

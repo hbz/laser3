@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.Subscription; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.License" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
 <laser:serviceInjection/>
 <g:if test="${!(sourceObject && targetObject)}">
     <% if (params) {

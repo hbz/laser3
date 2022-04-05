@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty;" %>
+<%@ page import="de.laser.Subscription; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />

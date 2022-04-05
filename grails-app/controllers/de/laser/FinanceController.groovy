@@ -11,7 +11,7 @@ import de.laser.finance.CostItemGroup
 import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

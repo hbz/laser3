@@ -6,8 +6,8 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.helper.SqlDateUtils
 import grails.plugins.mail.MailService

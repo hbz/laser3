@@ -1,4 +1,4 @@
-<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.helper.RDStore;de.laser.helper.RDConstants" %>
+<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>

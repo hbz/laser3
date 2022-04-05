@@ -1,4 +1,4 @@
-<%@page import="de.laser.interfaces.CalculatedType; de.laser.helper.RDStore" %>
+<%@page import="de.laser.interfaces.CalculatedType; de.laser.storage.RDStore" %>
 
 
 <g:if test="${data.billingSums}">

@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 
 /**
  * This class represents a participation of an institution at a survey. As every object being surveyed has its own configuration,

@@ -29,8 +29,8 @@ import de.laser.PendingChangeConfiguration
 import de.laser.TIPPCoverage
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.titles.TitleHistoryEvent
 import grails.converters.JSON

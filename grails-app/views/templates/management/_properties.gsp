@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
 
     <g:set var="allProperties"

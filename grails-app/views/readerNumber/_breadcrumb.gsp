@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.storage.RDStore" %>
 <semui:breadcrumbs>
     <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getAllOrgTypeIds())}">
         <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />

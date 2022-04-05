@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
+<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfig; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
 <laser:serviceInjection/>
 

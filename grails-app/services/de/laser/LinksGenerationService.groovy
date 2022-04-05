@@ -5,8 +5,8 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource

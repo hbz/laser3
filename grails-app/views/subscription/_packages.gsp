@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage" %>
+<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage" %>
 <laser:serviceInjection />
 
 <div class="ui card">

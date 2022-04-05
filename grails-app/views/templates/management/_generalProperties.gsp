@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">

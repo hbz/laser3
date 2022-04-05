@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.storage.RDStore" %>
     <semui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">

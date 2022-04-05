@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
 <html>
     <head>

@@ -4,7 +4,7 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import org.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder

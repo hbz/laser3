@@ -4,8 +4,8 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.titles.TitleInstance
  
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils

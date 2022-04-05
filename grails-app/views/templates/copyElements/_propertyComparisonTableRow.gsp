@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
+<%@ page import="de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>

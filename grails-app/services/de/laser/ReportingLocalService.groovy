@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.ctrl.FinanceControllerService
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.local.SubscriptionReport

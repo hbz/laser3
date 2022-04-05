@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Task;de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <semui:modal id="modalEditTask" message="task.edit" isEditModal="true" >

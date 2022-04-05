@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.Org; de.laser.storage.RDStore;" %>
 <laser:serviceInjection />
 
 <g:render template="/subscription/reporting/details/timeline/base.part1" />

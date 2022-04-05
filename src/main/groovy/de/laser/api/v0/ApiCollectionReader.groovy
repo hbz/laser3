@@ -19,7 +19,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.IssueEntitlementCoverage
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
 /**

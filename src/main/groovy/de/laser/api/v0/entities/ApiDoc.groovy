@@ -6,7 +6,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.api.v0.*
 import de.laser.helper.Constants
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
 /**

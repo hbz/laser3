@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.Org;de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
 
 <% /*
 <div class="field ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">

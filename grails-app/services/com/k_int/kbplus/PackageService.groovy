@@ -6,7 +6,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.PriceItem
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.sql.GroovyRowResult

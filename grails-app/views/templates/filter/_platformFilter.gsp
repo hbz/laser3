@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">

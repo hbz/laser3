@@ -10,8 +10,8 @@ import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.api.v0.*
 import de.laser.helper.Constants
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 

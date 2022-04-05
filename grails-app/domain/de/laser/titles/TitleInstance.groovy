@@ -8,7 +8,7 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils

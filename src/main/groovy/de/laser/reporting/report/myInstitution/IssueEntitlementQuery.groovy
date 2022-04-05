@@ -8,7 +8,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap

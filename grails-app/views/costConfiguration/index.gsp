@@ -45,7 +45,7 @@
                         <tr>
                             <td>${ciec.costItemElement.getI10n('value')}</td>
                             <td>
-                                <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.helper.RDConstants.COST_CONFIGURATION}"/>
+                                <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.storage.RDConstants.COST_CONFIGURATION}"/>
                             </td>
                             <g:if test="${editable}">
                                 <td>

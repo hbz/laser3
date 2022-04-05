@@ -24,6 +24,8 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.storage.BeanStorage
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer
@@ -179,7 +181,7 @@ class MyInstitutionController  {
         pu.setBenchmark("before loading subscription ids")
 
         String instanceFilter = ""
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],current:RDStore.SUBSCRIPTION_CURRENT,expired:RDStore.SUBSCRIPTION_EXPIRED]
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
         if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)

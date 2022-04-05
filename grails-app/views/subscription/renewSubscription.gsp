@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AuditConfig;de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

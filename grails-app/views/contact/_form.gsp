@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Contact;de.laser.Person;de.laser.helper.RDConstants;de.laser.RefdataCategory;de.laser.Org" %>
+<%@ page import="de.laser.Contact;de.laser.Person;de.laser.storage.RDConstants;de.laser.RefdataCategory;de.laser.Org" %>
 
 
 

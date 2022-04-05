@@ -13,7 +13,7 @@ import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointEzproxy
 import de.laser.oap.OrgAccessPointOA

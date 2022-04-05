@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.storage.RDStore;" %>
 <br />
 
 <g:render template="/templates/filter/javascript" />

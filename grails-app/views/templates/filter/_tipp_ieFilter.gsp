@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <g:if test="${controllerName == 'package'}">
     <g:set var="seriesNames"

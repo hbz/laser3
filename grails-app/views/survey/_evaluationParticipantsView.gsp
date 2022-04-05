@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyResult; de.laser.Org; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 
 <g:if test="${surveyConfig}">
 

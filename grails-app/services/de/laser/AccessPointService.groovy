@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional

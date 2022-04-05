@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.helper.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -118,7 +118,7 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
+                              from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
                               value="${params.type}"
@@ -130,7 +130,7 @@
                 <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_STATUS)}"
+                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_STATUS)}"
                             var="status">
                         <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
                                 value="${status.id}" title="${status.getI10n('value')}">

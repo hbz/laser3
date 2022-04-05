@@ -3,7 +3,7 @@ import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 
 databaseChangeLog = {
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.helper.DateUtils;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.helper.DateUtils;" %>
 <laser:serviceInjection/>
 
 <div class="ui card">

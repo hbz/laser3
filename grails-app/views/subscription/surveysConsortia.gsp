@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.interfaces.CalculatedType; de.laser.SurveyOrg; de.laser.SurveyResult" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.SurveyOrg; de.laser.SurveyResult" %>
 <laser:serviceInjection/>
 
 <!doctype html>

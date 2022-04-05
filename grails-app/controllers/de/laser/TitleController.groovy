@@ -7,7 +7,7 @@ import de.laser.titles.TitleInstance
 import de.laser.auth.User
  
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured

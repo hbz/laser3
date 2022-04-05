@@ -2,7 +2,7 @@ package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
 import de.laser.Platform
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class PlatformXCfg extends BaseConfig {

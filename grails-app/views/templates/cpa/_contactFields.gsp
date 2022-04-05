@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Contact; de.laser.helper.RDConstants; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
 
    <div id="contactFields" class="three fields">

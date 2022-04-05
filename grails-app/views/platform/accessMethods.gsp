@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform;de.laser.PlatformAccessMethod;de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.Platform;de.laser.PlatformAccessMethod;de.laser.storage.RDConstants" %>
 <!doctype html>
 <html>
     <head>

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.titles.TitleInstance
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
 /**

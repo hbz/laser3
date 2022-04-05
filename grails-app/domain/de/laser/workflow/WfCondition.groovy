@@ -1,6 +1,6 @@
 package de.laser.workflow
 
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 
 /**
  * A workflow condition, mapping a trigger for a workflow task ({@link WfTask})

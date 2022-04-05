@@ -10,7 +10,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition

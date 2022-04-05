@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_genericFilter -->
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">

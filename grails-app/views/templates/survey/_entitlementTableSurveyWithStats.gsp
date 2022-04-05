@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform;" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
 

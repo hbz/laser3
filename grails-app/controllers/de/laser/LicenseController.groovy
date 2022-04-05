@@ -8,7 +8,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
 import de.laser.auth.UserOrg
@@ -17,7 +17,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.ProfilerUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
 import grails.plugin.springsecurity.annotation.Secured

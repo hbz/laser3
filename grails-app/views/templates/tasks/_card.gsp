@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore" %>
+<%@page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>

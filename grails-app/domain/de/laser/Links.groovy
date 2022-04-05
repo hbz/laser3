@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataAnnotation
 import de.laser.exceptions.CreationException
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**

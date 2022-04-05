@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Person; de.laser.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.helper.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.Subscription; de.laser.Person; de.laser.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:set var="formService" bean="formService"/>

@@ -7,7 +7,7 @@ import de.laser.Person
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.Constants
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false

@@ -5,7 +5,7 @@ import de.laser.auth.User
  
 import de.laser.helper.AppUtils
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass

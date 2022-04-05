@@ -3,8 +3,8 @@ package de.laser
 import com.k_int.kbplus.ESWrapperService
 import de.laser.auth.User
 import de.laser.finance.*
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.system.SystemProfiler

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>
     <head>

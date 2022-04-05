@@ -189,7 +189,7 @@
                       <div class="item">
                           <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                           <div class="content">
-                              <semui:xEditableRefData owner="${t}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>
+                              <semui:xEditableRefData owner="${t}" field="status" config="${de.laser.storage.RDConstants.TIPP_STATUS}"/>
                           </div>
                       </div>
 

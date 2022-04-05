@@ -21,7 +21,7 @@
                             ${parentSuccessorSubscription.getProperty(prop.referenceField).getI10n('value')}
                         </g:if>
                         <g:elseif test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof java.lang.Boolean}">
-                            ${parentSuccessorSubscription.getProperty(prop.referenceField) ? de.laser.helper.RDStore.YN_YES.getI10n('value') : de.laser.helper.RDStore.YN_NO.getI10n('value')}
+                            ${parentSuccessorSubscription.getProperty(prop.referenceField) ? de.laser.storage.RDStore.YN_YES.getI10n('value') : de.laser.storage.RDStore.YN_NO.getI10n('value')}
                         </g:elseif>
                         <g:else>
                             ${parentSuccessorSubscription.getProperty(prop.referenceField)}

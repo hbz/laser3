@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import org.apache.commons.logging.Log

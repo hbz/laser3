@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.helper.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
+<%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
 <g:set var="compareService" bean="compareService"/>

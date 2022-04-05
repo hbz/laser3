@@ -1,5 +1,5 @@
 
-<%@ page import="de.laser.RefdataCategory; de.laser.Contact; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <!doctype html>
 <html>
 	<head>

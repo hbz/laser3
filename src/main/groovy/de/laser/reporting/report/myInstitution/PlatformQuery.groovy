@@ -2,7 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.storage.BeanStorage
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig

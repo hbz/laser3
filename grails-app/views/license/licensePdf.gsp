@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils;de.laser.Links;de.laser.helper.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.helper.RDConstants;de.laser.Contact;de.laser.Identifier" %>
+<%@ page import="de.laser.helper.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Contact;de.laser.Identifier" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>

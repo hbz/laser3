@@ -1,4 +1,4 @@
-<%@page import="de.laser.RefdataValue; de.laser.helper.RDStore" %>
+<%@page import="de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:set var="contextOrg" value="${contextService.getOrg()}" />

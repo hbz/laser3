@@ -20,6 +20,8 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
@@ -36,7 +38,6 @@ import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.core.QuartzScheduler
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
 
@@ -1180,7 +1181,7 @@ class YodaController {
                 costItems = CostItem.getAll()
             }
             else{
-                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner),RDStore.COST_ITEM_DELETED)
+                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner), RDStore.COST_ITEM_DELETED)
             }
 
             costItems.each {

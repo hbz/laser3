@@ -7,7 +7,7 @@ import de.laser.OrgSetting
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import de.laser.properties.PlatformProperty
 import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j

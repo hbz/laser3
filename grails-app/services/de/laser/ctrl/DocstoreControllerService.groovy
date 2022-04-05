@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.helper.AppUtils
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

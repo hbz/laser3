@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Task;de.laser.helper.RDConstants;de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Task;de.laser.storage.RDConstants;de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <div class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
 	<label for="license">

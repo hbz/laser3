@@ -11,7 +11,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.OrgSetting
 import de.laser.StatsTripleCursor
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 

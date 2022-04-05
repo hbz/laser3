@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <table id="subPkgPlatformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
   <tr>

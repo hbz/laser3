@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import grails.plugin.springsecurity.annotation.Secured
 

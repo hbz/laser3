@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap

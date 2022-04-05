@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:if test="${actionName == 'show'}">

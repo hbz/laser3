@@ -4,8 +4,8 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 
 /**
  * Represents a workflow. It is based on a {@link WfWorkflowPrototype} and may contain several {@link WfTask}s. A workflow is linked to a {@link Subscription} to which tasks should be done in an ordered way and owned by an

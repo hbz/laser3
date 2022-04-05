@@ -8,7 +8,7 @@ import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig

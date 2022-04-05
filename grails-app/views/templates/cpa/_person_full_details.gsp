@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.helper.RDStore; de.laser.Person; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">

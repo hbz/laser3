@@ -1,7 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.*
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import de.laser.oap.*
 import de.uni_freiburg.ub.Exception.InvalidRangeException
 import de.uni_freiburg.ub.IpRange

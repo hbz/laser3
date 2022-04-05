@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

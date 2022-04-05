@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PDStorage; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.storage.PDStorage; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/top" />

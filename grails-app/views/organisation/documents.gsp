@@ -1,4 +1,4 @@
-<%@page import="de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
+<%@page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <!doctype html>
 <html>
   <head>

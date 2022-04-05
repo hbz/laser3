@@ -2,7 +2,7 @@ package de.laser.workflow
 
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
+import de.laser.storage.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
 /**

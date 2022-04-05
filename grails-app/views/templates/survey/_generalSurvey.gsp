@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.helper.RDStore; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>

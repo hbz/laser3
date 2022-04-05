@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore;" %>
 <semui:subNav actionName="${actionName}">
 
     <semui:subNavItem controller="package" action="show" params="${[id:params.id]}" message="package.show.nav.details" />

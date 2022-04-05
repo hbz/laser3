@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

@@ -9,7 +9,7 @@ import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus

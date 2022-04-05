@@ -8,7 +8,7 @@ import de.laser.helper.AppUtils
 import de.laser.storage.BeanStorage
 import de.laser.helper.ConfigUtils
 import de.laser.helper.MigrationHelper
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 import net.sf.json.JSON
 import org.springframework.context.MessageSource
 
@@ -165,7 +165,7 @@ class SystemAnnouncement {
     private void sendMail(User user) throws Exception {
 
         MessageSource messageSource = BeanStorage.getMessageSource()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
