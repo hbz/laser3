@@ -16,9 +16,6 @@ buildscript {
     }
 }
 
-version '2.2.10'
-group 'laser2'
-
 apply plugin:'eclipse'
 apply plugin:'idea'
 apply plugin:'war'
@@ -29,7 +26,7 @@ apply plugin:'com.gorylenko.gradle-git-properties'
 
 // --- config
 
-version '2.2.12'
+version '2.3'
 group 'laser2'
 
 repositories {
