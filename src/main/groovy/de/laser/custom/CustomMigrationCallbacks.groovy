@@ -2,6 +2,7 @@ package de.laser.custom
 
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
+import de.laser.storage.BeanStorage
 import grails.core.GrailsApplication
 import liquibase.Liquibase
 import liquibase.changelog.ChangeSet
@@ -18,6 +19,34 @@ class CustomMigrationCallbacks {
 	}
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
+
+		// TODO : deactivate after migration -->
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStorage.getDataSource())
+
+		int count1 = (sql.rows("select * from databasechangelog where filename like 'done/pre%'")).size()
+		int count2 = (sql.rows("select * from databasechangelog where filename like 'changelog-2021-%'")).size()
+		int count3 = (sql.rows("select * from databasechangelog where filename like 'changelog-2022-%'")).size()
+
+		if (count1 || count2 || count3) {
+			sql.withTransaction {
+				println '--------------------------------------------------------------------------------'
+				println '-     Cleanup database migration table'
+				println '-        done/pre% -> ' + count1
+				println '-           updating pre1.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre1.0/', 'legacy/') where filename like 'done/pre1.0/%'")
+				println '-           updating pre2.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre2.0/', 'legacy/') where filename like 'done/pre2.0/%'")
+
+				println '-        changelog-2021-% -> ' + count2
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = concat('2021/', filename) where filename like 'changelog-2021-%'")
+
+				println '-        changelog-2022-% -> ' + count3
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = concat('2022/', filename) where filename like 'changelog-2022-%'")
+
+				sql.commit()
+				println '--------------------------------------------------------------------------------'
+			}
+		}
+
+		// TODO : <-- deactivate after migration
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }

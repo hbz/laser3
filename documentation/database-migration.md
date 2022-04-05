@@ -41,5 +41,5 @@
 ### Usage
 #### Adding changes to changelog
 
-    grails (prod) dbm-gorm-diff changelog-<currentDate>.groovy --add
+    grails (prod) dbm-gorm-diff <currentYear>/changelog-<currentDate>.groovy --add
   

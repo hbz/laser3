@@ -17,8 +17,6 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsVersion
         classpath 'org.grails.plugins:hibernate5:7.0.5'
 
-        // classpath 'gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0'    // -- nn --
-
         // https://github.com/grails/grails-database-migration
         classpath 'org.grails.plugins:database-migration:3.1.0'                                     // from 3.0.3
         // https://github.com/bertramdev/asset-pipeline
@@ -26,7 +24,10 @@ buildscript {
         // https://github.com/n0mer/gradle-git-properties
         classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'   // 2.4.0 available
 
+        // classpath 'gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0'    // -- nn --
+
         // -- dependency resolving issue
+
         classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
         classpath 'org.quartz-scheduler:quartz:2.3.2'
     }
@@ -39,9 +40,9 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
-// apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
-apply plugin: 'com.bertramlabs.asset-pipeline'
 apply plugin: 'com.gorylenko.gradle-git-properties'
+apply plugin: 'com.bertramlabs.asset-pipeline'
+// apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
 
 // ---[ plugin: database migration ! before dependencies configuration
 
@@ -110,7 +111,6 @@ dependencies {
 //    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:3.14.0"   // -- nn --
 //    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:3.14.0"  // -- nn --
 
-    // -- legacy
     // --------------------------------------------------
     compile 'org.grails:grails-docs:4.0.13'
 
@@ -162,6 +162,7 @@ dependencies {
     runtime 'org.postgresql:postgresql:42.3.3'                  // from 42.3.0
 
     // -- dependency resolving issue
+
     implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
@@ -206,14 +207,14 @@ buildProperties {
         if (! grailsBuildInfo) return
 
         Properties properties = new Properties()
-        grailsBuildInfo.withInputStream { properties.load(it) }             // read props from file
+        grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
 
         File BuildInfoFile = new File("${project.rootDir}/git.properties")
-        BuildInfoFile.withInputStream { properties.load(it) }               // read props from file
+        BuildInfoFile.withInputStream { properties.load(it) } // read props from file
 
-        properties.setProperty('build.time', new Date().format("dd.MM.yyyy HH:mm:ss"))     // add custom props
+        properties.setProperty('build.time', new Date().format("dd.MM.yyyy HH:mm:ss"))
 
-        grailsBuildInfo.withOutputStream { properties.store(it, null) }    // write back to file
+        grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
     }
 }
 
@@ -224,7 +225,7 @@ war {
     archiveName = 'laser3.war'
 }
 grails {
-    pathingJar = true   // windows - command line limitation
+    pathingJar = true // windows - command line limitation
 }
 
 // ---[ plugin: asset pipeline
@@ -254,6 +255,7 @@ assets {
             'datatables/**',
             'select2/**/*.js',
             'select2/**/*.css',
+            'spring-websocket/**',
             'swagger-ui/**',
     ]
 }
@@ -275,8 +277,9 @@ tasks.withType(GroovyCompile) {
 
 task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
     String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
+    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
     executable 'sh'
-    args '-c', grailsExe + ' prod dbm-gorm-diff changelog-' + java.time.LocalDate.now().format('yyyy-MM-dd') + '.groovy --add'
+    args '-c', grailsExe + ' prod dbm-gorm-diff ' + date.split('-').first() + '/changelog-' + date + '.groovy --add'
 }
 task( 'devtools.triggerRestart', group: 'laser' ) {
     doLast {
