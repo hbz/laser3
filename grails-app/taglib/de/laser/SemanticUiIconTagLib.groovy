@@ -143,19 +143,15 @@ class SemanticUiIconTagLib {
         String icon = 'question'
 
         switch (attrs.type) {
-            case 'Journal':
-            case JournalInstance.class.name:
+            case [ 'Journal', JournalInstance.class.name ]:
                 dc = message(code: 'spotlight.journaltitle')
                 icon = 'newspaper outline'
                 break
-            case 'Database':
-            case DatabaseInstance.class.name:
+            case [ 'Database', DatabaseInstance.class.name ]:
                 dc = message(code: 'spotlight.databasetitle')
                 icon = 'database'
                 break
-            case 'Book':
-            case 'EBook':
-            case BookInstance.class.name:
+            case [ 'Book', 'EBook', BookInstance.class.name ]:
                 dc = message(code: 'spotlight.ebooktitle')
                 icon = 'tablet alternate'
                 break

@@ -3392,7 +3392,8 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         //result.editable = true // true, because action is protected (is it? I doubt; INST_USERs have at least reading rights to this page!)
         switch(params.cmd) {
-            case 'new': result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+            case 'new':
+                result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
                 result.createOrUpdate = message(code:'default.button.create.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
@@ -3544,8 +3545,8 @@ join sub.orgRelations or_sub where
 
         String localizedName
         switch(LocaleContextHolder.getLocale()) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
+            case [ Locale.GERMANY, Locale.GERMAN ]:
+                localizedName = "name_de"
                 break
             default: localizedName = "name_en"
                 break

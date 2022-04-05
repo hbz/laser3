@@ -16,9 +16,7 @@
             ${message(code:'menu.datamanager.ann')}
         </h1>
 
-        <g:message code="profile.dashboardItemsTimeWindow"
-             default="You see events from the last {0} days."
-             args="${itemsTimeWindow}" />
+        <g:message code="profile.dashboardItemsTimeWindow" args="${itemsTimeWindow}" />
 
         <br />
 

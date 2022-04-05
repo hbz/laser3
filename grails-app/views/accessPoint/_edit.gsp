@@ -41,11 +41,11 @@
             <div class="ui card">
                 <div class="content">
                     <dl>
-                        <dt><g:message code="default.name.label" default="Name"/></dt>
+                        <dt><g:message code="default.name.label" /></dt>
         <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
         </dl>
         <dl>
-            <dt><g:message code="accessMethod.label" default="Access Method"/></dt>
+            <dt><g:message code="accessMethod.label" /></dt>
             <dd>
                 ${accessPoint.accessMethod.getI10n('value')}
                 <g:hiddenField id="accessMethod_id_${accessPoint.accessMethod.id}" name="accessMethod" value="${accessPoint.accessMethod.id}"/>
@@ -53,14 +53,14 @@
         </dl>
         <g:if test="${accessPoint.hasProperty('url')}">
             <dl>
-                <dt><g:message code="accessPoint.url" default="Proxy URL:"/></dt>
+                <dt><g:message code="accessPoint.url" /></dt>
                 <dd><semui:xEditable owner="${accessPoint}" field="url"/></dd>
             </dl>
         </g:if>
 
         <g:if test="${accessPoint.hasProperty('entityId')}">
             <dl>
-                <dt><g:message code="accessPoint.entityId" default="EntityId:"/></dt>
+                <dt><g:message code="accessPoint.entitiyId.label" /></dt>
                 <dd><semui:xEditable owner="${accessPoint}" field="entityId"/></dd>
             </dl>
         </g:if>

@@ -257,7 +257,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -266,7 +266,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -275,7 +275,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -329,7 +329,7 @@
                             rules: [
                                 {
                                     type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                 }
                             ]
                         },
@@ -338,7 +338,7 @@
                             rules: [
                                 {
                                     type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                                 }
                             ]
                         },

@@ -4,7 +4,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'status', 'error')} ">
 	<label for="status">
-		<g:message code="doc.status.label" default="Status" />
+		<g:message code="default.status.label" />
 		
 	</label>
 	<g:select id="status" name="status.id" from="${RefdataValue.list()}" optionKey="id" value="${docInstance?.status?.id}" class="many-to-one" noSelection="['null': '']"/>
@@ -12,7 +12,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'type', 'error')} ">
 	<label for="type">
-		<g:message code="doc.type.label" default="Type" />
+		<g:message code="default.type.label" />
 		
 	</label>
 	<g:select id="type" name="type.id" from="${RefdataValue.list()}" optionKey="id" value="${docInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
@@ -20,7 +20,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'content', 'error')} ">
 	<label for="content">
-		<g:message code="doc.content.label" default="Content" />
+		<g:message code="default.content.label" />
 		
 	</label>
 	<g:textField name="content" value="${docInstance?.content}"/>
@@ -44,7 +44,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'title', 'error')} ">
 	<label for="title">
-		<g:message code="doc.title.label" default="Title" />
+		<g:message code="default.title.label" />
 		
 	</label>
 	<g:textField name="title" value="${docInstance?.title}"/>
@@ -52,7 +52,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'filename', 'error')} ">
 	<label for="filename">
-		<g:message code="doc.filename.label" default="Filename" />
+		<g:message code="default.fileName.label" />
 		
 	</label>
 	<g:textField name="filename" value="${docInstance?.filename}"/>

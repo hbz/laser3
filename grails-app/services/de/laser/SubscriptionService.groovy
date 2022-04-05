@@ -1480,12 +1480,14 @@ class SubscriptionService {
                 if(Links.construct([source: newLicense, destination: sub, linkType: RDStore.LINKTYPE_LICENSE, owner: contextService.getOrg()])) {
                     RefdataValue licRole
                     switch(sub._getCalculatedType()) {
-                        case CalculatedType.TYPE_PARTICIPATION: licRole = RDStore.OR_LICENSEE_CONS
+                        case CalculatedType.TYPE_PARTICIPATION:
+                            licRole = RDStore.OR_LICENSEE_CONS
                             break
-                        case CalculatedType.TYPE_LOCAL: licRole = RDStore.OR_LICENSEE
+                        case CalculatedType.TYPE_LOCAL:
+                            licRole = RDStore.OR_LICENSEE
                             break
-                        case CalculatedType.TYPE_CONSORTIAL:
-                        case CalculatedType.TYPE_ADMINISTRATIVE: licRole = RDStore.OR_LICENSING_CONSORTIUM
+                        case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
+                            licRole = RDStore.OR_LICENSING_CONSORTIUM
                             break
                         default: log.error("no role type determinable!")
                             break

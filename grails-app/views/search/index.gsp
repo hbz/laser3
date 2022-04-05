@@ -74,7 +74,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
         </g:each>
 
         <div class="field">
-            <label><g:message code="search.text" default="Search Text"/>:</label>
+            <label><g:message code="search.text" />:</label>
             <input type="text" placeholder="${message(code: 'search.placeholder')}" name="q" value="${params.q}"/>
         </div>
 

@@ -116,8 +116,7 @@ class ControlledListService {
         else if(params.ctx && params.ctx.contains(License.class.name))
             ctx = genericOIDService.resolveOID(params.ctx)
         switch(ctx?._getCalculatedType()) {
-            case CalculatedType.TYPE_CONSORTIAL:
-            case CalculatedType.TYPE_ADMINISTRATIVE:
+            case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
                 queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
@@ -349,8 +348,7 @@ class ControlledListService {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
         switch(ctx?._getCalculatedType()) {
-            case CalculatedType.TYPE_CONSORTIAL:
-            case CalculatedType.TYPE_ADMINISTRATIVE:
+            case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
                 licFilter += " and l.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:

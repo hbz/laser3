@@ -15,12 +15,7 @@ class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
 
-	void beforeStartMigration(Database database) {
-	}
-
-	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
-
-		// TODO : deactivate after migration -->
+	static void _localChangelogMigration() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStorage.getDataSource())
 
 		int count1 = (sql.rows("select * from databasechangelog where filename like 'done/pre%'")).size()
@@ -45,8 +40,15 @@ class CustomMigrationCallbacks {
 				println '--------------------------------------------------------------------------------'
 			}
 		}
+	}
 
-		// TODO : <-- deactivate after migration
+	void beforeStartMigration(Database database) {
+	}
+
+	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
+
+		// TODO : deactivate after migration
+		_localChangelogMigration()
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }

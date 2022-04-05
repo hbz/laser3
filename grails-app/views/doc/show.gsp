@@ -21,21 +21,21 @@
 						<dl>
 				
                         <g:if test="${docInstance?.status}">
-                            <dt><g:message code="doc.status.label" default="Status" /></dt>
+                            <dt><g:message code="default.status.label" /></dt>
 
                                 <dd><g:link controller="refdataValue" action="show" id="${docInstance?.status?.id}">${docInstance?.status}</g:link></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.type}">
-                            <dt><g:message code="doc.type.label" default="Type" /></dt>
+                            <dt><g:message code="default.type.label" /></dt>
 
                                 <dd><g:link controller="refdataValue" action="show" id="${docInstance?.type?.id}">${docInstance?.type}</g:link></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.content}">
-                            <dt><g:message code="doc.content.label" default="Content" /></dt>
+                            <dt><g:message code="default.content.label" /></dt>
 
                                 <dd><g:fieldValue bean="${docInstance}" field="content"/></dd>
 
@@ -56,28 +56,28 @@
                         </g:if>
 
                         <g:if test="${docInstance?.title}">
-                            <dt><g:message code="doc.title.label" default="Title" /></dt>
+                            <dt><g:message code="default.title.label" /></dt>
 
                                 <dd><g:fieldValue bean="${docInstance}" field="title"/></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.filename}">
-                            <dt><g:message code="doc.filename.label" default="Filename" /></dt>
+                            <dt><g:message code="default.fileName.label" /></dt>
 
                                 <dd><g:fieldValue bean="${docInstance}" field="filename"/></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.dateCreated}">
-                            <dt><g:message code="doc.dateCreated.label" default="Date Created" /></dt>
+                            <dt><g:message code="default.dateCreated.label" /></dt>
 
                                 <dd><g:formatDate date="${docInstance?.dateCreated}" /></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.lastUpdated}">
-                            <dt><g:message code="doc.lastUpdated.label" default="Last Updated" /></dt>
+                            <dt><g:message code="default.lastUpdated.label" /></dt>
 
                                 <dd><g:formatDate date="${docInstance?.lastUpdated}" /></dd>
 

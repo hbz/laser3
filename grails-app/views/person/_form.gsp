@@ -123,7 +123,7 @@
 
 <div class="field ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
     <label for="tenant">
-        <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
+        <g:message code="person.tenant.label" />
     </label>
     <g:select id="tenant" name="tenant.id" class="ui dropdown" from="${userMemberships}"
               optionKey="id" value="${personInstance?.tenant?.id}" />

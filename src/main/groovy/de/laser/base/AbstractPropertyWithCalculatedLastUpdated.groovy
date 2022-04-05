@@ -179,32 +179,25 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         static_logger.debug( value + " << " + type )
 
         switch (type){
-            case Integer.toString():
-            case Integer.class.name:
+            case [ Integer.toString(), Integer.class.name ]:
                 result = Integer.parseInt(value)
                 break
-            case String.toString():
-            case String.class.name:
+            case [ String.toString(), String.class.name ]:
                 result = value
                 break
-            case BigDecimal.toString():
-            case BigDecimal.class.name:
+            case [ BigDecimal.toString(), BigDecimal.class.name ]:
                 result = new BigDecimal(value)
                 break
-            case org.codehaus.groovy.runtime.NullObject.toString():
-            case org.codehaus.groovy.runtime.NullObject.class.name:
+            case [ org.codehaus.groovy.runtime.NullObject.toString(), org.codehaus.groovy.runtime.NullObject.class.name ]:
                 result = null
                 break
-            case Date.toString():
-            case Date.class.name:
+            case [ Date.toString(), Date.class.name ]:
                 result = DateUtils.toDate_NoTime(value)
                 break
-            case RefdataValue.toString():
-            case RefdataValue.class.name:
+            case [ RefdataValue.toString(), RefdataValue.class.name ]:
                 result = RefdataValue.get(value)
                 break
-            case URL.toString():
-            case URL.class.name:
+            case [ URL.toString(), URL.class.name ]:
                 result = new URL(value)
                 break
             default:

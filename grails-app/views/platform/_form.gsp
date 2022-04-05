@@ -18,7 +18,7 @@
 
 <div class="field ${hasErrors(bean: platformInstance, field: 'tipps', 'error')} ">
 	<label for="tipps">
-		<g:message code="platform.tipps.label" default="Tipps" />
+		<g:message code="tipp.plural" />
 		
 	</label>
 	<g:select name="tipps" from="${TitleInstancePackagePlatform.list()}" multiple="multiple" optionKey="id" size="5" value="${platformInstance?.tipps*.id}" class="many-to-many"/>

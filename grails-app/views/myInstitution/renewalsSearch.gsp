@@ -72,7 +72,7 @@
         <div class="four wide column facetFilter">
             <div class="ui card">
                 <div class="content">
-                    <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
+                    <div class="header"><g:message code="default.filter.label" /></div>
                 </div>
                 <div class="content">
                     <div class="ui relaxed list">

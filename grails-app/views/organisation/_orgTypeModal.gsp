@@ -3,7 +3,7 @@
         <dt></dt>
         <dd>
             <a class="ui button" data-semui="modal" href="#orgType">
-                <g:message code="org.orgType.add.label" default="Add new Organisation Type"/>
+                <g:message code="org.orgType.add.label" />
             </a>
         </dd>
     </dl>
@@ -13,7 +13,7 @@
     <g:form class="ui form" url="[controller: 'organisation', action: 'addOrgType']" method="post">
         <input type="hidden" name="org" value="${org.id}"/>
         <div class="field">
-        <label><g:message code="org.orgType.label" default="Organisation Type" />:</label>
+        <label><g:message code="org.orgType.label" />:</label>
 
         <g:select from="${availableOrgTypes}"
                   class="ui dropdown fluid"

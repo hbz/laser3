@@ -477,10 +477,11 @@ class ManagementService {
                     if (childSubs) {
                         String localizedName
                         switch (LocaleContextHolder.getLocale()) {
-                            case Locale.GERMANY:
-                            case Locale.GERMAN: localizedName = "name_de"
+                            case [ Locale.GERMANY, Locale.GERMAN ]:
+                                localizedName = "name_de"
                                 break
-                            default: localizedName = "name_en"
+                            default:
+                                localizedName = "name_en"
                                 break
                         }
                         String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"

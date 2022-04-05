@@ -546,7 +546,7 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             }
@@ -561,7 +561,7 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -570,7 +570,7 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             },
@@ -579,11 +579,11 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     },
                                     {
                                         type: 'match[password_new]',
-                                        prompt : '{name} <g:message code="validation.mustMatch" default=" muss übereinstimmen" />'
+                                        prompt : '{name} <g:message code="validation.mustMatch" />'
                                     }
                                 ]
                             }
@@ -598,7 +598,7 @@
                                 rules: [
                                     {
                                         type   : 'regExp[/^[0-9]/]',
-                                        prompt : '{name} <g:message code="validation.onlyInteger" default=" darf nur aus Ziffern bestehen" />'
+                                        prompt : '{name} <g:message code="validation.onlyInteger" />'
                                     }
                                 ]
                             }

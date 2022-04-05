@@ -59,7 +59,7 @@
                       <tr>
                       <th style="white-space:nowrap">${message(code:'title.label')}</th>
                       <th style="white-space:nowrap">${message(code:'tipp.publisher')}</th>
-                      <th style="white-space:nowrap">${message(code:'indentifier.plural')}</th>
+                      <th style="white-space:nowrap">${message(code:'identifier.plural')}</th>
                       <th style="white-space:nowrap">${message(code:'default.status.label')}</th>
                       </tr>
                     </thead>

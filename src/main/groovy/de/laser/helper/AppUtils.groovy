@@ -19,14 +19,10 @@ class AppUtils {
         if (! Environment.isDevelopmentMode()) {
 
             switch (ConfigUtils.getLaserSystemId()) {
-                case 'LAS:eR-Dev':
-                case 'LAS:eR-Dev @ Grails3': // TODO - remove
-                case 'LAS:eR-Dev @ Grails4': // TODO - remove
+                case { it.startsWith('LAS:eR-Dev') }:
                     return DEV
                     break
-                case 'LAS:eR-QA/Stage':
-                case 'LAS:eR-QA/Stage @ Grails3': // TODO - remove
-                case 'LAS:eR-QA/Stage @ Grails4': // TODO - remove
+                case { it.startsWith('LAS:eR-QA/Stage') }:
                     return QA
                     break
                 case 'LAS:eR-Productive':

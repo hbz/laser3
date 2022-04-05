@@ -528,10 +528,11 @@ class ExportService {
 			}
 			def cell
 			switch(format) {
-				case "xls":
-				case "xlsx": cell = [field: value.join(', '), style: null]
+				case [ "xls", "xlsx" ]:
+					cell = [field: value.join(', '), style: null]
 					break
-				case "csv": cell = value.join('; ').replaceAll(',',';')
+				case "csv":
+					cell = value.join('; ').replaceAll(',',';')
 					break
 			}
 			if(cell)

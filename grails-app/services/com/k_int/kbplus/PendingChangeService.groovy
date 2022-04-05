@@ -927,13 +927,11 @@ class PendingChangeService extends AbstractLockableService {
      */
     Map<String, String> getEntityFromToken(String token) {
         switch(token) {
-            case PendingChangeConfiguration.NEW_TITLE:
-            case PendingChangeConfiguration.TITLE_UPDATED:
-            case PendingChangeConfiguration.TITLE_DELETED: [entity: 'tipp.id', entityPackage: 'tipp.pkg']
+            case [ PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED ]:
+                [entity: 'tipp.id', entityPackage: 'tipp.pkg']
                 break
-            case PendingChangeConfiguration.NEW_COVERAGE:
-            case PendingChangeConfiguration.COVERAGE_UPDATED:
-            case PendingChangeConfiguration.COVERAGE_DELETED: [entity: 'tippCoverage.id', entityPackage: 'tippCoverage.tipp.pkg']
+            case [ PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED ]:
+                [entity: 'tippCoverage.id', entityPackage: 'tippCoverage.tipp.pkg']
                 break
             default: [:]
                 break

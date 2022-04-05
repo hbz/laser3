@@ -240,12 +240,10 @@ class ApiController {
                 }
                 else {
                     switch(request.getHeader('accept')) {
-                        case Constants.MIME_APPLICATION_JSON:
-                        case Constants.MIME_TEXT_JSON:
+                        case [ Constants.MIME_APPLICATION_JSON, Constants.MIME_TEXT_JSON ]:
                             format = Constants.MIME_APPLICATION_JSON
                             break
-                        case Constants.MIME_APPLICATION_XML:
-                        case Constants.MIME_TEXT_XML:
+                        case [ Constants.MIME_APPLICATION_XML, Constants.MIME_TEXT_XML ]:
                             format = Constants.MIME_APPLICATION_XML
                             break
                         case Constants.MIME_TEXT_PLAIN:

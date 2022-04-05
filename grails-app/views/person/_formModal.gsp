@@ -105,8 +105,7 @@
 
                     <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
                         <label for="tenant">
-                            <g:message code="person.tenant.label"
-                                       default="Tenant (Permissions to edit this person and depending addresses and contacts)"/>
+                            <g:message code="person.tenant.label" />
                         </label>
                         <g:select id="tenant" name="tenant.id" from="${contextService.getMemberships()}" optionKey="id"
                                   value="${contextService.getOrg().id}"/>
@@ -302,8 +301,7 @@
                     rules: [
                         {
                             type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut"
-                                                        default=" muss ausgefüllt werden"/>'
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                         }
                     ]
                 }

@@ -17,11 +17,11 @@
 					<thead>
 						<tr>
 						
-							<th class="header"><g:message code="doc.status.label" default="Status" /></th>
+							<th class="header"><g:message code="default.status.label" /></th>
 						
-							<th class="header"><g:message code="doc.type.label" default="Type" /></th>
+							<th class="header"><g:message code="default.type.label" /></th>
 						
-							<g:sortableColumn property="content" title="${message(code: 'doc.content.label')}" />
+							<g:sortableColumn property="content" title="${message(code: 'default.content.label')}" />
 						
 							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label')}" />
 						

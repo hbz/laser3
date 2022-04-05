@@ -181,8 +181,7 @@ class Contact implements Comparable<Contact>{
      */
     private int getCompareOrderValueForType(Contact contact){
         switch (contact?.getContentType()?.getValue()){
-            case REFDATA_EMAIL:
-            case REFDATA_MAIL:
+            case [ REFDATA_MAIL, REFDATA_EMAIL ]:
                 return 1;
             case REFDATA_URL:
                 return 2;

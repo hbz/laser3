@@ -39,11 +39,11 @@
         <div class="ui card">
             <div class="content">
                 <dl>
-                    <dt><g:message code="default.name.label" default="Name"/></dt>
+                    <dt><g:message code="default.name.label" /></dt>
                     <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
                 </dl>
                 <dl>
-                    <dt><g:message code="accessMethod.label" default="Access Method"/></dt>
+                    <dt><g:message code="accessMethod.label" /></dt>
                     <dd>
                         ${accessPoint.accessMethod.getI10n('value')}
                         <g:hiddenField id="accessMethod_id_${accessPoint.accessMethod.id}" name="accessMethod" value="${accessPoint.accessMethod.id}"/>

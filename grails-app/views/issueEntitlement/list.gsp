@@ -21,13 +21,13 @@
 						
 							<th class="header"><g:message code="default.subscription.label" /></th>
 						
-							<th class="header"><g:message code="issueEntitlement.tipp.label" default="Tipp" /></th>
+							<th class="header"><g:message code="tipp.label" /></th>
 						
 							<g:sortableColumn property="startDate" title="${message(code: 'default.startDate.label')}" />
 						
-							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label')}" />
+							<g:sortableColumn property="startVolume" title="${message(code: 'tipp.startVolume')}" />
 						
-							<g:sortableColumn property="startIssue" title="${message(code: 'issueEntitlement.startIssue.label')}" />
+							<g:sortableColumn property="startIssue" title="${message(code: 'tipp.startIssue')}" />
 						
 							<th></th>
 						</tr>

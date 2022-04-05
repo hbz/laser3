@@ -450,10 +450,11 @@ class AjaxController {
                 PropertyDefinition propDef = genericOIDService.resolveOID(params.propDef)
                 Map<String, Object> propertyData = propertyService.getAvailableProperties(propDef, contextService.getOrg(), params)
                 switch (params.table) {
-                    case "with": checkedProperties.addAll(propertyData.withProp.collect { o -> o.id })
+                    case "with":
+                        checkedProperties.addAll(propertyData.withProp.collect { o -> o.id })
                         break
-                    case "without":
-                    case "audit": checkedProperties.addAll(propertyData.withoutProp.collect { o -> o.id })
+                    case [ "without", "audit" ]:
+                        checkedProperties.addAll(propertyData.withoutProp.collect { o -> o.id })
                         break
                 }
             }

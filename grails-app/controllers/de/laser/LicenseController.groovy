@@ -172,10 +172,11 @@ class LicenseController {
                 if(childLics) {
                     String localizedName
                     switch(LocaleContextHolder.getLocale()) {
-                        case Locale.GERMANY:
-                        case Locale.GERMAN: localizedName = "name_de"
+                        case [ Locale.GERMANY, Locale.GERMAN ]:
+                            localizedName = "name_de"
                             break
-                        default: localizedName = "name_en"
+                        default:
+                            localizedName = "name_en"
                             break
                     }
                     String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"

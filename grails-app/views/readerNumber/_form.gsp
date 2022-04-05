@@ -22,7 +22,7 @@
 
 <div class="${hasErrors(bean: numbersInstance, field: 'startDate', 'error')} required">
 	<label for="startDate">
-		<g:message code="readerNumber.startDate.label" default="Start Date" />
+		<g:message code="default.startDate.label" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:datePicker id="startDate" name="startDate" precision="day"  value="${numbersInstance?.startDate}"  />
@@ -31,7 +31,7 @@
 
 <div class="${hasErrors(bean: numbersInstance, field: 'endDate', 'error')} ">
 	<label for="endDate">
-		<g:message code="readerNumber.endDate.label" default="End Date" />
+		<g:message code="default.endDate.label" />
 		
 	</label>
 	<g:datePicker id="endDate" name="endDate" precision="day"  value="${numbersInstance?.endDate}" default="none" noSelection="['': '']" />
