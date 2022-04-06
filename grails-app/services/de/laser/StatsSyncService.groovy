@@ -52,8 +52,8 @@ class StatsSyncService {
     FactService factService
     GlobalService globalService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-    def queryParams = [:]
-    def errors = []
+    Map queryParams = [:]
+    List errors = []
     Map<String,List> availableReportCache = [:]
 
 
@@ -65,7 +65,7 @@ class StatsSyncService {
     static int exceptionCount=0
     static long syncStartTime=0
     static int syncElapsed=0
-    static def activityHistogram = [:]
+    static Map activityHistogram = [:]
 
     static boolean running = false
     static transactional = false
@@ -1525,7 +1525,7 @@ class StatsSyncService {
         if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3031') {
             def exceptionData = xml.Exception.Data
             def matcher = exceptionData =~ /\d{4}-\d{2}/
-            def list = []
+            List list = []
             matcher.each {
                 list.add(it)
             }

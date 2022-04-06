@@ -260,7 +260,7 @@ class QueryService {
      * @return a map containing the query string and the parameters for the query
      */
     private Map<String, Object> getDueSubscriptionsQuery(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
-        def queryParams = [:]
+        Map queryParams = [:]
         queryParams.endDateFrom = endDateFrom
         queryParams.endDateTo = endDateTo
         queryParams.manualCancellationDateFrom = manualCancellationDateFrom

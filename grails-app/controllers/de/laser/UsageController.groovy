@@ -176,10 +176,10 @@ class UsageController  {
             instOrg = Org.get(params.institution)
             wibid = instOrg?.getIdentifierByType('wibid')?.value
         }
-        def factAndWhereCondition = ''
-        def cursorAndWhereCondition = ''
-        def factParams = [:]
-        def cursorParams = [:]
+        String factAndWhereCondition = ''
+        String cursorAndWhereCondition = ''
+        Map factParams = [:]
+        Map cursorParams = [:]
 
         if (supplier) {
             factAndWhereCondition += " and t1.supplier = :supplier_id"

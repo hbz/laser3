@@ -1102,7 +1102,7 @@ class DataloadService {
     log.debug("dataCleansing");
     // 1. Find all packages that do not have a nominal platform
     Package.findAllByNominalPlatformIsNull().each { p ->
-      def platforms = [:]
+      Map platforms = [:]
       p.tipps.each{ tipp ->
         if ( !platforms.keySet().contains(tipp.platform.id) ) {
           platforms[tipp.platform.id] = [count:1, platform:tipp.platform]

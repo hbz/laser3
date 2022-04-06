@@ -1043,8 +1043,8 @@ select distinct oap from OrgAccessPoint oap
      * Retrieves the running time (= allocation term) of this subscription
      * @return the time of span covered by this subscription; if it is a multi year subscription, the parent subscription is being consulted which covers the whole allocation term
      */
-    def getAllocationTerm() {
-        def result = [:]
+    Map getAllocationTerm() {
+        Map result = [:]
 
         if(isMultiYear) {
             result.startDate = startDate

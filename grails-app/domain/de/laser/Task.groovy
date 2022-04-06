@@ -96,8 +96,8 @@ class Task {
      * Retrieves the associated objects to this task as link parameters
      * @return a {@link List} of link argument maps, depending on the object type to which this task is associated
      */
-    def getObjects() {
-        def result = []
+    List getObjects() {
+        List result = []
 
         if (license)
             result << [controller: 'license', object: license]

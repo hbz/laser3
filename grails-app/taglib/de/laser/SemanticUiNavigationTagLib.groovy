@@ -99,7 +99,7 @@ class SemanticUiNavigationTagLib {
             return
         }
 
-        def linkParams = [:]
+        Map linkParams = [:]
         if (attrs.params) {
             linkParams.putAll(attrs.params)
         }
@@ -115,7 +115,7 @@ class SemanticUiNavigationTagLib {
             linkParams.order = params.order
         }
 
-        def linkTagAttrs = [action: action]
+        Map linkTagAttrs = [action: action]
         if (attrs.controller) {
             linkTagAttrs.controller = attrs.controller
         }

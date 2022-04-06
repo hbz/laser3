@@ -177,7 +177,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
    */
     @Deprecated
   static def findByIdentifier(candidate_identifiers) {
-    def matched = []
+    List matched = []
     candidate_identifiers.each { i ->
       // TODO [ticket=1789]
       //List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])

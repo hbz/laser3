@@ -1,6 +1,6 @@
 <%@ page import="de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.DocContext; de.laser.RefdataValue; de.laser.SurveyConfig; de.laser.storage.RDStore; java.text.SimpleDateFormat" %>
 <%
-    def result = []
+    List result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 

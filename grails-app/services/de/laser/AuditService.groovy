@@ -25,8 +25,8 @@ class AuditService {
      * @param obj the object upon which a change has been performed
      * @return a list of properties which trigger inheritance
      */
-    def getWatchedProperties(Auditable obj) {
-        def result = []
+    List<String> getWatchedProperties(Auditable obj) {
+        List<String> result = []
 
         if (getAuditConfig(obj, AuditConfig.COMPLETE_OBJECT)) {
             obj.getLogIncluded().each { cp ->

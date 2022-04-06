@@ -16,7 +16,7 @@ class RefdataService {
      */
     List getUsageDetails() {
         Map detailsMap      = [:]
-        def usedRdvList     = []
+        List usedRdvList    = []
         Map allDcs          = [:]
 
         List classes = AppUtils.getAllDomainClasses().findAll {
@@ -24,7 +24,7 @@ class RefdataService {
         }
 
         classes.each { dc ->
-            def dcFields = []
+            List dcFields = []
             Class cls = dc.clazz
 
             // find all rdv_fk from superclasses
@@ -75,7 +75,7 @@ class RefdataService {
         Map fortytwo = [:]
 
         AppUtils.getAllDomainClasses().each { dc ->
-            def dcFields = []
+            List dcFields = []
             Class cls = dc.clazz
 
             // find all rdv_fk from superclasses

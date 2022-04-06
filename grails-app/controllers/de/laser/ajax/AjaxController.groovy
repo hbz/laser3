@@ -274,7 +274,7 @@ class AjaxController {
             log.error(e.toString())
         }
 
-        def resp = [newValue: result]
+        Map resp = [newValue: result]
         log.debug("genericSetRel() returns ${resp as JSON}")
         render resp as JSON
     }
@@ -313,7 +313,7 @@ class AjaxController {
         rq.each { it ->
           def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
           int ctr = 0
-          def row = [:]
+          Map row = [:]
           config.cols.each { cd ->
             // log.debug("Processing result col ${cd} pos ${ctr}");
             row["${ctr++}"] = rowobj[cd]

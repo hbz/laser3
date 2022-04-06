@@ -1185,7 +1185,7 @@ class YodaController {
             }
 
             costItems.each {
-                def costItem = [:]
+                Map costItem = [:]
                 costItem.globalUID = it.globalUID
 
                 costItem.costItemStatus = it.costItemStatus?.value
@@ -1994,7 +1994,7 @@ class YodaController {
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
                         if(surveyResult?.size() > 0) {
                             count++
-                            def newMap = [:]
+                            Map newMap = [:]
                             //println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
                             newMap.surveyResult = surveyResult?.id ?: ""
                             newMap.subName = sub.name
@@ -2007,7 +2007,7 @@ class YodaController {
                             resultMap << newMap
                         }else{
                             count++
-                            def newMap = [:]
+                            Map newMap = [:]
                             //println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
                             newMap.surveyResult = 'Kein Umfrage'
                             newMap.subName = sub.name
@@ -2032,7 +2032,7 @@ class YodaController {
                                 def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
                                 if(surveyResult?.size() > 0) {
                                     count++
-                                    def newMap = [:]
+                                    Map newMap = [:]
                                     println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
                                     newMap.surveyResult = surveyResult?.id ?: ""
                                     newMap.subName = sub.name
@@ -2045,7 +2045,7 @@ class YodaController {
                                     resultMap << newMap
                                 }else{
                                     count++
-                                    def newMap = [:]
+                                    Map newMap = [:]
                                     println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
                                     newMap.surveyResult = 'Kein Umfrage'
                                     newMap.subName = sub.name

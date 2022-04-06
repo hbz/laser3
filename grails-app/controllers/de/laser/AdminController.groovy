@@ -478,9 +478,9 @@ class AdminController  {
                 render(view:'showAffiliations',model:result)
             }
             json {
-                def r2 = []
+                List r2 = []
                 result.users.each { u ->
-                    def row = [:]
+                    Map row = [:]
                     row.username = u.username
                     row.display = u.display
                     row.email = u.email

@@ -27,7 +27,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
 <%
     def addFacet = { params, facet, val ->
-        def newparams = [:]
+        Map newparams = [:]
         newparams.putAll(params)
         newparams.remove('offset');
         newparams.remove('max');
@@ -44,7 +44,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
         newparams
     }
     def removeFacet = { params, facet, val ->
-        def newparams = [:]
+        Map newparams = [:]
         newparams.putAll(params)
         def current = newparams[facet]
         newparams.remove('offset');

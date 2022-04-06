@@ -1237,8 +1237,6 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
-        def ctxlist = []
-
         log.debug("deleteDocuments ${params}");
 
         docstoreService.unifiedDeleteDocuments(params)
@@ -1432,7 +1430,7 @@ join sub.orgRelations or_sub where
                     out.close()
                 }
                 /*json {
-                    def map = [:]
+                    Map map = [:]
                     exportService.addTitlesToMap(map, result.titles)
                     def content = map as JSON
 

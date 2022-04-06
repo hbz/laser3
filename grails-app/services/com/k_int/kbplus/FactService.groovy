@@ -370,7 +370,7 @@ class FactService {
    * @return a list of maps containing the usage data
    */
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
-    def params = [:]
+    Map params = [:]
     String hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
@@ -418,7 +418,7 @@ class FactService {
   private def transformToListOfMaps(queryResult) {
     def list = []
     queryResult.each { li ->
-      def map = [:]
+      Map map = [:]
       map['factValue'] = li[0]
       map['reportingYear'] = li[1]
       map['reportingMonth'] = li[2]
