@@ -15,9 +15,9 @@ class RefdataService {
      * @return a list of reference value usages and where they are used
      */
     List getUsageDetails() {
-        def detailsMap      = [:]
+        Map detailsMap      = [:]
         def usedRdvList     = []
-        def allDcs          = [:]
+        Map allDcs          = [:]
 
         List classes = AppUtils.getAllDomainClasses().findAll {
             ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
@@ -25,7 +25,7 @@ class RefdataService {
 
         classes.each { dc ->
             def dcFields = []
-            def cls = dc.clazz
+            Class cls = dc.clazz
 
             // find all rdv_fk from superclasses
             while (cls != Object.class) {
@@ -35,13 +35,13 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            allDcs << ["${dc.clazz.simpleName}" : dcFields.sort()]
+            allDcs.putAt( dc.clazz.simpleName, dcFields.sort() )
         }
 
         // inspect classes and fields
 
         allDcs.each { dcName, dcFields ->
-            def dfMap = [:]
+            Map dfMap = [:]
 
             dcFields.each { df ->
                 Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
@@ -55,7 +55,7 @@ class RefdataService {
             }
 
             if (! dfMap.isEmpty()) {
-                detailsMap << ["${dcName}": dfMap]
+                detailsMap.putAt( dcName, dfMap )
             }
         }
 
@@ -72,11 +72,11 @@ class RefdataService {
 
         log.debug("replacing: ${rdvFrom} with: ${rdvTo}")
         def count = 0
-        def fortytwo = [:]
+        Map fortytwo = [:]
 
         AppUtils.getAllDomainClasses().each { dc ->
             def dcFields = []
-            def cls = dc.clazz
+            Class cls = dc.clazz
 
             // find all rdv_fk from superclasses
             while (cls != Object.class) {
@@ -86,7 +86,7 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            fortytwo << ["${dc.clazz.simpleName}" : dcFields.sort()]
+            fortytwo.putAt( dc.clazz.simpleName, dcFields.sort() )
         }
 
         fortytwo.each { dcName, dcFields ->
@@ -114,10 +114,10 @@ class RefdataService {
      * @return a map containing for each reference data field defined whether it really belongs to the annotated reference data category
      */
     Map<String, Object> integrityCheck() {
-        Map checkResult = [:]
+        Map<String, Object> checkResult = [:]
 
         AppUtils.getAllDomainClasses().each { dc ->
-            def cls = dc.clazz
+            Class cls = dc.clazz
             String dcClassName = cls.simpleName
 
             // find all rdv_fk from superclasses
@@ -137,10 +137,10 @@ class RefdataService {
                                 fieldCats.each { it2 ->
                                     RefdataValue rdv = RefdataValue.get(it2[0])
                                     if (it2[1] == RefdataCategory.getByDesc(anno.cat())?.id) {
-                                        fieldCheck << ["${rdv}": true]
+                                        fieldCheck.putAt( rdv.value, true )
                                     }
                                     else {
-                                        fieldCheck << ["${rdv}": RefdataCategory.get(it2[1])]
+                                        fieldCheck.putAt( rdv.value, RefdataCategory.get(it2[1]) )
                                     }
                                 }
                                 return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.getByDesc(anno.cat()), check: fieldCheck]
@@ -152,7 +152,7 @@ class RefdataService {
                 )
 
                 if (tmp) {
-                    checkResult << ["${cls.simpleName}": tmp]
+                    checkResult.putAt( cls.simpleName, tmp )
                 }
                 cls = cls.getSuperclass()
             }

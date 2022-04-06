@@ -1,4 +1,4 @@
-<style type="text/css">
+<style>
 body {
     font-size: 16px;
 }

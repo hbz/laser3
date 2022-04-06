@@ -237,7 +237,7 @@ class PropertyService {
 
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
                 //log.debug(pds)
-                detailsMap << ["${dc.shortName}": pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort()]
+                detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
 
                 // ids of used property definitions
                 pds.each{ PropertyDefinition pd ->
@@ -249,7 +249,7 @@ class PropertyService {
             }
             else if(SurveyResult.class.name.contains(dc.name)) {
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery('select distinct type from SurveyResult')
-                detailsMap << ["${dc.shortName}": pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort()]
+                detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
                 pds.each { PropertyDefinition pd ->
                     usedPdList << pd.id
                 }

@@ -1,8 +1,6 @@
 package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.titles.TitleInstance
-import grails.gorm.transactions.Transactional
 
 /**
  * This service updates timestamps of depending objects if an object update has been triggered. This is essential for

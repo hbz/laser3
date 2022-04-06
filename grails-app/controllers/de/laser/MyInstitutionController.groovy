@@ -1071,8 +1071,7 @@ join sub.orgRelations or_sub where
             TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
             TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
-                case "xls":
-                case "xlsx":
+                case [ "xls", "xlsx" ]:
                     row.add([field: sub.name ?: "", style: 'bold'])
                     row.add([field: sub.globalUID, style: null])
                     row.add([field: licenseReferences.get(sub) ? licenseReferences.get(sub).join(", ") : '', style: null])
@@ -1133,8 +1132,7 @@ join sub.orgRelations or_sub where
             }
         }
         switch(format) {
-            case 'xls':
-            case 'xlsx':
+            case [ 'xls', 'xlsx' ]:
                 Map sheetData = [:]
                 sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: subscriptionData]
                 return exportService.generateXLSXWorkbook(sheetData)

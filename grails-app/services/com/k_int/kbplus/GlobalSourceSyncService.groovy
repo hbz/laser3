@@ -255,8 +255,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
                     max = 5000
                     break
-                case "language":
-                case "editionStatement":
+                case [ "language", "editionStatement" ]:
                     triggeredTypes = ['TitleInstancePackagePlatform']
                     max = 5000
                     break

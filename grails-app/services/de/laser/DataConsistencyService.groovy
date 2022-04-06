@@ -159,7 +159,7 @@ class DataConsistencyService {
                 Map<String, Boolean> props = [:]
 
                 bools.each { it ->
-                    props.put( "${it.name}", dc.constraints[ it.name ].isNullable() )
+                    props.putAt( it.name, dc.constraints[ it.name ].isNullable() )
                 }
 
                 // println " " + dc.clazz.simpleName

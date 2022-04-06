@@ -206,8 +206,7 @@ class SemanticUiIconTagLib {
     def contactIcon = { attrs, body ->
 
         switch (attrs.type) {
-            case 'E-Mail':
-            case 'Mail': // Deprecated
+            case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
                 out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon js-copyTrigger"></i>'
                 out << '</span>'

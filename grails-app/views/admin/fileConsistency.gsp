@@ -18,7 +18,7 @@
 <div class="ui grid">
     <div class="sixtenn wide column">
 
-        <h3 class="ui headerline"><i class="ui hdd icon"></i> Dateien</h3>
+        <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -47,7 +47,7 @@
             </tbody>
         </table>
 
-        <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: Doc</h3>
+        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: Doc</span></h3>
 
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -98,7 +98,7 @@
             </tbody>
          </table>
 
-        <h3 class="ui headerline"><i class="ui database icon"></i> Objekte: DocContext</h3>
+        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: DocContext</span></h3>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -131,17 +131,18 @@
         <br />
         <br />
 
-        <h3 class="ui headerline"><i class="ui tasks icon"></i> ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</h3>
+        <h3 class="ui header"><i class="ui tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
 
-        <p>
+        <div class="ui info message">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
             <br />
-            Rote Einträge markieren ungültige Referenzen: DocContext.owner(<span style="color:red">status = deleted</span>) => Doc.
-        </p>
+            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span style="color:red">status = deleted</span> ) => Doc.
+        </div>
 
-        <g:each in="${listOfDocsInUseOrphaned}" var="doc">
-            <ul>
-                <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="index" controller="docstore" id="${doc.uuid}">${doc.uuid}</g:link>
+        <div class="ui list">
+            <g:each in="${listOfDocsInUseOrphaned}" var="doc">
+
+                 <div class="item">${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="index" controller="docstore" id="${doc.uuid}">${doc.uuid}</g:link>
                     <g:if test="${doc.owner}">
                         (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>
@@ -149,16 +150,16 @@
                     print "&nbsp;&nbsp;"
                     print link(action: 'recoveryDoc', controller: 'admin', params:['docID': doc.id], target: '_blank') { '<i class="ui large icon paste yellow"></i>' }
                 %>
-                </li>
 
-                <ul>
-                <g:each in="${DocContext.findAllByOwner(doc)}" var="dc">
-                    <li>
+                     <g:if test="${DocContext.findAllByOwner(doc)}">
+                        <div class="ui list">
+                        <g:each in="${DocContext.findAllByOwner(doc)}" var="dc">
+                            <div class="item">
                         <%
                             if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
                                 print "<span style='color:red'>"
                             }
-                            print "${dc.id} : "
+                            print "&nbsp;&nbsp;&nbsp;&nbsp; ${dc.id} : "
 
                             if (dc.isShared) {
                                 print " <i class='ui icon share alternate square'></i> "
@@ -195,11 +196,14 @@
                                 print "</span>"
                             }
                         %>
-                    </li>
-                </g:each>
-                </ul>
-            </ul>
-        </g:each>
+                            </div>
+                        </g:each>
+                        </div>
+                     </g:if>
+                </div>
+
+            </g:each>
+        </div>
 
     </div>
 </div>

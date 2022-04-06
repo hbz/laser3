@@ -880,8 +880,7 @@ class PendingChangeService extends AbstractLockableService {
         }
         else {
             switch(change.msgToken) {
-                case PendingChangeConfiguration.PACKAGE_PROP:
-                case PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED:
+                case [ PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED ]:
                     eventIcon = '<span data-tooltip="'+messageSource.getMessage('default.change.label',null,locale)+'"><i class="yellow circle icon"></i></span>'
                     instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
                     eventData = [change.targetProperty,change.oldValue,change.newValue]

@@ -71,9 +71,9 @@ class ProfileController {
 
         String i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'name_de' : 'name_en'
 
-        custPropDefs.each { it ->
+        custPropDefs.each { String it ->
             List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
-            propDefs << ["${it}": itResult]
+            propDefs.putAt( it, itResult )
         }
 
         List usedRdvList = refdataService.getUsageDetails()

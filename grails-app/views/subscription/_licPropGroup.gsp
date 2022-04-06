@@ -3,12 +3,12 @@
 
 <table class="ui table compact la-table-inCard la-ignore-fixed">
     <g:if test="${propList}">
-        <thead>
+        <thead><tr>
             <th>${message(code:'property.table.property')}</th>
             <th>${message(code:'property.table.value')}</th>
             <th>${message(code:'property.table.paragraph')}</th>
             <th>${message(code:'property.table.notes')}</th>
-        </thead>
+        </tr></thead>
     </g:if>
     <tbody>
         <g:each in="${propList}" var="prop">

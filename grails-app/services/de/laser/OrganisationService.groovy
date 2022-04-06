@@ -111,8 +111,7 @@ class OrganisationService {
             contacts[o] = orgContacts
         }
         switch(format) {
-            case "xls":
-            case "xlsx":
+            case [ "xls", "xlsx" ]:
                 orgs.each{ org ->
                     List row = []
                     Map<String,String> furtherData = [isil: identifiers[org]?.ISIL,

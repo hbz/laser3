@@ -83,12 +83,11 @@ class ApiService {
             ["street1": street1, "street2": street2]
         }
 
-        def doublets = [:]
+        Map doublets = [:]
 
         xml.institution.each { inst ->
 
             // handle identifiers
-
             def identifiers = []
 
             inst.identifier.children().each { ident ->
@@ -98,7 +97,8 @@ class ApiService {
                     def idValue = normString(innerIdent.text())
                     if (idValue) {
                         identifiers << ["${innerIdent.name()}": idValue]
-                        doublets.put("${innerIdent.name()}:${idValue}", (doublets.get("${innerIdent.name()}:${idValue}") ?: 0) + 1)
+                        String dKey = "${innerIdent.name()}:${idValue}"
+                        doublets.putAt( dKey, (doublets.get("${innerIdent.name()}:${idValue}") ?: 0) + 1 )
                     }
                 }
             }

@@ -125,7 +125,7 @@ class YodaController {
         result.currentConfig   = grails.util.Holders.config
         result.quartzScheduler = quartzScheduler
 
-        def groups = [:]
+        Map<String, Object> groups = [:]
         for (String groupName : quartzScheduler.getJobGroupNames()) {
             def group = []
 
@@ -158,7 +158,7 @@ class YodaController {
                 group << map
             }
 
-            groups << ["${groupName}" : group.sort{ a, b -> (a.name < b.name ? -1 : 1)}]
+            groups.putAt( groupName, group.sort{ a, b -> (a.name < b.name ? -1 : 1)} )
         }
         result.quartz = groups
         result
@@ -507,23 +507,23 @@ class YodaController {
                                         private: Modifier.isPrivate(mods),
                                         static: Modifier.isStatic(mods)
                                 ]
-                                mList.others << ["${mKey}": mInfo]
+                                mList.others.putAt(mKey, mInfo)
                             }
                         }
                         else {
-                            mList.public << ["${mKey}": mInfo]
+                            mList.public.putAt(mKey, mInfo)
                         }
                     }
                 }
 
-                cList << ["${controllerClass.simpleName}": [
+                cList.putAt( controllerClass.simpleName, [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': [
                                 public: mList.public.sort{it.key},
                                 others: mList.others.sort{it.key}
                         ],
                         'deprecated': controllerClass.getAnnotation(Deprecated) ? true : false
-                ]]
+                ])
             }
         }
         result.controller = cList.sort{it.key}

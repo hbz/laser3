@@ -23,7 +23,7 @@ class SessionCacheWrapper {
 
         session.getAttributeNames().each {
             if (it.startsWith(keyPrefix)){
-                result << ["${it.replaceFirst(keyPrefix, '')}" : get(it.replaceFirst(keyPrefix, ''))]
+                result.putAt( it.replaceFirst(keyPrefix, ''), get(it.replaceFirst(keyPrefix, '')) )
             }
         }
         result
