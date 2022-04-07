@@ -13,6 +13,7 @@ jstk = {
     el_idCounter: 0,
 
     go: function () {
+        console.log('jstk -> go')
 
         jstk._checkIds()
 
@@ -91,7 +92,7 @@ jstk = {
     },
 
     comments: function() {
-        console.log('jstk: $(comments)')
+        console.log('jstk: $( comments )')
         let comments = $('*').contents().filter(function() { return this.nodeType === 8 })
         $.each(comments, function (i, elem) {
             console.log(elem)
@@ -99,21 +100,21 @@ jstk = {
     },
 
     forms: function() {
-        console.log('jstk: $(forms)')
+        console.log('jstk: $( forms )')
         $.each($('form'), function (i, elem) {
             console.log(elem)
         })
     },
 
     headlines: function() {
-        console.log('jstk: $(headlines')
+        console.log('jstk: $( headlines )')
         $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
             console.log(elem)
         })
     },
 
     templates: function() {
-        console.log('jstk: $(templates)')
+        console.log('jstk: $( templates )')
         let comments = $('*').contents().filter(function() { return this.nodeType === 8 && this.textContent.includes('[template:') && this.textContent.includes('START') })
         $.each(comments, function (i, elem) {
             console.log(elem)

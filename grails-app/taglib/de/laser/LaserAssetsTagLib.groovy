@@ -66,14 +66,21 @@ class LaserAssetsTagLib {
 
             if (attrs.get('model')) {
                 out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '], START -->'
+
             } else {
                 out << '<!-- [template: ' + uri + '], START -->'
             }
 
-            out << g.render(attrs)
+            if (params.debug) {
+                out << '<div style="border:2px dotted orangered" title="' + uri + '">'
+                out << g.render(attrs)
+                out << '</div>'
+            } else {
+                out << g.render(attrs)
+            }
+
             out << '<!-- [template: ' + uri + '], END -->'
-        }
-        else {
+        } else {
             out << g.render(attrs)
         }
     }
