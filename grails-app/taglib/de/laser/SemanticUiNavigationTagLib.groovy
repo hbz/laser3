@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.helper.SwissKnife
+import de.laser.storage.BeanStorage
+import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
 class SemanticUiNavigationTagLib {
@@ -80,12 +82,11 @@ class SemanticUiNavigationTagLib {
             log.debug("throwTagError(\"Tag [paginate] is missing required attribute [total]\")")
         }
 
-
-        def messageSource = grailsAttributes.messageSource
-        def locale = RequestContextUtils.getLocale(request)
+        MessageSource messageSource = BeanStorage.getMessageSource()
+        Locale locale = RequestContextUtils.getLocale(request)
 
         def total = attrs.int('total') ?: 0
-        def action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
+        String action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
 
         def offset = attrs.int('offset') ?: 0
         if (! offset) offset = (params.int('offset') ?: 0)
@@ -127,8 +128,8 @@ class SemanticUiNavigationTagLib {
         }
         linkTagAttrs.params = linkParams
 
-        Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('paginate.prev', null, messageSource.getMessage('default.paginate.prev', null, 'Previous', locale), locale))]
-        Map nextMap = [title: (attrs.next ?: messageSource.getMessage('paginate.next', null, messageSource.getMessage('default.paginate.next', null, 'Next', locale), locale))]
+        Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('default.paginate.prev', null, null, locale))]
+        Map nextMap = [title: (attrs.next ?: messageSource.getMessage('default.paginate.next', null, null, locale))]
 
         // determine paging variables
         def steps = maxsteps > 0
@@ -242,8 +243,8 @@ class SemanticUiNavigationTagLib {
             }
         }
         // all button
-        def allLinkAttrs = linkTagAttrs.clone()
-        allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, locale)]
+        Map allLinkAttrs = linkTagAttrs.clone() as Map
+        allLinkAttrs.putAt('title', messageSource.getMessage('default.paginate.all', null, locale))
         if(total <= 200) {
             allLinkAttrs.class = "item"
             allLinkAttrs.params.remove('offset')

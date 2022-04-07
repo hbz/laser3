@@ -37,13 +37,13 @@
 
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Teilnehmer" data-position="top center"
-               aria-label="Teilnehmer" data-jsqtk-id="jsqtk-722">
+               aria-label="Teilnehmer" data-jstk-id="jstk-722">
                 <i class="users large icon" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Teilnehmerkosten" data-position="top center"
-               aria-label="Teilnehmerkosten" data-jsqtk-id="jsqtk-725">
+               aria-label="Teilnehmerkosten" data-jstk-id="jstk-725">
                 <i class="money bill large icon" aria-hidden="true"></i>
             </a>
         </th>
@@ -127,7 +127,7 @@
             <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
-                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-jsqtk-id="jsqtk-757">
+                      aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-jstk-id="jstk-757">
                     <i class="ui icon pie chart" aria-hidden="true"></i>
                 </span>
             </a>

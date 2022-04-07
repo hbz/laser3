@@ -9,7 +9,7 @@
 //= require modules/a11y/collections/menu.js
 //= require modules/a11y/elements/icon.js
 //= require modules/a11y/modules/modal.js
-//= require modules/jsqtk.js
+//= require modules/jstk.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
 

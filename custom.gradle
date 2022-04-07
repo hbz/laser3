@@ -1,0 +1,26 @@
+
+task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
+    String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
+    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+    executable 'sh'
+    args '-c', grailsExe + ' prod dbm-gorm-diff ' + date.split('-').first() + '/changelog-' + date + '.groovy --add'
+}
+
+task( 'devtools.triggerRestart', group: 'laser' ) {
+    doLast {
+        FileWriter fw = new FileWriter('./grails-app/conf/spring/restart.trigger')
+        fw.write(System.currentTimeMillis().toString())
+        fw.close()
+    }
+}
+
+task ( 'system.environment', group: 'laser' ) {
+    doLast {
+        System.getenv().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+    }
+}
+task ( 'system.properties', group: 'laser' ) {
+    doLast {
+        System.getProperties().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+    }
+}

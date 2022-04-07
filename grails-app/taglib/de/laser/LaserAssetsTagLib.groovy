@@ -2,7 +2,9 @@ package de.laser
 
 import de.laser.helper.AjaxUtils
 import de.laser.helper.AppUtils
+import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
+import org.grails.web.servlet.mvc.GrailsWebRequest
 
 class LaserAssetsTagLib {
 
@@ -47,10 +49,32 @@ class LaserAssetsTagLib {
         out << "\n\$(function() {"
 
         assetBlocks.each {assetBlock ->
-            out << "\n//-> new asset: ${assetBlock.attrs ?: ''}"
+            out << "\n//-> asset: ${assetBlock.attrs ?: ''}"
             out << "\n ${assetBlock.body}"
         }
 
         out << "\n});</script>"
+    }
+
+    // render override for dev environment
+
+    def render = { attrs ->
+
+        if (Environment.isDevelopmentMode()) {
+            GrailsWebRequest webRequest = getWebRequest()
+            String uri = webRequest.getAttributes().getTemplateUri(attrs.template as String, webRequest.getRequest())
+
+            if (attrs.get('model')) {
+                out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '], START -->'
+            } else {
+                out << '<!-- [template: ' + uri + '], START -->'
+            }
+
+            out << g.render(attrs)
+            out << '<!-- [template: ' + uri + '], END -->'
+        }
+        else {
+            out << g.render(attrs)
+        }
     }
 }

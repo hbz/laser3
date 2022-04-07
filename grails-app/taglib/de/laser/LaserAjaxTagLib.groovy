@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.helper.AjaxUtils
 import de.laser.helper.SwissKnife
 
 class LaserAjaxTagLib {
@@ -9,14 +8,9 @@ class LaserAjaxTagLib {
 
     def remoteLink = {attrs, body ->
 
-        def cssClass = attrs.class
-        attrs.remove('class')
-
-        def role = attrs.role
-        attrs.remove('role')
-
-        def ariaLabel = attrs.ariaLabel
-        attrs.remove('ariaLabel')
+        String cssClass = attrs.remove('class')
+        String role = attrs.remove('role')
+        String ariaLabel = attrs.remove('ariaLabel')
 
         Closure switchEntries = { keys ->
             Map<String, Object> map = [:]
@@ -53,7 +47,7 @@ class LaserAjaxTagLib {
         }
         attrs.remove('url')
 
-        def params = [
+        Map params = [
                 method: (attrs.method? attrs.method : 'post'),
                 action: (attrs.action? attrs.action : url instanceof CharSequence ? url.toString() : createLink(url))
         ]

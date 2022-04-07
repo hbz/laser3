@@ -66,7 +66,7 @@ class SemanticUiDropdownTagLib {
             aClass = aClass + ' active'
         }
 
-        def linkParams = [
+        Map linkParams = [
                 class: aClass,
                 controller: attrs.controller,
                 action: attrs.action,

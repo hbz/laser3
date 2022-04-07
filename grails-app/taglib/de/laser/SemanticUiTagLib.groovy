@@ -550,11 +550,11 @@ class SemanticUiTagLib {
 
     def datepicker = { attrs, body ->
 
-        def inputCssClass = attrs.inputCssClass ?: '';
-        def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
-        def name = attrs.name ? "${message(code: attrs.name)}" : ''
-        def id = attrs.id ? "${message(code: attrs.id)}" : ''
-        def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
+        String inputCssClass = attrs.inputCssClass ?: ''
+        String label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
+        String name = attrs.name ? "${message(code: attrs.name)}" : ''
+        String id = attrs.id ? "${message(code: attrs.id)}" : ''
+        String placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String value = ''
@@ -1154,7 +1154,7 @@ class SemanticUiTagLib {
 
             ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             String gokbId = "${attrs.gokbId}"
-            def record = gokbService.getPackageMapWithUUID(api, gokbId)
+            Map record = gokbService.getPackageMapWithUUID(api, gokbId)
 
             if(record && record[attrs.field]){
                 out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])
