@@ -1,8 +1,12 @@
 package de.laser.helper
 
+import de.laser.storage.BeanStorage
 import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
+import groovy.sql.Sql
+
+import javax.sql.DataSource
 
 class AppUtils {
 
@@ -11,7 +15,7 @@ class AppUtils {
     public static final DEV     = 'DEV'
     public static final LOCAL   = 'LOCAL'
 
-    // -- Server
+    // -- server
 
     static String getCurrentServer() {
         // laserSystemId mapping for runtime check; do not delete
@@ -34,7 +38,7 @@ class AppUtils {
         return LOCAL
     }
 
-    // -- App
+    // -- app
 
     static String getMeta(String token) {
         Holders.grailsApplication.metadata.get( token ) ?: token
@@ -46,7 +50,7 @@ class AppUtils {
         ConfigUtils.readConfig( 'grails.plugin.' + token, false )
     }
 
-    // -- Devtools
+    // -- devtools
 
     static boolean isRestartedByDevtools() {
         try {
@@ -62,7 +66,46 @@ class AppUtils {
         false
     }
 
-    // -- DC
+    // -- database
+
+    static Map<String, String> getPostgresqlServerInfo() {
+
+        DataSource dataSource = BeanStorage.getDataSource()
+        Sql sql = new Sql(dataSource)
+
+        try {
+            [
+                server_version : (sql.firstRow('show server_version').values().join(',') ?: 'unkown'),
+                server_encoding: (sql.firstRow('show server_encoding').values().join(',') ?: 'unkown')
+            ]
+        } catch (Exception e) {
+             println e.getMessage()
+            [ server_version: 'unkown', server_encoding: 'unkown' ]
+        }
+    }
+
+    static Map<String, List> getPostgresqlTableInfo() {
+
+        Map<String, List> result = [:]
+        DataSource dataSource = BeanStorage.getDataSource()
+        Sql sql = new Sql(dataSource)
+
+        sql.rows( "select tablename from pg_tables where schemaname = 'public'").each { table ->
+            String tablename = table.get('tablename')
+            List columns = []
+            sql.rows("select column_name, data_type, collation_name from information_schema.columns where table_schema = 'public' and table_name = '" + tablename + "'").each{ col ->
+                columns.add([
+                        column: col.get('column_name'),
+                        type: col.get('data_type'),
+                        collation: col.get('collation_name') ?: ''
+                ])
+            }
+            result.putAt(tablename, columns)
+        }
+        result
+    }
+
+    // -- domain classes
 
     static GrailsClass getDomainClass(String qualifiedName) {
         // fallback
