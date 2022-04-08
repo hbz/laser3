@@ -10,6 +10,9 @@
     <g:if test="${actionName in ['index','addEntitlements']}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportIEsModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"

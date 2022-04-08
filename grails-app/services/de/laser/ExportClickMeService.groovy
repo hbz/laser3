@@ -550,6 +550,59 @@ class ExportClickMeService {
 
     ]
 
+    static Map<String, Object> EXPORT_ISSUE_ENTITLEMENT_CONFIG = [
+            issueEntitlement      : [
+                    label: 'IssueEntitlement',
+                    message: 'issueEntitlement.label',
+                    fields: [
+                            'issueEntitlement.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'issueEntitlement.status'               : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'issueEntitlement.medium'               : [field: 'medium', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'issueEntitlement.accessStartDate'        : [field: 'accessStartDate', label: 'Access Start Date', message: 'tipp.accessStartDate', defaultChecked: 'true'],
+                            'issueEntitlement.accessEndDate'        : [field: 'accessEndDate', label: 'Cost Before Tax', message: 'renewalEvaluation.costBeforeTax', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.titleType'         : [field: 'tipp.titleType', label: 'Cost After Tax', message: 'renewalEvaluation.costAfterTax', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.hostPlatformURL'              : [field: 'tipp.hostPlatformURL', label: 'Cost Tax', message: 'renewalEvaluation.costTax', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.firstAuthor'             : [field: 'tipp.firstAuthor', label: 'Cost Before Tax', message: 'renewalEvaluation.currency', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.firstEditor'           : [field: 'tipp.firstEditor', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.volume'           : [field: 'tipp.volume', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.editionStatement'           : [field: 'tipp.editionStatement', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.editionNumber'           : [field: 'tipp.editionNumber', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.seriesName'           : [field: 'tipp.seriesName', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.subjectReference'           : [field: 'tipp.subjectReference', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.delayedOA'           : [field: 'tipp.delayedOA', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.hybridOA'           : [field: 'tipp.hybridOA', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.publisherName'           : [field: 'tipp.publisherName', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.accessType'           : [field: 'tipp.publisherName', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.openAccess'           : [field: 'tipp.openAccess', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.pkg'           : [field: 'tipp.pkg.name', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.platform.name'           : [field: 'tipp.platform.name', label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                    ]
+            ],
+            issueEntitlementIdentifiers : [
+                    label: 'Identifiers',
+                    fields: [:],
+
+            ],
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'subscription.name', label: 'Name', message: 'subscription.name.label'],
+                            'subscription.startDate'                    : [field: 'subscription.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                            'subscription.endDate'                      : [field: 'subscription.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.manualCancellationDate'       : [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                            'subscription.status'                       : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
+                            'subscription.kind'                         : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
+                            'subscription.form'                         : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
+                            'subscription.resource'                     : [field: 'subscription.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'subscription.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'subscription.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                            'subscription.uuid'                         : [field: 'subscription.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+    ]
+
     /**
      * Gets the fields for the subscription renewal for the given survey for processing
      * @param surveyConfig the survey to which the renewal fields should be generated
@@ -1134,6 +1187,64 @@ class ExportClickMeService {
     }
 
     /**
+     * Generic call from views
+     * Gets the subscription member export fields for the given subscription and institution and prepares them for the UI
+     * @param subscription the subscription whose members should be exported
+     * @param institution the context institution
+     * @return the configuration map for the subscription member export for the UI
+     */
+    Map<String, Object> getExportIssueEntitlementFieldsForUI() {
+
+        Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
+            fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        fields
+    }
+
+    /**
+     * Gets the subscription fields for the given institution
+     * @param institution the context institution whose perspective should be taken for the export
+     * @return the configuration map for the subscription export
+     */
+    Map<String, Object> getExportIssueEntitlementFields() {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_ISSUE_ENTITLEMENT_CONFIG.keySet().each {
+            EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        exportFields
+    }
+
+    /**
      * Exports the selected fields of the given renewal result
      * @param renewalResult the result to export
      * @param selectedFields the fields which should appear
@@ -1573,6 +1684,49 @@ class ExportClickMeService {
     }
 
     /**
+     * Exports the given fields from the given subscriptions
+     * @param result the subscription set to export
+     * @param selectedFields the fields which should appear
+     * @param institution the institution as reference
+     * @return an Excel worksheet containing the export
+     */
+    def exportIssueEntitlements(ArrayList<IssueEntitlement> result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportIssueEntitlementFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+
+        List titles = exportTitles(selectedExportFields, locale, null, null)
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        List exportData = []
+        result.each { IssueEntitlement issueEntitlement ->
+            setIeRow(issueEntitlement, selectedExportFields, exportData)
+        }
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('myinst.currentSubscriptions.label', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    /**
      * Fills a row for the renewal export
      * @param participantResult the participant's result for the row
      * @param selectedFields the fields which should appear
@@ -1899,6 +2053,37 @@ class ExportClickMeService {
         exportData.add(row)
 
     }
+
+    /**
+     * Fills a row for the subscription export
+     * @param result the subscription to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param localizedName the localised name of the property name
+     * @param selectedCostItemElements the cost item elements to export
+     * @param selectedCostItemFields the fields which should appear in the cost item export
+     */
+    private void setIeRow(def result, Map<String, Object> selectedFields, List exportData){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+
+                }
+                else {
+                    def fieldValue = getFieldValue(result, field, sdf)
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
+        exportData.add(row)
+
+    }
+
 
     /**
      * Returns the value for the given object
