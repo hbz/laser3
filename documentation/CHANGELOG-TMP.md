@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4185    08.04.2022  dev     2.3         Moe     Feature     Testfunktion für Mail verschicken
+
 --      01.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen-500er korrigiert
 
 --      01.04.2022  dev     2.3         Andreas Feature     Glattziehen der Referenzwert-Schlüssel
