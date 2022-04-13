@@ -4,6 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.AppUtils
+import de.laser.helper.MigrationHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
@@ -36,6 +37,7 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
 import org.hibernate.SQLQuery
+import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -563,27 +565,81 @@ class AdminController  {
         DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
 
-        result.table_columns = sql.rows("""
-            SELECT table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
-            FROM information_schema.columns
+        result.allTables = sql.rows("""
+            select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name,
+                (select indexname from pg_indexes where tablename = table_name and indexdef like concat('% INDEX ', column_name, '_idx ON ', table_schema, '.', table_name, ' %')) as indexname
+            from information_schema.columns
             where data_type in ('text', 'character varying') and table_schema = 'public'
-            order by  table_schema, table_name, column_name;
+            order by table_schema, table_name, column_name;
             """)
 
-        result.laser_german_phonebook = "DIN 5007 Var.2"
-        result.default_collate = sql.rows("show LC_COLLATE;").get(0).get('lc_collate')
+        result.collate_current = sql.rows('show LC_COLLATE').get(0).get('lc_collate')
+        result.collate_de = 'de_DE.UTF-8'
+        result.collate_en = 'en_US.UTF-8'
+        result.current_de = 'current_de'
+        result.current_en = 'current_en'
+        int limit = 500;
+
+        String query1de = "select rdv.rdv_value_de from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'country'"
+        String query2de = "select rdv.rdv_value_de from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'ddc'"
+
+        String query1en = "select rdv.rdv_value_en from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'country'"
+        String query2en = "select rdv.rdv_value_en from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'ddc'"
+
+        String query3 = "select org_name from org"
+        String query4 = "select ti_title from title_instance"
 
         result.examples = [
-                'default' : sql.rows(
-                        "select rdv.rdv_value_de from refdata_value rdv, refdata_category rdc " +
-                                "where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'country' " +
-                                "order by rdv.rdv_value_de COLLATE \"default\" limit 20;"
-                ).collect{ it.rdv_value_de },
-                // works because RefdataValue.value_de is set to laser_german_phonebook
-                'laser_german_phonebook' : RefdataValue.executeQuery(
-                        "select rdv.value_de from RefdataValue rdv where rdv.owner.desc = 'country' order by rdv.value_de", [max: 20]
-                )
+                country : [
+                        'de_DE.UTF-8' : sql.rows( query1de + ' order by rdv.rdv_value_de COLLATE "de_DE" limit ' + limit ).collect{ it.rdv_value_de },
+                        'en_US.UTF-8' : sql.rows( query1en + ' order by rdv.rdv_value_en COLLATE "en_US" limit ' + limit ).collect{ it.rdv_value_en },
+                        'current_de'  : RefdataValue.executeQuery( "select value_de from RefdataValue where owner.desc = 'country' order by value_de", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select value_en from RefdataValue where owner.desc = 'country' order by value_en", [max: limit] )
+                ],
+                ddc : [
+                        'de_DE.UTF-8' : sql.rows( query2de + ' order by rdv.rdv_value_de COLLATE "de_DE" limit ' + limit ).collect{ it.rdv_value_de },
+                        'en_US.UTF-8' : sql.rows( query2en + ' order by rdv.rdv_value_en COLLATE "en_US" limit ' + limit ).collect{ it.rdv_value_en },
+                        'current_de'  : RefdataValue.executeQuery( "select value_de from RefdataValue where owner.desc = 'ddc' order by value_de", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select value_en from RefdataValue where owner.desc = 'ddc' order by value_en", [max: limit] )
+                ],
+                org : [
+                        'de_DE.UTF-8' : sql.rows( query3 + ' order by org_name COLLATE "de_DE" limit ' + limit ).collect{ it.org_name },
+                        'en_US.UTF-8' : sql.rows( query3 + ' order by org_name COLLATE "en_US" limit ' + limit ).collect{ it.org_name },
+                        'current_de'  : RefdataValue.executeQuery( "select name from Org order by name", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select name from Org order by name", [max: limit] )
+                ],
+                title : [
+                        'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
+                        'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
+                        'current_de'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] )
+                ]
         ]
+
+        String de_x_icu = MigrationHelper.DE_U_CO_PHONEBK_X_ICU
+        result.examples['country'].putAt( de_x_icu, sql.rows( query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
+        result.examples[    'ddc'].putAt( de_x_icu, sql.rows( query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
+        result.examples[    'org'].putAt( de_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.org_name } )
+        result.examples[  'title'].putAt( de_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
+
+        String en_x_icu = MigrationHelper.EN_US_U_VA_POSIX_X_ICU
+        result.examples['country'].putAt( en_x_icu, sql.rows( query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
+        result.examples[    'ddc'].putAt( en_x_icu, sql.rows( query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
+        result.examples[    'org'].putAt( en_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.org_name } )
+        result.examples[  'title'].putAt( en_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def databaseInfo() {
+        Map<String, Object> result = [:]
+
+        Session hibSess = sessionFactory.currentSession
+        def dbmQuery = (hibSess.createSQLQuery(
+                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
+        )).list()
+        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
 
         result
     }

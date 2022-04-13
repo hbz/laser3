@@ -95,12 +95,4 @@ databaseChangeLog = {
         }
     }
 
-//    changeSet(author: "klober (modified)", id: "1648804786911-12") {
-//        grailsChange {
-//            change {
-//
-//            }
-//            rollback {}
-//        }
-//    }
 }

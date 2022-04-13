@@ -108,6 +108,12 @@
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
+                        <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
+                        <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">

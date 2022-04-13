@@ -50,21 +50,20 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${AppUtils.getConfig('dataSource.url').split('/').last()}</td></tr>
+            <tr><td>Collations</td><td>
+                <%
+                    Set collations = []
+                    AppUtils.getPostgresqlTableInfo().each { it ->
+                        List c = it.value['collation'].findAll()
+                        if (! c.isEmpty()) { collations.addAll(c) }
+                    }
+                    collations.each { print it + '<br/>' }
+                %>
+            </td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
             <tr><td>DataSource.dbCreate</td><td> ${AppUtils.getConfig('dataSource.dbCreate')}</td></tr>
             <tr><td>Postgresql server</td><td> ${AppUtils.getPostgresqlServerInfo()}</td></tr>
-            <tr><td>Postgresql collations</td><td>
-                <%
-                    AppUtils.getPostgresqlTableInfo().each { t ->
-                        t.value.each{ c ->
-                            if (c['collation']) {
-                                println t.key + '.' + c['column'] + '</strong> &nbsp; (' + c['type'] + ') &nbsp; ' + c['collation'] + ' <br/>'
-                            }
-                        }
-                    }
-                %>
-            </td></tr>
         <tbody>
     </table>
 
