@@ -926,6 +926,19 @@ class SubscriptionController {
     }
 
     /**
+     * Call to trigger the revertion of holding status to the end of the subscription's year ring
+     * @return a redirect to the referer
+     */
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR")})
+    def resetHoldingToSubEnd() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.resetHoldingToSubEnd(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code: ctrlResult.result.errMess)
+        redirect(url: request.getHeader("referer"))
+    }
+
+    /**
      * Call for a batch update on the given subscription's holding
      * @return the issue entitlement holding view
      */
