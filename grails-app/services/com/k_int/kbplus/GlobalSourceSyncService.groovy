@@ -716,7 +716,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             break
-                        case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                        case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
                         case 'pkgPropDiffs':
                             diff.diffs.each { pkgPropDiff ->
@@ -1240,9 +1240,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue status = tippStatus.get(tippB.status)
         if ((status == RDStore.TIPP_STATUS_DELETED || tippA.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED) && tippA.status != status) {
             log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId}")
+            RefdataValue oldStatus = tippA.status
             tippA.status = RDStore.TIPP_STATUS_DELETED
             tippA.save()
-            [event: "delete", target: tippA]
+            [event: "delete", oldValue: oldStatus, target: tippA]
         }
         else if(tippA.status != RDStore.TIPP_STATUS_DELETED && status != RDStore.TIPP_STATUS_DELETED) {
             //process central differences which are without effect to issue entitlements
@@ -1652,16 +1653,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     else {
                         def newItem
-                        if(instanceType == 'coverage')
-                            newItem = addNewStatement(tippA,itemB)
+                        if(instanceType == 'coverage') {
+                            newItem = addNewStatement(tippA, itemB)
+                            if(newItem)
+                                subDiffs << [event: 'add', target: newItem]
+                        }
                         else if(instanceType == 'price') {
                             addNewPriceItem(tippA, itemB)
                             IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ie ->
                                 addNewPriceItem(ie, itemB)
                             }
                         }
-                        if(newItem)
-                            subDiffs << [event: 'add', target: newItem]
                     }
                 }
             }
@@ -1701,7 +1703,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     calA.setTime((Date) itemA[cp])
                     calB.setTime((Date) itemB[cp])
                     if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))) {
-                        if(itemA instanceof IssueEntitlementCoverage)
+                        if(itemA instanceof AbstractCoverage)
                             diffs << [prop: cp, oldValue: itemA[cp], newValue: itemB[cp]]
                         else if(itemA instanceof PriceItem) {
                             itemA[cp] = itemB[cp]
@@ -1717,7 +1719,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                      */
                     if(itemA[cp] != null && itemB[cp] == null) {
                         calA.setTime((Date) itemA[cp])
-                        if(itemA instanceof IssueEntitlementCoverage)
+                        if(itemA instanceof AbstractCoverage)
                             diffs << [prop:cp, oldValue:itemA[cp],newValue:null]
                         else if(itemA instanceof PriceItem) {
                             itemA[cp] = null
@@ -1726,7 +1728,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     else if(itemA[cp] == null && itemB[cp] != null) {
                         calB.setTime((Date) itemB[cp])
-                        if(itemA instanceof IssueEntitlementCoverage)
+                        if(itemA instanceof AbstractCoverage)
                             diffs << [prop:cp, oldValue:null, newValue: itemB[cp]]
                         else if(itemA instanceof PriceItem) {
                             itemA[cp] = itemB[cp]
@@ -1737,7 +1739,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             else {
                 if(itemA[cp] != itemB[cp] && !((itemA[cp] == '' && itemB[cp] == null) || (itemA[cp] == null && itemB[cp] == ''))) {
-                    if(itemA instanceof IssueEntitlementCoverage)
+                    if(itemA instanceof AbstractCoverage)
                         diffs << [prop:cp, oldValue: itemA[cp], newValue: itemB[cp]]
                     else if(itemA instanceof PriceItem) {
                         itemA[cp] = itemB[cp]
@@ -1764,12 +1766,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             equivalencyProperties.addAll(PriceItem.equivalencyProperties)
         for (String k : equivalencyProperties) {
             if(k in ['startDate','endDate']) {
-                Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
+                Calendar calA = GregorianCalendar.getInstance(), calB = GregorianCalendar.getInstance()
                 listA.each { itemA ->
                     if(itemA[k] != null && itemB[k] != null) {
                         calA.setTime(itemA[k])
                         calB.setTime(itemB[k])
-                        if (calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))
+                        if (calA == calB)
                             equivalent = itemA
                     }
                     else if(itemA[k] == null && itemB[k] == null)
@@ -1777,9 +1779,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             else
-                equivalent = listA.find { it[k] == itemB[k] }
+                equivalent = listA.find { it[k] == itemB[k] && it[k] != null && itemB[k] != null }
             if (equivalent != null) {
-                println "Statement ${equivalent.id} located as equivalent to ${itemB}"
+                println "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
                 break
             }
         }
