@@ -205,7 +205,36 @@
                                     </tr>
                                     <g:if test="${editmode}">
                                         <tr>
-                                            <td colspan="4" class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></td>
+                                            <td colspan="2" class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></td>
+                                            <g:set var="now" value="${new Date()}"/>
+                                            <td colspan="2" class="control-label">
+                                                <g:if test="${subscription.endDate < now}">
+                                                    <%
+                                                        boolean disabled = false
+                                                        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+                                                        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+                                                        threadArray.each { Thread thread ->
+                                                            if (thread.name == 'PackageTransfer_' + subscription.id) {
+                                                                disabled = true
+                                                            }
+                                                        }
+                                                    %>
+                                                    <g:if test="${!disabled}">
+                                                        <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+                                                                params="[id: subscription.id, subPkg: sp.id]"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.resetSubToEndDate")}"
+                                                                data-confirm-term-how="ok">
+                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:link class="ui disabled button negative la-modern-button la-popup-tooltip la-delay"
+                                                                data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
+                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
+                                                        </g:link>
+                                                    </g:else>
+                                                </g:if>
+                                            </td>
                                         </tr>
                                     </g:if>
                                     </table>

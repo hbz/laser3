@@ -19,10 +19,15 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
+import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.BatchingStatementWrapper
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
@@ -31,6 +36,8 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
@@ -69,6 +76,7 @@ class SubscriptionControllerService {
     ManagementService managementService
     MessageSource messageSource
     PackageService packageService
+    PendingChangeService pendingChangeService
     PropertyService propertyService
     SessionFactory sessionFactory
     SubscriptionService subscriptionService
@@ -1798,12 +1806,14 @@ class SubscriptionControllerService {
         else {
             List<SubscriptionPackage> pkgList = []
             Set<String> pendingOrWithNotification = []
-            Set<Long> packageHistory = [], accepted = []
             Set subscriptionHistory = []
             Set<PendingChange> changesOfPage = []
             result.subscription.packages.each { SubscriptionPackage sp ->
-                pkgList << sp
-                pendingOrWithNotification.addAll(sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey })
+                List<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
+                if(keysWithPendingOrNotification) {
+                    pkgList << sp
+                    pendingOrWithNotification.addAll(keysWithPendingOrNotification)
+                }
             }
 
             /*OLD
@@ -1828,45 +1838,46 @@ class SubscriptionControllerService {
 
             params.sort = params.sort ?: 'ts'
             params.order = params.order ?: 'desc'
+            params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
             String order = " order by pc.${params.sort} ${params.order}"
             if(pkgList && pendingOrWithNotification) {
                 pkgList.each { SubscriptionPackage sp ->
                     Package pkg = sp.pkg
                     Date entryDate = sp.dateCreated
-                    String query = 'select pc.id from PendingChange pc where pc.pkg = :package and pc.oid = null and pc.status = :history ',
-                           query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)',
+                    String query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)',
                            query2a = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)'
                     //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                     String query1b
-                    if(params.eventType == PendingChangeConfiguration.NEW_TITLE)
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED])
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
                     String query2b
-                    if(params.eventType == PendingChangeConfiguration.NEW_COVERAGE)
+                    if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED])
                         query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else
+                    else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED)
                         query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
                     //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                     String query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.msgToken = :eventType and pc.status not in (:pendingStatus)'
-                    subscriptionHistory.addAll(PendingChange.executeQuery(query+order,[package: pkg, history: RDStore.PENDING_CHANGE_HISTORY]))
-                    subscriptionHistory.addAll(PendingChange.executeQuery(query1a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    subscriptionHistory.addAll(PendingChange.executeQuery(query2a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED])
+                        subscriptionHistory.addAll(PendingChange.executeQuery(query1a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
+                        subscriptionHistory.addAll(PendingChange.executeQuery(query2a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     //subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[package: pkg, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
-                    changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED])
+                        changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
+                        changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
                     //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     changesOfPage.addAll(PendingChange.executeQuery(query1c+order,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
                 }
             }
 
             params.tab = params.tab ?: 'changes'
-            params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
             params.max = result.max
             params.offset = result.offset
 
-            result.countPendingChanges = changesOfPage.size()
-            result.countAcceptedChanges = subscriptionHistory.size()
+            result.putAll(pendingChangeService.getCountsForPackages(pkgList))
 
             if(params.tab == 'changes') {
                 result.changes = changesOfPage ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:changesOfPage) order by '+params.sort+' '+params.order, [changesOfPage: changesOfPage.drop(result.offset).take(result.max)]) : []
@@ -2365,6 +2376,137 @@ class SubscriptionControllerService {
                 }
             }
             [result:result,status:STATUS_OK]
+        }
+    }
+
+    /**
+     * Reverts the changes applied to the given subscription after its end of running. As the process
+     * may affect a large amount of entries, the process is deployed to a parallel thread
+     * @param params the request parameter map
+     * @return OK if the execution was successful, false otherwise
+     */
+    Map<String,Object> resetHoldingToSubEnd(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        if(!result) {
+            [result: null, status: STATUS_ERROR]
+        }
+        else {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageTransfer_' + result.subscription.id) {
+                    result.errMess = 'subscription.packages.resetToSubEnd.threadRunning'
+                    [result: result, status: STATUS_ERROR]
+                }
+            }
+            executorService.execute({
+                Thread.currentThread().setName("PackageTransfer_${result.subscription.id}")
+                SubscriptionPackage sp = SubscriptionPackage.get(params.subPkg)
+                //need to use native sql because of performance and queries not doable in hql
+                def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+                Sql sql = new Sql(dataSource)
+                //revert changes applied to the package
+                //BEWARE: we have to restore the state to subscription end! If the entity has been modified several times, I need the closest change to the subscription end - and ONLY that!
+                /*
+                    inversion mapping:
+                    new title: set new title to deleted
+                    title updated: set old value
+                    title deleted: set old title to current
+                    new coverage: delete
+                    coverage updated: set old value
+                    coverage deleted: recreate old value (parse JSON in pc.oldValue)
+                 */
+                Map<String, PropertyConfig> ieColNames = GrailsDomainBinder.getMapping(IssueEntitlement).columns,
+                                            covColNames = GrailsDomainBinder.getMapping(IssueEntitlementCoverage).columns
+                sql.withTransaction {
+                    //revert new titles
+                    //log.debug("update issue_entitlement set ie_status_rv_fk = ${RDStore.TIPP_STATUS_DELETED.id} where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and pc_status_rdv_fk = ${RDStore.PENDING_CHANGE_ACCEPTED.id} and (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_tipp_fk is not null and pc_msg_token = ${PendingChangeConfiguration.NEW_TITLE}) and ie_subscription_fk in (select sub_id from subscription where sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id})")
+                    sql.executeUpdate("update issue_entitlement set ie_status_rv_fk = :deleted where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :newTipp) and ie_subscription_fk in (select sub_id from subscription where sub_id = :subId or sub_parent_sub_fk = :subId)", [subId: sp.subscription.id, pkgId: sp.pkg.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, deleted: RDStore.TIPP_STATUS_DELETED.id, newTipp: PendingChangeConfiguration.NEW_TITLE])
+                    //revert updated titles
+                    List<GroovyRowResult> acceptedTitleUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) pc_tipp_fk, pc_old_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :tippUpdated order by pc_date_created::date", [subId: sp.subscription.id, pkgId: sp.pkg.id, tippUpdated: PendingChangeConfiguration.TITLE_UPDATED])
+                    //need to revert changes one by one ... very ugly!
+                    acceptedTitleUpdates.eachWithIndex { GroovyRowResult row, int i ->
+                        println "now processing record ${i} of ${acceptedTitleUpdates.size()} entries"
+                        sql.executeUpdate("update issue_entitlement set ${ieColNames[row['pc_target_property']].column} = :oldValue where ie_tipp_fk = :tipp and ie_subscription_fk = :subscription", [oldValue: row['pc_old_value'], tipp: row['pc_tipp_fk'], subscription: row['sub_fk']])
+                    }
+                    //revert deleted titles
+                    //log.debug("update issue_entitlement set ie_status_rv_fk = case when pc_old_value is not null then (select rdv_id from refdata_value join refdata_category on rdc_id = rdv_owner where rdv_value = pc_old_value and rdc_description = '${RDConstants.TIPP_STATUS}') else :current end from pending_change where where ie_tipp_fk = pc_tipp_fk and pc_tipp_fk in (select distinct on (pc_date_created) pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and pc_status_rdv_fk = ${RDStore.PENDING_CHANGE_ACCEPTED.id} and pc_tipp_fk is not null and pc_msg_token = ${PendingChangeConfiguration.TITLE_DELETED}) and ie_subscription_fk in (select sub_id from subscription where sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id})")
+                    sql.executeUpdate("update issue_entitlement set ie_status_rv_fk = case when pc_old_value is not null then (select rdv_id from refdata_value join refdata_category on rdc_id = rdv_owner where rdv_value = pc_old_value and rdc_description = '${RDConstants.TIPP_STATUS}') else :current end from pending_change where ie_tipp_fk = pc_tipp_fk and pc_tipp_fk in (select distinct on (pc_date_created) pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and pc_tipp_fk is not null and pc_msg_token = :titleDeleted order by pc_date_created) and ie_subscription_fk in (select sub_id from subscription where sub_id = :subId or sub_parent_sub_fk = :subId)", [subId: sp.subscription.id, pkgId: sp.pkg.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, current: RDStore.TIPP_STATUS_CURRENT.id, tippDeleted: PendingChangeConfiguration.TITLE_DELETED])
+                    //revert new coverages
+                    sql.executeUpdate("delete from issue_entitlement_coverage where ic_id in (select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join subscription on ie_subscription_fk = sub_id where (sub_id = :subId or sub_parent_sub_fk = :subId) and ic_date_created > sub_end_date)", [subId: sp.subscription.id])
+                    //revert updated coverages
+                    //log.debug("select distinct on (pc_date_created::date, pc_target_property) pc_tc_fk, pc_msg_token, pc_old_value, pc_new_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and pc_status_rdv_fk = ${RDStore.PENDING_CHANGE_ACCEPTED.id} and pc_oid in (select concat('${Subscription.class.name}:',sub_id) from subscription where sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_tc_fk is not null and pc_msg_token = ${PendingChangeConfiguration.COVERAGE_UPDATED} order by pc_date_created::date")
+                    List<GroovyRowResult> acceptedCoverageUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) tc_tipp_fk, pc_tc_fk, pc_msg_token, pc_old_value, pc_new_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and pc_oid in (select concat('${Subscription.class.name}:',sub_id) from subscription where sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tc_fk is not null and pc_msg_token = :covUpdated order by pc_date_created::date", [subId: sp.subscription.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, pkgId: sp.pkg.id, covUpdated: PendingChangeConfiguration.COVERAGE_UPDATED])
+                    Map<Long, Map<String, Object>> revertingChanges = [:]
+                    acceptedCoverageUpdates.eachWithIndex { GroovyRowResult row, int idx ->
+                        println "now processing change ${idx} out of ${acceptedCoverageUpdates.size()} records"
+                        Map<String, Object> revertingMap = revertingChanges.get(row['pc_tc_fk'])
+                        if(!revertingMap)
+                            revertingMap = [subscriptions: new HashSet<Long>(), changes: []]
+                        revertingMap.subscriptions << Long.parseLong(row['sub_fk'])
+                        def oldValue, newValue
+                        if (row['pc_target_property'] in ['startDate', 'endDate']) {
+                            oldValue = row['pc_old_value'] ? new Timestamp(DateUtils.parseDateGeneric(row['pc_old_value']).getTime()) : null
+                        } else {
+                            oldValue = row['pc_old_value']
+                        }
+                        revertingMap.changes << [key: covColNames[row['pc_target_property']].column, value: oldValue]
+                        revertingChanges.put(row['pc_tc_fk'], revertingMap)
+                    }
+                    revertingChanges.eachWithIndex { Long tc, Map<String, Object> revertingMap, int i ->
+                        revertingMap.subscriptions.eachWithIndex { Long subKey, int j ->
+                            println "now reverting change ${i} out of ${revertingChanges.size()} records at subscriptions ${j} out of ${revertingMap.subscriptions.size()} subscriptions"
+                            List<GroovyRowResult> revertingRecords = sql.rows("select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join tippcoverage on ie_tipp_fk = tc_tipp_fk where tc_id = :tc and ie_subscription_fk = :subscription order by ic_id limit 1", [tc: tc, subscription: subKey])
+                            if(revertingRecords.size() == 1) {
+                                GroovyRowResult oldRec = revertingRecords.get(0)
+                                revertingMap.changes.each { Map<String, Object> changeMap ->
+                                    sql.executeUpdate("update issue_entitlement_coverage set ${changeMap.key} = :oldValue where ic_id = :icId", [oldValue: changeMap.value, icId: oldRec['ic_id']])
+                                }
+                            }
+                        }
+                    }
+                    //revert deleted coverages
+                    //log.debug("select pc_old_value, split_part(pc_oid, ':', 2) as sub_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_msg_token = '${PendingChangeConfiguration.COVERAGE_DELETED}'")
+                    List<GroovyRowResult> deletedCoverages = sql.rows("select pc_old_value, split_part(pc_oid, ':', 2) as sub_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_msg_token = :covDeleted and pc_status_rdv_fk = :accepted", [pkgId: sp.pkg.id, subId: sp.subscription.id, covDeleted: PendingChangeConfiguration.COVERAGE_DELETED, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id])
+                    if(deletedCoverages) {
+                        sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_note, ic_coverage_depth, ic_embargo, ic_date_created, ic_last_updated) values (0, :ie, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :note, :depth, :embargo, :dateCreated, :lastUpdated)") { BatchingStatementWrapper stmt ->
+                            deletedCoverages.eachWithIndex { GroovyRowResult row, int i ->
+                                println "now restoring deleted coverage ${i}"
+                                Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
+                                //when migrating to dev: change deleted by removed
+                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :deleted", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), deleted: RDStore.TIPP_STATUS_DELETED])
+                                if(ie) {
+                                    Map<String, Object> ieCovMap = [ie: ie[0],
+                                                                    dateCreated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.dateCreated).getTime()),
+                                                                    lastUpdated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.lastUpdated).getTime()),
+                                                                    startDate: oldCoverage.startDate ? new Timestamp(DateUtils.parseDateGeneric(oldCoverage.startDate).getTime()) : null,
+                                                                    startVolume: oldCoverage.startVolume,
+                                                                    startIssue: oldCoverage.startIssue,
+                                                                    endDate: oldCoverage.endDate ? new Timestamp(DateUtils.parseDateGeneric(oldCoverage.endDate).getTime()) : null,
+                                                                    endVolume: oldCoverage.endVolume,
+                                                                    endIssue: oldCoverage.endIssue,
+                                                                    note: oldCoverage.coverageNote,
+                                                                    depth: oldCoverage.coverageDepth,
+                                                                    embargo: oldCoverage.embargo]
+                                    stmt.addBatch(ieCovMap)
+                                }
+                            }
+                        }
+                    }
+                    Set<Object> pendingStatus = [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_PENDING.id]
+                    sql.executeUpdate("update pending_change set pc_status_rdv_fk = :rejected from subscription, subscription_package where split_part(pc_oid, ':', 2)::bigint = sub_id and split_part(pc_oid, ':', 2)::bigint = sp_sub_fk and sp_pkg_fk = :pkgId and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and pc_status_rdv_fk = any(:pendingStatus)", [rejected: RDStore.PENDING_CHANGE_REJECTED.id, pendingStatus: sql.connection.createArrayOf('bigint', pendingStatus.toArray()), subId: sp.subscription.id, pkgId: sp.pkg.id])
+                    sql.executeUpdate("update pending_change_configuration set pcc_with_notification = false, pcc_setting_value_rv_fk = :reject where pcc_sp_fk = :spId", [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT.id, spId: sp.id])
+                }
+                sp.freezeHolding = true
+                sp.save()
+                PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                    AuditConfig.removeConfig(sp.subscription, settingKey)
+                    AuditConfig.removeConfig(sp.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                    if(!AuditConfig.getConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING))
+                        AuditConfig.addConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING)
+                }
+            })
+            [result: result, status: STATUS_OK]
         }
     }
 

@@ -938,6 +938,89 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     /**
+     * Retrieves the counts of changes for each of the packages in the given list
+     * @param pkgList the list of packages (as {@link SubscriptionPackage} link objects) whose counts should be retrieved
+     * @return a {@link Map} of counts, grouped by events and application status (pending or accepted)
+     */
+    Map<String, Integer> getCountsForPackages(List<SubscriptionPackage> pkgList) {
+        Integer newTitlesPending = 0, titlesUpdatedPending = 0, titlesDeletedPending = 0, newCoveragesPending = 0, coveragesUpdatedPending = 0, coveragesDeletedPending = 0
+        Integer newTitlesAccepted = 0, titlesUpdatedAccepted = 0, titlesDeletedAccepted = 0, newCoveragesAccepted = 0, coveragesUpdatedAccepted = 0, coveragesDeletedAccepted = 0
+        List<RefdataValue> pendingStatus = [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]
+        pkgList.each { SubscriptionPackage sp ->
+            //spontaneous convention: 1: title, 2: coverage, a: accepted, b: pending
+            List acceptedTitleCounts = PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and pc.oid = :subOid and pc.status in (:pendingStatus) group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, subOid: genericOIDService.getOID(sp.subscription), eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED], pendingStatus: pendingStatus])
+            List acceptedCoverageCounts = PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and pc.oid = :subOid and pc.status in (:pendingStatus) group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, subOid: genericOIDService.getOID(sp.subscription), eventTypes: [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED], pendingStatus: pendingStatus])
+            //String query1b
+            List pendingTitleCounts = [], pendingCoverageCounts = []
+            //if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED])
+            pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED], subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+            //else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
+            pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+            //String query2b
+            //if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED])
+            pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED], subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+            //else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED)
+            pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.COVERAGE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+            acceptedTitleCounts.each { row ->
+                switch(row[1]) {
+                    case PendingChangeConfiguration.NEW_TITLE: newTitlesAccepted += row[0]
+                        break
+                    case PendingChangeConfiguration.TITLE_UPDATED: titlesUpdatedAccepted += row[0]
+                        break
+                    case PendingChangeConfiguration.TITLE_DELETED: titlesDeletedAccepted += row[0]
+                        break
+                }
+            }
+            acceptedCoverageCounts.each { row ->
+                switch(row[1]) {
+                    case PendingChangeConfiguration.NEW_COVERAGE: newCoveragesAccepted += row[0]
+                        break
+                    case PendingChangeConfiguration.COVERAGE_UPDATED: coveragesUpdatedAccepted += row[0]
+                        break
+                    case PendingChangeConfiguration.COVERAGE_DELETED: coveragesDeletedAccepted += row[0]
+                        break
+                }
+            }
+            pendingTitleCounts.each { row ->
+                switch(row[1]) {
+                    case PendingChangeConfiguration.NEW_TITLE: newTitlesPending += row[0]
+                        break
+                    case PendingChangeConfiguration.TITLE_UPDATED: titlesUpdatedPending += row[0]
+                        break
+                    case PendingChangeConfiguration.TITLE_DELETED: titlesDeletedPending += row[0]
+                        break
+                }
+            }
+            pendingCoverageCounts.each { row ->
+                switch(row[1]) {
+                    case PendingChangeConfiguration.NEW_COVERAGE: newCoveragesPending += row[0]
+                        break
+                    case PendingChangeConfiguration.COVERAGE_UPDATED: coveragesUpdatedPending += row[0]
+                        break
+                    case PendingChangeConfiguration.COVERAGE_DELETED: coveragesDeletedPending += row[0]
+                        break
+                }
+            }
+        }
+        Integer pendingCount = newTitlesPending+titlesUpdatedPending+titlesDeletedPending+newCoveragesPending+coveragesUpdatedPending+coveragesDeletedPending
+        Integer acceptedCount = newTitlesAccepted+titlesUpdatedAccepted+titlesDeletedAccepted+newCoveragesAccepted+coveragesUpdatedAccepted+coveragesDeletedAccepted
+        [countPendingChanges: pendingCount,
+         countAcceptedChanges: acceptedCount,
+         newTitlesPending: newTitlesPending,
+         titlesUpdatedPending: titlesUpdatedPending,
+         titlesDeletedPending: titlesDeletedPending,
+         newTitlesAccepted: newTitlesAccepted,
+         titlesUpdatedAccepted: titlesUpdatedAccepted,
+         titlesDeletedAccepted: titlesDeletedAccepted,
+         newCoveragesPending: newCoveragesPending,
+         coveragesUpdatedPending: coveragesUpdatedPending,
+         coveragesDeletedPending: coveragesDeletedPending,
+         newCoveragesAccepted: newCoveragesAccepted,
+         coveragesUpdatedAccepted: coveragesUpdatedAccepted,
+         coveragesDeletedAccepted: coveragesDeletedAccepted]
+    }
+
+    /**
      * Accepts the given change and applies the parameters
      * @param pc the change to accept
      * @param subId the subscription on which the change should be applied
@@ -1032,8 +1115,15 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     List<IssueEntitlement> ieCheck = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])
-                    if(ieCheck.size() > 0)
-                        targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ieCheck.get(0).coverages)
+                    if(ieCheck.size() > 0) {
+                        IssueEntitlement ie = (IssueEntitlement) ieCheck.get(0)
+                        targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
+                        if(!targetCov) {
+                            List<Long> tippCoverageIDs = TIPPCoverage.executeQuery('select tc.id from TIPPCoverage tc where tc.tipp = :tipp order by tc.startDate, tc.startVolume, tc.startIssue', [tipp: pc.tippCoverage.tipp])
+                            int idx = tippCoverageIDs.indexOf(pc.tippCoverage.id)
+                            targetCov = ie.coverages.getAt(idx)
+                        }
+                    }
                 }
                 if(targetCov && pc.targetProperty) {
                     targetCov[pc.targetProperty] = parsedNewValue
@@ -1221,7 +1311,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param subId the subscription which would have been affected
      * @return true if the rejection was successful, false otherwise
      */
-    boolean reject(PendingChange pc, subId = null) {
+    boolean reject(PendingChange pc, Long subId = null) {
         if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
             pc.status = RDStore.PENDING_CHANGE_REJECTED
             pc.actionDate = new Date()
@@ -1242,11 +1332,11 @@ class PendingChangeService extends AbstractLockableService {
                 target = pc.tippCoverage
             }
             if(target) {
-                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(subId)])
+                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:subId])
                 if(subPkg.size() == 1) {
                     PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg[0].subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextOrg])
                     if (!toReject)
-                        log.error("Error when auto-accepting pending change ${toReject} with token ${toReject.msgToken}!")
+                        log.error("Error when auto-rejecting pending change ${toReject} with token ${toReject.msgToken}!")
                 }
                 else log.error("unable to determine subscription package for pending change ${pc}")
             }
