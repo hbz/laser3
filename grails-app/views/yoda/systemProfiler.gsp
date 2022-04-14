@@ -89,10 +89,10 @@
                     <td>
                         <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
-                            <span style="color:red"> ${avg} </span>
+                            <strong style="color:red"> ${avg} </strong>
                         </g:if>
                         <g:elseif test="${avg >= 4}">
-                            <span style="color:orange"> ${avg} </span>
+                            <strong style="color:orange"> ${avg} </strong>
                         </g:elseif>
                         <g:else>
                             <span>${avg}</span>

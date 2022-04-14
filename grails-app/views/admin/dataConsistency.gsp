@@ -14,10 +14,10 @@
 
 <h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
 
+<h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
+
 <div class="ui grid">
     <div class="twelve wide column">
-
-        <h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 
         <g:each in="${titles}" var="obj">
             <g:if test="${true}">

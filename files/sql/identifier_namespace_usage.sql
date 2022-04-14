@@ -8,7 +8,6 @@ SELECT * FROM (
              sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
              sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
              sum(CASE WHEN i.id_sub_fk is null THEN 0 ELSE 1 END)  sub,
-             sum(CASE WHEN i.id_ti_fk is null THEN 0 ELSE 1 END)   title,
              sum(CASE WHEN i.id_tipp_fk is null THEN 0 ELSE 1 END) tipp
       FROM identifier i
                JOIN identifier_namespace idns ON idns.idns_id = i.id_ns_fk
@@ -19,6 +18,5 @@ SELECT * FROM (
     CASE WHEN sq.org > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.pkg > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.sub > 0 THEN 1 ELSE 0 END +
-    CASE WHEN sq.title > 0 THEN 1 ELSE 0 END +
     CASE WHEN sq.tipp > 0 THEN 1 ELSE 0 END
     ) > 1;

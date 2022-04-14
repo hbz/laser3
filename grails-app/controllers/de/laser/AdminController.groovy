@@ -573,7 +573,7 @@ class AdminController  {
             order by table_schema, table_name, column_name;
             """)
 
-        result.collate_current = sql.rows('show LC_COLLATE').get(0).get('lc_collate')
+        result.collate_current = sql.firstRow('show LC_COLLATE').get('lc_collate')
         result.collate_de = 'de_DE.UTF-8'
         result.collate_en = 'en_US.UTF-8'
         result.current_de = 'current_de'
@@ -640,6 +640,15 @@ class AdminController  {
                 'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
         )).list()
         result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+
+        DataSource dataSource = BeanStorage.getDataSource()
+        Sql sql = new Sql(dataSource)
+
+        result.defaultCollate = sql.firstRow('show LC_COLLATE').get('lc_collate')
+
+        result.dbSize = sql.firstRow("select pg_size_pretty(pg_database_size(current_database())) as dbsize").get('dbsize')
+        result.dbActivity = sql.rows('select * from pg_stat_activity where datname = current_database() order by pid')
+        result.dbTableUsage = sql.rows( 'select relname as tablename, n_tup_ins - n_tup_del as rowcount from pg_stat_all_tables join information_schema.tables on relname = table_name where table_schema = \'public\' order by table_name')
 
         result
     }

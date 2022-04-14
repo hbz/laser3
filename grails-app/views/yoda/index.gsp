@@ -113,14 +113,17 @@
                     <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
-                    <div class="item">
+                    <%--<div class="item">
                         <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link> <span class="ui mini label">Admin</span>
-                    </div>
+                    </div>--%>
                     <div class="item">
                         <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link class="item" controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link> <span class="ui mini label">Admin</span>
+                        <g:link controller="admin" action="fileConsistency" target="_blank">${message(code: "menu.admin.fileConsistency")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
+                        <g:link controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>

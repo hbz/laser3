@@ -58,4 +58,13 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1649658426259-4") {
+        grailsChange {
+            change {
+                sql.execute("delete from system_profiler where sp_archive = '2.0'")
+            }
+            rollback {}
+        }
+    }
 }

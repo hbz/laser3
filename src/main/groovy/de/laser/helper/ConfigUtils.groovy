@@ -45,9 +45,6 @@ class ConfigUtils {
     static String getAggrEsGOKBIndex(boolean validate = false) {
         readConfig('aggr_es_gokb_index', validate)
     }
-    static Object getAppDefaultPrefs(boolean validate = false) {
-        readConfig('appDefaultPrefs', validate)
-    }
     static String getBasicDataFileName(boolean validate = false) {
         readConfig('basicDataFileName', validate)
     }
@@ -105,9 +102,6 @@ class ConfigUtils {
     static String getReporting(boolean validate = false) {
         readConfig('reporting', validate)
     }
-    static String getSchemaSpyScripPath(boolean validate = false) {
-        readConfig('schemaSpyScriptPath', validate)
-    }
     static boolean getShowDebugInfo(boolean validate = false) {
         readConfig('showDebugInfo', validate)
     }
@@ -119,9 +113,6 @@ class ConfigUtils {
     }
     static String getStatsApiUrl(boolean validate = false) {
         readConfig('statsApiUrl', validate)
-    }
-    static boolean getStatsSyncJobActiv(boolean validate = false) {
-        readConfig('StatsSyncJobActiv', validate)
     }
     static String getSystemEmail(boolean validate = false) {
         readConfig('systemEmail', validate)
@@ -144,7 +135,6 @@ class ConfigUtils {
         getAggrEsCluster(true)
         getAggrEsHostname(true)
         //getAggrEsIndices(true)
-        getAppDefaultPrefs(true)
         getBasicDataFileName(true)
         getBasicDataPath(true)
         getDeployBackupLocation(true)
@@ -163,11 +153,9 @@ class ConfigUtils {
         getPgDumpPath(true)
         getQuartzHeartbeat(true)
         getReporting(true)
-        getSchemaSpyScripPath(true) // QA only
         getShowDebugInfo(true)
         getShowSystemInfo(true)
         getStatsApiUrl(true)
-        getStatsSyncJobActiv(true)
         getSystemEmail(true)
         getWkhtmltopdfBinary(true)
         getWkhtmltopdfXvfbRunner(true)
