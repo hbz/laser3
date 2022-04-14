@@ -786,6 +786,15 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR")})
+    def resetHoldingToSubEnd() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.resetHoldingToSubEnd(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code: ctrlResult.result.errMess)
+        redirect(url: request.getHeader("referer"))
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
