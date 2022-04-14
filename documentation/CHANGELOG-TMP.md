@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
+
+4188    14.04.2022  rc-2.2  2.2.13      Andreas Feature     Bestand auf Ende eines Jahresringes zurücksetzen
+
 --      01.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen-500er korrigiert
 
 --      01.04.2022  dev     2.3         Andreas Feature     Glattziehen der Referenzwert-Schlüssel
