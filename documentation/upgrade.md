@@ -10,7 +10,8 @@
 - Groovy 2.5.14
 - Java 11
 
-See [build.gradle](../build.gradle) for details on all plugins
+See [build.gradle](../build.gradle) for details on all plugins.
+See [changes.md](./changes.md) for generell information
 
 ### Setup
 
@@ -29,12 +30,7 @@ See [build.gradle](../build.gradle) for details on all plugins
 
 - [laser3-config.groovy.example](../files/server/laser3-config.groovy.example)
 
-### Plugins
+### Plugins 
 
-#### Database migration
-
-- [database-migration.md](./database-migration.md)
-
-#### PDF generation
-
-- [pdf-generation.md](./pdf-generation.md)
+- Database migration: [database-migration.md](./database-migration.md)
+- PDF generation: [pdf-generation.md](./pdf-generation.md)
