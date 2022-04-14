@@ -1385,8 +1385,8 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
         else {
-            base_qry += " and tipp.status != :deleted "
-            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+            base_qry += " and tipp.status != :removed "
+            qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
         if(params.status != '' && params.status != null) {

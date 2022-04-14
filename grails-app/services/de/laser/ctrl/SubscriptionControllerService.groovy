@@ -2178,7 +2178,7 @@ class SubscriptionControllerService {
                         }
                     }
                     result.checked = [:]
-                    Map<String, Object> unfilteredParams = [pkg:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED]
+                    Map<String, Object> unfilteredParams = [pkg:result.subscription.packages.pkg, removed:RDStore.TIPP_STATUS_REMOVED]
                     Set<String> selectedTippIds = [], identifierValues = []
                     identifiers.values().each { subList ->
                         if(subList instanceof List)
@@ -2186,7 +2186,7 @@ class SubscriptionControllerService {
                     }
                     identifierValues.collate(32700).each { List<String> chunk ->
                         unfilteredParams.idList = chunk
-                        selectedTippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg = :pkg and tipp.status != :deleted and id.value in (:idList)',unfilteredParams))
+                        selectedTippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg = :pkg and tipp.status != :removed and id.value in (:idList)',unfilteredParams))
                         selectedTippIds.removeAll(addedTipps)
                     }
                     selectedTippIds.each { String wekbId ->
@@ -2213,8 +2213,8 @@ class SubscriptionControllerService {
                 }
                 /*
                 if (!params.pagination) {
-                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
-                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
+                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
+                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
                     Map<String, Set> allIdentifiers = [:]
                     identifierRows.each { Map row ->
                         Set<Map> ids = allIdentifiers.get(row.gokbId)

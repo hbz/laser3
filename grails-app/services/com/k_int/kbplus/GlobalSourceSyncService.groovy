@@ -54,6 +54,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     PendingChangeService pendingChangeService
     def genericOIDService
     EscapeService escapeService
+    PackageService packageService
     GlobalRecordSource source
     ApiSource apiSource
 
@@ -77,6 +78,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Integer> initialPackagesCounter
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
     Map<String,Set<Map<String,Object>>> packagesToNotify
+    Set<PendingChange> titlesToRemove
 
     boolean running = false
 
@@ -168,6 +170,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 }
                             }
                             log.info("end notifying subscriptions")
+                            log.info("clearing removed titles")
+                            if(titlesToRemove.size() > 0) {
+                                packageService.clearRemovedTitles(titlesToRemove)
+                            }
+                            log.info("end clearing titles")
                         }
                         else {
                             log.info("no diffs recorded ...")
@@ -740,6 +747,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                         case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
+                        case 'remove': titlesToRemove << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
+                            break
                         case 'pkgPropDiffs':
                             diff.diffs.each { pkgPropDiff ->
                                 packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
@@ -821,12 +830,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //TitleInstancePackagePlatform.withSession { Session sess ->
             if(tippA) {
                 //update or delete TIPP
-                result.putAll(processTippDiffs(tippA,tippB)) //maybe I have to make some adaptations on tippB!
+                result.putAll(processTippDiffs(tippA,tippB))
             }
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted") && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value])) {
+                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted") && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value])) {
                     //new TIPP
                     TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
                     result.event = 'add'
@@ -1309,7 +1318,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.save()
             [event: "delete", oldValue: oldStatus, target: tippA]
         }
-        else if(tippA.status != RDStore.TIPP_STATUS_DELETED && status != RDStore.TIPP_STATUS_DELETED) {
+        else if(status == RDStore.TIPP_STATUS_REMOVED && tippA.status != status) {
+            //the difference to event: delete is that the title is an error and should have never been appeared in LAS:eR!
+            log.info("TIPP with UUID ${tippA.gokbId} has been marked as erroneous and removed")
+            tippA.status = RDStore.TIPP_STATUS_REMOVED
+            tippA.save()
+            [event: "remove", target: tippA]
+        }
+        else if(!(tippA.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             //tippA.name = tippB.name //TODO include name, sortname in IssueEntitlements, then, this property may move to the controlled ones
@@ -1969,7 +1985,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_DELETED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
-        tippStatus.put(RDStore.TIPP_STATUS_TRANSFERRED.value,RDStore.TIPP_STATUS_TRANSFERRED)
+        tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_UNKNOWN.value,RDStore.TIPP_STATUS_UNKNOWN)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
@@ -2013,6 +2029,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         initialPackagesCounter = [:]
         pkgPropDiffsContainer = [:]
         packagesToNotify = [:]
+        titlesToRemove = []
     }
 
     /**

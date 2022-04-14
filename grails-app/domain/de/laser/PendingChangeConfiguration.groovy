@@ -26,6 +26,7 @@ class PendingChangeConfiguration {
     static final String NEW_TITLE = "pendingChange.message_TP01"
     static final String TITLE_UPDATED = "pendingChange.message_TP02"
     static final String TITLE_DELETED = "pendingChange.message_TP03"
+    static final String TITLE_REMOVED = "pendingChange.message_TP04"
     static final String COVERAGE_UPDATED = "pendingChange.message_TC01"
     static final String NEW_COVERAGE = "pendingChange.message_TC02"
     static final String COVERAGE_DELETED = "pendingChange.message_TC03"

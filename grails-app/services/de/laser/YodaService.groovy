@@ -70,7 +70,7 @@ class YodaService {
         Map<String,List<Package>> result = [pkgDuplicates: pkgDuplicates]
         if(pkgDuplicates) {
             log.debug("located package duplicates")
-            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
+            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :removed',[pkg:pkgDuplicates,removed:RDStore.TIPP_STATUS_REMOVED])
             List<Package> pkgDupsWithoutTipps = []
             pkgDuplicates.each { pkg ->
                 if(!pkgDupsWithTipps.contains(pkg))
@@ -696,7 +696,7 @@ class YodaService {
      * @param doIt execute the cleanup?
      * @return a result map of titles whose we:kb entry has been marked as deleted
      */
-    Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
+    Map<String, Object> expungeRemovedTIPPs(boolean doIt) {
         GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
         Map<String, Object> result = [:]
         Map<String, String> wekbUuids = [:]
@@ -705,7 +705,7 @@ class YodaService {
         http.request(Method.POST, ContentType.JSON) { req ->
             body = [componentType: 'TitleInstancePackagePlatform',
                     max: 10000,
-                    status: ['Deleted', GlobalSourceSyncService.PERMANENTLY_DELETED]]
+                    status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
             requestContentType = ContentType.URLENC
             response.success = { resp, json ->
                 if(resp.status == 200) {
@@ -728,7 +728,7 @@ class YodaService {
         }
         http.shutdown()
         if(wekbUuids) {
-            List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted or tipp.gokbId in (:deletedWekbIDs)', [deleted: RDStore.TIPP_STATUS_DELETED, deletedWekbIDs: wekbUuids.keySet()])
+            List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :removed or tipp.gokbId in (:deletedWekbIDs)', [removed: RDStore.TIPP_STATUS_REMOVED, deletedWekbIDs: wekbUuids.keySet()])
             Set<String> keysToDelete = []
             deletedLaserTIPPs.each { Map row ->
                 Map<String, Object> titleRow = row
