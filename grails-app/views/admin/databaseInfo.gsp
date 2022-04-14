@@ -37,6 +37,11 @@
             <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
             <tr><td>Config dataSource.dbCreate</td><td> ${AppUtils.getConfig('dataSource.dbCreate')}</td></tr>
             <tr><td>Database size</td><td> ${dbSize}</td></tr>
+            <tr><td>User defined functions</td><td>
+                <g:each in="${dbFunctions}" var="udf">
+                    ${udf.function}; Version ${udf.version}<br />
+                </g:each>
+            </td></tr>
             <tr><td>Postgresql server</td><td> ${AppUtils.getPostgresqlServerInfo()}</td></tr>
         <tbody>
     </table>
@@ -66,7 +71,7 @@
         <tbody>
     </table>
 
-<h2 class="ui header">Nutzung (schnelle Berechnung)</h2>
+    <h2 class="ui header">Nutzung (schnelle Berechnung)</h2>
 
     <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>

@@ -264,7 +264,7 @@ assets {
 
 // ---[ gradle tasks
 
-apply from: 'custom.gradle'
+apply from: 'laserTasks.gradle'
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions) {

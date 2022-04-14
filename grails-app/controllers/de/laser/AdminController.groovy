@@ -645,10 +645,12 @@ class AdminController  {
         Sql sql = new Sql(dataSource)
 
         result.defaultCollate = sql.firstRow('show LC_COLLATE').get('lc_collate')
+        result.dbSize         = sql.firstRow("select pg_size_pretty(pg_database_size(current_database())) as dbsize").get('dbsize')
 
-        result.dbSize = sql.firstRow("select pg_size_pretty(pg_database_size(current_database())) as dbsize").get('dbsize')
-        result.dbActivity = sql.rows('select * from pg_stat_activity where datname = current_database() order by pid')
-        result.dbTableUsage = sql.rows( 'select relname as tablename, n_tup_ins - n_tup_del as rowcount from pg_stat_all_tables join information_schema.tables on relname = table_name where table_schema = \'public\' order by table_name')
+        result.dbActivity   = sql.rows('select * from pg_stat_activity where datname = current_database() order by pid')
+
+        result.dbFunctions  = sql.rows( "select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines where routine_type = 'FUNCTION' and specific_schema = 'public' order by function")
+        result.dbTableUsage = sql.rows( "select relname as tablename, n_tup_ins - n_tup_del as rowcount from pg_stat_all_tables join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
 
         result
     }

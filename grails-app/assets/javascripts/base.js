@@ -6,4 +6,5 @@
 //= require libs/moment-with-locales-laser.js
 //= require libs/readmore.js
 //= require /select2/js/select2.js      //-- vendor
+
 console.log('+ base.js')
