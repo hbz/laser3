@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4195        19.04.2022  dev 2.3        Moe      Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
+
+--      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
+
+4188    14.04.2022  rc-2.2  2.2.13      Andreas Feature     Bestand auf Ende eines Jahresringes zurücksetzen
+
 4021    08.04.2022  dev     2.3         Moe     Feature    ClickMe Excel für Titel-Ebene
 
 4185    08.04.2022  dev     2.3         Moe     Feature     Testfunktion für Mail verschicken
