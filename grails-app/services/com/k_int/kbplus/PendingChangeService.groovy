@@ -567,14 +567,14 @@ class PendingChangeService extends AbstractLockableService {
                 if(row.get('prompt') != null && row.get('prompt') == true) {
                     Set<String> packageSettings = packageConfigMap.prompt.get([spId, spPkg, dateEntry, spSub])
                     if(!packageSettings)
-                        packageSettings = []
+                        packageSettings = [PendingChangeConfiguration.TITLE_REMOVED] //must always be present! And it cannot be added to SETTING_KEYS as this procedure is different from the other - configurable - settings!
                     packageSettings << row.get('key')
                     packageConfigMap.prompt.put([spId, spPkg, dateEntry, spSub], packageSettings)
                 }
                 if(row.get('with_notification') == true) {
                     Set<String> packageSettings = packageConfigMap.notify.get([spId, spPkg, dateEntry, spSub])
                     if(!packageSettings)
-                        packageSettings = []
+                        packageSettings = [PendingChangeConfiguration.TITLE_REMOVED]
                     packageSettings << row.get('key')
                     packageConfigMap.notify.put([spId, spPkg, dateEntry, spSub], packageSettings)
                 }
