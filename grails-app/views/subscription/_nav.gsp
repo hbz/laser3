@@ -12,7 +12,7 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}<div class="ui floating blue circular label">${currentTitlesCounts}</div></g:link>
     </g:else>
 
-    <semui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.pendingChanges.label" />
+    <semui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.changes.label" />
 
     <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
         <semui:subNavItem controller="subscription" action="members" counts="${currentMembersCounts}" params="${[id:params.id]}" message="${"subscription.details.consortiaMembers.label"}" />

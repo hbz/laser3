@@ -72,7 +72,7 @@
                     <g:if test="${editable}">
                         <td class="x">
                             <g:if test="${costItemGroups.get(bcode)}">
-                                <g:link controller="myInstitution" action="finance"  class="ui icon button"
+                                <g:link controller="myInstitution" action="finance"  class="ui button icon blue la-modern-button"
                                         params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
                                     <i class="share icon"></i>
                                 </g:link>

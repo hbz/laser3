@@ -298,7 +298,7 @@ class StatsSyncService {
                                                     }
                                                 }
                                                 if(donePeriods.size() > 0) {
-                                                    log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toArrayString()}")
+                                                    log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
                                                     sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.connection.createArrayOf('bigint', donePeriods.toArray())])
                                                 }
                                                 log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
