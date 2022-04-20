@@ -841,7 +841,10 @@ class StatsSyncService {
                     }
                 }
                 response.failure = { resp, reader ->
-                    result.error = "server response: ${resp.statusLine} - ${reader}"
+                    if(reader.containsKey("Report_Header"))
+                        result.header = reader["Report_Header"]
+                    else
+                        result.error = "server response: ${resp.statusLine} - ${reader}"
                 }
             }
             http.shutdown()
