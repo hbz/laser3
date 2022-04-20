@@ -79,6 +79,14 @@
                                     </g:else>
                                 </g:if>
                             </g:if>
+                            <g:if test="${(ownobj instanceof SurveyConfig)}">
+                                <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                <button type="button" class="ui icon blue button la-modern-button editable-cancel"
+                                        data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i class="pencil icon"></i></button>
+                            </g:if>
                         </div>
                     </div>
                 </div>
