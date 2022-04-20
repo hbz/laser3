@@ -1975,7 +1975,7 @@ join sub.orgRelations or_sub where
 
         result.surveyResults = []
 
-        result.surveyConfig.getSortiedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
             result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
         }
 

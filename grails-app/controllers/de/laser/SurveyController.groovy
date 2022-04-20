@@ -1980,7 +1980,7 @@ class SurveyController {
 
         result.surveyResults = []
 
-        result.surveyConfig.getSortiedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
             result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
         }
 

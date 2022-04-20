@@ -864,7 +864,7 @@
 </g:if>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-    <g:set var="surveyProperties" value="${surveyConfig.getSortiedSurveyConfigProperties()}"/>
+    <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
     <semui:form>
 

@@ -476,7 +476,7 @@ class SurveyConfig {
         return surveyInfo.name + ' - ' + statusString + ' ' +period + ' ' + surveyInfo.type.getI10n('value')
     }
 
-    List<SurveyConfigProperties> getSortiedSurveyConfigProperties() {
+    List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
        List<SurveyConfigProperties> surveyConfigPropertiesList = []
 
         surveyConfigPropertiesList << surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
@@ -487,8 +487,8 @@ class SurveyConfig {
 
     }
 
-    List<PropertyDefinition> getSortiedSurveyProperties() {
-        List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortiedSurveyConfigProperties()
+    List<PropertyDefinition> getSortedSurveyProperties() {
+        List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortedSurveyConfigProperties()
         return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 

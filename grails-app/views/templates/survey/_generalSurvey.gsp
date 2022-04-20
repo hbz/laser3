@@ -247,7 +247,7 @@
 </div><!-- .grid -->
 
 <g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-    <g:set var="surveyProperties" value="${surveyConfig.getSortiedSurveyConfigProperties()}"/>
+    <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
     <semui:form>
 
