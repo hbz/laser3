@@ -49,8 +49,9 @@ class IssueEntitlementController  {
 
       result.user = contextService.getUser()
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
+      result.sub = result.issueEntitlementInstance.subscription
 
-      if(result.subscription.getSubscriber() == contextService.getOrg() || result.subscription.getConsortia() == contextService.getOrg()){
+      if(result.sub.getSubscriber().id == contextService.getOrg().id || result.sub.getConsortia().id == contextService.getOrg().id){
           result.isMySub = true
       }
 

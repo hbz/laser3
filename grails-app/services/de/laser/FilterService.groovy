@@ -1225,7 +1225,7 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
+        if (params.hasPerpetualAccess) {
             if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
                 base_qry += "and ie.perpetualAccessBySub is not null "
             }else{
@@ -1235,10 +1235,9 @@ class FilterService {
         }
 
         if (params.hasPerpetualAccessBySubs) {
-            base_qry += "and ie.perpetualAccessBySub in (:subs)"
+            base_qry += "and ie.tipp in (select ie2.tipp from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
             qry_params.subs = params.list('hasPerpetualAccessBySubs')
             filterSet = true
-            println(base_qry)
         }
 
         if(!params.forCount)
