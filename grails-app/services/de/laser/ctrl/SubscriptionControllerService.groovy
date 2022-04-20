@@ -1157,6 +1157,20 @@ class SubscriptionControllerService {
             Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
 
+            result.subscriber = newSub.getSubscriber()
+
+            result.subscriberSubs = []
+            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
+            if(subscriptions) {
+                result.subscriberSubs = subscriptions
+            }
+
+            if (params.hasPerpetualAccess) {
+                params.hasPerpetualAccessBySubs = subscriptions
+                result.hasPerpetualAccess = params.hasPerpetualAccess
+                params.remove('hasPerpetualAccess')
+            }
+
             List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
@@ -1176,6 +1190,10 @@ class SubscriptionControllerService {
                 List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
 
+            }
+
+            if (result.hasPerpetualAccess) {
+                params.hasPerpetualAccess = result.hasPerpetualAccess
             }
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
@@ -1229,7 +1247,7 @@ class SubscriptionControllerService {
             result.newSub = newSub
             result.subscription = baseSub
             result.previousSubscription = previousSubscription
-            result.subscriber = result.newSub.getSubscriber()
+
 
             if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
                 result.participant = result.subscriber
@@ -1237,13 +1255,6 @@ class SubscriptionControllerService {
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
             result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-
-
-            result.subscriberSubs = []
-            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-            if(subscriptions) {
-                result.subscriberSubs = subscriptions
-            }
 
 
             if (result.editable) {
