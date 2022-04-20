@@ -1978,7 +1978,7 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(result.participant, result.surveyConfig, result.surveyConfig.getSortiedSurveyProperties())
 
         result.ownerId = result.surveyInfo.owner.id
 

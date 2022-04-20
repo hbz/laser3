@@ -476,6 +476,22 @@ class SurveyConfig {
         return surveyInfo.name + ' - ' + statusString + ' ' +period + ' ' + surveyInfo.type.getI10n('value')
     }
 
+    List<SurveyConfigProperties> getSortiedSurveyConfigProperties() {
+       List<SurveyConfigProperties> surveyConfigPropertiesList = []
+
+        surveyConfigPropertiesList << surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
+        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+
+        return surveyConfigPropertiesList.flatten()
+
+    }
+
+    List<PropertyDefinition> getSortiedSurveyProperties() {
+        List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortiedSurveyConfigProperties()
+        return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
+    }
+
 
 
 }

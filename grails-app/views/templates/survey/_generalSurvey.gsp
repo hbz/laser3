@@ -247,7 +247,7 @@
 </div><!-- .grid -->
 
 <g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
+    <g:set var="surveyProperties" value="${surveyConfig.getSortiedSurveyConfigProperties()}"/>
 
     <semui:form>
 
@@ -269,7 +269,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
