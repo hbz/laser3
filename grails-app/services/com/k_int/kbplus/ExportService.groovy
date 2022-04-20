@@ -2052,7 +2052,7 @@ class ExportService {
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
 
 		if(showStatsInMonthRings){
-		titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
 		}
 
 		List rows = []
@@ -2094,6 +2094,34 @@ class ExportService {
 						else {
 							allRows << entitlement
 						}
+					}
+				}
+				Map<TitleInstancePackagePlatform, Map<Date, AbstractReport>> reportMap = [:]
+				if(showStatsInMonthRings && subscriber) {
+					String sort = 'r.reportCount desc'
+
+					String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+
+					Calendar filterTime = GregorianCalendar.getInstance()
+					filterTime.setTime(showStatsInMonthRings.first())
+					filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+					Date startDate = filterTime.getTime()
+					filterTime.setTime(showStatsInMonthRings.last())
+					filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+					Date endDate = filterTime.getTime()
+
+					Map<String, Object> queryParams = [customer: subscriber, platforms: titleInstances.platform, startDate: startDate, endDate: endDate, titles: titleInstances]
+
+					List counterReportRows
+					counterReportRows = Counter5Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles)'+dateRange+' order by '+sort, queryParams)
+					if(!counterReportRows)
+						counterReportRows = Counter4Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:title)'+dateRange+' order by '+sort, queryParams)
+					counterReportRows.each { reportRow ->
+						Map<Date, AbstractReport> usageMap = reportMap.get(reportRow[0].title)
+						if(!usageMap)
+							usageMap = [:]
+						usageMap.put(reportRow[1], reportRow[0])
+						reportMap.put(reportRow[0].title,usageMap)
 					}
 				}
 				allRows.each { rowData ->
@@ -2230,18 +2258,22 @@ class ExportService {
 						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
 					}
 
-					if(entitlement && showStatsInMonthRings && subscriber){
-						showStatsInMonthRings.each {Date date ->
-							def counterReport = entitlement.getCounterReport(date, subscriber)
-							//println(counterReport)
+					if(entitlement && showStatsInMonthRings && subscriber) {
+						Calendar filterTime = GregorianCalendar.getInstance()
+						Map<Date, AbstractReport> usageMap = reportMap.get(entitlement.tipp)
+						showStatsInMonthRings.each { Date month ->
+							filterTime.setTime(month)
+							AbstractReport counterReport
+							if(usageMap) {
+								counterReport = usageMap.get(filterTime.get(Calendar.MONTH)+1) //+1 because Calendar.MONTH ranges from 0 to 11
+							}
 							if(counterReport){
 								//println(counterReport)
 								//println(counterReport.reportCount ?: '')
 								row.add([field: counterReport.reportCount ?: '', style:null])
-							}else{
-								row.add([field: ' ', style:null])
 							}
-
+							else
+								row.add([field: ' ', style:null])
 						}
 					}
 
