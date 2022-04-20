@@ -7,7 +7,8 @@ Previous versions of Grails used a reloading agent called SpringLoaded.
 Since this library is no longer maintained and does not support Java 11 it has been removed. 
 As a replacement, SpringBootDeveloperTools is used.
 
-Deploying code changes is configured now via trigger file. Use the Gradle task **devtools.triggerRestart** to update this file and force Devtools to restart the app with current code changes.
+Deploying code changes is configured to watch a [trigger file](../grails-app/conf/spring/restart.trigger). 
+Use the Gradle task **devtools.triggerRestart** to update this file and force a restart with the latest code changes.
 
 ### Passwords
 
@@ -34,4 +35,5 @@ The following fallbacks have been set for faster migration. They can be treated 
 
 ### HTTPBuilder
 
-*org.codehaus.groovy.modules.http-builder:http-builder* is outdated. A migration to *io.micronaut:micronaut-http-client* (or alternative) should take place.
+*org.codehaus.groovy.modules.http-builder:http-builder* is outdated. 
+A migration to *de.laser.http.BasicHttpClient* should take place.

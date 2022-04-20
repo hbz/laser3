@@ -1,26 +1,8 @@
 package de.laser
 
-import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtils
-import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
-import org.apache.http.HttpHost
-import org.apache.http.conn.ConnectTimeoutException
-import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestClient
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.aggregations.AggregationBuilders
-import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
-import org.elasticsearch.search.builder.SearchSourceBuilder
-import org.elasticsearch.search.sort.FieldSortBuilder
-import org.elasticsearch.search.sort.SortOrder
-import org.grails.web.json.parser.JSONParser
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
