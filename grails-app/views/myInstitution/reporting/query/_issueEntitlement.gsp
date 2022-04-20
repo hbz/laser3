@@ -17,7 +17,7 @@
         </div>
     </g:else>
 
-    <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
+    <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
         <div class="ui message negative">
             <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
         </div>

@@ -1,9 +1,11 @@
 package de.laser.reporting.report
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.laser.ApiSource
 import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
+import de.laser.http.BasicHttpClient
 import de.laser.helper.ConfigUtils
 import de.laser.reporting.export.myInstitution.PackageExport
 import de.laser.reporting.export.myInstitution.PlatformExport
@@ -13,10 +15,17 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.grails.web.json.JSONObject
 
 class ElasticSearchHelper {
 
-    static final String ELASTIC_SEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
+    static Log static_logger = LogFactory.getLog(ElasticSearchHelper)
+
+    static final int ELASTICSEARCH_CHUNKSIZE = 500
+
+    static final String ELASTICSEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
 
     static final String IGNORE_FILTER = 'ignoreFilter'
 
@@ -37,7 +46,7 @@ class ElasticSearchHelper {
                 orphanedIdList = esr.orphanedIds as List<Long>
             }
             else {
-                filterResult.put(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)
+                filterResult.put(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE, ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)
                 orphanedIdList = idList
             }
         }
@@ -89,6 +98,110 @@ class ElasticSearchHelper {
 
             try {
                 Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
+
+                static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
+
+                while (pkgList) {
+                    // print ' ~' + pkgList.size()
+                    List terms = pkgList.take(ELASTICSEARCH_CHUNKSIZE)
+                    pkgList = pkgList.drop(ELASTICSEARCH_CHUNKSIZE) as List<List>
+
+                    client.request(
+                            BasicHttpClient.Method.POST,
+                            BasicHttpClient.ContentType.JSON,
+                            null,
+                            [
+                                query: [
+                                        terms: [ uuid: terms.collect{ it[0] } ]
+                                ],
+                                from: 0,
+                                size: 10000,
+                                _source: PackageExport.ES_SOURCE_FIELDS
+                            ],
+                        { resp, data ->
+                                ObjectMapper om = new ObjectMapper()
+                                data.hits.hits.each {
+                                    JSONObject source = it.get('_source')
+                                    Map map = om.readValue( source.toString(), Map.class )
+                                    String id = terms.find{ it[0] == source.uuid }[1] as String
+                                    result.records.putAt( id, map )
+                                }
+                            },
+                        { resp ->
+                                println (resp.statusLine)
+                            }
+                    )
+                }
+            }
+            catch (Exception e) {
+                static_logger.error e.getMessage()
+            }
+            result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
+        }
+        result
+    }
+
+    static Map<String, Object> getEsPlatformRecords(List<Long> idList) {
+        Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
+
+        if (idList) {
+            List<List> pkgList = Platform.executeQuery('select plt.gokbId, plt.id from Platform plt where plt.id in (:idList)', [idList: idList])
+
+            try {
+                Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
+
+                static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
+
+                while (pkgList) {
+                    // print ' ~' + pkgList.size()
+                    List terms = pkgList.take(ELASTICSEARCH_CHUNKSIZE)
+                    pkgList = pkgList.drop(ELASTICSEARCH_CHUNKSIZE) as List<List>
+
+                    client.request(
+                            BasicHttpClient.Method.POST,
+                            BasicHttpClient.ContentType.JSON,
+                            null,
+                            [
+                                query: [
+                                        terms: [ uuid: terms.collect{ it[0] } ]
+                                ],
+                                from: 0,
+                                size: 10000,
+                                _source: PlatformExport.ES_SOURCE_FIELDS
+                            ],
+                            { resp, data ->
+                                ObjectMapper om = new ObjectMapper()
+                                data.hits.hits.each {
+                                    JSONObject source = it.get('_source')
+                                    Map map = om.readValue( source.toString(), Map.class )
+                                    String id = terms.find{ it[0] == source.uuid }[1] as String
+                                    result.records.putAt( id, map )
+                                }
+                            },
+                            { resp ->
+                                println (resp.statusLine)
+                            }
+                    )
+                }
+            }
+            catch (Exception e) {
+                static_logger.error e.getMessage()
+            }
+            result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
+        }
+        result
+    }
+
+    static Map<String, Object> getEsPackageRecords_ORG(List<Long> idList) {
+        Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
+
+        if (idList) {
+            List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
+
+            try {
+                Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
                 HTTPBuilder hb = new HTTPBuilder( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
 
                 print ' Retrieving: ' + hb.getUri()
@@ -129,7 +242,7 @@ class ElasticSearchHelper {
         result
     }
 
-    static Map<String, Object> getEsPlatformRecords(List<Long> idList) {
+    static Map<String, Object> getEsPlatformRecords_ORG(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
 
         if (idList) {

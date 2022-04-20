@@ -5,11 +5,11 @@
     <g:set var="validFilterResult" value="${filterResult.data.packageIdList}" />
 
     <g:if test="${validFilterResult}">
-        <div class="ui message ${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE) ? 'warning' : 'success'}">
+        <div class="ui message ${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE) ? 'warning' : 'success'}">
             <p>
                 <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
-            <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
+            <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
                 <p><i class="icon large exclamation triangle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
@@ -29,7 +29,7 @@
         <div class="ui message negative">
             <p><g:message code="reporting.filter.result.x.empty" /></p>
 
-            <g:if test="${filterResult.get(ElasticSearchHelper.ELASTIC_SEARCH_IS_NOT_REACHABLE)}">
+            <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
                 <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
             </g:if>
         </div>

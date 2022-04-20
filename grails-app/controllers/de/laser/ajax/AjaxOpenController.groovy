@@ -36,4 +36,10 @@ class AjaxOpenController {
     def messages() {
         render template: '/templates/systemMessages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
     }
+
+    @Secured(['permitAll']) // TODO
+    def test() {
+        Map test = [ a: 1, b: 2, status: 'test_only', time: System.currentTimeMillis() ]
+        render test as JSON
+    }
 }

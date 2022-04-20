@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.AjaxUtils
+import de.laser.http.AjaxUtils
 import de.laser.helper.AppUtils
 import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
