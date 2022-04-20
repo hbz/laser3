@@ -421,7 +421,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
+            <g:each in="${surveyResults}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">
