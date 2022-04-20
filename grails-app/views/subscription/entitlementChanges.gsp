@@ -65,6 +65,48 @@
                     params="[eventType: event, tab: params.tab]"
                     class="item ${params.eventType == event ? 'active' : ''}">
                 <g:message code="subscription.packages.${event}"/>
+                <span class="ui circular label">
+                    <g:if test="${params.tab == 'acceptedChanges'}">
+                        <g:if test="${event == PendingChangeConfiguration.NEW_TITLE}">
+                            ${newTitlesAccepted}
+                        </g:if>
+                        <g:elseif test="${event == PendingChangeConfiguration.TITLE_UPDATED}">
+                            ${titlesUpdatedAccepted}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.TITLE_DELETED}">
+                            ${titlesDeletedAccepted}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.NEW_COVERAGE}">
+                            ${newCoveragesAccepted}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_UPDATED}">
+                            ${coveragesUpdatedAccepted}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_DELETED}">
+                            ${coveragesDeletedAccepted}
+                        </g:elseif>
+                    </g:if>
+                    <g:else>
+                        <g:if test="${event == PendingChangeConfiguration.NEW_TITLE}">
+                            ${newTitlesPending}
+                        </g:if>
+                        <g:elseif test="${event == PendingChangeConfiguration.TITLE_UPDATED}">
+                            ${titlesUpdatedPending}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.TITLE_DELETED}">
+                            ${titlesDeletedPending}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.NEW_COVERAGE}">
+                            ${newCoveragesPending}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_UPDATED}">
+                            ${coveragesUpdatedPending}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_DELETED}">
+                            ${coveragesDeletedPending}
+                        </g:elseif>
+                    </g:else>
+                </span>
             </g:link>
         </g:each>
     </div>

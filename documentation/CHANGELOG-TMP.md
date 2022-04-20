@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
+
+--      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
+
+4188    14.04.2022  rc-2.2  2.2.13      Andreas Feature     Bestand auf Ende eines Jahresringes zurücksetzen
+
 --      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel 
 
 4171    28.03.2022  rc-2.2  2.2.12      Moe     Bug         Umfragen auch bei abgelaufener Lizenz

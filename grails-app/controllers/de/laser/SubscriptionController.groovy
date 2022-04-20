@@ -786,6 +786,15 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR")})
+    def resetHoldingToSubEnd() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.resetHoldingToSubEnd(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code: ctrlResult.result.errMess)
+        redirect(url: request.getHeader("referer"))
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
@@ -1056,10 +1065,12 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                 }
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name, monthsInRing, ctrlResult.result.subscriber)
+                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
                 export.titles << "Pick"
 
                 Map sheetData = [:]

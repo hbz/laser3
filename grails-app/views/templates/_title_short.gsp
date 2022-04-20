@@ -48,7 +48,13 @@
                     ${RDStore.YN_YES.getI10n('value')}
                 </g:if>
                 <g:else>
-                    ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                    %{--newSub come only from Workflow Survey with IEs--}%
+                    <g:if test="${newSub}">
+                        ${ie.perpetualAccessBySub && ie.subscription == newSub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                    </g:if>
+                    <g:else>
+                        ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                    </g:else>
                 </g:else>
             </div>
         </div>
