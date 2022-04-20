@@ -1225,13 +1225,20 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.hasPerpetualAccess) {
+        if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
             if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
                 base_qry += "and ie.perpetualAccessBySub is not null "
             }else{
                 base_qry += "and ie.perpetualAccessBySub is null "
             }
             filterSet = true
+        }
+
+        if (params.hasPerpetualAccessBySubs) {
+            base_qry += "and ie.perpetualAccessBySub in (:subs)"
+            qry_params.subs = params.list('hasPerpetualAccessBySubs')
+            filterSet = true
+            println(base_qry)
         }
 
         if(!params.forCount)

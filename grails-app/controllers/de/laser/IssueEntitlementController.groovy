@@ -50,6 +50,10 @@ class IssueEntitlementController  {
       result.user = contextService.getUser()
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
 
+      if(result.subscription.getSubscriber() == contextService.getOrg() || result.subscription.getConsortia() == contextService.getOrg()){
+          result.isMySub = true
+      }
+
       params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
       SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -91,7 +95,7 @@ class IssueEntitlementController  {
         return
       }
 
-      String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
+     /* String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
       Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_DELETED]
 
       if ( params.filter ) {
@@ -118,13 +122,13 @@ class IssueEntitlementController  {
       }
       else {
         base_qry += " order by lower(tipp.name) asc"
-      }
+      }*/
 
       // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
       // result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:result.max, offset:result.offset]);
       // DMs report that this list is limited to 10
-      result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:300, offset:0]);
-      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
+      //result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:300, offset:0]);
+      //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
 
       result
 
