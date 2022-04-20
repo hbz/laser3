@@ -833,6 +833,9 @@ class StatsSyncService {
                             result.error = json["Exception"]["Message"]
                         }
                     }
+                    else if(json.containsKey("Report_Header")) {
+                        result.header = json["Report_Header"]
+                    }
                     else {
                         result.error = "server response: ${resp.statusLine}"
                     }
