@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.ConfigUtils; de.laser.IssueEntitlement" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.ConfigUtils; de.laser.IssueEntitlement" %>
 <!doctype html>
 <html>
 <head>
@@ -33,24 +33,26 @@
 
 <div class="la-inline-lists">
 
-    <div class="ui card">
-        <div class="content">
-            <h3 class="ui header">
-                <g:message code="subscription.label"/>
-            </h3>
-        </div>
+    <g:if test="${isMySub || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+        <div class="ui card">
+            <div class="content">
+                <h3 class="ui header">
+                    <g:message code="subscription.label"/>
+                </h3>
+            </div>
 
-        <div class="content">
-            <g:link controller="subscription" action="show" id="${issueEntitlementInstance.subscription.id}">
-                ${issueEntitlementInstance.subscription.dropdownNamingConvention()}
-            </g:link>
-            <br>
-            <br>
-            <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
-                <g:message code="subscription.details.current_ent"/>
-            </g:link>
+            <div class="content">
+                <g:link controller="subscription" action="show" id="${issueEntitlementInstance.subscription.id}">
+                    ${issueEntitlementInstance.subscription.dropdownNamingConvention()}
+                </g:link>
+                <br>
+                <br>
+                <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
+                    <g:message code="subscription.details.current_ent"/>
+                </g:link>
+            </div>
         </div>
-    </div>
+    </g:if>
 
     <div class="ui card">
         <div class="content">
@@ -88,96 +90,100 @@
 
             <br/>
 
-            <div class="la-title">${message(code: 'subscription.details.access_dates')}</div>
+            <g:if test="${isMySub || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                <div class="la-title">${message(code: 'subscription.details.access_dates')}</div>
 
-            <div class="la-icon-list">
-                <div class="item">
-                    <i class="grey calendar icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.details.access_start')}"></i>
-                    <g:if test="${editable}">
-                        <semui:xEditable owner="${issueEntitlementInstance}" type="date"
-                                         field="accessStartDate"/>
-                        <i class="grey question circle icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                    </g:if>
-                    <g:else>
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.accessStartDate}"/>
-                    </g:else>
+                <div class="la-icon-list">
+                    <div class="item">
+                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_start')}"></i>
+                        <g:if test="${editable}">
+                            <semui:xEditable owner="${issueEntitlementInstance}" type="date"
+                                             field="accessStartDate"/>
+                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                        </g:if>
+                        <g:else>
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${issueEntitlementInstance.accessStartDate}"/>
+                        </g:else>
+                    </div>
+
+                    <div class="item">
+                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_end')}"></i>
+                        <g:if test="${editable}">
+                            <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
+                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                        </g:if>
+                        <g:else>
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${issueEntitlementInstance.accessEndDate}"/>
+                        </g:else>
+                    </div>
                 </div>
 
-                <div class="item">
-                    <i class="grey calendar icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.details.access_end')}"></i>
-                    <g:if test="${editable}">
-                        <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                        <i class="grey question circle icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                    </g:if>
-                    <g:else>
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.accessEndDate}"/>
-                    </g:else>
-                </div>
-            </div>
+                <br/>
 
-            <br/>
 
-            <div class="la-title">${message(code: 'subscription.details.prices')}</div>
+                <div class="la-title">${message(code: 'subscription.details.prices')}</div>
 
-            <div class="la-icon-list">
-                <g:if test="${issueEntitlementInstance.priceItems}">
-                    <div class="ui cards">
-                        <g:each in="${issueEntitlementInstance.priceItems}" var="priceItem" status="i">
-                            <div class="item">
-                                <div class="ui card">
-                                    <div class="content">
-                                        <div class="la-card-column">
-                                            <g:message code="tipp.price.listPrice"/>:
-                                            <semui:xEditable field="listPrice"
-                                                             owner="${priceItem}"/> <semui:xEditableRefData
-                                                    field="listCurrency" owner="${priceItem}" config="Currency"/>
+                <div class="la-icon-list">
+                    <g:if test="${issueEntitlementInstance.priceItems}">
+                        <div class="ui cards">
+                            <g:each in="${issueEntitlementInstance.priceItems}" var="priceItem" status="i">
+                                <div class="item">
+                                    <div class="ui card">
+                                        <div class="content">
+                                            <div class="la-card-column">
+                                                <g:message code="tipp.price.listPrice"/>:
+                                                <semui:xEditable field="listPrice"
+                                                                 owner="${priceItem}"/> <semui:xEditableRefData
+                                                        field="listCurrency" owner="${priceItem}" config="Currency"/>
 
-                                            <br/>
-                                            <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                                  owner="${priceItem}"/> <semui:xEditableRefData
-                                                    field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                            <%--<br/>
-                                            (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
-                                                                                                      type="date"
-                                                                                                      owner="${priceItem}"/>-
-                                            <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
-                                                                                                   type="date"
-                                                                                                   owner="${priceItem}"/>)--%>
+                                                <br/>
+                                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable
+                                                        field="localPrice"
+                                                        owner="${priceItem}"/> <semui:xEditableRefData
+                                                        field="localCurrency" owner="${priceItem}" config="Currency"/>
+                                                <%--<br/>
+                                                (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                                                                                          type="date"
+                                                                                                          owner="${priceItem}"/>-
+                                                <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                                                                                       type="date"
+                                                                                                       owner="${priceItem}"/>)--%>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                        </g:each>
-                    </div>
-                </g:if>
-            </div>
-            <br/>
-
-            <div class="la-title">${message(code: 'subscription.details.ieGroups')}</div>
-
-            <div class="la-icon-list">
-                <g:if test="${issueEntitlementInstance.ieGroups}">
-                    <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
-                        <div class="item">
-                            <i class="grey icon object group la-popup-tooltip la-delay"
-                               data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
-
-                            <div class="content">
-                                <g:link controller="subscription" action="index"
-                                        id="${issueEntitlementInstance.subscription.id}"
-                                        params="[titleGroup: titleGroup.ieGroup.id]">${titleGroup.ieGroup.name}</g:link>
-                            </div>
+                            </g:each>
                         </div>
-                    </g:each>
-                </g:if>
-            </div>
+                    </g:if>
+                </div>
+                <br/>
+
+                <div class="la-title">${message(code: 'subscription.details.ieGroups')}</div>
+
+                <div class="la-icon-list">
+                    <g:if test="${issueEntitlementInstance.ieGroups}">
+                        <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
+                            <div class="item">
+                                <i class="grey icon object group la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
+
+                                <div class="content">
+                                    <g:link controller="subscription" action="index"
+                                            id="${issueEntitlementInstance.subscription.id}"
+                                            params="[titleGroup: titleGroup.ieGroup.id]">${titleGroup.ieGroup.name}</g:link>
+                                </div>
+                            </div>
+                        </g:each>
+                    </g:if>
+                </div>
+            </g:if>
         </div>
 
     </div>
