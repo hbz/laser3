@@ -259,6 +259,7 @@
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</semui:link>
 
                                         <div class="divider"></div>
 

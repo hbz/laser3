@@ -30,6 +30,9 @@
             </g:else>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
+            <a class="item" data-semui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -107,6 +110,9 @@
                     next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
                     max="${max}" total="${num_tipp_rows}"/>
 </g:if>
+
+
+<g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.selectAll = function () {

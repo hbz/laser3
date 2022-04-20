@@ -287,6 +287,9 @@
 
 </g:form>
 
+
+<g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
+
 <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.selectAll = function () {

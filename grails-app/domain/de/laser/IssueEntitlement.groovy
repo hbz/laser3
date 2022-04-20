@@ -39,14 +39,18 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     def deletionService
 
+    @Deprecated
     Date coreStatusStart
+    @Deprecated
     Date coreStatusEnd
+
     Date accessStartDate
     Date accessEndDate
 
     String name
     String sortname
 
+    @Deprecated
     String ieReason
 
     Subscription perpetualAccessBySub
@@ -55,9 +59,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
+    @Deprecated
     @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
     RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
+    @Deprecated
     @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
