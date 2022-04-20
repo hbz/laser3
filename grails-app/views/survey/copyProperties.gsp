@@ -61,13 +61,13 @@ ${surveyInfo.name}
             </div>
 
             <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: false]">
                     <i class="check bordered large green icon"></i>
                 </g:link>
             </g:if>
             <g:else>
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
@@ -92,13 +92,13 @@ ${surveyInfo.name}
             </div>
 
             <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: false]">
                     <i class="check bordered large green icon"></i>
                 </g:link>
             </g:if>
             <g:else>
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
@@ -121,13 +121,13 @@ ${surveyInfo.name}
             </div>
 
             <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: false]">
                     <i class="check bordered large green icon"></i>
                 </g:link>
             </g:if>
             <g:else>
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
@@ -151,13 +151,13 @@ ${surveyInfo.name}
             </div>
 
             <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: false]">
                     <i class="check bordered large green icon"></i>
                 </g:link>
             </g:if>
             <g:else>
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
@@ -181,13 +181,13 @@ ${surveyInfo.name}
             </div>
 
             <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: false]">
                     <i class="check bordered large green icon"></i>
                 </g:link>
             </g:if>
             <g:else>
-                <g:link controller="survey" action="surveyTransferConfig"
+                <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
@@ -727,7 +727,7 @@ ${surveyInfo.name}
         })
     </laser:script>
 
-    <g:form action="surveyCompleted" method="post" class="ui form"
+    <g:form action="setSurveyCompleted" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
         <div class="ui right floated compact segment">

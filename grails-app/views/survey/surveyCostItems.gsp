@@ -309,7 +309,7 @@
             <br />
             <br />
 
-            <g:form action="surveyCostItemsFinish" method="post" class="ui form"
+            <g:form action="workflowCostItemsFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
                 <div class="ui right floated compact segment">

@@ -930,7 +930,7 @@
                         <g:set var="surveyPropertyMandatoryEditable"
                                value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                        (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
+                        <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
 
                             <div class="ui checkbox">
