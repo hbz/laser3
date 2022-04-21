@@ -104,10 +104,9 @@ class ElasticSearchHelper {
                     List terms = pkgList.take(ELASTICSEARCH_CHUNKSIZE)
                     pkgList = pkgList.drop(ELASTICSEARCH_CHUNKSIZE) as List<List>
 
-                    client.request(
-                            BasicHttpClient.Method.POST,
-                            BasicHttpClient.ContentType.JSON,
-                            null,
+                    client.post(
+                            BasicHttpClient.ResponseType.JSON,
+                            BasicHttpClient.PostType.JSON,
                             [
                                 query: [
                                         terms: [ uuid: terms.collect{ it[0] } ]
@@ -156,10 +155,9 @@ class ElasticSearchHelper {
                     List terms = pkgList.take(ELASTICSEARCH_CHUNKSIZE)
                     pkgList = pkgList.drop(ELASTICSEARCH_CHUNKSIZE) as List<List>
 
-                    client.request(
-                            BasicHttpClient.Method.POST,
-                            BasicHttpClient.ContentType.JSON,
-                            null,
+                    client.post(
+                            BasicHttpClient.ResponseType.JSON,
+                            BasicHttpClient.PostType.JSON,
                             [
                                 query: [
                                         terms: [ uuid: terms.collect{ it[0] } ]

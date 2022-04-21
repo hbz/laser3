@@ -8,6 +8,7 @@ task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
 
 task( 'devtools.triggerRestart', group: 'laser' ) {
     doLast {
+        System.gc()
         FileWriter fw = new FileWriter('./grails-app/conf/spring/restart.trigger')
         fw.write(System.currentTimeMillis().toString())
         fw.close()
