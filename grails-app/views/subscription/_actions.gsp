@@ -22,6 +22,16 @@
                     <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
                 </g:else>
             </semui:exportDropdownItem>
+            <g:if test="${actionName == 'index'}">
+                <semui:exportDropdownItem>
+                    <a class="item" data-semui="modal" href="#individuallyExportIEsModal">Click Me Excel Export</a>
+                </semui:exportDropdownItem>
+            </g:if>
+            <g:if test="${actionName == 'addEntitlements'}">
+                <semui:exportDropdownItem>
+                    <a class="item" data-semui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+                </semui:exportDropdownItem>
+            </g:if>
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"

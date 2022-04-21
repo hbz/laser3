@@ -218,7 +218,7 @@
         <br />
         <br />
 
-        <g:form action="surveyConfigFinish" method="post" class="ui form"
+        <g:form action="setSurveyConfigFinish" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
             <div class="ui right floated compact segment">

@@ -357,7 +357,7 @@ ${surveyInfo.name}
     </semui:form>
 
 
-    <g:form action="renewalSent" method="post" class="ui form"
+    <g:form action="workflowRenewalSent" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
         <div class="ui right floated compact segment">
