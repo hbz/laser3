@@ -5,9 +5,6 @@ activateTestJob = false
 aggr_es_cluster   = 'laser3'
 aggr_es_hostname  = '127.0.0.1'
 
-basicDataFileName = 'basicDataDump.xml'
-basicDataPath = ''
-
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'
 dataSource.username = 'laser'
 dataSource.password = 'laser'
@@ -41,9 +38,6 @@ notifications.email.genericTemplate = true // if enabled, no customisation in em
 notifications.email.replyTo = 'laser@local'
 
 notificationsJobActive = false
-
-orgDumpFileExtension   = '.xml'
-orgDumpFileNamePattern = 'orgDump_'
 
 pgDumpPath = '/usr/bin/pg_dump'
 

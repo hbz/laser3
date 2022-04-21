@@ -134,15 +134,8 @@ class BootStrapService {
             setIdentifierNamespace()
 
             log.debug("checking database ..")
-
             if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-                log.debug("database is probably empty; setting up essential data ..")
-                File f = new File("${ConfigUtils.getBasicDataPath()}${ConfigUtils.getBasicDataFileName()}")
-                if (f.exists())
-                    apiService.setupBasicData(f)
-                else {
-                    organisationService.createOrgsFromScratch()
-                }
+                organisationService.createOrgsFromScratch()
             }
 
             log.debug("adjustDatabasePermissions ..")

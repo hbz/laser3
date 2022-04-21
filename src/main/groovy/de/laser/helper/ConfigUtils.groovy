@@ -45,12 +45,6 @@ class ConfigUtils {
     static String getAggrEsGOKBIndex(boolean validate = false) {
         readConfig('aggr_es_gokb_index', validate)
     }
-    static String getBasicDataFileName(boolean validate = false) {
-        readConfig('basicDataFileName', validate)
-    }
-    static String getBasicDataPath(boolean validate = false) {
-        readConfig('basicDataPath', validate)
-    }
     static String getDeployBackupLocation(boolean validate = false) {
         readConfig('deployBackupLocation', validate)
     }
@@ -86,12 +80,6 @@ class ConfigUtils {
     }
     static boolean getNotificationsJobActive(boolean validate = false) {
         readConfig('notificationsJobActive', validate)
-    }
-    static String getOrgDumpFileExtension(boolean validate = false) {
-        readConfig('orgDumpFileExtension', validate)
-    }
-    static String getOrgDumpFileNamePattern(boolean validate = false) {
-        readConfig('orgDumpFileNamePattern', validate)
     }
     static String getPgDumpPath(boolean validate = false) {
         readConfig('pgDumpPath', validate)
@@ -135,8 +123,6 @@ class ConfigUtils {
         getAggrEsCluster(true)
         getAggrEsHostname(true)
         //getAggrEsIndices(true)
-        getBasicDataFileName(true)
-        getBasicDataPath(true)
         getDeployBackupLocation(true)
         getDocumentStorageLocation(true)
         getFinancialsCurrency(true)
@@ -148,8 +134,6 @@ class ConfigUtils {
         getNotificationsEmailGenericTemplate(true)
         getNotificationsEmailReplyTo(true)
         getNotificationsJobActive(true)
-        getOrgDumpFileExtension(true)
-        getOrgDumpFileNamePattern(true)
         getPgDumpPath(true)
         getQuartzHeartbeat(true)
         getReporting(true)

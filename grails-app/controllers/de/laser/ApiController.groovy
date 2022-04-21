@@ -103,28 +103,6 @@ class ApiController {
 
     @Deprecated
     @Secured(['ROLE_API'])
-    def importInstitutions() {
-        log.info("import institutions via xml .. ROLE_API required")
-
-        def xml = "(Code: 0) - Errare humanum est"
-        def rawText = request.getReader().getText()
-
-        if (request.method == 'POST') {
-
-            if(rawText) {
-                xml = new XmlSlurper().parseText(rawText)
-                assert xml instanceof GPathResult
-                apiService.makeshiftOrgImport(xml)
-            }
-            else {
-                xml = "(Code: 1) - Ex nihilo nihil fit"
-            }
-        }
-        render xml
-    }
-
-    @Deprecated
-    @Secured(['ROLE_API'])
     def setupLaserData() {
         log.info("import institutions via xml .. ROLE_API required")
 

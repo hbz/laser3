@@ -16,8 +16,6 @@ class UrlMappings {
 
         // api
 
-        "/api/push/orgs"                    (controller: 'api', action: 'importInstitutions', parseRequest: false)
-
         "/api/$version/specs.yaml"          (controller: 'api', action: 'loadSpecs')
         "/api/$version/changelog.md"        (controller: 'api', action: 'loadChangelog')
         "/api/$version/ezb/$obj"            (controller: 'api', action: 'dispatch') { section = "ezb" }
