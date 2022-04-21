@@ -156,7 +156,6 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
-    @Deprecated
     List getKeys() {
         cache.getKeys()
     }

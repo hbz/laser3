@@ -145,7 +145,6 @@ class DataConsistencyService {
         result
     }
 
-    @Deprecated
     def checkBooleanFields() {
 
         List<String> candidates = []

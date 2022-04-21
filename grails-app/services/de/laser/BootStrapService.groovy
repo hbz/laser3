@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class BootStrapService {
 
-    ApiService apiService
     CacheService cacheService
     DataSource dataSource
     GrailsApplication grailsApplication

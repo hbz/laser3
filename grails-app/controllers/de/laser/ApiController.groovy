@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
 
-    ApiService apiService
     ContextService contextService
     ExportService exportService
 
@@ -99,50 +98,6 @@ class ApiController {
         result.apiContext   = org?.globalUID ?: ''
 
         result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_API'])
-    def setupLaserData() {
-        log.info("import institutions via xml .. ROLE_API required")
-
-        def xml = "(Code: 0) - Errare humanum est"
-        def rawText = request.getReader().getText()
-
-        if (request.method == 'POST') {
-
-            if(rawText) {
-                xml = new XmlSlurper().parseText(rawText)
-                assert xml instanceof GPathResult
-                apiService.setupLaserData(xml)
-            }
-            else {
-                xml = "(Code: 1) - Ex nihilo nihil fit"
-            }
-        }
-        render xml
-    }
-
-    @Deprecated
-    @Secured(['ROLE_API'])
-    def importSubscriptions() {
-        log.info("import subscriptions via xml .. ROLE_API required")
-        // TODO: in progress - erms-746
-        def xml = "(Code: 0) - Errare humanum est"
-        def rawText = request.getReader().getText()
-
-        if (request.method == 'POST') {
-
-            if(rawText) {
-                xml = new XmlSlurper().parseText(rawText)
-                assert xml instanceof GPathResult
-                apiService.makeshiftSubscriptionImport(xml)
-            }
-            else {
-                xml = "(Code: 1) - Ex nihilo nihil fit"
-            }
-        }
-        render xml
     }
 
     /**
