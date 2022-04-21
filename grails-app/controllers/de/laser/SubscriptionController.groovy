@@ -1052,12 +1052,12 @@ class SubscriptionController {
                 List monthsInRing = []
                 if(ctrlResult.result.showStatisticByParticipant) {
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.subscription.startDate && ctrlResult.result.subscription.endDate) {
-                        startTime.setTime(ctrlResult.result.subscription.startDate)
-                        if (ctrlResult.result.subscription.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.subscription.endDate)
-                    } else if (ctrlResult.result.subscription.startDate) {
-                        startTime.setTime(ctrlResult.result.subscription.startDate)
+                    if (ctrlResult.result.newSub.startDate && ctrlResult.result.newSub.endDate) {
+                        startTime.setTime(ctrlResult.result.newSub.startDate)
+                        if (ctrlResult.result.newSub.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.newSub.endDate)
+                    } else if (ctrlResult.result.newSub.startDate) {
+                        startTime.setTime(ctrlResult.result.newSub.startDate)
                         endTime.setTime(new Date())
                     }
                     while (startTime.before(endTime)) {

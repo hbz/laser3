@@ -103,8 +103,8 @@ class Counter5Report extends AbstractReport {
         accessType          column: 'c5r_access_type'
         accessMethod        column: 'c5r_access_method'
         metricType          column: 'c5r_metric_type'
-        reportFrom          column: 'c5r_report_from'
-        reportTo            column: 'c5r_report_to'
+        reportFrom          column: 'c5r_report_from', index: 'c5r_report_from_idx'
+        reportTo            column: 'c5r_report_to', index: 'c5r_report_to_idx'
         reportCount         column: 'c5r_report_count'
     }
 

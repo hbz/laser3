@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.04.2022  rc-2.2  2.2.14      Andreas Bug         Instandsetzung und Performanzverbesserung bei Laden der Nutzungsdaten
+
 --      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
 
 --      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
