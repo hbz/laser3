@@ -1,7 +1,9 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
+import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -10,6 +12,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
+import org.hibernate.Session
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -549,6 +552,173 @@ class ExportClickMeService {
                     ]
             ],
 
+    ]
+
+    static Map<String, Object> EXPORT_ISSUE_ENTITLEMENT_CONFIG = [
+            issueEntitlement      : [
+                    label: 'IssueEntitlement',
+                    message: 'issueEntitlement.label',
+                    fields: [
+                            'issueEntitlement.name'                 : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'issueEntitlement.status'               : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'issueEntitlement.medium'               : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
+                            'issueEntitlement.accessStartDate'      : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
+                            'issueEntitlement.accessEndDate'        : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.titleType'       : [field: 'tipp.titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.pkg'             : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.platform.name'   : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.ieGroup.name'   : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.perpetualAccessBySub'   : [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
+                    ]
+            ],
+            titleDetails      : [
+                    label: 'Title Details',
+                    message: 'title.details',
+                    fields: [
+                            'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
+                            'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
+                            'issueEntitlement.tipp.dateFirstInPrint' : [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
+                            'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
+                            'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
+                            'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
+                            'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
+                            'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
+                            'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
+                            'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
+                            'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
+                            'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
+                            'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
+                            'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
+                            'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
+                            'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                            'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
+                            'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
+                            'issueEntitlement.tipp.publishers'       : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
+                    ]
+            ],
+            coverage: [
+                    label: 'Coverage',
+                    message: 'tipp.coverage',
+                    fields: [
+                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
+                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
+                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
+                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
+                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
+                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
+                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'tipp.coverageNote'],
+                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
+                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                    ]
+            ],
+            priceItem: [
+                    label: 'Price Item',
+                    message: 'costItem.label',
+                    fields: [
+                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur'],
+                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp'],
+                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd'],
+                            'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur'],
+                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp'],
+                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd']
+                    ]
+            ],
+            issueEntitlementIdentifiers : [
+                    label: 'Identifiers',
+                    fields: [:],
+
+            ],
+
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'subscription.name', label: 'Name', message: 'subscription.name.label'],
+                            'subscription.startDate'                    : [field: 'subscription.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                            'subscription.endDate'                      : [field: 'subscription.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.manualCancellationDate'       : [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                            'subscription.status'                       : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
+                            'subscription.kind'                         : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
+                            'subscription.form'                         : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
+                            'subscription.resource'                     : [field: 'subscription.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'subscription.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'subscription.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                            'subscription.uuid'                         : [field: 'subscription.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+    ]
+
+    static Map<String, Object> EXPORT_TIPP_CONFIG = [
+            tipp      : [
+                    label: 'Title',
+                    message: 'default.title.label',
+                    fields: [
+                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
+                            'tipp.titleType'       : [field: 'titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true'],
+                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
+                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
+                    ]
+            ],
+            titleDetails      : [
+                    label: 'Title Details',
+                    message: 'title.details',
+                    fields: [
+                            'tipp.hostPlatformURL' : [field: 'hostPlatformURL', label: 'Url', message: null],
+                            'tipp.dateFirstOnline' : [field: 'dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
+                            'tipp.dateFirstInPrint' : [field: 'dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
+                            'tipp.firstAuthor'     : [field: 'firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
+                            'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
+                            'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume'],
+                            'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
+                            'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
+                            'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
+                            'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName'],
+                            'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
+                            'tipp.delayedOA'       : [field: 'delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
+                            'tipp.hybridOA'        : [field: 'hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
+                            'tipp.publisherName'   : [field: 'publisherName', label: 'Publisher', message: 'tipp.publisher'],
+                            'tipp.accessType'      : [field: 'accessType', label: 'Access Type', message: 'tipp.accessType'],
+                            'tipp.openAccess'      : [field: 'openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                            'tipp.ddcs'            : [field: 'ddcs', label: 'DDCs', message: 'tipp.ddc'],
+                            'tipp.languages'       : [field: 'languages', label: 'Languages', message: 'tipp.language'],
+                            'tipp.publishers'       : [field: 'publishers', label: 'Publishers', message: 'tipp.provider']
+                    ]
+            ],
+            coverage: [
+                    label: 'Coverage',
+                    message: 'tipp.coverage',
+                    fields: [
+                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
+                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
+                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
+                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
+                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
+                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
+                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'tipp.coverageNote'],
+                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
+                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                    ]
+            ],
+            priceItem: [
+                    label: 'Price Item',
+                    message: 'costItem.label',
+                    fields: [
+                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur'],
+                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp'],
+                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd'],
+                            'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur'],
+                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp'],
+                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd']
+                    ]
+            ],
+            tippIdentifiers : [
+                    label: 'Identifiers',
+                    fields: [:],
+
+            ],
     ]
 
     /**
@@ -1135,6 +1305,116 @@ class ExportClickMeService {
     }
 
     /**
+     * Generic call from views
+     * Gets the issue entitlement export fields and prepares them for the UI
+     * @return the configuration map for the issue entitlement export for the UI
+     */
+    Map<String, Object> getExportIssueEntitlementFieldsForUI() {
+
+        Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
+            fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        fields
+    }
+
+    /**
+     * Gets the issue entitlement fields
+     * @return the configuration map for the issue entitlement export
+     */
+    Map<String, Object> getExportIssueEntitlementFields() {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_ISSUE_ENTITLEMENT_CONFIG.keySet().each {
+            EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        exportFields
+    }
+
+    /**
+     * Generic call from views
+     * Gets the title export fields and prepares them for the UI
+     * @return the configuration map for the title export for the UI
+     */
+    Map<String, Object> getExportTippFieldsForUI() {
+
+        Map<String, Object> fields = EXPORT_TIPP_CONFIG as Map
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
+            fields.tippIdentifiers.fields << ["tippIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        fields
+    }
+
+    /**
+     * Gets the title fields
+     * @return the configuration map for the title export
+     */
+    Map<String, Object> getExportTippFields() {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleContextHolder.getLocale()
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
+        EXPORT_TIPP_CONFIG.keySet().each {
+            EXPORT_TIPP_CONFIG.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        exportFields
+    }
+
+    /**
      * Exports the selected fields of the given renewal result
      * @param renewalResult the result to export
      * @param selectedFields the fields which should appear
@@ -1574,6 +1854,122 @@ class ExportClickMeService {
     }
 
     /**
+     * Exports the given fields from the given issue entitlements
+     * @param result the issue entitlements set to export
+     * @param selectedFields the fields which should appear
+     * @return an Excel worksheet containing the export
+     */
+    def exportIssueEntitlements(ArrayList<IssueEntitlement> result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportIssueEntitlementFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = exportTitles(selectedExportFields, locale, null, null)
+
+        List exportData = []
+
+        int max = 500
+        TitleInstancePackagePlatform.withSession { Session sess ->
+            for(int offset = 0; offset < result.size(); offset+=max) {
+                List allRows = []
+                //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                    Set<IssueEntitlement> issueEntitlements = result.drop(offset).take(max)
+                    issueEntitlements.each { IssueEntitlement entitlement ->
+                        if(!entitlement.coverages && !entitlement.priceItems) {
+                            allRows << entitlement
+                        }
+                        else if(entitlement.coverages.size() > 1){
+                            entitlement.coverages.each { AbstractCoverage covStmt ->
+                                allRows << covStmt
+                            }
+                        }
+                        else {
+                            allRows << entitlement
+                        }
+                    }
+
+                allRows.each { rowData ->
+                    setIeRow(rowData, selectedExportFields, exportData)
+
+                }
+                println("flushing after ${offset} ...")
+                sess.flush()
+            }
+        }
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    /**
+     * Exports the given fields from the given titles
+     * @param result the titles set to export
+     * @param selectedFields the fields which should appear
+     * @return an Excel worksheet containing the export
+     */
+    def exportTipps(ArrayList<TitleInstancePackagePlatform> result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportTippFields()
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = exportTitles(selectedExportFields, locale, null, null)
+
+        List exportData = []
+
+        int max = 500
+        TitleInstancePackagePlatform.withSession { Session sess ->
+            for(int offset = 0; offset < result.size(); offset+=max) {
+                List allRows = []
+                //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                Set<TitleInstancePackagePlatform> tipps = result.drop(offset).take(max)
+                tipps.each { TitleInstancePackagePlatform tipp ->
+                    if(!tipp.coverages && !tipp.priceItems) {
+                        allRows << tipp
+                    }
+                    else if(tipp.coverages.size() > 1){
+                        tipp.coverages.each { AbstractCoverage covStmt ->
+                            allRows << covStmt
+                        }
+                    }
+                    else {
+                        allRows << tipp
+                    }
+                }
+
+                allRows.each { rowData ->
+                    setTippRow(rowData, selectedExportFields, exportData)
+
+                }
+                println("flushing after ${offset} ...")
+                sess.flush()
+            }
+        }
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    /**
      * Fills a row for the renewal export
      * @param participantResult the participant's result for the row
      * @param selectedFields the fields which should appear
@@ -1900,6 +2296,221 @@ class ExportClickMeService {
         exportData.add(row)
 
     }
+
+    /**
+     * Fills a row for the issue entitlement export
+     * @param result the issue entitlement to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     */
+    private void setIeRow(def result, Map<String, Object> selectedFields, List exportData){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+
+        result = exportService.getIssueEntitlement(result)
+
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                        if (result) {
+                            Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                            if (identifierList) {
+                                row.add([field: identifierList.value.join(";"), style: null])
+                            } else {
+                                row.add([field: '', style: null])
+                            }
+                        } else {
+                            row.add([field: '', style: null])
+                        }
+                }
+                else if (fieldKey.contains('tipp.ddcs')) {
+                    row.add([field: result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";"), style: null])
+                }
+                else if (fieldKey.contains('tipp.languages')) {
+                    row.add([field: result.tipp.languages.collect {"${it.language.getI10n("value")}"}.join(";"), style: null])
+                }else if (fieldKey.contains('perpetualAccessBySub')) {
+                    row.add([field: result.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'), style: null])
+                }
+                else if (fieldKey.startsWith('coverage.')) {
+                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
+                    String coverageField = fieldKey.split("\\.")[1]
+
+                    def fieldValue = covStmt ? getFieldValue(covStmt, coverageField, sdf) : null
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+                else if (fieldKey.contains('listPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('listPriceGBP')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('listPriceUSD')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceGBP')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceUSD')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else {
+                    def fieldValue = getFieldValue(result, field, sdf)
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
+        exportData.add(row)
+
+    }
+
+    /**
+     * Fills a row for the title export
+     * @param result the title to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     */
+    private void setTippRow(def result, Map<String, Object> selectedFields, List exportData){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+
+        result = exportService.getTipp(result)
+
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('tippIdentifiers.')) {
+                    if (result) {
+                        Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                        List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                        if (identifierList) {
+                            row.add([field: identifierList.value.join(";"), style: null])
+                        } else {
+                            row.add([field: '', style: null])
+                        }
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('ddcs')) {
+                    row.add([field: result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";"), style: null])
+                }
+                else if (fieldKey.contains('languages')) {
+                    row.add([field: result.tipp.languages.collect { "${it.language.getI10n("value")}" }.join(";"), style: null])
+                }
+                else if (fieldKey.startsWith('coverage.')) {
+                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
+                    String coverageField = fieldKey.split("\\.")[1]
+
+                    def fieldValue = covStmt ? getFieldValue(covStmt, coverageField, sdf) : null
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+                else if (fieldKey.contains('listPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('listPriceGBP')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('listPriceUSD')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceGBP')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else if (fieldKey.contains('localPriceUSD')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItemsList) {
+                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    } else {
+                        row.add([field: '', style: null])
+                    }
+                }
+                else {
+                    def fieldValue = getFieldValue(result, field, sdf)
+                    row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
+        exportData.add(row)
+
+    }
+
 
     /**
      * Returns the value for the given object

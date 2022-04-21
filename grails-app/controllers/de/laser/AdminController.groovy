@@ -33,6 +33,8 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.plugins.mail.MailService
+import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
@@ -65,6 +67,7 @@ class AdminController  {
     DeletionService deletionService
     FilterService filterService
     GenericOIDService genericOIDService
+    MailService mailService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
@@ -135,6 +138,34 @@ class AdminController  {
         }
         result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
         result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def testMailSending() {
+        Map<String, Object> result = [:]
+
+        result.mailDisabled = AppUtils.getConfig('grails.mail.disabled')
+
+        if (params.sendTestMail == 'Send Test Mail' && params.mailAddress) {
+            if (grailsApplication.config.grails.mail.disabled == true) {
+                flash.error = 'Failed due grailsApplication.config.grails.mail.disabled = true'
+            }else {
+                String currentServer = AppUtils.getCurrentServer()
+                String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+                String mailSubject = subjectSystemPraefix + params.subject
+
+                    mailService.sendMail {
+                        to      params.mailAddress
+                        from    ConfigUtils.getNotificationsEmailFrom()
+                        subject mailSubject
+                        body    params.content
+                    }
+                flash.message = "Test email was sent successfully"
+            }
+
+        }
         result
     }
 

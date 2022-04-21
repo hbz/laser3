@@ -31,6 +31,9 @@
                   </g:else>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
+                  <a class="item" data-semui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+              </semui:exportDropdownItem>
+              <semui:exportDropdownItem>
                   <g:if test="${filterSet}">
                       <g:link class="item js-open-confirm-modal"
                               data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -110,6 +113,9 @@
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
     // TODO -- no usage found
   --%>
+
+
+  <g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
     <laser:script file="${this.getGroovyPageFileName()}">
       JSPC.app.selectAll = function () {

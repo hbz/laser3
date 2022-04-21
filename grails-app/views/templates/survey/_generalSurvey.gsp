@@ -247,7 +247,7 @@
 </div><!-- .grid -->
 
 <g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
+    <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
     <semui:form>
 
@@ -269,7 +269,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
@@ -315,7 +315,7 @@
                     <td>
                         <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
+                        <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
 
                             <div class="ui checkbox">
@@ -421,7 +421,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
+            <g:each in="${surveyResults}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">

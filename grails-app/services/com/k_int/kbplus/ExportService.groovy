@@ -2053,7 +2053,7 @@ class ExportService {
 	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
 	 * raw text output; access rows.field for the bare data
 	 */
-	Map<String, List> generateTitleExportCustom(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null) {
+	Map<String, List> generateTitleExportCustom(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null, Collection perpetuallyPurchasedTitleURLs = []) {
 		log.debug("Begin generateTitleExportCustom")
 		Locale locale = LocaleContextHolder.getLocale()
 
@@ -2101,9 +2101,8 @@ class ExportService {
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
 
 		if(showStatsInMonthRings){
-		titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
 		}
-
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
 		int max = 500
@@ -2145,152 +2144,186 @@ class ExportService {
 						}
 					}
 				}
+				Map<TitleInstancePackagePlatform, Map<Integer, AbstractReport>> reportMap = [:]
+				if(showStatsInMonthRings && subscriber) {
+
+					String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+
+					Calendar filterTime = GregorianCalendar.getInstance()
+					filterTime.setTime(showStatsInMonthRings.first())
+					filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+					Date startDate = filterTime.getTime()
+					filterTime.setTime(showStatsInMonthRings.last())
+					filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+					Date endDate = filterTime.getTime()
+
+					Map<String, Object> queryParams = [customer: subscriber, platforms: titleInstances.platform.unique(), startDate: startDate, endDate: endDate, titles: titleInstances]
+
+					List counterReportRows
+					counterReportRows = Counter5Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and lower(r.reportType) = :defaultReport and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
+					if(!counterReportRows)
+						counterReportRows = Counter4Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and r.reportType in (:defaultReports) and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReports: [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1], defaultMetric: 'ft_total'])
+					counterReportRows.each { reportRow ->
+						Map<Integer, AbstractReport> usageMap = reportMap.get(reportRow[0].title)
+						if(!usageMap)
+							usageMap = [:]
+						usageMap.put(reportRow[1], reportRow[0])
+						reportMap.put(reportRow[0].title,usageMap)
+					}
+				}
 				allRows.each { rowData ->
 					IssueEntitlement entitlement = getIssueEntitlement(rowData)
 					TitleInstancePackagePlatform tipp = getTipp(rowData)
+					String style = null
+					if(tipp.hostPlatformURL in perpetuallyPurchasedTitleURLs)
+						style = 'negative'
 					AbstractCoverage covStmt = getCoverageStatement(rowData)
 					List row = []
-					row.add([field: tipp.name ?: '', style:null])
+					row.add([field: tipp.name ?: '', style:style])
 					//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
 					if(tipp.getIdentifierValue('pISBN'))
-						row.add([field: tipp.getIdentifierValue('pISBN'), style:null])
+						row.add([field: tipp.getIdentifierValue('pISBN'), style:style])
 					else if(tipp.getIdentifierValue('ISSN'))
-						row.add([field: tipp.getIdentifierValue('ISSN'), style:null])
-					else row.add([field: '', style:null])
+						row.add([field: tipp.getIdentifierValue('ISSN'), style:style])
+					else row.add([field: '', style:style])
 					//online_identifier
 					if(tipp.getIdentifierValue('ISBN'))
-						row.add([field: tipp.getIdentifierValue('ISBN'), style:null])
+						row.add([field: tipp.getIdentifierValue('ISBN'), style:style])
 					else if(tipp.getIdentifierValue('eISSN'))
-						row.add([field: tipp.getIdentifierValue('eISSN'), style:null])
-					else row.add([field: '', style:null])
+						row.add([field: tipp.getIdentifierValue('eISSN'), style:style])
+					else row.add([field: '', style:style])
 
-					row.add([field: tipp.pkg.name ?: '', style:null])
-					row.add([field: tipp.platform.name ?: '', style:null])
+					row.add([field: tipp.pkg.name ?: '', style:style])
+					row.add([field: tipp.platform.name ?: '', style:style])
 					switch(tipp.titleType) {
-						case "Journal": row.add([field:'serial', style:null])
+						case "Journal": row.add([field:'serial', style:style])
 							break
-						case "Book": row.add([field:'monograph', style:null])
+						case "Book": row.add([field:'monograph', style:style])
 							break
-						case "Database": row.add([field:'database', style:null])
+						case "Database": row.add([field:'database', style:style])
 							break
-						default: row.add([field:'other', style:null])
+						default: row.add([field:'other', style:style])
 							break
 					}
-					row.add([field: tipp.publisherName ? tipp.publisherName : '', style:null])
-					row.add([field: tipp.medium ? tipp.medium.getI10n('value') : '', style:null])
-					row.add([field: tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : '', style:null])
-					row.add([field: tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : '', style:null])
-					row.add([field: tipp.hostPlatformURL ?: '', style:null])
-					row.add([field: tipp.firstAuthor ?: '', style:null])
-					row.add([field: tipp.firstEditor ?: '', style:null])
+					row.add([field: tipp.publisherName ? tipp.publisherName : '', style:style])
+					row.add([field: tipp.medium ? tipp.medium.getI10n('value') : '', style:style])
+					row.add([field: tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : '', style:style])
+					row.add([field: tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : '', style:style])
+					row.add([field: tipp.hostPlatformURL ?: '', style:style])
+					row.add([field: tipp.firstAuthor ?: '', style:style])
+					row.add([field: tipp.firstEditor ?: '', style:style])
 					if(covStmt) {
 						//date_first_issue_online
-						row.add([field: covStmt.startDate ? formatter.format(covStmt.startDate) : ' ', style:null])
+						row.add([field: covStmt.startDate ? formatter.format(covStmt.startDate) : ' ', style:style])
 						//num_first_volume_online
-						row.add([field: covStmt.startVolume ?: ' ', style:null])
+						row.add([field: covStmt.startVolume ?: ' ', style:style])
 						//num_first_issue_online
-						row.add([field: covStmt.startIssue ?: ' ', style:null])
+						row.add([field: covStmt.startIssue ?: ' ', style:style])
 						//date_last_issue_online
-						row.add([field: covStmt.endDate ? formatter.format(covStmt.endDate) : ' ', style:null])
+						row.add([field: covStmt.endDate ? formatter.format(covStmt.endDate) : ' ', style:style])
 						//num_last_volume_online
-						row.add([field: covStmt.endVolume ?: ' ', style:null])
+						row.add([field: covStmt.endVolume ?: ' ', style:style])
 						//num_last_issue_online
-						row.add([field: covStmt.endIssue ?: ' ', style:null])
+						row.add([field: covStmt.endIssue ?: ' ', style:style])
 						//embargo_information
-						row.add([field: covStmt.embargo ?: ' ', style:null])
+						row.add([field: covStmt.embargo ?: ' ', style:style])
 						//coverage_depth
-						row.add([field: covStmt.coverageDepth ?: ' ', style:null])
+						row.add([field: covStmt.coverageDepth ?: ' ', style:style])
 						//notes
-						row.add([field: covStmt.coverageNote ?: ' ', style:null])
+						row.add([field: covStmt.coverageNote ?: ' ', style:style])
 					}
 					else {
 						//empty values for coverage fields
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
 					}
 
 					if(tipp.titleType == 'Book') {
-						row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ', style:null])
-						row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ', style:null])
-						row.add([field: tipp.volume ?: ' ', style:null])
-						row.add([field: tipp.editionNumber ?: ' ', style:null])
+						row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ', style:style])
+						row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ', style:style])
+						row.add([field: tipp.volume ?: ' ', style:style])
+						row.add([field: tipp.editionNumber ?: ' ', style:style])
 					}
 					else {
 						//empty values from date_monograph_published_print to first_editor
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
-						row.add([field: '', style:null])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
+						row.add([field: '', style:style])
 					}
-					row.add([field: tipp.seriesName ?: ' ', style:null])
-					row.add([field: tipp.subjectReference ?: ' ', style:null])
-					row.add([field: tipp.status ? tipp.status.getI10n('value') : ' ', style:null])
-					row.add([field: tipp.accessType ? tipp.accessType.getI10n('value') : ' ', style:null])
-					row.add([field: tipp.openAccess ? tipp.openAccess.getI10n('value') : ' ', style:null])
+					row.add([field: tipp.seriesName ?: ' ', style:style])
+					row.add([field: tipp.subjectReference ?: ' ', style:style])
+					row.add([field: tipp.status ? tipp.status.getI10n('value') : ' ', style:style])
+					row.add([field: tipp.accessType ? tipp.accessType.getI10n('value') : ' ', style:style])
+					row.add([field: tipp.openAccess ? tipp.openAccess.getI10n('value') : ' ', style:style])
 
 					if(entitlement?.priceItems) {
 						//listprice_eur
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ', style:style])
 						//listprice_gbp
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ', style:style])
 						//listprice_usd
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ', style:style])
 						//localprice_eur
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ', style:style])
 						//localprice_gbp
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ', style:style])
 						//localprice_usd
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ', style:null])
+						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ', style:style])
 					} else if (tipp.priceItems) {
 						//listprice_eur
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ', style:style])
 						//listprice_gbp
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ', style:style])
 						//listprice_usd
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ', style:style])
 						//localprice_eur
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ', style:style])
 						//localprice_gbp
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ', style:style])
 						//localprice_usd
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ', style:null])
+						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ', style:style])
 					}
 					else {
 						//empty values for price item columns
-						row.add([field: ' ', style:null])
-						row.add([field: ' ', style:null])
-						row.add([field: ' ', style:null])
-						row.add([field: ' ', style:null])
-						row.add([field: ' ', style:null])
-						row.add([field: ' ', style:null])
+						row.add([field: ' ', style:style])
+						row.add([field: ' ', style:style])
+						row.add([field: ' ', style:style])
+						row.add([field: ' ', style:style])
+						row.add([field: ' ', style:style])
+						row.add([field: ' ', style:style])
 					}
 
 					coreTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
+						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style)
 					}
 					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: null)
+						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style)
 					}
 
-					if(entitlement && showStatsInMonthRings && subscriber){
-						showStatsInMonthRings.each {Date date ->
-							def counterReport = entitlement.getCounterReport(date, subscriber)
-							//println(counterReport)
+					if(entitlement && showStatsInMonthRings && subscriber) {
+						Calendar filterTime = GregorianCalendar.getInstance()
+						Map<Integer, AbstractReport> usageMap = reportMap.get(entitlement.tipp)
+						showStatsInMonthRings.each { Date month ->
+							filterTime.setTime(month)
+							AbstractReport counterReport
+							if(usageMap) {
+								counterReport = usageMap.get(filterTime.get(Calendar.MONTH)+1) //+1 because Calendar.MONTH ranges from 0 to 11
+							}
 							if(counterReport){
 								//println(counterReport)
 								//println(counterReport.reportCount ?: '')
-								row.add([field: counterReport.reportCount ?: '', style:null])
-							}else{
-								row.add([field: ' ', style:null])
+								row.add([field: counterReport.reportCount ?: '', style:style])
 							}
-
+							else
+								row.add([field: ' ', style:style])
 						}
 					}
 

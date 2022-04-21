@@ -501,6 +501,8 @@
 <div id="magicArea">
 </div>
 
+<g:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
+
 <semui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">

@@ -1313,6 +1313,12 @@ class FilterService {
             filterSet = true
         }
 
+        if (params.hasPerpetualAccessBySubs) {
+            base_qry += "and ie.tipp in (select ie2.tipp from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
+            qry_params.subs = params.list('hasPerpetualAccessBySubs')
+            filterSet = true
+        }
+
         if(!params.forCount)
             base_qry += " group by tipp, ic, ie.id "
         else base_qry += " group by tipp, ic "

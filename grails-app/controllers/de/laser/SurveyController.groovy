@@ -1140,7 +1140,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> surveyConfigFinish() {
+    Map<String,Object> setSurveyConfigFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1167,7 +1167,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> renewalSent() {
+    Map<String,Object> workflowRenewalSent() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1194,7 +1194,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> surveyCostItemsFinish() {
+    Map<String,Object> workflowCostItemsFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1220,7 +1220,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> surveyPropertyMandatory() {
+    Map<String,Object> setSurveyPropertyMandatory() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1248,7 +1248,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> surveyCompleted() {
+    Map<String,Object> setSurveyCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1274,7 +1274,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-    Map<String,Object> surveyTransferConfig() {
+    Map<String,Object> setSurveyTransferConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -1791,77 +1791,6 @@ class SurveyController {
     }
 
     /**
-     * Call to the survey evaluation for a given participant
-     * @return the evaluation view for the given survey and participant
-     */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
-    })
-     Map<String,Object> surveyTitlesSubscriber() {
-        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        /*result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
-        result.iesListPriceSum = 0
-        result.ies.each{
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
-        result.iesFixListPriceSum = 0
-        result.iesFix.each{
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.ownerId = result.surveyConfig.surveyInfo.owner.id ?: null
-
-        if(result.subscription) {
-            result.authorizedOrgs = result.user.authorizedOrgs
-            result.contextOrg = result.institution
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscription.orgRelations.each { OrgRole or ->
-                if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-        }
-
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
-
-        result*/
-
-        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
-
-    }
-
-    /**
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
@@ -2030,91 +1959,6 @@ class SurveyController {
 
     }
 
-    @Deprecated
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-     Map<String,Object> completeIssueEntitlementsSurvey() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        /*IssueEntitlement.withTransaction { TransactionStatus ->
-            Set participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org?.flatten().unique { a, b -> a.id <=> b.id }
-
-            participantsFinish.each { org ->
-                Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
-
-                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
-
-                IssueEntitlementGroup issueEntitlementGroup
-
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                    ie.save()
-
-                    if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
-                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                ie: ie,
-                                ieGroup: issueEntitlementGroup)
-
-                        if (!issueEntitlementGroupItem.save()) {
-                            log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
-                        }
-                    }
-                }
-            }
-        }*/
-
-        flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
-
-        redirect(action: 'surveyEvaluation', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
-
-    }
-
-    /**
-     * Evaluates the title selection of the participant
-     * @return the selected titles of the participant
-     */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
-    })
-     Map<String,Object> evaluateIssueEntitlementsSurvey() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.subscription =  result.surveyConfig.subscription
-
-        result.ies = subscriptionService.getCurrentIssueEntitlements(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-        result
-
-    }
-
     /**
      * Evaluates the general selection and the costs of the participant
      * @return the participant evaluation view
@@ -2135,7 +1979,12 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+        result.surveyResults = []
+
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
+        }
+
 
         result.ownerId = result.surveyInfo.owner.id
 

@@ -683,6 +683,24 @@ class SubscriptionController {
                 response.outputStream.close()
                 workbook.dispose()
             }
+            else if(params.exportClickMeExcel) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+
+                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs,[sort:'tipp.sortname']) : [:]
+
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                Map<String, Object> selectedFields = [:]
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields)
+                response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+            }
             else {
                 withFormat {
                     html {
@@ -763,6 +781,23 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 workbook.dispose()
+            }else if(params.exportClickMeExcel) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+
+                ArrayList<IssueEntitlement> tipps = ctrlResult.result.tipps ? TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'tipp.sortname']) : [:]
+
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                Map<String, Object> selectedFields = [:]
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+                response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
             withFormat {
                 html {
@@ -1253,10 +1288,12 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                 }
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name, monthsInRing, ctrlResult.result.subscriber)
+                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
                 export.titles << "Pick"
 
                 Map sheetData = [:]
