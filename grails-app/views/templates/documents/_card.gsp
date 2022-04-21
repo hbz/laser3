@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AjaxUtils; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.http.AjaxUtils; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
