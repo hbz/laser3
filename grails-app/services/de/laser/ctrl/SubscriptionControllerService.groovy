@@ -1170,9 +1170,7 @@ class SubscriptionControllerService {
             }
 
             if (params.hasPerpetualAccess) {
-                params.hasPerpetualAccessBySubs = subscriptions
-                result.hasPerpetualAccess = params.hasPerpetualAccess
-                params.remove('hasPerpetualAccess')
+                    params.hasPerpetualAccessBySubs = subscriptions
             }
 
             List<IssueEntitlement> sourceIEs = []
