@@ -49,9 +49,7 @@ apply plugin: 'com.bertramlabs.asset-pipeline'
 
 sourceSets {
     main {
-        resources {
-            srcDir 'grails-app/migrations'
-        }
+        resources { srcDir 'grails-app/migrations' }
     }
 }
 

@@ -20,12 +20,12 @@
 
 <body>
 
-<g:render template="breadcrumb"
+<laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 
 <semui:controlButtons>
-    <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
+    <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
@@ -48,7 +48,7 @@
     </div>
 </g:if>
 
-<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render debug="true"template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -268,7 +268,7 @@
                                     <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                     <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                     <td class="right aligned">
-                                        <%--<g:render template="/templates/links/subLinksModal"
+                                        <%--<laser:render template="/templates/links/subLinksModal"
                                                   model="${[tmplText:message(code:'org.details.editLink'),
                                                             tmplIcon:'write',
                                                             tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
@@ -308,7 +308,7 @@
                                                             context: orgInstance
                                 ]
                             %>
-                            <g:render template="/templates/links/subLinksModal"
+                            <laser:render template="/templates/links/subLinksModal"
                                       model="${model}" />
                         </div>
                     </g:if>
@@ -322,12 +322,12 @@
                         <dl>
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
-                                <g:render template="orgTypeAsList"
+                                <laser:render template="orgTypeAsList"
                                           model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 
-                        <g:render template="orgTypeModal"
+                        <laser:render template="orgTypeModal"
                                   model="${[org: orgInstance, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                     </div>
                 </div>
@@ -357,10 +357,10 @@
                                 <%
                                     List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
                                 %>
-                                <g:render template="orgSubjectGroupAsList"
+                                <laser:render template="orgSubjectGroupAsList"
                                           model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
 
-                                <g:render template="orgSubjectGroupModal"
+                                <laser:render template="orgSubjectGroupModal"
                                           model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
                             </dd>
                         </dl>
@@ -478,7 +478,7 @@
                     <dl>
                         <dt>
                             <dd>
-                            <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
+                            <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
                             <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !orgInstanceRecord}">
                                 <div class="ui list">
@@ -526,7 +526,7 @@
                                                         <% List addresses = typeAddressMap.get(typeName) %>
                                                         <g:each in="${addresses}" var="a">
                                                             <g:if test="${a.org}">
-                                                                <g:render template="/templates/cpa/address" model="${[
+                                                                <laser:render template="/templates/cpa/address" model="${[
                                                                         hideAddressType     : true,
                                                                         address             : a,
                                                                         tmplShowDeleteButton: false,
@@ -565,7 +565,7 @@
                                             </h5>
                                             <g:if test="${createdByOrgGeneralContacts}">
                                                 <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
                                                             person              : cbogc,
                                                             personContext       : orgInstance.createdBy,
                                                             tmplShowFunctions       : true,
@@ -590,7 +590,7 @@
                                             </h5>
                                             <g:if test="${legallyObligedByOrgGeneralContacts}">
                                                 <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
                                                             person              : lobogc,
                                                             personContext       : orgInstance.legallyObligedBy,
                                                             tmplShowFunctions       : true,
@@ -611,7 +611,7 @@
 
             <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
                 <div id="new-dynamic-properties-block">
-                    <g:render template="properties" model="${[
+                    <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,
                             authorizedOrgs: authorizedOrgs,
                             contextOrg: institution
@@ -623,15 +623,15 @@
     </div>
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
-            <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+            <laser:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
         </div>
     </aside>
 </div>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-%{-- grails-3: performance issue <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/> --}%
-%{--<g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+%{-- grails-3: performance issue <laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/> --}%
+%{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </semui:debugInfo>
 
 </body>

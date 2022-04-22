@@ -4,7 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
 import de.laser.helper.AppUtils
-import de.laser.helper.MigrationHelper
+import de.laser.helper.DatabaseUtils
 import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
@@ -641,13 +641,13 @@ class AdminController  {
                 ]
         ]
 
-        String de_x_icu = MigrationHelper.DE_U_CO_PHONEBK_X_ICU
+        String de_x_icu = DatabaseUtils.DE_U_CO_PHONEBK_X_ICU
         result.examples['country'].putAt( de_x_icu, sql.rows( query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
         result.examples[    'ddc'].putAt( de_x_icu, sql.rows( query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
         result.examples[    'org'].putAt( de_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.org_name } )
         result.examples[  'title'].putAt( de_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
 
-        String en_x_icu = MigrationHelper.EN_US_U_VA_POSIX_X_ICU
+        String en_x_icu = DatabaseUtils.EN_US_U_VA_POSIX_X_ICU
         result.examples['country'].putAt( en_x_icu, sql.rows( query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
         result.examples[    'ddc'].putAt( en_x_icu, sql.rows( query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
         result.examples[    'org'].putAt( en_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.org_name } )

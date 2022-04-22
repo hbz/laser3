@@ -66,45 +66,6 @@ class AppUtils {
         false
     }
 
-    // -- database
-
-    static Map<String, String> getPostgresqlServerInfo() {
-
-        DataSource dataSource = BeanStorage.getDataSource()
-        Sql sql = new Sql(dataSource)
-
-        try {
-            [
-                server_version : (sql.firstRow('show server_version').values().join(',') ?: 'unkown'),
-                server_encoding: (sql.firstRow('show server_encoding').values().join(',') ?: 'unkown')
-            ]
-        } catch (Exception e) {
-             println e.getMessage()
-            [ server_version: 'unkown', server_encoding: 'unkown' ]
-        }
-    }
-
-    static Map<String, List> getPostgresqlTableInfo() {
-
-        Map<String, List> result = [:]
-        DataSource dataSource = BeanStorage.getDataSource()
-        Sql sql = new Sql(dataSource)
-
-        sql.rows( "select tablename from pg_tables where schemaname = 'public'").each { table ->
-            String tablename = table.get('tablename')
-            List columns = []
-            sql.rows("select column_name, data_type, collation_name from information_schema.columns where table_schema = 'public' and table_name = '" + tablename + "'").each{ col ->
-                columns.add([
-                        column: col.get('column_name'),
-                        type: col.get('data_type'),
-                        collation: col.get('collation_name') ?: ''
-                ])
-            }
-            result.putAt(tablename, columns)
-        }
-        result
-    }
-
     // -- domain classes
 
     static GrailsClass getDomainClass(String qualifiedName) {

@@ -40,16 +40,16 @@ The following fallbacks have been set for faster migration. They can be treated 
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated. 
 A migration to *de.laser.http.BasicHttpClient* should take place.
 
-#### Opencsv
-
-*com.opencsv:opencsv* is only used in one file. Replacement should take place.
-
-#### Juniversalchardet
-*com.github.albfernandez:juniversalchardet* is only used in one file. Replacement should take place.
-
-#### GPars
-*org.codehaus.gpars:gpars* is only used in one file. Replacement should take place.
-
 #### ExecutorGrailsPlugin
 
 *org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
+
+#### Opencsv
+
+*com.opencsv:opencsv* is only used in one file.
+
+#### Juniversalchardet
+*com.github.albfernandez:juniversalchardet* is only used in one file.
+
+#### GPars
+*org.codehaus.gpars:gpars* is only used in one file.

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.MigrationHelper; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStorage" %>
+<%@ page import="de.laser.helper.DatabaseUtils; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStorage" %>
 <!doctype html>
 <html>
 <head>
@@ -56,10 +56,10 @@
                     <g:else>
                         <td class="x">
                             <span class="ui image label">
-                            <g:if test="${row[6] == MigrationHelper.DE_U_CO_PHONEBK_X_ICU}">
+                            <g:if test="${row[6] == DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}">
                                 <img class="ui mini" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" /> ${row[6]}
                             </g:if>
-                            <g:elseif test="${row[6] == MigrationHelper.EN_US_U_VA_POSIX_X_ICU}">
+                            <g:elseif test="${row[6] == DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}">
                                 <img class="ui mini" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" /> ${row[6]}
                             </g:elseif>
                             <g:else>
@@ -88,7 +88,7 @@
         <tr>
             <th>#</th>
             <th style="text-transform: none !important;">COLLATE: ${collate_de}</th>
-            <th style="text-transform: none !important;">COLLATE: ${MigrationHelper.DE_U_CO_PHONEBK_X_ICU}</th>
+            <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}</th>
             <th>Current Query Result</th>
         </tr>
     </thead>
@@ -96,7 +96,7 @@
             <g:each in="${examples.keySet()}" var="cat">
                 <g:each in="${examples[cat].get(collate_de)}" var="e" status="i">
                     <tr class="${cat}">
-                        <g:set var="phbk_de" value="${examples[cat].get(MigrationHelper.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(MigrationHelper.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
+                        <g:set var="phbk_de" value="${examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
                         <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="positive"'} else { print 'class="negative"'} %>>
@@ -129,7 +129,7 @@
         <tr>
             <th>#</th>
             <th style="text-transform: none !important;">COLLATE: ${collate_en}</th>
-            <th style="text-transform: none !important;">COLLATE: ${MigrationHelper.EN_US_U_VA_POSIX_X_ICU}</th>
+            <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}</th>
             <th>Current Query Result</th>
         </tr>
         </thead>
@@ -137,7 +137,7 @@
             <g:each in="${examples.keySet()}" var="cat">
                 <g:each in="${examples[cat].get(collate_en)}" var="e" status="i">
                     <tr class="${cat}">
-                        <g:set var="phbk_en" value="${examples[cat].get(MigrationHelper.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(MigrationHelper.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
+                        <g:set var="phbk_en" value="${examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
                         <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="positive"'} else { print 'class="negative"'} %>>

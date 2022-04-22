@@ -85,23 +85,6 @@ class CustomMigrationCallbacks {
 			}
 
 			println '-        done ..'
-
-			if (ConfigUtils.getSchemaSpyScripPath()) {
-
-				println 'Executing post-migration scripts'
-
-				try {
-					String cmd = 'sh ' + ConfigUtils.getSchemaSpyScripPath()
-					println '-        ' + cmd
-
-					cmd.execute()
-
-				} catch (Exception e) {
-					println '-        error: ' + e.getMessage()
-					e.printStackTrace()
-				}
-			}
-
 			println '--------------------------------------------------------------------------------'
 		}
 	}

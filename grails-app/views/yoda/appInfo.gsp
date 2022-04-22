@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -50,20 +50,19 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${AppUtils.getConfig('dataSource.url').split('/').last()}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
             <tr><td>Collations</td><td>
                 <%
                     Set collations = []
-                    AppUtils.getPostgresqlTableInfo().each { it ->
+                    DatabaseUtils.getTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
                     collations.each { print it + '<br/>' }
                 %>
             </td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
-            <tr><td>DataSource.dbCreate</td><td> ${AppUtils.getConfig('dataSource.dbCreate')}</td></tr>
-            <tr><td>Postgresql server</td><td> ${AppUtils.getPostgresqlServerInfo()}</td></tr>
+            <tr><td>Postgresql server</td><td> ${DatabaseUtils.getServerInfo()}</td></tr>
         <tbody>
     </table>
 

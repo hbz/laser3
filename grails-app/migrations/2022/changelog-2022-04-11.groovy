@@ -1,12 +1,13 @@
-import de.laser.helper.MigrationHelper
+import de.laser.helper.DatabaseUtils
 
 databaseChangeLog = {
 
     changeSet(author: "klober (modified)", id: "1649658426259-1") {
         grailsChange {
             change {
-                String collate = MigrationHelper.DE_U_CO_PHONEBK_X_ICU
-                sql.execute('create collation if not exists "' + collate + '" (provider = icu, locale = "' + collate.replace('-x-icu', '') + '")')
+                String collate = DatabaseUtils.DE_U_CO_PHONEBK_X_ICU
+                String locale = collate.replace('-x-icu', '')
+                sql.execute('create collation if not exists public."' + collate + '" (provider = icu, locale = "' + locale + '")')
             }
             rollback {}
         }
@@ -14,8 +15,9 @@ databaseChangeLog = {
     changeSet(author: "klober (modified)", id: "1649658426259-2") {
         grailsChange {
             change {
-                String collate = MigrationHelper.EN_US_U_VA_POSIX_X_ICU
-                sql.execute('create collation if not exists "' + collate + '" (provider = icu, locale = "' + collate.replace('-x-icu', '') + '")')
+                String collate = DatabaseUtils.EN_US_U_VA_POSIX_X_ICU
+                String locale = collate.replace('-x-icu', '')
+                sql.execute('create collation if not exists public."' + collate + '" (provider = icu, locale = "' + locale + '")')
             }
             rollback {}
         }
@@ -42,13 +44,13 @@ databaseChangeLog = {
                     String type = nfo[2]
                     boolean index = nfo[3]
 
-                    sql.execute('alter table ' + table + ' alter column ' + column + '_de type ' + type + ' collate "' + MigrationHelper.DE_U_CO_PHONEBK_X_ICU + '"')
+                    sql.execute('alter table ' + table + ' alter column ' + column + '_de type ' + type + ' collate public."' + DatabaseUtils.DE_U_CO_PHONEBK_X_ICU + '"')
                     if (index) {
                         sql.execute('drop index ' + column + '_de_idx')
                         sql.execute('create index ' + column + '_de_idx on ' + table + '(' + column + ')')
                     }
 
-                    sql.execute('alter table ' + table + ' alter column ' + column + '_en type ' + type + ' collate "' + MigrationHelper.EN_US_U_VA_POSIX_X_ICU + '"')
+                    sql.execute('alter table ' + table + ' alter column ' + column + '_en type ' + type + ' collate public."' + DatabaseUtils.EN_US_U_VA_POSIX_X_ICU + '"')
                     if (index) {
                         sql.execute('drop index ' + column + '_en_idx')
                         sql.execute('create index ' + column + '_en_idx on ' + table + '(' + column + ')')
