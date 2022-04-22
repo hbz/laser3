@@ -479,9 +479,25 @@ class SurveyConfig {
     List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
        List<SurveyConfigProperties> surveyConfigPropertiesList = []
 
-        surveyConfigPropertiesList << surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
-        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
-        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+        List<SurveyConfigProperties> tmp = []
+
+        tmp = surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
+
+        if(tmp && tmp.size() > 0) {
+            surveyConfigPropertiesList << tmp
+        }
+
+        tmp = surveyProperties.findAll {it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+
+        if(tmp && tmp.size() > 0) {
+            surveyConfigPropertiesList << tmp
+        }
+
+        tmp =  surveyProperties.findAll {it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+
+        if(tmp && tmp.size() > 0) {
+            surveyConfigPropertiesList << tmp
+        }
 
         return surveyConfigPropertiesList.flatten()
 
