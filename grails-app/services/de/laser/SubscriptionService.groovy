@@ -71,7 +71,7 @@ class SubscriptionService {
         pu.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
-        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        List<Role> consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
         pu.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
@@ -591,14 +591,14 @@ class SubscriptionService {
      * @return a sorted list of member subscriptions which are marked as current
      */
     List getCurrentValidSubChilds(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOfAndStatus(
                 subscription,
                 RDStore.SUBSCRIPTION_CURRENT
         )
         if(validSubChilds) {
             validSubChilds = validSubChilds?.sort { a, b ->
-                def sa = a.getSubscriber()
-                def sb = b.getSubscriber()
+                Org sa = a.getSubscriber()
+                Org sb = b.getSubscriber()
                 (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
             }
         }
@@ -617,7 +617,7 @@ class SubscriptionService {
      * @return a filtered list of member subscriptions
      */
     List getValidSurveySubChilds(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
                 [RDStore.SUBSCRIPTION_CURRENT,
                  RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION,
@@ -649,13 +649,13 @@ class SubscriptionService {
      * @return a filtered list subscribers
      */
     List getValidSurveySubChildOrgs(Subscription subscription) {
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
+        List<Subscription> validSubChilds = Subscription.findAllByInstanceOfAndStatusInList(
                 subscription,
                 [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
 
         if(validSubChilds) {
-            List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
+            List<OrgRole> orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
 
             if (orgs) {
                 return orgs.org

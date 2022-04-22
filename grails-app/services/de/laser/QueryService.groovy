@@ -154,11 +154,11 @@ class QueryService {
             query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
         }
         if (SubscriptionProperty.class.equals(propertyClass)) {
-            def tmpQuery = getMySubscriptionsQuery(contextOrg)
+            Map tmpQuery = getMySubscriptionsQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
         }else if (LicenseProperty.class.equals(propertyClass)){
-            def tmpQuery = getMyLicensesQuery(contextOrg)
+            Map tmpQuery = getMyLicensesQuery(contextOrg)
             queryParams << tmpQuery.queryParams
             query += "and owner in ( " + tmpQuery.query + " )"
         }
@@ -175,7 +175,7 @@ class QueryService {
      * @return a list of upcoming due subscription properties
      */
     List<SubscriptionProperty> getDueSubscriptionCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, true)
+        Map query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, true)
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
@@ -187,7 +187,7 @@ class QueryService {
      * @return a list of upcoming due license properties
      */
     List<LicenseProperty> getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, true)
+        Map query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, true)
         LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
@@ -199,7 +199,7 @@ class QueryService {
      * @return a list of upcoming due organisation properties
      */
     List<OrgProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
-        def query = getQuery(OrgProperty.class, contextOrg, fromDateValue, toDateValue, false)
+        Map query = getQuery(OrgProperty.class, contextOrg, fromDateValue, toDateValue, false)
         OrgProperty.executeQuery(query.query, query.queryParams)
     }
 
@@ -211,7 +211,7 @@ class QueryService {
      * @return a list of upcoming due private subscription properties
      */
     List<SubscriptionProperty> getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, false)
+        Map query = getQuery(SubscriptionProperty.class, contextOrg, fromDateValue, toDateValue, false)
         SubscriptionProperty.executeQuery(query.query, query.queryParams)
     }
 
@@ -223,7 +223,7 @@ class QueryService {
      * @return a list of upcoming due private license properties
      */
     List<LicenseProperty> getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, false)
+        Map query = getQuery(LicenseProperty.class, contextOrg, fromDateValue, toDateValue, false)
         LicenseProperty.executeQuery(query.query, query.queryParams)
     }
 
@@ -246,7 +246,7 @@ class QueryService {
      * @return a list of due subscriptions
      */
     List<Subscription> getDueSubscriptions(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
-        def query = getDueSubscriptionsQuery(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo)
+        Map query = getDueSubscriptionsQuery(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo)
         Subscription.executeQuery(query.query, query.queryParams)
     }
 

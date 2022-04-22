@@ -153,7 +153,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                def uo = new UserOrg(
+                UserOrg uo = new UserOrg(
                         org: org,
                         user: user,
                         formalRole: formalRole)

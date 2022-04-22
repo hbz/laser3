@@ -27,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-          <g:each in="${titleInstanceList}" var="titleInstance">
+          <g:each in="${titleList}" var="titleInstance">
             <tr>
               <td>${fieldValue(bean: titleInstance, field: "title")}</td>
             </tr>

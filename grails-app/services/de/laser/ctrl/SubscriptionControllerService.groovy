@@ -16,6 +16,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
+import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
@@ -43,6 +44,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
+import javax.sql.DataSource
 import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -1750,7 +1752,7 @@ class SubscriptionControllerService {
             result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
-            def query = filterService.getIssueEntitlementQuery(params, result.subscription)
+            Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set<Long> entitlements = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
@@ -1766,7 +1768,7 @@ class SubscriptionControllerService {
             if(result.subscription.ieGroups.size() > 0) {
                 Map configMap = params.clone()
                 configMap.forCount = true
-                def query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
+                Map query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
@@ -2415,7 +2417,7 @@ class SubscriptionControllerService {
                 Thread.currentThread().setName("PackageTransfer_${result.subscription.id}")
                 SubscriptionPackage sp = SubscriptionPackage.get(params.subPkg)
                 //need to use native sql because of performance and queries not doable in hql
-                def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+                DataSource dataSource = BeanStorage.getDataSource()
                 Sql sql = new Sql(dataSource)
                 //revert changes applied to the package
                 //BEWARE: we have to restore the state to subscription end! If the entity has been modified several times, I need the closest change to the subscription end - and ONLY that!

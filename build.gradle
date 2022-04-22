@@ -100,7 +100,6 @@ dependencies {
     runtime 'javax.xml.bind:jaxb-api:2.3.1'
 //    runtime 'org.glassfish.web:el-impl:2.1.2-b03'                         // -- nn --
 //    runtime 'com.h2database:h2'                                           // -- nn --
-//    runtime 'com.bertramlabs.plugins:asset-pipeline-grails:3.4.3'         // from 3.2.4 // -- nn --
 //    testCompile "io.micronaut:micronaut-inject-groovy"                    // -- nn --
 //    testCompile "org.grails:grails-gorm-testing-support"                  // -- nn --
 //    testCompile "org.mockito:mockito-core"                                // -- nn --
@@ -138,9 +137,9 @@ dependencies {
     compile 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache
-    compile 'org.hibernate:hibernate-ehcache:5.4.33.Final'    // from 5.1.16.Final
+    compile 'org.hibernate:hibernate-ehcache:5.4.33.Final'              // from 5.1.16.Final
     // https://mvnrepository.com/artifact/net.sf.ehcache/ehcache
-    compile 'net.sf.ehcache:ehcache:2.10.9.2'                 // from 2.10.6
+    compile 'net.sf.ehcache:ehcache:2.10.9.2'                           // from 2.10.6
 //    compile 'org.hibernate:hibernate-jcache:5.4.33.Final'       // instead of hibernate-ehcache:5.1.16.Final
 //    compile 'org.ehcache:ehcache:3.9.9'                         // instead of net.sf.ehcache:ehcache:2.10.9.2
 
@@ -261,9 +260,7 @@ assets {
 apply from: 'laserTasks.gradle'
 
 tasks.withType(GroovyCompile) {
-    configure(groovyOptions) {
-        forkOptions.jvmArgs = ['-Xmx1024m']
-    }
+    configure(groovyOptions) { forkOptions.jvmArgs = ['-Xmx1024m'] }
 }
 
 //tasks.withType(Test) {        // -- nn --

@@ -106,11 +106,9 @@ class BootStrapService {
             if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
                 log.warn("there are user org rows with no role set. Please update the table to add role FKs")
             }
-
             // def auto_approve_memberships = SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
 
             SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
-
             if (mailSent) {
                 mailSent.delete()
             }
@@ -521,13 +519,10 @@ class BootStrapService {
      * @param perm the {@link Perm} permission to be granted
      */
     void ensurePermGrant(Role role, Perm perm) {
+
         PermGrant existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
-            //log.debug("create new perm grant for ${role}, ${perm}")
             new PermGrant(role:role, perm:perm).save()
-        }
-        else {
-            //log.debug("grant already exists ${role}, ${perm}")
         }
     }
 
@@ -537,6 +532,7 @@ class BootStrapService {
      * This method sets those (actually never used) reference groups
      */
     void setOrgRoleGroups() {
+
         String lic = License.name
         String sub = Subscription.name
         String pkg = Package.name
@@ -576,13 +572,11 @@ class BootStrapService {
     void setupRefdata() {
 
         List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
-
         rdcList.each { map ->
             RefdataCategory.construct(map)
         }
 
         List rdvList = getParsedCsvData('setup/RefdataValue.csv', 'RefdataValue')
-
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
@@ -595,7 +589,6 @@ class BootStrapService {
     void setupPropertyDefinitions() {
 
         List pdList = getParsedCsvData('setup/PropertyDefinition.csv', 'PropertyDefinition')
-
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }
@@ -645,23 +638,6 @@ class BootStrapService {
             }
         }
 
-        // copied from Config.groovy .. END
-
-        // -------------------------------------------------------------------
-        // ONIX-PL Additions
-        // -------------------------------------------------------------------
-
-        /*
-        RefdataCategory.loc('Entitlement Issue Status',
-                [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
-
-        RefdataValue.loc('Entitlement Issue Status', [en: 'Live', de: 'Live'], BOOTSTRAP)
-        RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
-        RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
-        */
-
-        // Controlled values from the <UsageType> element.
-
         List<String> usageStatusList = [
                 'UseForDataMining', 'InterpretedAsPermitted', 'InterpretedAsProhibited',
                 'Permitted', 'Prohibited', 'SilentUninterpreted', 'NotApplicable'
@@ -669,28 +645,6 @@ class BootStrapService {
         usageStatusList.each { String token ->
             RefdataValue.construct( [token: token, rdc: RDConstants.USAGE_STATUS, hardData: BOOTSTRAP, i10n:[value_de: token, value_en: token]] )
         }
-
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'UseForDataMining')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'InterpretedAsPermitted')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'redCross',       'InterpretedAsProhibited')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'greenTick',      'Permitted')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'redCross',       'Prohibited')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'purpleQuestion', 'SilentUninterpreted')
-//        RefdataCategory.lookupOrCreate(RDConstants.USAGE_STATUS, 'purpleQuestion', 'NotApplicable')
-
-        // def gokb_record_source = GlobalRecordSource.findByIdentifier('gokbPackages') ?: new GlobalRecordSource(
-        //                                                                                       identifier:'gokbPackages',
-        //                                                                                       name:'GOKB',
-        //                                                                                       type:'OAI',
-        //                                                                                       haveUpTo:null,
-        //                                                                                       uri:'https://gokb.kuali.org/gokb/oai/packages',
-        //                                                                                       listPrefix:'oai_dc',
-        //                                                                                       fullPrefix:'gokb',
-        //                                                                                       principal:null,
-        //                                                                                       credentials:null,
-        //                                                                                       rectype:0)
-        // gokb_record_source.save(flush:true, stopOnError:true)
-        // log.debug("new gokb record source: ${gokb_record_source}")
     }
 
     @Deprecated

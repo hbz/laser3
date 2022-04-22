@@ -71,7 +71,7 @@
                                 <i class="ui icon play green"></i>
                             </g:elseif>
                             <g:elseif test="${job.available}">
-                                <i class="ui icon question circle yellow"></i>
+                                <i class="ui icon question yellow"></i>
                             </g:elseif>
                         </g:else>
                     </td>

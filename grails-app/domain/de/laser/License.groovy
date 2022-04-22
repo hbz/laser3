@@ -526,10 +526,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         derived_licenses.each { dl ->
             log.debug("Send pending change to ${dl.id}")
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            def description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
+            Locale locale = LocaleContextHolder.getLocale()
+            String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
-            def definedType = 'text'
+            String definedType = 'text'
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
                 definedType = 'rdv'
             }

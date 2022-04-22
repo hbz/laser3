@@ -10,6 +10,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
+import de.laser.storage.BeanStorage
 import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
@@ -26,6 +27,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
+import javax.sql.DataSource
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ExecutorService
@@ -296,7 +298,7 @@ class CopyElementsService {
                 /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                         [result.subscription, it.id])*/
 
-                def newSubscription = new Subscription(
+                Subscription newSubscription = new Subscription(
                         isMultiYear: subMember.isMultiYear,
                         type: subMember.type,
                         kind: subMember.kind,
@@ -1533,7 +1535,7 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-                    def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+                    DataSource dataSource = BeanStorage.getDataSource()
                     Sql sql = new Sql(dataSource)
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
                     packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
