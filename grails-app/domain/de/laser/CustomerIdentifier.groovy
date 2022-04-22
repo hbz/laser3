@@ -1,14 +1,14 @@
 package de.laser
 
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * Represents a key/value pair for a customer {@link Org} which enables to load statistic data from a SUSHI server
  */
 class CustomerIdentifier {
 
-    @RefdataAnnotation(cat = 'CustomerIdentifierType')
+    @RefdataInfo(cat = 'CustomerIdentifierType')
     RefdataValue type
     String value
     String requestorKey

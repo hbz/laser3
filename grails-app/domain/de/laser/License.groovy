@@ -9,7 +9,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
@@ -43,10 +43,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     boolean isSlaved = false
     boolean isPublicForApi = false
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
+    @RefdataInfo(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
+    @RefdataInfo(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
     RefdataValue licenseCategory
 
     /**
@@ -61,7 +61,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     String noticePeriod
     String licenseUrl
 
-    @RefdataAnnotation(cat = RDConstants.Y_N_U)
+    @RefdataInfo(cat = RDConstants.Y_N_U)
     RefdataValue openEnded
 
     Date startDate

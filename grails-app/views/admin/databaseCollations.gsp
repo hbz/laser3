@@ -44,26 +44,26 @@
         </thead>
         <tbody>
             <g:each in="${allTables}" var="row" status="i">
-                <tr class="${! row[6] ? 'current' : row[6]}">
+                <tr class="${! row.collation_name ? 'current' : row.collation_name}">
                     <td>${i+1}</td>
-                    <td>${row[1]}</td>
-                    <td>${row[2]}</td>
-                    <td>${row[3]}</td>
-                    <td>${row[7]}</td>
-                    <g:if test="${! row[6]}">
+                    <td>${row.table_name}</td>
+                    <td>${row.column_name}</td>
+                    <td>${row.data_type}</td>
+                    <td>${row.index_name}</td>
+                    <g:if test="${! row.collation_name}">
                         <td class="x disabled">${collate_current}</td>
                     </g:if>
                     <g:else>
                         <td class="x">
                             <span class="ui image label">
-                            <g:if test="${row[6] == DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}">
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" /> ${row[6]}
+                            <g:if test="${row.collation_name == DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}">
+                                <img class="ui mini" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" /> ${row.collation_name}
                             </g:if>
-                            <g:elseif test="${row[6] == DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}">
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" /> ${row[6]}
+                            <g:elseif test="${row.collation_name == DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}">
+                                <img class="ui mini" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" /> ${row.collation_name}
                             </g:elseif>
                             <g:else>
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/xx.svg', absolute:true)}" alt="[?]" /> ${row[6]}
+                                <img class="ui mini" src="${resource(dir:'images', file:'flags/xx.svg', absolute:true)}" alt="[?]" /> ${row.collation_name}
                             </g:else>
                         </span>
                         </td>
@@ -166,7 +166,7 @@
         } else {
             $(baseSel).removeClass('hidden')
         }
-    })
+    }).trigger('change')
 </laser:script>
 
 </body>

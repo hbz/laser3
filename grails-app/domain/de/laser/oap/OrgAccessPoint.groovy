@@ -8,7 +8,7 @@ import de.laser.base.AbstractBase
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
 import groovy.json.JsonSlurper
@@ -27,7 +27,7 @@ class OrgAccessPoint extends AbstractBase {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RDConstants.ACCESS_POINT_TYPE)
+    @RefdataInfo(cat = RDConstants.ACCESS_POINT_TYPE)
     RefdataValue accessMethod
 
     static belongsTo = [

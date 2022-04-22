@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
@@ -24,7 +24,7 @@ class CostConfigurationController {
     /**
      * Gets the current list of an institution's cost configurations
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -54,7 +54,7 @@ class CostConfigurationController {
     /**
      * Opens the creation modal, filtering out those cost item elements for which a configuration already exists
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -84,7 +84,7 @@ class CostConfigurationController {
      * Controller call for creating a new cost item element configuration
      * @return the list view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -97,7 +97,7 @@ class CostConfigurationController {
      * Controller call for deleting a cost item element configuration
      * @return the list view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -118,7 +118,7 @@ class CostConfigurationController {
      * the given cost item element configuration to each of them
      * @return the list view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })

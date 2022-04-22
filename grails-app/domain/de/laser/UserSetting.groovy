@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents settings for a user; it ensures preferences of the user using the system.
@@ -92,7 +92,7 @@ class UserSetting {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
+    @RefdataInfo(cat = RefdataInfo.GENERIC)
     RefdataValue rdValue
 
     static transients = ['value'] // mark read-only accessor methods

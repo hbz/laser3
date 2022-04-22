@@ -83,14 +83,19 @@
             </a>
         </g:if>
         <a class="${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
-            <i class="bullhorn icon large"></i>
+            <i class="warning circle icon large"></i>
             <span id="notificationsCount">${message(code:'myinst.acceptedChanges.label', args: [message(code:'myinst.loadPending')])}</span>
         </a>
 
         <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="warning circle icon large"></i>
+            <i class="bullhorn icon large"></i>
             ${systemAnnouncements.size()}
             ${message(code:'announcement.plural')}
+        </a>
+
+        <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
+            <i class="chart pie icon large"></i>
+            <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -100,11 +105,6 @@
                 ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
-
-        <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
-            <i class="chart pie icon large"></i>
-            <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
-        </a>
 
         <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">

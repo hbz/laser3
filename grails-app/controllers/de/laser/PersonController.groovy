@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.titles.TitleInstance
  
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.converters.JSON
@@ -41,7 +41,7 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Person.withTransaction {
@@ -247,7 +247,7 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
@@ -417,7 +417,7 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Person.withTransaction {

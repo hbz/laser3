@@ -9,7 +9,7 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -30,16 +30,16 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   String provenance
   String titleNamespace
 
-  @RefdataAnnotation(cat = '?')
+  @RefdataInfo(cat = '?')
   RefdataValue type
 
-  @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
+  @RefdataInfo(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
 
-  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.serviceProvider')
+  @RefdataInfo(cat = RDConstants.Y_N, i18n = 'platform.serviceProvider')
   RefdataValue serviceProvider
 
-  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.softwareProvider')
+  @RefdataInfo(cat = RDConstants.Y_N, i18n = 'platform.softwareProvider')
   RefdataValue softwareProvider
 
   Date dateCreated

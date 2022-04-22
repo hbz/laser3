@@ -5,7 +5,7 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -29,22 +29,22 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     String vendorURL
     String cancellationAllowances
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
+    @RefdataInfo(cat = RDConstants.PACKAGE_CONTENT_TYPE)
     RefdataValue contentType
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
+    @RefdataInfo(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_BREAKABLE)
+    @RefdataInfo(cat = RDConstants.PACKAGE_BREAKABLE)
     RefdataValue breakable
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_CONSISTENT)
+    @RefdataInfo(cat = RDConstants.PACKAGE_CONSISTENT)
     RefdataValue consistent
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_FILE)
+    @RefdataInfo(cat = RDConstants.PACKAGE_FILE)
     RefdataValue file
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_SCOPE)
+    @RefdataInfo(cat = RDConstants.PACKAGE_SCOPE)
     RefdataValue scope
 
     boolean isPublic = false

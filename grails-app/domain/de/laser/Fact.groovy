@@ -1,9 +1,8 @@
 package de.laser
 
 
-import de.laser.titles.TitleInstance
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents a statistics entry (usage report) which comes from the national statistics server (Nationaler Statistikserver).
@@ -17,9 +16,9 @@ class Fact {
     String factUid
     Long reportingYear
     Long reportingMonth
-    @RefdataAnnotation(cat = RDConstants.FACT_TYPE)
+    @RefdataInfo(cat = RDConstants.FACT_TYPE)
     RefdataValue factType
-    @RefdataAnnotation(cat = RDConstants.FACT_METRIC)
+    @RefdataInfo(cat = RDConstants.FACT_METRIC)
     RefdataValue factMetric
 
     //TitleInstance relatedTitle

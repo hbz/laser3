@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
@@ -19,7 +19,7 @@ class CompareController  {
     /**
      * Compares licenses against each other
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -48,7 +48,7 @@ class CompareController  {
     /**
      * Compares subscriptions against each other
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -86,7 +86,7 @@ class CompareController  {
      * As the list of titles per subscription may get very long, this is an AJAX-called method to load the next batch of entitlements
      * @return the issue entitlement table, starting with the entities from the given offset
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })

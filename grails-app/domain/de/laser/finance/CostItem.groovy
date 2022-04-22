@@ -9,7 +9,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.DeleteFlag
 
@@ -63,25 +63,25 @@ class CostItem extends AbstractBase
 
     Boolean isVisibleForSubscriber = false
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_TYPE)
+    @RefdataInfo(cat = RDConstants.COST_ITEM_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_STATUS, i18n = 'default.status.label')
+    @RefdataInfo(cat = RDConstants.COST_ITEM_STATUS, i18n = 'default.status.label')
     RefdataValue costItemStatus
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_CATEGORY)
+    @RefdataInfo(cat = RDConstants.COST_ITEM_CATEGORY)
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT, i18n = 'financials.costItemElement')
+    @RefdataInfo(cat = RDConstants.COST_ITEM_ELEMENT, i18n = 'financials.costItemElement')
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION, i18n = 'financials.costItemConfiguration')
+    @RefdataInfo(cat = RDConstants.COST_CONFIGURATION, i18n = 'financials.costItemConfiguration')
     RefdataValue costItemElementConfiguration
 
-    @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
+    @RefdataInfo(cat = RDConstants.TAX_TYPE)
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
-    @RefdataAnnotation(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
+    @RefdataInfo(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
     RefdataValue billingCurrency
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax

@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
+import de.laser.annotations.UnderDevelopment
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
@@ -11,7 +12,7 @@ import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
 
 // not ready for use
-@Deprecated
+@UnderDevelopment
 class IssueEntitlementFilter extends BaseFilter {
 
     static int TMP_QUERY_CONSTRAINT = 30000

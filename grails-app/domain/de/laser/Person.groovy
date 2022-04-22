@@ -6,7 +6,7 @@ import de.laser.titles.TitleInstance
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -33,16 +33,16 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     String       last_name
     Org          tenant
 
-    @RefdataAnnotation(cat = RDConstants.GENDER)
+    @RefdataInfo(cat = RDConstants.GENDER)
     RefdataValue gender
 
     boolean isPublic = false
 
-    @RefdataAnnotation(cat = RDConstants.PERSON_CONTACT_TYPE)
+    @RefdataInfo(cat = RDConstants.PERSON_CONTACT_TYPE)
     RefdataValue contactType
 
     @Deprecated
-    @RefdataAnnotation(cat = RDConstants.PERSON_POSITION)
+    @RefdataInfo(cat = RDConstants.PERSON_POSITION)
     RefdataValue roleType // TODO remove !?
 
     Date dateCreated

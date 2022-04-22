@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This domain is part of the statistics component implemented for the Nationaler Statistikserver data.
@@ -20,7 +20,7 @@ class StatsTripleCursor {
     Date availTo
     Integer numFacts
 
-    @RefdataAnnotation(cat = RDConstants.FACT_TYPE)
+    @RefdataInfo(cat = RDConstants.FACT_TYPE)
     RefdataValue factType
 
     static mapping = {

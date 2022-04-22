@@ -3,7 +3,7 @@ package de.laser
 import de.laser.auth.User
  
 import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -40,7 +40,7 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
@@ -95,7 +95,7 @@ class TaskController  {
 	 * Call to create a new task
 	 * @return the task creation modal
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
         def contextOrg  = contextService.getOrg()
@@ -124,7 +124,7 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_USER")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def edit() {
 		Task.withTransaction {
@@ -208,7 +208,7 @@ class TaskController  {
 	 * Call to delete the given task instance
 	 * @return a redirect to the referer
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Task.withTransaction {

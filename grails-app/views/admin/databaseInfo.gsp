@@ -29,7 +29,7 @@
             <tr><td>Collations</td><td>
                 <%
                     Set collations = [defaultCollate]
-                    DatabaseUtils.getTablesCollationInfo().each { it ->
+                    DatabaseUtils.getAllTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
@@ -37,8 +37,8 @@
                 %>
             </td></tr>
             <tr><td>User defined functions</td><td>
-                <g:each in="${dbFunctions}" var="udf">
-                    ${udf.function}; Version ${udf.version}<br />
+                <g:each in="${dbUserFunctions}" var="uf">
+                    ${uf.function}; Version ${uf.version}<br />
                 </g:each>
             </td></tr>
             <tr><td>Database size</td><td> ${dbSize}</td></tr>
@@ -76,13 +76,15 @@
     <table class="ui celled la-js-responsive-table la-table table compact">
         <thead>
         <tr>
+            <th>#</th>
             <th>Tabelle</th>
             <th>Einträge</th>
         </tr>
         </thead>
         <tbody>
-        <g:each in="${dbTableUsage}" var="tbl">
+        <g:each in="${dbTableUsage}" var="tbl" status="i">
             <tr>
+                <td>${i+1}</td>
                 <td>${tbl.tablename}</td>
                 <td><g:formatNumber number="${tbl.rowcount}" format="${message(code:'default.decimal.format')}"/></td>
             </tr>

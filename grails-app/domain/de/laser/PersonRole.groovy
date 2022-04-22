@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This class ensures connections between {@link Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.
@@ -35,20 +35,20 @@ class PersonRole implements Comparable<PersonRole>{
     /**
      * The person has a certain position at the given organisation. Is exclusive with other types
      */
-    @RefdataAnnotation(cat = RDConstants.PERSON_POSITION)
+    @RefdataInfo(cat = RDConstants.PERSON_POSITION)
     RefdataValue    positionType
 
     /**
      * The person has a certain function at the given organisation. Is exclusive with other types
      */
-    @RefdataAnnotation(cat = RDConstants.PERSON_FUNCTION)
+    @RefdataInfo(cat = RDConstants.PERSON_FUNCTION)
     RefdataValue    functionType
 
     /**
      * The person has a certain responsibility at the given organisation, the responsibility concerns usually a certain object. Is exclusive with other types
      * @see #setReference(java.lang.Object)
      */
-    @RefdataAnnotation(cat = RDConstants.PERSON_RESPONSIBILITY)
+    @RefdataInfo(cat = RDConstants.PERSON_RESPONSIBILITY)
     RefdataValue    responsibilityType
 
     License                        lic

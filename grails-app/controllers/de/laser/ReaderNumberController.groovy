@@ -1,8 +1,7 @@
 package de.laser
 
 import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
-import de.laser.storage.RDStore
+import de.laser.annotations.DebugInfo
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
 
@@ -18,7 +17,7 @@ class ReaderNumberController  {
 	 * Creates a new reader number for the given institution
 	 * @return redirect to the updated reader number table
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -43,7 +42,7 @@ class ReaderNumberController  {
 	 * Takes the submitted parameters and updates the given reader number with the given parameter map
 	 * @return the updated reader number table
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -70,7 +69,7 @@ class ReaderNumberController  {
 	 * Deletes the given reader numbers, specified by their grouping unit
 	 * @return the updated reader number table
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->

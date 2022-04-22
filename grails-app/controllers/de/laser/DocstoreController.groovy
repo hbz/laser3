@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
@@ -54,7 +54,7 @@ class DocstoreController  {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugAnnotation(wtc = 2)
+    @DebugInfo(wtc = 2)
     @Secured(['ROLE_USER'])
     def uploadDocument() {
         Doc.withTransaction { TransactionStatus ts ->
@@ -191,7 +191,7 @@ class DocstoreController  {
     /**
      * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)

@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.
@@ -10,12 +10,12 @@ import de.laser.annotations.RefdataAnnotation
  */
 class ReaderNumber {
 
-    @RefdataAnnotation(cat = RDConstants.NUMBER_TYPE)
+    @RefdataInfo(cat = RDConstants.NUMBER_TYPE)
     RefdataValue referenceGroup
     String dateGroupNote //counts for every number for a given date
 
     BigDecimal value
-    @RefdataAnnotation(cat = RDConstants.SEMESTER)
+    @RefdataInfo(cat = RDConstants.SEMESTER)
     RefdataValue semester
     Date dueDate
 

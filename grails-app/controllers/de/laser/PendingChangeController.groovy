@@ -3,8 +3,7 @@ package de.laser
 import com.k_int.kbplus.ExecutorWrapperService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
-import de.laser.annotations.DebugAnnotation
-import de.laser.exceptions.ChangeAcceptException
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
@@ -23,7 +22,7 @@ class PendingChangeController  {
     /**
      * Call to accept the given change and to trigger processing of the changes stored in the record
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def accept() {
         log.debug("Accept")
@@ -67,7 +66,7 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def reject() {
         log.debug("Reject")
@@ -85,7 +84,7 @@ class PendingChangeController  {
     /**
      * Call to bulk-process a set of changes. Loops through the changes and performs accepting or rejecting
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAll() {
         log.debug("processAll - ${params}")
@@ -126,7 +125,7 @@ class PendingChangeController  {
     /**
      * Call to bulk-accept a set of changes. The changes are going to be looped and accepting triggered in each of them
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def acceptAll() {
         log.debug("acceptAll - ${params}")
@@ -147,7 +146,7 @@ class PendingChangeController  {
     /**
      * Call to bulk-reject a set of changes. The changes are going to be looped and rejecting triggered in each of them
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {
         log.debug("rejectAll ${params}")

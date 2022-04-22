@@ -1,7 +1,7 @@
 package de.laser.workflow
 
 import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
@@ -11,10 +11,10 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 class WfTaskBase {
 
-    @RefdataAnnotation(cat = RDConstants.WF_TASK_PRIORITY)
+    @RefdataInfo(cat = RDConstants.WF_TASK_PRIORITY)
     RefdataValue priority
 
-    //@RefdataAnnotation(cat = RDConstants.WF_TASK_TYPE)
+    //@RefdataInfo(cat = RDConstants.WF_TASK_TYPE)
     //RefdataValue type
 
     WfConditionBase condition

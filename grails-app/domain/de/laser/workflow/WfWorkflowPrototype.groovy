@@ -2,7 +2,7 @@ package de.laser.workflow
 
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -16,7 +16,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
 
     static final String KEY = 'WF_WORKFLOW_PROTOTYPE'
 
-    @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATE)
+    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATE)
     RefdataValue state
 
     WfTaskPrototype task

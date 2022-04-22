@@ -2,8 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
-import de.laser.annotations.DebugAnnotation
-import de.laser.storage.RDConstants
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.oap.OrgAccessPoint
@@ -217,7 +216,7 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def link() {
         Map<String, Object> result = [:]
@@ -254,7 +253,7 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
@@ -293,7 +292,7 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -309,7 +308,7 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -322,7 +321,7 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -347,7 +346,7 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })

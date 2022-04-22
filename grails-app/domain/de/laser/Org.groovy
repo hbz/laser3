@@ -13,7 +13,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.interfaces.DeleteFlag
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
@@ -75,37 +75,37 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    @RefdataAnnotation(cat = RDConstants.ORG_SECTOR)
+    @RefdataInfo(cat = RDConstants.ORG_SECTOR)
     RefdataValue sector
 
-    @RefdataAnnotation(cat = RDConstants.ORG_STATUS)
+    @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue membership
 
-    @RefdataAnnotation(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
+    @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
     RefdataValue country
 
-    @RefdataAnnotation(cat = '?', i18n = 'org.region.label')
+    @RefdataInfo(cat = '?', i18n = 'org.region.label')
     RefdataValue region
 
-    @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK, i18n = 'org.libraryNetwork.label')
+    @RefdataInfo(cat = RDConstants.LIBRARY_NETWORK, i18n = 'org.libraryNetwork.label')
     RefdataValue libraryNetwork
 
-    @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE, i18n = 'org.funderType.label')
+    @RefdataInfo(cat = RDConstants.FUNDER_TYPE, i18n = 'org.funderType.label')
     RefdataValue funderType
 
-    @RefdataAnnotation(cat = RDConstants.FUNDER_HSK_TYPE, i18n = 'org.funderHSK.label')
+    @RefdataInfo(cat = RDConstants.FUNDER_HSK_TYPE, i18n = 'org.funderHSK.label')
     RefdataValue funderHskType
 
-    @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE, i18n = 'org.libraryType.label')
+    @RefdataInfo(cat = RDConstants.LIBRARY_TYPE, i18n = 'org.libraryType.label')
     RefdataValue libraryType
 
-    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
+    @RefdataInfo(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue costConfigurationPreset
 
-    @RefdataAnnotation(cat = RDConstants.E_INVOICE_PORTAL)
+    @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)
     RefdataValue eInvoicePortal
 
     SortedSet ids

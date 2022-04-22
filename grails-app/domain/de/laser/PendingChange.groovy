@@ -7,7 +7,7 @@ import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
@@ -72,7 +72,7 @@ class PendingChange {
     @Deprecated
     String desc
 
-    @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_STATUS)
+    @RefdataInfo(cat = RDConstants.PENDING_CHANGE_STATUS)
     RefdataValue status
 
     static transients = ['payloadAsJSON', 'changeDocAsJSON', 'message', 'parsedParams']

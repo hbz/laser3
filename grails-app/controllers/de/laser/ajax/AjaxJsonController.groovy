@@ -34,7 +34,7 @@ import de.laser.RefdataValue
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -867,7 +867,7 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
@@ -967,7 +967,7 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })

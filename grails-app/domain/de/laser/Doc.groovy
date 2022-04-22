@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.helper.ConfigUtils
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * A document object representation. The document may be an uploaded file with annotations or a note without file. As legacy, automatised messages / announcements were stored as docs as well. This type is specified by the
@@ -17,10 +17,10 @@ class Doc {
     static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
     static final CONTENT_TYPE_FILE                = 3
 
-    @RefdataAnnotation(cat = 'Document Status')
+    @RefdataInfo(cat = 'Document Status')
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.DOCUMENT_TYPE)
+    @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
 
   String title

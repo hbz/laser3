@@ -34,7 +34,7 @@ import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
@@ -575,7 +575,7 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -626,7 +626,7 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -663,7 +663,7 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -829,7 +829,7 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })

@@ -1,6 +1,6 @@
 package de.laser
  
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -32,7 +32,7 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Address.withTransaction {
@@ -118,7 +118,7 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         Address.withTransaction {
@@ -175,7 +175,7 @@ class AddressController  {
     /**
      * Deletes the given address
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Address.withTransaction {

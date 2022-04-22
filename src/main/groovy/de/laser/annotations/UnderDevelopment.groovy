@@ -5,14 +5,8 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
-@Target(ElementType.FIELD)
+@Target([ElementType.METHOD, ElementType.TYPE])
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface RefdataAnnotation {
-
-    static final String UNKOWN = '?'
-    static final String GENERIC = 'GENERIC'
-
-    String cat() default 'n/a'
-    String i18n() default 'n/a'
+@interface UnderDevelopment {
 }

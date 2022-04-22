@@ -25,10 +25,9 @@ class SystemProfiler {
         version     false
         uri         column:'sp_uri',        index: 'sp_uri_idx'
         params      column:'sp_params',     type: 'text'
-        context     column:'sp_context_fk'
+        context     column:'sp_context_fk', index: 'sp_context_idx'
         ms          column:'sp_ms'
-        archive     column:'sp_archive'
-
+        archive     column:'sp_archive',    index: 'sp_archive_idx'
         dateCreated column:'sp_created'
     }
 

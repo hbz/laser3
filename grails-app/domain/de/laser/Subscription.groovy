@@ -12,7 +12,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
@@ -72,19 +72,19 @@ import java.time.LocalDate
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport {
 
-    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_TYPE)
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_KIND)
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_KIND)
     RefdataValue kind
 
-    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_FORM)
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_FORM)
     RefdataValue form
 
-    @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_RESOURCE)
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_RESOURCE)
     RefdataValue resource
 
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
@@ -92,7 +92,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 	boolean isPublicForApi = false
 
     //explicitely demanded as of ERMS-2503 - but demand has been revoked! Keep in u.f.n. until discussions on orderer side are terminated!
-    //@RefdataAnnotation(cat = RDConstants.Y_N)
+    //@RefdataInfo(cat = RDConstants.Y_N)
     //RefdataValue hasPerpetualAccess
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false

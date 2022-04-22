@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.exceptions.CreationException
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
@@ -17,7 +17,7 @@ class Links {
     Subscription destinationSubscription
     License sourceLicense
     License destinationLicense
-    @RefdataAnnotation(cat = RDConstants.LINK_TYPE)
+    @RefdataInfo(cat = RDConstants.LINK_TYPE)
     RefdataValue linkType
     Org     owner
     Date    dateCreated

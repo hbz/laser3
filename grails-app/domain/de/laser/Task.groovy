@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfTask}, not part of a more complex workflow
@@ -29,7 +29,7 @@ class Task {
     String          title
     String          description
 
-    @RefdataAnnotation(cat = RDConstants.TASK_STATUS)
+    @RefdataInfo(cat = RDConstants.TASK_STATUS)
     RefdataValue    status
 
     User            creator

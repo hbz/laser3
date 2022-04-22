@@ -5,7 +5,7 @@ import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import groovy.time.TimeCategory
@@ -57,7 +57,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     String subjectReference
     String imprint
     String titleType
-    @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+    @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium
     Date dateFirstInPrint
     Date dateFirstOnline
@@ -75,28 +75,28 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     String gokbId
   //TitleInstance title
 
-    @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
+    @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue option
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue delayedOA
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue hybridOA
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue statusReason
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue payment
 
-    @RefdataAnnotation(cat = RDConstants.TIPP_ACCESS_TYPE)
+    @RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
     RefdataValue accessType
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_OA_TYPE)
+    @RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
     RefdataValue openAccess
 
     String hostPlatformURL

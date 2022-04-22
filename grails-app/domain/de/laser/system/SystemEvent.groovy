@@ -124,9 +124,9 @@ class SystemEvent {
         version     false
         token       column:'se_token'
         payload     column:'se_payload',   type: 'text'
-        category    column:'se_category'
-        relevance   column:'se_relevance'
-        created     column:'se_created',   index: 'se_created_idx'
+        category    column:'se_category',   index: 'se_category_idx'
+        relevance   column:'se_relevance',  index: 'se_relevance_idx'
+        created     column:'se_created'
     }
 
     static constraints = {

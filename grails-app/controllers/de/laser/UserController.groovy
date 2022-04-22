@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.helper.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
@@ -38,7 +38,7 @@ class UserController  {
      * Call to delete the given user, listing eventual substitutes for personal belongings.
      * If confirmed, the deletion will be executed and objects reassigned to the given substitute
      */
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
@@ -139,7 +139,7 @@ class UserController  {
      * Shows the affiliations and global roles given user
      * @return a list of the user's affiliations and roles
      */
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
@@ -152,7 +152,7 @@ class UserController  {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
+    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = 2)
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })

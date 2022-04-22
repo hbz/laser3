@@ -4,13 +4,11 @@ import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.ESWrapperService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GlobalSourceSyncService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
 import de.laser.auth.UserRole
 import de.laser.finance.CostItem
-import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
@@ -30,7 +28,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.web.Action
 import groovy.json.JsonOutput
-import groovy.xml.MarkupBuilder
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -460,7 +457,7 @@ class YodaController {
                         String mKey = method.name
                         Map<String, Object> mInfo = [:]
 
-                        Annotation da = method.getAnnotation(DebugAnnotation)
+                        Annotation da = method.getAnnotation(DebugInfo)
                         if (da) {
                             mInfo.debug = [
                                     perm     : da.perm(),

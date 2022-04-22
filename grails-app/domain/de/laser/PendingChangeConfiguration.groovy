@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents a switch cabinet for a subscription package. Each package linked to a subscription contains a
@@ -41,7 +41,7 @@ class PendingChangeConfiguration {
     static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
 
     String settingKey
-    @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)
+    @RefdataInfo(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)
     RefdataValue settingValue
     boolean withNotification = false
 

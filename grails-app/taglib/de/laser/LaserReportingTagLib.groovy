@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -118,13 +118,13 @@ class LaserReportingTagLib {
     def reportFilterRefdata = { attrs, body ->
 
         Field refdata   = attrs.config.meta.class.getDeclaredField(attrs.refdata)
-        def anno        = refdata.getAnnotationsByType(RefdataAnnotation).head()
+        def anno        = refdata.getAnnotationsByType(RefdataInfo).head()
         String rdCat    = anno.cat()
         String rdI18n   = anno.i18n()
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
-        String filterLabel    = rdI18n != 'n/a' ? message(code: rdI18n, default: rdCat) : message(code: rdCat + '.label', default: rdCat) // TODO -> @RefdataAnnotation
+        String filterLabel    = rdI18n != 'n/a' ? message(code: rdI18n, default: rdCat) : message(code: rdCat + '.label', default: rdCat) // TODO -> @RefdataInfo
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
         Integer filterValue   = params.int(filterName)
 

@@ -6,15 +6,10 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
- 
-import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
-import de.laser.storage.RDStore
+import de.laser.annotations.DebugInfo
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
-
-import java.text.SimpleDateFormat
 
 /**
  * This controller handles issue entitlement detail calls
@@ -28,7 +23,7 @@ class IssueEntitlementController  {
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect action: 'list', params: params
@@ -39,7 +34,7 @@ class IssueEntitlementController  {
      * Use {@link SubscriptionController#index()} instead
      */
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def list() {
         params.max = params.max ?: contextService.getUser().getDefaultPageSize()
@@ -52,7 +47,7 @@ class IssueEntitlementController  {
      * instead
      */
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
@@ -62,7 +57,7 @@ class IssueEntitlementController  {
      * Shows the given issue entitlement details
      * @return
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
       Map<String, Object> result = [:]
@@ -155,13 +150,13 @@ class IssueEntitlementController  {
 
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->

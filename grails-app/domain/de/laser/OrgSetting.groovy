@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents organisation-wide configuration settings, see the enum {@link OrgSetting.KEYS} for the possible settings.
@@ -58,7 +58,7 @@ class OrgSetting {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
+    @RefdataInfo(cat = RefdataInfo.GENERIC)
     RefdataValue rdValue
     String       strValue
     Role         roleValue

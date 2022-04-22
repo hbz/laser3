@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
@@ -18,7 +18,7 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
     Long id
     Long version
-    @RefdataAnnotation(cat = RDConstants.DDC)
+    @RefdataInfo(cat = RDConstants.DDC)
     RefdataValue ddc
     Date dateCreated
     Date lastUpdated

@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
@@ -69,7 +69,7 @@ class SurveyController {
      * Redirects the call to the survey details view
      * @return the survey details view of the given survey
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -84,7 +84,7 @@ class SurveyController {
      * Loads for the context consortium the currently running surveys
      * @return a table view of the current surveys
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -169,7 +169,7 @@ class SurveyController {
      * Loads the current surveys with their workflows for the given consortium. The workflow list may also be exported as Excel worksheet
      * @return the table view of the current surveys with their attached workflows
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -240,7 +240,7 @@ class SurveyController {
      * Call to create a general survey
      * @return the new survey form
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -263,7 +263,7 @@ class SurveyController {
      * Takes the given parameters and creates a new general survey based on the input
      * @return the new survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -333,7 +333,7 @@ class SurveyController {
      * Call to create a subscription survey
      * @return the new survey form
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -417,7 +417,7 @@ class SurveyController {
      * Call to create a title survey
      * @return the new survey form
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -504,7 +504,7 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -535,7 +535,7 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -566,7 +566,7 @@ class SurveyController {
      * Takes the given parameters and creates a new subscription survey based on the input
      * @return the new survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -662,7 +662,7 @@ class SurveyController {
      * Takes the given parameters and creates a new title survey based on the input
      * @return the new survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -736,7 +736,7 @@ class SurveyController {
      * Shows the given survey's details
      * @return the survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -840,7 +840,7 @@ class SurveyController {
      * Lists the titles subject of the given survey
      * @return a list view of the issue entitlements linked to the given survey
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -876,7 +876,7 @@ class SurveyController {
      * Lists the documents attached to the given survey configuration
      * @return a list of the survey config documents
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -891,7 +891,7 @@ class SurveyController {
      * Lists the participants of the given survey. The result may be filtered
      * @return the participant list for the given tab
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -939,7 +939,7 @@ class SurveyController {
      * Lists the costs linked to the given survey, reflecting upcoming subscription costs
      * @return a list of costs linked to the survey
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1003,7 +1003,7 @@ class SurveyController {
      * Takes the given input and processes the change on the selected survey cost items
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1136,7 +1136,7 @@ class SurveyController {
      * Marks the given survey as finished
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1163,7 +1163,7 @@ class SurveyController {
      * Marks the renewal sending flag as done for the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1190,7 +1190,7 @@ class SurveyController {
      * Marks the establishment of survey cost items as done for the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1216,7 +1216,7 @@ class SurveyController {
      * Marks the given survey property (i.e. survey question) as mandatory to fill out
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1244,7 +1244,7 @@ class SurveyController {
      * Marks the given survey as completed; is a toggle between survey completed and survey in evaluation
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1270,7 +1270,7 @@ class SurveyController {
      * Marks the given transfer procedure as (un-)checked
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1325,7 +1325,7 @@ class SurveyController {
      * exported as (configurable) Excel worksheet
      * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1456,7 +1456,7 @@ class SurveyController {
      * Call to open the participant transfer view
      * @return the participant list with their selections
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1512,7 +1512,7 @@ class SurveyController {
      * Call to transfer the survey participants onto the next year's subscription
      * @return the subscription comparison view for the given subscriptions (the predecessor and the successor instances)
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1615,7 +1615,7 @@ class SurveyController {
      * Call to list the members; either those who completed the survey or those who did not
      * @return a list of the participants in the called tab view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1647,7 +1647,7 @@ class SurveyController {
      * Opens the survey for the given participants and sends eventual reminders
      * @return the participation view with the counts of execution done
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1729,7 +1729,7 @@ class SurveyController {
      * Call to list the titles attached to the given survey. The list may be exported as KBART or Excel worksheet
      * @return a list view of titles, either as HTML view or as KBART / Excel worksheet
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -1794,7 +1794,7 @@ class SurveyController {
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1840,7 +1840,7 @@ class SurveyController {
      * Marks the given survey as completed for the given participant
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1886,7 +1886,7 @@ class SurveyController {
      * Finalises the title selection for the given participant
      * @return redirects to the survey titles view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1963,7 +1963,7 @@ class SurveyController {
      * Evaluates the general selection and the costs of the participant
      * @return the participant evaluation view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2066,7 +2066,7 @@ class SurveyController {
 
     }
 
-    /*@DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    /*@DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2160,7 +2160,7 @@ class SurveyController {
      * Call to list all possible survey properties (i.e. the questions which may be asked in a survey)
      * @return a list of properties for the given consortium
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2182,7 +2182,7 @@ class SurveyController {
      * Adds the given survey property to the survey configuration, i.e. inserts a new question for the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2220,7 +2220,7 @@ class SurveyController {
      * Removes the given survey property from the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2263,7 +2263,7 @@ class SurveyController {
      * Creates a new survey property
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2325,7 +2325,7 @@ class SurveyController {
      * Deletes the given survey property
      * @return redirects to the survey property listing
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2358,7 +2358,7 @@ class SurveyController {
      * Adds the given institutions to the given survey as new participants
      * @return the updated survey participants list
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2441,7 +2441,7 @@ class SurveyController {
      * Opens the given survey to the public and sends reminders to the participants to call to fill the survey out
      * @return redirects to the survey details page
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2492,7 +2492,7 @@ class SurveyController {
      * Marks the given survey as in evaluation and closes further survey completion
      * @return either the evaluation view for the renewal or redirects to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2523,7 +2523,7 @@ class SurveyController {
      * Marks the survey as in processing and closes survey completion
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2547,7 +2547,7 @@ class SurveyController {
      * Starts and opens the survey immediately for completion
      * @return the survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2609,7 +2609,7 @@ class SurveyController {
      * Opens the survey again after a break
      * @return the survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2646,7 +2646,7 @@ class SurveyController {
      * Removes the given survey participants from the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2686,7 +2686,7 @@ class SurveyController {
      * Call to delete the given documents from the survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2702,7 +2702,7 @@ class SurveyController {
      * Deletes the entire survey with attached objects
      * @return the survey list in case of success, a redirect to the referer otherwise
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2774,7 +2774,7 @@ class SurveyController {
      * Call to edit the given survey cost item
      * @return the cost item editing modal
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2807,7 +2807,7 @@ class SurveyController {
      * Call to add a new survey cost item to every participant
      * @return the new cost item modal
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2842,7 +2842,7 @@ class SurveyController {
      * Marks the survey as being in evaluation
      * @return redirects to the renewal evaluation view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2868,7 +2868,7 @@ class SurveyController {
      * Marks the survey as completed
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2894,7 +2894,7 @@ class SurveyController {
      * Marks the survey as finished, i.e. evaluation is over, too
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2920,7 +2920,7 @@ class SurveyController {
      * Sets the given comment for the given survey
      * @return a redirect to the referer
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2946,7 +2946,7 @@ class SurveyController {
      * Excel worksheet
      * @return the evaluation view for the given renewal survey
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3002,7 +3002,7 @@ class SurveyController {
      * @return a modal to show the differences between this and next year ring's subscription parameters (= the selected
      * parameters by each member)
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3060,7 +3060,7 @@ class SurveyController {
      * Call to copy the given survey
      * @return the view with the base parameters for the survey copy
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3152,7 +3152,7 @@ class SurveyController {
      * Call to add the subscription members as participants to the survey
      * @return the survey participants list
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3172,7 +3172,7 @@ class SurveyController {
      * Takes the submitted base parameters and creates a copy of the given survey
      * @return either the survey list view for consortia or the survey details view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3265,7 +3265,7 @@ class SurveyController {
      * Initialises the subscription renewal for the parent subscription after a survey
      * @return the view for the successor subscription base parameter's configuration
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3315,7 +3315,7 @@ class SurveyController {
      * linked to the predecessor instance. The element copy workflow is triggered right after
      * @return the subscription element copy starting view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3416,7 +3416,7 @@ class SurveyController {
      * Exports the survey costs in an Excel worksheet
      * @return an Excel worksheet containing the survey cost data
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3451,7 +3451,7 @@ class SurveyController {
      * Call to copy the mail adresses of all participants
      * @return the modal containing the participant's mail addresses
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
@@ -3470,7 +3470,7 @@ class SurveyController {
      * Takes the submitted input and creates cost items based on the given parameters for every selected survey participant
      * @return a redirect to the referer
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', wtc = 1)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = 1)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
@@ -3691,7 +3691,7 @@ class SurveyController {
      * in each year
      * @return a list of members for each subscription
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3754,7 +3754,7 @@ class SurveyController {
      * Call to copy the survey cost items
      * @return a list of each participant's survey costs
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3804,7 +3804,7 @@ class SurveyController {
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
      * @return the survey cost copy overview
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3873,7 +3873,7 @@ class SurveyController {
      * Call to open the transfer of survey cost items into the respective member subscriptions
      * @return a list of participants with their respective survey cost items
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3913,7 +3913,7 @@ class SurveyController {
      * Takes the submitted parameters and copies the survey cost items into the subscriptions
      * @return the survey-subscription cost transfer view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3968,7 +3968,7 @@ class SurveyController {
      * Call to open the property copying view from one subscription into another
      * @return the list of properties for each year ring
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -4074,7 +4074,7 @@ class SurveyController {
      * Takes the submitted data and creates copies of the selected properties into the successor subscriptions
      * @return the property copy overview
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -4212,7 +4212,7 @@ class SurveyController {
      * the following year along with their depending data
      * @return a redirect to the member comparison view
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -4411,7 +4411,7 @@ class SurveyController {
      * @param params the request parameter map
      * @return the new member subscription instance
      */
-    @DebugAnnotation(wtc = 1)
+    @DebugInfo(wtc = 1)
     private def processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
 
         Org institution = contextService.getOrg()
@@ -4564,7 +4564,7 @@ class SurveyController {
      * @param property the property to update
      * @param value the value to set
      */
-    @DebugAnnotation(wtc = 1)
+    @DebugInfo(wtc = 1)
     private def setNewProperty(def property, def value) {
 
         String field = null
@@ -4674,7 +4674,7 @@ class SurveyController {
      * the call will process copying of the given survey elements
      * @return the given tab with the copy parameters
      */
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -4750,7 +4750,7 @@ class SurveyController {
      * Lists the tasks attached to the given survey
      * @return the list of tasks of the given survey
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
@@ -4774,7 +4774,7 @@ class SurveyController {
      * Lists the notes attached to the given survey
      * @return the list of notes of the given survey
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def notes() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)

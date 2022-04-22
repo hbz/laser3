@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -31,7 +31,7 @@ class ContactController  {
 	 * Creating a new contact entity: takes the given parameters and constructs a new contact entity with them
 	 * @return the contact view in case of success or returning to the creation page with an error message
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Contact.withTransaction {
@@ -92,7 +92,7 @@ class ContactController  {
     }
 
 	@Deprecated
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
 		redirect controller: 'contact', action: 'show', params: params
@@ -103,7 +103,7 @@ class ContactController  {
 	 * Deletes the given contact entity
 	 * @return the contact list in case of success; the details view otherwise
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Contact.withTransaction {

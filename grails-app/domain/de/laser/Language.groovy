@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
@@ -18,7 +18,7 @@ class Language implements CalculatedLastUpdated, Comparable {
 
     Long id
     Long version
-    @RefdataAnnotation(cat = RDConstants.LANGUAGE_ISO)
+    @RefdataInfo(cat = RDConstants.LANGUAGE_ISO)
     RefdataValue language
     Date dateCreated
     Date lastUpdated

@@ -1,6 +1,6 @@
 package de.laser.reporting.report
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.BeanStorage
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -63,11 +63,11 @@ class GenericHelper {
             // LaserReportingTagLib:reportFilterRefdata
 
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
-            def anno        = refdata.getAnnotationsByType(RefdataAnnotation).head()
+            def anno        = refdata.getAnnotationsByType(RefdataInfo).head()
             String rdCat    = anno.cat()
             String rdI18n   = anno.i18n()
 
-            label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataAnnotation
+            label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataInfo
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
             // LaserReportingTagLib:reportFilterRefdataRelTable

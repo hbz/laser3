@@ -15,7 +15,7 @@ import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
 import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.helper.ProfilerUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
@@ -62,7 +62,7 @@ class LicenseController {
     /**
      * Shows the given license
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 
@@ -296,7 +296,7 @@ class LicenseController {
     /**
      * Gets the tasks connected to this license
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
@@ -319,7 +319,7 @@ class LicenseController {
      * Call to delete the given license; a parameter specifies whether the deletion should be executed or not
      * @return the view showing the attached object to the given license
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_EDIT)
@@ -337,7 +337,7 @@ class LicenseController {
     /**
      * Creates a new member license to the given consortial license if it not exists
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug( params.toMapString() )
@@ -425,7 +425,7 @@ class LicenseController {
      * Processes a linking between one or more subscriptions. Depending on the call level,
      * the action redirects to the appropriate table
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
@@ -470,7 +470,7 @@ class LicenseController {
     /**
      * Opens possible subscriptions to link to the given license; the parent level is being considered
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
@@ -483,7 +483,7 @@ class LicenseController {
     /**
      * Shows all subscriptions linked to the current license
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def linkedSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -570,7 +570,7 @@ class LicenseController {
     /**
      * Lists the member licenses to the given consortial license
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def members() {
         log.debug("license id:${params.id}");
@@ -623,7 +623,7 @@ class LicenseController {
     /**
      * Opens possible subscriptions to link to the given license; the member level is being considered
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
@@ -683,7 +683,7 @@ class LicenseController {
     }
 
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
         log.debug("license id:${params.id}");
@@ -718,7 +718,7 @@ class LicenseController {
     }
 
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def history() {
         log.debug("license::history : ${params}");
@@ -769,7 +769,7 @@ class LicenseController {
     /**
      * Should enumerate the changes done on the given license, function currently undetermined
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
         log.debug("license::changes : ${params}")
@@ -802,7 +802,7 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -818,7 +818,7 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -833,7 +833,7 @@ class LicenseController {
     /**
      * Call to delete the given document
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}")
@@ -848,7 +848,7 @@ class LicenseController {
      * @deprecated use {@link MyInstitutionController#emptyLicense()} instead
      */
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def create() {
     Map<String, Object> result = [:]
@@ -859,7 +859,7 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -961,7 +961,7 @@ class LicenseController {
     /**
      * Controller menu for copying components of the given license into another license
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {
         def result             = [:]

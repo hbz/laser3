@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.LogFactory
 
@@ -31,10 +31,10 @@ class Address {
      * @see RDConstants#REGIONS_AT
      * @see RDConstants#REGIONS_CH
      */
-    @RefdataAnnotation(cat = '?')
+    @RefdataInfo(cat = '?')
     RefdataValue region
 
-    @RefdataAnnotation(cat = RDConstants.COUNTRY)
+    @RefdataInfo(cat = RDConstants.COUNTRY)
     RefdataValue country
 
 
@@ -45,7 +45,7 @@ class Address {
     Person prs              // person related contact; exclusive with org
     Org    org              // org related contact; exclusive with prs
 
-    @RefdataAnnotation(cat = RDConstants.ADDRESS_TYPE)
+    @RefdataInfo(cat = RDConstants.ADDRESS_TYPE)
     static hasMany = [
             type: RefdataValue
     ]

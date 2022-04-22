@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
@@ -24,11 +24,11 @@ class DocContext implements ShareableTrait, Comparable {
         surveyConfig:   SurveyConfig
     ]
 
-    @RefdataAnnotation(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
+    @RefdataInfo(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
     RefdataValue status
-    @RefdataAnnotation(cat = RDConstants.DOCUMENT_TYPE)
+    @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue doctype
-    @RefdataAnnotation(cat = RDConstants.SHARE_CONFIGURATION)
+    @RefdataInfo(cat = RDConstants.SHARE_CONFIGURATION)
     RefdataValue shareConf
     Org targetOrg
 

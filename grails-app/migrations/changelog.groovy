@@ -2,7 +2,6 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "changelog") {}
 
-    // include file: '2021/changelog-2021-01-13.groovy' -- runs locally but breaks production
 	include file: '2021/changelog-2021-01-22.groovy'
     include file: '2021/changelog-2021-01-25.groovy'
     include file: '2021/changelog-2021-01-27.groovy'

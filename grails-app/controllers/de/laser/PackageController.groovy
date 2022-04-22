@@ -7,7 +7,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.auth.User
 import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
@@ -209,7 +209,7 @@ class PackageController {
     /**
      * Compares two packages based on their holdings
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -938,7 +938,7 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processLinkToSub() {
         Map<String, Object> result = [:]

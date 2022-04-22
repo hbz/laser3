@@ -4,10 +4,11 @@ import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.annotations.UnderDevelopment
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 // not ready for use
-@Deprecated
+@UnderDevelopment
 class IssueEntitlementXCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [

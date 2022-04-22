@@ -3,7 +3,7 @@ package de.laser
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This domain defines the general attributes of a survey and completes the {@link SurveyConfig} definition which in turn connects the survey to its target.
@@ -25,10 +25,10 @@ class SurveyInfo {
 
     Org owner
 
-    @RefdataAnnotation(cat = RDConstants.SURVEY_TYPE)
+    @RefdataInfo(cat = RDConstants.SURVEY_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.SURVEY_STATUS)
+    @RefdataInfo(cat = RDConstants.SURVEY_STATUS)
     RefdataValue status
 
     Date dateCreated

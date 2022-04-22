@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.helper.AppUtils
 import grails.gorm.transactions.Transactional
 
@@ -128,8 +128,8 @@ class RefdataService {
                         .findAll { it -> it.type.name == RefdataValue.class.name }
                         .collect { it ->
 
-                            RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
-                            if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
+                            RefdataInfo anno = it.getAnnotation(RefdataInfo)
+                            if (anno && ! [RefdataInfo.GENERIC, RefdataInfo.UNKOWN].contains(anno.cat()) ) {
                                 String query = "SELECT DISTINCT dummy.${it.name}.id, rdc.id FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
                                 List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]

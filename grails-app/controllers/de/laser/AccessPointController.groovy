@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.ctrl.AccessPointControllerService
 import de.laser.helper.DateUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
@@ -39,7 +39,7 @@ class AccessPointController  {
      * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
      * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -113,7 +113,7 @@ class AccessPointController  {
      * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
      * @see OrgAccessPoint
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -140,7 +140,7 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -162,7 +162,7 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -333,7 +333,7 @@ class AccessPointController  {
     /**
      * Handles the deletion call for the given IP range to the service
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -345,7 +345,7 @@ class AccessPointController  {
     /**
      * Controller call to link an access point to a given platform
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -359,7 +359,7 @@ class AccessPointController  {
     /**
      * Controller call to unlink an access point from a given platform
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })

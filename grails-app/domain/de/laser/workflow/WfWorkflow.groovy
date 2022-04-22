@@ -3,7 +3,7 @@ package de.laser.workflow
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 
@@ -21,7 +21,7 @@ class WfWorkflow extends WfWorkflowBase {
 
     static final String KEY = 'WF_WORKFLOW'
 
-    @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATUS)
+    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATUS)
     RefdataValue status
 
     WfWorkflowPrototype prototype

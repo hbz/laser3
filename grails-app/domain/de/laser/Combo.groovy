@@ -2,17 +2,17 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * Represents a connection between two {@link Org}s. The types of combo connections see {@link RDConstants#COMBO_TYPE}
  */
 class Combo {
 
-    @RefdataAnnotation(cat = RDConstants.COMBO_STATUS)
+    @RefdataInfo(cat = RDConstants.COMBO_STATUS)
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.COMBO_TYPE)
+    @RefdataInfo(cat = RDConstants.COMBO_TYPE)
     RefdataValue type
 
     Org fromOrg

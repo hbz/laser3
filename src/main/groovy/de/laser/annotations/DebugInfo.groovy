@@ -8,7 +8,7 @@ import java.lang.annotation.Target
 @Target([ElementType.METHOD, ElementType.TYPE])
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface DebugAnnotation {
+@interface DebugInfo {
 
     String test() default ''
     String perm() default ''

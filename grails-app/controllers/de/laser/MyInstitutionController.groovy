@@ -4,7 +4,7 @@ import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.InstitutionsService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -98,7 +98,7 @@ class MyInstitutionController  {
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect(action:'dashboard')
@@ -108,7 +108,7 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -307,7 +307,7 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
 
@@ -632,7 +632,7 @@ class MyInstitutionController  {
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -678,7 +678,7 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_USER")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
@@ -776,7 +776,7 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -897,7 +897,7 @@ join sub.orgRelations or_sub where
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1156,7 +1156,7 @@ join sub.orgRelations or_sub where
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -1194,7 +1194,7 @@ join sub.orgRelations or_sub where
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
@@ -1207,7 +1207,7 @@ join sub.orgRelations or_sub where
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
@@ -1220,7 +1220,7 @@ join sub.orgRelations or_sub where
      * @see Doc
      * @see DocContext
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -1234,7 +1234,7 @@ join sub.orgRelations or_sub where
      * @return the document table view ({@link #documents()})
      * @see com.k_int.kbplus.DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -1252,7 +1252,7 @@ join sub.orgRelations or_sub where
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentTitles() {
 
@@ -1459,7 +1459,7 @@ join sub.orgRelations or_sub where
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentPackages() {
 
@@ -1567,7 +1567,7 @@ join sub.orgRelations or_sub where
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
 
@@ -1586,7 +1586,7 @@ join sub.orgRelations or_sub where
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1608,7 +1608,7 @@ join sub.orgRelations or_sub where
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1623,7 +1623,7 @@ join sub.orgRelations or_sub where
         result
     }
 
-    //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    //@DebugInfo(test = 'hasAffiliation("INST_USER")')
     //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     @Deprecated
     @Secured(['ROLE_ADMIN'])
@@ -1715,7 +1715,7 @@ join sub.orgRelations or_sub where
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1734,7 +1734,7 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see CostItem
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1772,7 +1772,7 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1809,7 +1809,7 @@ join sub.orgRelations or_sub where
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1826,7 +1826,7 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -1864,7 +1864,7 @@ join sub.orgRelations or_sub where
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
@@ -1958,7 +1958,7 @@ join sub.orgRelations or_sub where
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
@@ -2074,7 +2074,7 @@ join sub.orgRelations or_sub where
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -2177,7 +2177,7 @@ join sub.orgRelations or_sub where
      * @see User
      * @see de.laser.auth.UserOrg
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2215,7 +2215,7 @@ join sub.orgRelations or_sub where
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2262,7 +2262,7 @@ join sub.orgRelations or_sub where
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2284,7 +2284,7 @@ join sub.orgRelations or_sub where
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2300,7 +2300,7 @@ join sub.orgRelations or_sub where
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
@@ -2322,7 +2322,7 @@ join sub.orgRelations or_sub where
      * @return the user editing view
      * @see de.laser.auth.UserOrg
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2339,7 +2339,7 @@ join sub.orgRelations or_sub where
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -2374,7 +2374,7 @@ join sub.orgRelations or_sub where
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = 2)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2438,7 +2438,7 @@ join sub.orgRelations or_sub where
      * @return a table view of tasks
      * @see Task
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2472,7 +2472,7 @@ join sub.orgRelations or_sub where
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", wtc = 2)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", wtc = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         Combo.withTransaction {
@@ -2518,7 +2518,7 @@ join sub.orgRelations or_sub where
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def currentWorkflows() {
         Map<String, Object> result = [:]
@@ -2758,7 +2758,7 @@ join sub.orgRelations or_sub where
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 1)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
@@ -2886,7 +2886,7 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
@@ -3262,7 +3262,7 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3325,7 +3325,7 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -3440,7 +3440,7 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -3543,7 +3543,7 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = 2)
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
@@ -3656,7 +3656,7 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -3743,7 +3743,7 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -3884,7 +3884,7 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugInfo(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

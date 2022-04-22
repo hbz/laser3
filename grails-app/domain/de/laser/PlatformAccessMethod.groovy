@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
 
 /**
@@ -20,7 +20,7 @@ class PlatformAccessMethod extends AbstractBase {
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RDConstants.ACCESS_METHOD)
+    @RefdataInfo(cat = RDConstants.ACCESS_METHOD)
     RefdataValue accessMethod
 
     static belongsTo = [

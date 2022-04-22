@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
@@ -45,7 +45,7 @@ class OrgRole implements ShareableTrait {
         /* sharedFrom: OrgRole */ // self-referential GORM problem
     ]
 
-    @RefdataAnnotation(cat = RDConstants.ORGANISATIONAL_ROLE)
+    @RefdataInfo(cat = RDConstants.ORGANISATIONAL_ROLE)
     RefdataValue roleType
 
     Package       pkg

@@ -2,14 +2,14 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * This is a linking class between a subject group and an organisation
  */
 class OrgSubjectGroup implements Comparable {
 
-    @RefdataAnnotation(cat = RDConstants.SUBJECT_GROUP)
+    @RefdataInfo(cat = RDConstants.SUBJECT_GROUP)
     RefdataValue subjectGroup
 
     Date dateCreated

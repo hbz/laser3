@@ -1,7 +1,7 @@
 package de.laser.workflow
 
 import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 
 /**
@@ -22,7 +22,7 @@ class WfTask extends WfTaskBase {
 
     static final String KEY = 'WF_TASK'
 
-    @RefdataAnnotation(cat = RDConstants.WF_TASK_STATUS)
+    @RefdataInfo(cat = RDConstants.WF_TASK_STATUS)
     RefdataValue status
 
     WfCondition condition

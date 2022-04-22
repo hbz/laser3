@@ -7,7 +7,7 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import org.apache.commons.logging.Log
@@ -54,18 +54,18 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
-    @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
+    @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
     @Deprecated
-    @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
+    @RefdataInfo(cat = RDConstants.CORE_STATUS)
     RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
     @Deprecated
-    @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+    @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
-    @RefdataAnnotation(cat = RDConstants.IE_ACCEPT_STATUS)
+    @RefdataInfo(cat = RDConstants.IE_ACCEPT_STATUS)
     RefdataValue acceptStatus
 
     Date dateCreated

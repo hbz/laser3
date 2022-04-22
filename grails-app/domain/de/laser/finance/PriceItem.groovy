@@ -5,7 +5,7 @@ import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 import javax.persistence.Transient
 
@@ -16,10 +16,10 @@ import javax.persistence.Transient
  */
 class PriceItem extends AbstractBase {
 
-    @RefdataAnnotation(cat = RDConstants.CURRENCY)
+    @RefdataInfo(cat = RDConstants.CURRENCY)
     RefdataValue listCurrency
 
-    @RefdataAnnotation(cat = RDConstants.CURRENCY)
+    @RefdataInfo(cat = RDConstants.CURRENCY)
     RefdataValue localCurrency
 
     BigDecimal listPrice

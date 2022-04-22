@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
  
 import de.laser.helper.AppUtils
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
@@ -38,7 +38,7 @@ class DocController  {
     }
 
 	@Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 		Doc docInstance = Doc.get(params.id)
@@ -96,7 +96,7 @@ class DocController  {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
 	def editNote() {
 		Doc.withTransaction {
@@ -147,7 +147,7 @@ class DocController  {
 	/**
 	 * Deletes the {@link Doc} given by params.id
 	 */
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Doc.withTransaction {

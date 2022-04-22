@@ -4,7 +4,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 
 /**
  * An calculation sign configuration class for an {@link Org}: an {@link Org} may specify, to a given cost item element, how the cost items in it should be calculated (add, negative, substract).
@@ -12,10 +12,10 @@ import de.laser.annotations.RefdataAnnotation
  */
 class CostItemElementConfiguration extends AbstractBase {
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
+    @RefdataInfo(cat = RDConstants.COST_ITEM_ELEMENT)
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
+    @RefdataInfo(cat = RDConstants.COST_CONFIGURATION)
     RefdataValue elementSign
 
     Org  forOrganisation

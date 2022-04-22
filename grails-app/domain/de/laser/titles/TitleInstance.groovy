@@ -9,7 +9,7 @@ import de.laser.RefdataValue
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
@@ -50,10 +50,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   String seriesName
   String subjectReference
 
-  @RefdataAnnotation(cat = RDConstants.TITLE_STATUS)
+  @RefdataInfo(cat = RDConstants.TITLE_STATUS)
   RefdataValue status
 
-  @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+  @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
   RefdataValue medium
 
     Date dateCreated

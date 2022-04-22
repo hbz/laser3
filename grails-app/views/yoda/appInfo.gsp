@@ -55,7 +55,7 @@
             <tr><td>Collations</td><td>
                 <%
                     Set collations = []
-                    DatabaseUtils.getTablesCollationInfo().each { it ->
+                    DatabaseUtils.getAllTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }

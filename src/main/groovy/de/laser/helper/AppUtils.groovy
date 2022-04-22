@@ -1,12 +1,8 @@
 package de.laser.helper
 
-import de.laser.storage.BeanStorage
 import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
-import groovy.sql.Sql
-
-import javax.sql.DataSource
 
 class AppUtils {
 

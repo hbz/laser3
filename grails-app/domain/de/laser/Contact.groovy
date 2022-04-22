@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataAnnotation
+import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.LogFactory
 
@@ -28,13 +28,13 @@ class Contact implements Comparable<Contact>{
     Date dateCreated
     Date lastUpdated
 
-    @RefdataAnnotation(cat = RDConstants.CONTACT_CONTENT_TYPE)
+    @RefdataInfo(cat = RDConstants.CONTACT_CONTENT_TYPE)
     RefdataValue contentType
 
-    @RefdataAnnotation(cat = RDConstants.CONTACT_TYPE)
+    @RefdataInfo(cat = RDConstants.CONTACT_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.LANGUAGE_ISO)
+    @RefdataInfo(cat = RDConstants.LANGUAGE_ISO)
     RefdataValue language
     
     static mapping = {

@@ -61,8 +61,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             cache   true
                     id column: 'rdv_id'
                version column: 'rdv_version'
-                 owner column: 'rdv_owner', index: 'rdv_owner_value_idx'
-                 value column: 'rdv_value', index: 'rdv_owner_value_idx'
+                 owner column: 'rdv_owner', index: 'rdv_owner_idx, rdv_owner_value_idx'
+                 value column: 'rdv_value', index: 'rdv_value_idx, rdv_owner_value_idx'
               value_de column: 'rdv_value_de', index:'rdv_value_de_idx'
               value_en column: 'rdv_value_en', index:'rdv_value_en_idx'
                expl_de column: 'rdv_explanation_de', type: 'text'

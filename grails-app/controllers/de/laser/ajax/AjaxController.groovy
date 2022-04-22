@@ -1,7 +1,7 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.annotations.DebugAnnotation
+import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -2092,7 +2092,7 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })

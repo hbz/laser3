@@ -7,6 +7,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.annotations.UnderDevelopment
 import de.laser.storage.BeanStorage
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -16,7 +17,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 // not ready for use
-@Deprecated
+@UnderDevelopment
 class IssueEntitlementQuery extends BaseQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
