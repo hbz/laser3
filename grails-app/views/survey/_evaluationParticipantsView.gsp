@@ -33,7 +33,7 @@
         <g:link  class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
-            <strong>test${message(code: 'surveyconfig.orgs.label')}:</strong>
+            <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
             <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
         </g:link>
 
@@ -47,6 +47,17 @@
     <div class="la-inline-lists">
 
         <h3 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h3>
+
+        <g:if test="${propertiesChanged}">
+            <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+                    id="${surveyConfig.surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
+                Export ${message(code: 'renewalEvaluation.propertiesChanged')}
+            </g:link>
+            <br>
+            <br>
+        </g:if>
+
 
         <table class="ui la-js-responsive-table la-table table">
                         <thead>
