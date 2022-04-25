@@ -733,7 +733,7 @@ class FinanceService {
         Map<String,Object> result
         String subFilterQuery = "", costItemFilterQuery = ""
         Map<String,Object> queryParams = [:]
-        EhcacheWrapper cache = contextService.getCache("/finance/${params.filterKey}/filter/",ContextService.USER_SCOPE)
+        EhcacheWrapper cache = contextService.getUserCache("/finance/${params.filterKey}/filter/")
         if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null && !params.subDetailsPage) {
             Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
             result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]

@@ -123,7 +123,7 @@ class CacheService implements ApplicationContextAware {
 
         if (! shared_user_cache) {
 
-            String cacheName = 'USER_CACHE_SHARED'
+            String cacheName = 'SHARED_USER_CACHE'
             CacheManager cacheManager = getCacheManager()
             shared_user_cache = getCache(cacheManager, cacheName)
 
@@ -144,7 +144,7 @@ class CacheService implements ApplicationContextAware {
 
         if (! shared_org_cache) {
 
-            String cacheName = 'ORG_CACHE_SHARED'
+            String cacheName = 'SHARED_ORG_CACHE'
             CacheManager cacheManager = getCacheManager()
             shared_org_cache = getCache(cacheManager, cacheName)
 

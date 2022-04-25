@@ -442,7 +442,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def updatePropertiesSelection() {
         Map success = [success: false]
-        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        EhcacheWrapper cache = contextService.getUserCache("/manageProperties")
         List<String> checkedProperties = cache.get(params.table) ?: []
         boolean check = Boolean.valueOf(params.checked)
         if(params.key == "all") {
@@ -569,7 +569,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateIssueEntitlementOverwrite() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
+      EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
       Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)

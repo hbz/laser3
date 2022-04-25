@@ -10,18 +10,18 @@ class ProfilerUtils {
     ContextService contextService = BeanStorage.getContextService()
     EhcacheWrapper benchCache
 
-    final static String PU_S_SYSTEMPROFILER = 'ProfilerUtils/Session/SystemProfiler'
-    final static String PU_S_BENCHMARK      = 'ProfilerUtils/Session/Benchmark'
+    final static String SESSION_SYSTEMPROFILER = 'ProfilerUtils/Session/SystemProfiler'
+    final static String USER_BENCHMARK = 'ProfilerUtils/User/Benchmark'
 
     // for global interceptors; object stored in session caches
     ProfilerUtils(String cacheKeyPrefix) {
-        benchCache = contextService.getCache(cacheKeyPrefix, ContextService.USER_SCOPE)
+        benchCache = contextService.getUserCache(cacheKeyPrefix)
     }
 
     // for inner method benches; object not stored
     ProfilerUtils() {
-        String cid = PU_S_BENCHMARK + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString()
-        benchCache = contextService.getCache(cid, ContextService.USER_SCOPE)
+        String cid = USER_BENCHMARK + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString()
+        benchCache = contextService.getUserCache(cid)
     }
 
     // handling interceptor benches

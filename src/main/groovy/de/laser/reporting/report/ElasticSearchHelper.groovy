@@ -5,6 +5,7 @@ import de.laser.ApiSource
 import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
+import de.laser.helper.AppUtils
 import de.laser.http.BasicHttpClient
 import de.laser.helper.ConfigUtils
 import de.laser.reporting.export.myInstitution.PackageExport
@@ -94,7 +95,7 @@ class ElasticSearchHelper {
             List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
 
             try {
-                Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+                Map rConfig = AppUtils.getConfig('reporting') as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
 
                 static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
@@ -145,7 +146,7 @@ class ElasticSearchHelper {
             List<List> pkgList = Platform.executeQuery('select plt.gokbId, plt.id from Platform plt where plt.id in (:idList)', [idList: idList])
 
             try {
-                Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+                Map rConfig = AppUtils.getConfig('reporting') as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
 
                 static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
@@ -193,7 +194,7 @@ class ElasticSearchHelper {
         boolean reachable = false
 
         try {
-            Map rConfig = ConfigUtils.readConfig('reporting', false) as Map
+            Map rConfig = AppUtils.getConfig('reporting') as Map
             URI uri = new URI( rConfig.elasticSearch.url )
             InetAddress es = InetAddress.getByName( uri.getHost() )
             reachable = es.isReachable( 7000 )

@@ -18,9 +18,6 @@ class ContextService {
     CacheService cacheService
     SpringSecurityService springSecurityService
 
-    static final USER_SCOPE  = 'USER_SCOPE'
-    static final ORG_SCOPE   = 'ORG_SCOPE'
-
     /**
      * Sets the picked institution as current context
      * @param context the institution used for the current session
@@ -91,20 +88,12 @@ class ContextService {
         user ? user.authorizedOrgs : []
     }
 
-    /**
-     * Retrieves the session cache of the given scope for the given prefix
-     * @param cacheKeyPrefix the prefix to retrieve
-     * @param scope the cache scope used or to be used for the storage
-     * @return the cache for the given key prefix
-     */
-    EhcacheWrapper getCache(String cacheKeyPrefix, String scope) {
+    EhcacheWrapper getUserCache(String cacheKeyPrefix) {
+        cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
+    }
 
-        if (scope == ORG_SCOPE) {
-            cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
-        }
-        else if (scope == USER_SCOPE) {
-            cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
-        }
+    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
+        cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
     }
 
     /**

@@ -312,7 +312,7 @@ class MyInstitutionController  {
     def currentLicenses() {
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        EhcacheWrapper cache = contextService.getCache("/license/filter/",ContextService.USER_SCOPE)
+        EhcacheWrapper cache = contextService.getUserCache("/license/filter/")
         if(cache && cache.get('licenseFilterCache')) {
             if(!params.resetFilter && !params.filterSet)
                 params.putAll((GrailsParameterMap) cache.get('licenseFilterCache'))
@@ -783,7 +783,7 @@ class MyInstitutionController  {
 		ProfilerUtils pu = new ProfilerUtils()
 		pu.setBenchmark('init')
 
-        EhcacheWrapper cache = contextService.getCache('MyInstitutionController/currentProviders', contextService.ORG_SCOPE)
+        EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
         List orgIds = []
 
         if (cache.get('orgIds')) {
@@ -3457,7 +3457,7 @@ join sub.orgRelations or_sub where
             redirect(url: request.getHeader('referer'))
         }
         SwissKnife.setPaginationParams(result, params, result.user)
-        EhcacheWrapper cache = contextService.getCache("/manageProperties", contextService.USER_SCOPE)
+        EhcacheWrapper cache = contextService.getUserCache("/manageProperties")
         result.selectedWithout = cache.get('without') ?: []
         result.selectedWith = cache.get('with') ?: []
         result.selectedAudit = cache.get('audit') ?: []

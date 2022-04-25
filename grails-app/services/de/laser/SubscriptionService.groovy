@@ -57,7 +57,7 @@ class SubscriptionService {
      */
     Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
-        EhcacheWrapper cache = contextService.getCache("/subscriptions/filter/",ContextService.USER_SCOPE)
+        EhcacheWrapper cache = contextService.getUserCache("/subscriptions/filter/")
         if(cache && cache.get('subscriptionFilterCache')) {
             if(!params.resetFilter && !params.isSiteReloaded)
                 params.putAll((GrailsParameterMap) cache.get('subscriptionFilterCache'))

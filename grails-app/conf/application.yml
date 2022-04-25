@@ -60,6 +60,7 @@ spring:
 server:
     servlet:
         session:
+            persistent: false
             timeout: 1800 # 1800 seconds - 30 minutes
 
 management:
