@@ -275,7 +275,7 @@ class SurveyConfig {
                     }
                 }*/
 
-                if (countFinish > 0 && countNotFinish == 0) {
+                if (countFinish >= 0 && countNotFinish == 0) {
                     return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
                     return ALL_RESULTS_HALF_PROCESSED_BY_ORG
@@ -479,9 +479,9 @@ class SurveyConfig {
     List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
        List<SurveyConfigProperties> surveyConfigPropertiesList = []
 
-        List<SurveyConfigProperties> tmp = []
+        LinkedHashSet<SurveyConfigProperties> tmp = []
 
-        tmp = surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
+        tmp = surveyProperties.findAll {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
 
         if(tmp && tmp.size() > 0) {
             surveyConfigPropertiesList << tmp
