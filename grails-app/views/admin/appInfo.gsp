@@ -155,24 +155,5 @@
             </td></tr>
         </tbody>
     </table>
-
-    %{--
-    <table class="ui celled la-js-responsive-table la-table table compact">
-        <thead>
-            <tr><th>HttpServletRequest.getAttributeNames()</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                <div class="ui relaxed divided list">
-                    <g:each in="${request.getAttributeNames()}" var="an">
-                        <div class="item">${an} = ${request.getAttribute(an)}</div>
-                    </g:each>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    --}%
 </body>
 </html>

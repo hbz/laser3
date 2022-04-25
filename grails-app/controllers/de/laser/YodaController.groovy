@@ -393,41 +393,6 @@ class YodaController {
     }
 
     /**
-     * Shows the information and current state of services
-     * @return a dump of service states and further information
-     */
-    //@Cacheable('message')
-    @Secured(['ROLE_ADMIN'])
-    def appInfo() {
-        Map<String, Object> result = [:]
-
-        result.statsSyncService = [:]
-        result.dataloadService = [:]
-        result.globalSourceSyncService = [:]
-        result.globalSourceSyncService.running = globalSourceSyncService.running
-        result.statsSyncService.running = statsSyncService.running
-        result.statsSyncService.submitCount = statsSyncService.submitCount
-        result.statsSyncService.completedCount = statsSyncService.completedCount
-        result.statsSyncService.newFactCount = statsSyncService.newFactCount
-        result.statsSyncService.totalTime = statsSyncService.totalTime
-        result.statsSyncService.threads = statsSyncService.THREAD_POOL_SIZE
-        result.statsSyncService.queryTime = statsSyncService.queryTime
-        result.statsSyncService.activityHistogram = statsSyncService.activityHistogram
-        result.statsSyncService.syncStartTime = statsSyncService.syncStartTime
-        result.statsSyncService.syncElapsed = statsSyncService.syncElapsed
-        result.dataloadService.update_running = dataloadService.update_running
-        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
-        result.esinfos = FTControl.list()
-
-        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
-        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
-
-        result
-    }
-
-    /**
      * Dumps the current method securing for each controller call
      * @return a list of calls with their security level, grouped by controller
      */

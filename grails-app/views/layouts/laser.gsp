@@ -238,7 +238,7 @@
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.admin')}
-                                <i  class="dropdown icon"></i>
+                                <i class="dropdown icon"></i>
                             </a>
 
                             <div class="menu" role="menu">
@@ -249,7 +249,7 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</semui:link>
 

@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.helper.AppUtils
 import de.laser.helper.DatabaseUtils
 import de.laser.storage.BeanStorage
@@ -61,10 +62,12 @@ class AdminController  {
     DeletionService deletionService
     FilterService filterService
     GenericOIDService genericOIDService
+    GlobalSourceSyncService globalSourceSyncService
     MailService mailService
     PropertyService propertyService
     RefdataService refdataService
     SessionFactory sessionFactory
+    StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     WorkflowService workflowService
     YodaService yodaService
@@ -1603,5 +1606,40 @@ SELECT * FROM (
         }
 
         redirect(action: 'systemMessages')
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def appInfo() {
+        Map<String, Object> result = [:]
+
+        result.statsSyncService = [:]
+
+        result.globalSourceSyncService = [
+                running: globalSourceSyncService.running
+                ]
+        result.dataloadService = [
+                update_running: dataloadService.update_running,
+                lastIndexUpdate: dataloadService.lastIndexUpdate
+        ]
+        result.statsSyncService = [
+                running: statsSyncService.running,
+                submitCount: statsSyncService.submitCount,
+                completedCount: statsSyncService.completedCount,
+                newFactCount: statsSyncService.newFactCount,
+                totalTime: statsSyncService.totalTime,
+                threads: statsSyncService.THREAD_POOL_SIZE,
+                queryTime: statsSyncService.queryTime,
+                activityHistogram: statsSyncService.activityHistogram,
+                syncStartTime: statsSyncService.syncStartTime,
+                syncElapsed: statsSyncService.syncElapsed
+                ]
+        result.esinfos = FTControl.list()
+
+        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
+        )).list()
+        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+
+        result
     }
 }

@@ -9,6 +9,12 @@ import org.springframework.core.env.Environment
 class ConfigMapper {
 
     static Log static_logger = LogFactory.getLog(ConfigMapper)
+    
+    static final int NO_OUTPUT = 0
+    static final int LOGGER = 1
+    static final int PRINTLN = 2
+    
+    // -- controlled configuration
 
     static final String ACTIVATE_TEST_JOB       = 'activateTestJob'
     static final String AGGR_ES_CLUSTER         = 'aggr_es_cluster'
@@ -66,8 +72,6 @@ class ConfigMapper {
 
     ]
 
-    // -- current configuration --
-
     static File getCurrentConfigFile(Environment environment) {
         Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
 
@@ -83,7 +87,7 @@ class ConfigMapper {
 
         println ": --------------------------------------------->"
         CONTROLLED_CONFIGURATION_LIST.each { cc ->
-            readConfig(cc, true)
+            readConfig(cc, PRINTLN)
         }
         println ": --------------------------------------------->"
     }
@@ -91,111 +95,111 @@ class ConfigMapper {
     // -- basic getter --
 
     static def getConfig(String token) {
-        readConfig( token, false )
+        readConfig( token )
     }
     static def getPluginConfig(String token) {
-        readConfig( 'grails.plugin.' + token, false )
+        readConfig( 'grails.plugin.' + token )
     }
 
     // -- comfortable --
 
-    static boolean getActivateTestJob(boolean validate = false) {
-        readConfig( ACTIVATE_TEST_JOB, validate )
+    static boolean getActivateTestJob(int output = LOGGER) {
+        readConfig( ACTIVATE_TEST_JOB, output )
     }
-    static String getAggrEsCluster(boolean validate = false) {
-        readConfig( AGGR_ES_CLUSTER, validate )
+    static String getAggrEsCluster(int output = LOGGER) {
+        readConfig( AGGR_ES_CLUSTER, output )
     }
-    static String getAggrEsHostname(boolean validate = false) {
-        readConfig( AGGR_ES_HOSTNAME, validate )
+    static String getAggrEsHostname(int output = LOGGER) {
+        readConfig( AGGR_ES_HOSTNAME, output )
     }
-    static Map getAggrEsIndices(boolean validate = false) {
-        readConfig( AGGR_ES_INDICES, validate ) as Map
+    static Map getAggrEsIndices(int output = LOGGER) {
+        readConfig( AGGR_ES_INDICES, output ) as Map
     }
-    static String getAggrEsGOKBCluster(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_CLUSTER, validate )
+    static String getAggrEsGOKBCluster(int output = LOGGER) {
+        readConfig( AGGR_ES_GOKB_CLUSTER, output )
     }
-    static String getAggrEsGOKBHostname(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_HOSTNAME, validate )
+    static String getAggrEsGOKBHostname(int output = LOGGER) {
+        readConfig( AGGR_ES_GOKB_HOSTNAME, output )
     }
-    static String getAggrEsGOKBIndex(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_INDEX, validate )
+    static String getAggrEsGOKBIndex(int output = LOGGER) {
+        readConfig( AGGR_ES_GOKB_INDEX, output )
     }
-    static String getDeployBackupLocation(boolean validate = false) {
-        readConfig( DEPLOY_BACKUP_LOCATION, validate )
+    static String getDeployBackupLocation(int output = LOGGER) {
+        readConfig( DEPLOY_BACKUP_LOCATION, output )
     }
-    static String getDocumentStorageLocation(boolean validate = false) {
-        readConfig( DOCUMENT_STORAGE_LOCATION, validate )
+    static String getDocumentStorageLocation(int output = LOGGER) {
+        readConfig( DOCUMENT_STORAGE_LOCATION, output )
     }
-    static String getFinancialsCurrency(boolean validate = false) {
-        readConfig( FINANCIALS_CURRENCY, validate )
+    static String getFinancialsCurrency(int output = LOGGER) {
+        readConfig( FINANCIALS_CURRENCY, output )
     }
-    static boolean getGlobalDataSyncJobActiv(boolean validate = false) {
-        readConfig( GLOBAL_DATA_SYNC_JOB_ACTIV, validate )
+    static boolean getGlobalDataSyncJobActiv(int output = LOGGER) {
+        readConfig( GLOBAL_DATA_SYNC_JOB_ACTIV, output )
     }
-    static boolean getGrailsMailDisabled(boolean validate = false) {
-        readConfig( GRAILS_MAIL_DISABLED, validate )
+    static boolean getGrailsMailDisabled(int output = LOGGER) {
+        readConfig( GRAILS_MAIL_DISABLED, output )
     }
-    static String getWkhtmltopdfBinary(boolean validate = false) {
-        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, validate )
+    static String getWkhtmltopdfBinary(int output = LOGGER) {
+        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, output )
     }
-    static String getWkhtmltopdfXvfbRunner(boolean validate = false) {
-        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, validate )
+    static String getWkhtmltopdfXvfbRunner(int output = LOGGER) {
+        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, output )
     }
-    static String getGrailsServerURL(boolean validate = false) {
-        readConfig( GRAILS_SERVER_URL, validate )
+    static String getGrailsServerURL(int output = LOGGER) {
+        readConfig( GRAILS_SERVER_URL, output )
     }
-    static boolean getIsSendEmailsForDueDatesOfAllUsers(boolean validate = false) {
-        readConfig( IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, validate )
+    static boolean getIsSendEmailsForDueDatesOfAllUsers(int output = LOGGER) {
+        readConfig( IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, output )
     }
-    static boolean getIsUpdateDashboardTableInDatabase(boolean validate = false) {
-        readConfig( IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE, validate )
+    static boolean getIsUpdateDashboardTableInDatabase(int output = LOGGER) {
+        readConfig( IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE, output )
     }
-    static boolean getLaserStatsSyncJobActive(boolean validate = false) {
-        readConfig( LASER_STATS_SYNC_JOB_ACTIVE, validate )
+    static boolean getLaserStatsSyncJobActive(int output = LOGGER) {
+        readConfig( LASER_STATS_SYNC_JOB_ACTIVE, output )
     }
-    static String getLaserSystemId(boolean validate = false) {
-        readConfig( LASER_SYSTEM_ID, validate )
+    static String getLaserSystemId(int output = LOGGER) {
+        readConfig( LASER_SYSTEM_ID, output )
     }
-    static String getNotificationsEmailFrom(boolean validate = false) {
-        readConfig( NOTIFICATIONS_EMAIL_FROM, validate )
+    static String getNotificationsEmailFrom(int output = LOGGER) {
+        readConfig( NOTIFICATIONS_EMAIL_FROM, output )
     }
-    static boolean getNotificationsEmailGenericTemplate(boolean validate = false) {
-        readConfig( NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, validate )
+    static boolean getNotificationsEmailGenericTemplate(int output = LOGGER) {
+        readConfig( NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, output )
     }
-    static String getNotificationsEmailReplyTo(boolean validate = false) {
-        readConfig( NOTIFICATIONS_EMAIL_REPLY_TO, validate )
+    static String getNotificationsEmailReplyTo(int output = LOGGER) {
+        readConfig( NOTIFICATIONS_EMAIL_REPLY_TO, output )
     }
-    static boolean getNotificationsJobActive(boolean validate = false) {
-        readConfig( NOTIFICATIONS_JOB_ACTIVE, validate )
+    static boolean getNotificationsJobActive(int output = LOGGER) {
+        readConfig( NOTIFICATIONS_JOB_ACTIVE, output )
     }
-    static String getPgDumpPath(boolean validate = false) {
-        readConfig( PGDUMP_PATH, validate )
+    static String getPgDumpPath(int output = LOGGER) {
+        readConfig( PGDUMP_PATH, output )
     }
-    static String getQuartzHeartbeat(boolean validate = false) {
-        readConfig( QUARTZ_HEARTBEAT, validate )
+    static String getQuartzHeartbeat(int output = LOGGER) {
+        readConfig( QUARTZ_HEARTBEAT, output )
     }
-    static Map getReporting(boolean validate = false) {
-        readConfig( REPORTING, validate ) as Map
+    static Map getReporting(int output = LOGGER) {
+        readConfig( REPORTING, output ) as Map
     }
-    static boolean getShowDebugInfo(boolean validate = false) {
-        readConfig( SHOW_DEBUG_INFO, validate )
+    static boolean getShowDebugInfo(int output = LOGGER) {
+        readConfig( SHOW_DEBUG_INFO, output )
     }
-    static boolean getShowSystemInfo(boolean validate = false) {
-        readConfig( SHOW_SYSTEM_INFO, validate )
+    static boolean getShowSystemInfo(int output = LOGGER) {
+        readConfig( SHOW_SYSTEM_INFO, output )
     }
-    static boolean getShowStatsInfo(boolean validate = false) {
-        readConfig( SHOW_STATS_INFO, validate )
+    static boolean getShowStatsInfo(int output = LOGGER) {
+        readConfig( SHOW_STATS_INFO, output )
     }
-    static String getStatsApiUrl(boolean validate = false) {
-        readConfig( STATS_API_URL, validate )
+    static String getStatsApiUrl(int output = LOGGER) {
+        readConfig( STATS_API_URL, output )
     }
-    static String getSystemEmail(boolean validate = false) {
-        readConfig( SYSTEM_EMAIL, validate )
+    static String getSystemEmail(int output = LOGGER) {
+        readConfig( SYSTEM_EMAIL, output )
     }
 
     // -- raw --
 
-    static def readConfig(String key, boolean validate) {
+    static def readConfig(String key, int output = NO_OUTPUT) {
         def result
 
         if (key) {
@@ -205,7 +209,15 @@ class ConfigMapper {
                 result = result ? result.get(lvl) : cfg.get(lvl)
             }
 
-            if (validate) {
+            if (output == LOGGER) {
+                if (result == null) {
+                    static_logger.warn 'Configuration key not found: ' + key
+                }
+                else if (result instanceof org.grails.config.NavigableMap.NullSafeNavigator) {
+                    static_logger.warn 'Configuration key found, but no value: ' + key
+                }
+            }
+            else if (output == PRINTLN) {
                 if (result == null) {
                     println(": key NOT found              ${key}")
                 }

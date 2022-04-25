@@ -33,6 +33,10 @@ The following fallbacks have been set for faster migration. They can be treated 
     grails.views.gsp.codecs.scriptlet: none
     hibernate.allow_update_outside_transaction: true
 
+### ConfigMapper
+
+The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
+
 ### Replacements
 
 #### HTTPBuilder
