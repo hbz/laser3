@@ -1754,7 +1754,7 @@ class SurveyService {
             PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
             if (subPropDef) {
                 List row = []
-                participants.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                participants.each { SurveyOrg surveyOrg ->
                     Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : surveyConfig.subscription,
                              participant: surveyOrg.org
