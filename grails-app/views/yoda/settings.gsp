@@ -16,7 +16,7 @@
 <div>
     <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
 
-    <g:set var="mailConfigDisabled" value="${ConfigMapper.getConfig('grails.mail.disabled')}" />
+    <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
     <table class="ui celled la-js-responsive-table la-table table">

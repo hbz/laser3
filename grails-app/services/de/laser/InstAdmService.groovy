@@ -184,7 +184,7 @@ class InstAdmService {
             return
         }
 
-        model.serverURL = ConfigMapper.getConfig('grails.serverURL')
+        model.serverURL = ConfigMapper.getGrailsServerURL()
 
         try {
 

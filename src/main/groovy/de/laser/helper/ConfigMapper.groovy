@@ -24,8 +24,10 @@ class ConfigMapper {
     static final String FINANCIALS_CURRENCY         = 'financials.currency'
 
     static final String GLOBAL_DATA_SYNC_JOB_ACTIV                  = 'globalDataSyncJobActiv'
+    static final String GRAILS_MAIL_DISABLED                        = 'grails.mail.disabled'
     static final String GRAILS_PLUGIN_WKHTMLTOPDF_BINARY            = 'grails.plugin.wkhtmltopdf.binary'
     static final String GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER        = 'grails.plugin.wkhtmltopdf.xvfbRunner'
+    static final String GRAILS_SERVER_URL                           = 'grails.serverURL'
 
     static final String IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS   = 'isSendEmailsForDueDatesOfAllUsers'
     static final String IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE       = 'isUpdateDashboardTableInDatabase'
@@ -39,9 +41,7 @@ class ConfigMapper {
     static final String NOTIFICATIONS_JOB_ACTIVE                = 'notificationsJobActive'
 
     static final String PGDUMP_PATH         = 'pgDumpPath'
-
     static final String QUARTZ_HEARTBEAT    = 'quartzHeartbeat'
-
     static final String REPORTING           = 'reporting'
 
     static final String SHOW_DEBUG_INFO     = 'showDebugInfo'
@@ -55,9 +55,8 @@ class ConfigMapper {
             ACTIVATE_TEST_JOB, AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES, AGGR_ES_GOKB_CLUSTER, AGGR_ES_GOKB_HOSTNAME, AGGR_ES_GOKB_INDEX,
             DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION,
             FINANCIALS_CURRENCY,
-            GLOBAL_DATA_SYNC_JOB_ACTIV,
+            GLOBAL_DATA_SYNC_JOB_ACTIV, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
             IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
-            GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER,
             LASER_STATS_SYNC_JOB_ACTIVE, LASER_SYSTEM_ID,
             NOTIFICATIONS_EMAIL_FROM, NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, NOTIFICATIONS_EMAIL_REPLY_TO, NOTIFICATIONS_JOB_ACTIVE,
             PGDUMP_PATH,
@@ -104,40 +103,46 @@ class ConfigMapper {
         readConfig( ACTIVATE_TEST_JOB, validate )
     }
     static String getAggrEsCluster(boolean validate = false) {
-        readConfig( AGGR_ES_CLUSTER, validate ) as String
+        readConfig( AGGR_ES_CLUSTER, validate )
     }
     static String getAggrEsHostname(boolean validate = false) {
-        readConfig( AGGR_ES_HOSTNAME, validate ) as String
+        readConfig( AGGR_ES_HOSTNAME, validate )
     }
     static Map getAggrEsIndices(boolean validate = false) {
         readConfig( AGGR_ES_INDICES, validate ) as Map
     }
     static String getAggrEsGOKBCluster(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_CLUSTER, validate ) as String
+        readConfig( AGGR_ES_GOKB_CLUSTER, validate )
     }
     static String getAggrEsGOKBHostname(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_HOSTNAME, validate ) as String
+        readConfig( AGGR_ES_GOKB_HOSTNAME, validate )
     }
     static String getAggrEsGOKBIndex(boolean validate = false) {
-        readConfig( AGGR_ES_GOKB_INDEX, validate ) as String
+        readConfig( AGGR_ES_GOKB_INDEX, validate )
     }
     static String getDeployBackupLocation(boolean validate = false) {
-        readConfig( DEPLOY_BACKUP_LOCATION, validate ) as String
+        readConfig( DEPLOY_BACKUP_LOCATION, validate )
     }
     static String getDocumentStorageLocation(boolean validate = false) {
-        readConfig( DOCUMENT_STORAGE_LOCATION, validate ) as String
+        readConfig( DOCUMENT_STORAGE_LOCATION, validate )
     }
     static String getFinancialsCurrency(boolean validate = false) {
-        readConfig( FINANCIALS_CURRENCY, validate ) as String
+        readConfig( FINANCIALS_CURRENCY, validate )
     }
     static boolean getGlobalDataSyncJobActiv(boolean validate = false) {
         readConfig( GLOBAL_DATA_SYNC_JOB_ACTIV, validate )
     }
+    static boolean getGrailsMailDisabled(boolean validate = false) {
+        readConfig( GRAILS_MAIL_DISABLED, validate )
+    }
     static String getWkhtmltopdfBinary(boolean validate = false) {
-        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, validate ) as String
+        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, validate )
     }
     static String getWkhtmltopdfXvfbRunner(boolean validate = false) {
-        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, validate ) as String
+        readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, validate )
+    }
+    static String getGrailsServerURL(boolean validate = false) {
+        readConfig( GRAILS_SERVER_URL, validate )
     }
     static boolean getIsSendEmailsForDueDatesOfAllUsers(boolean validate = false) {
         readConfig( IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, validate )
@@ -149,25 +154,25 @@ class ConfigMapper {
         readConfig( LASER_STATS_SYNC_JOB_ACTIVE, validate )
     }
     static String getLaserSystemId(boolean validate = false) {
-        readConfig( LASER_SYSTEM_ID, validate ) as String
+        readConfig( LASER_SYSTEM_ID, validate )
     }
     static String getNotificationsEmailFrom(boolean validate = false) {
-        readConfig( NOTIFICATIONS_EMAIL_FROM, validate ) as String
+        readConfig( NOTIFICATIONS_EMAIL_FROM, validate )
     }
     static boolean getNotificationsEmailGenericTemplate(boolean validate = false) {
         readConfig( NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, validate )
     }
     static String getNotificationsEmailReplyTo(boolean validate = false) {
-        readConfig( NOTIFICATIONS_EMAIL_REPLY_TO, validate ) as String
+        readConfig( NOTIFICATIONS_EMAIL_REPLY_TO, validate )
     }
     static boolean getNotificationsJobActive(boolean validate = false) {
         readConfig( NOTIFICATIONS_JOB_ACTIVE, validate )
     }
     static String getPgDumpPath(boolean validate = false) {
-        readConfig( PGDUMP_PATH, validate ) as String
+        readConfig( PGDUMP_PATH, validate )
     }
     static String getQuartzHeartbeat(boolean validate = false) {
-        readConfig( QUARTZ_HEARTBEAT, validate ) as String
+        readConfig( QUARTZ_HEARTBEAT, validate )
     }
     static Map getReporting(boolean validate = false) {
         readConfig( REPORTING, validate ) as Map
@@ -182,10 +187,10 @@ class ConfigMapper {
         readConfig( SHOW_STATS_INFO, validate )
     }
     static String getStatsApiUrl(boolean validate = false) {
-        readConfig( STATS_API_URL, validate ) as String
+        readConfig( STATS_API_URL, validate )
     }
     static String getSystemEmail(boolean validate = false) {
-        readConfig( SYSTEM_EMAIL, validate ) as String
+        readConfig( SYSTEM_EMAIL, validate )
     }
 
     // -- raw --

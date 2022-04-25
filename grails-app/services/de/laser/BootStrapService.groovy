@@ -11,6 +11,7 @@ import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
+import grails.util.Environment
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
 import org.hibernate.Session
@@ -46,7 +47,7 @@ class BootStrapService {
      */
     void init (boolean quickStart) {
 
-        if (! quickStart) {
+        if (Environment.isDevelopmentMode() && ! quickStart) {
             ConfigMapper.checkCurrentConfig()
         }
 
@@ -54,7 +55,7 @@ class BootStrapService {
 
         log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
-        log.info("Server:    ${AppUtils.getCurrentServer()}")
+        log.info("Server:    ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
         log.info("Database:  ${ConfigMapper.getConfig('dataSource.url')}")
         log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate')}")
         log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}")
