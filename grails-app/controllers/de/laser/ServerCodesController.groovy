@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import grails.core.GrailsApplication
 import grails.plugin.springsecurity.annotation.Secured
@@ -33,11 +33,11 @@ class ServerCodesController {
             String nl = " %0D%0A"
 
             result.mailString =
-                    "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - " + ConfigUtils.getLaserSystemId() +
+                    "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - " + ConfigMapper.getLaserSystemId() +
                     "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
                     "URI: "     + request.forwardURI + nl +
                     "Zeitpunkt: " + DateUtils.getSDF_NoZ().format( new Date() ) + nl +
-                    "System: "  + ConfigUtils.getLaserSystemId() + nl +
+                    "System: "  + ConfigMapper.getLaserSystemId() + nl +
                     "Branch: "  + AppUtils.getMeta('git.branch') + nl +
                     "Commit: "  + AppUtils.getMeta('git.commit.id') + nl +
                     "Class: "   + (root?.class?.name ?: exception.class.name) + nl

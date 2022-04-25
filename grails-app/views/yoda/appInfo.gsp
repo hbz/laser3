@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -25,10 +25,10 @@
             <tr><td>Grails version</td><td> ${AppUtils.getMeta('info.app.grailsVersion')}</td></tr>
             <tr><td>Groovy (currently running)</td><td> ${GroovySystem.getVersion()}</td></tr>
             <tr><td>Java (currently running)</td><td> ${System.getProperty('java.version')}</td></tr>
-            <tr><td>Configuration file</td><td> ${ConfigUtils.getConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
+            <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
-            <tr><td>Last quartz heartbeat</td><td>${ConfigUtils.getQuartzHeartbeat()}</td></tr>
+            <tr><td>Last quartz heartbeat</td><td>${ConfigMapper.getQuartzHeartbeat()}</td></tr>
         </tbody>
     </table>
 
@@ -49,9 +49,9 @@
             <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Database</td><td> ${AppUtils.getConfig('dataSource.url').split('/').last()}</td></tr>
+            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url').split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
+            <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
             <tr><td>Collations</td><td>
                 <%
                     Set collations = []
@@ -89,7 +89,7 @@
         </tbody>
     </table>
 
-    <g:if test="${AppUtils.getConfig('reporting.elasticSearch')}">
+    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch')}">
         <table class="ui celled la-js-responsive-table la-table table compact">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
@@ -97,14 +97,14 @@
             <tbody>
             <tr>
                 <td>ElasticSearch url</td>
-                <td><a href="${AppUtils.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${AppUtils.getConfig('reporting.elasticSearch.url')}</a></td>
+                <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url')}</a></td>
             </tr>
             <tr>
                 <td>ElasticSearch indicies</td>
                 <td>
-                    <g:if test="${AppUtils.getConfig('reporting.elasticSearch.indicies')}">
-                        <g:each in="${AppUtils.getConfig('reporting.elasticSearch.indicies')}" var="k, v">
-                            <a href="${AppUtils.getConfig('reporting.elasticSearch.url') + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
+                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies')}">
+                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies')}" var="k, v">
+                            <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url') + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
                         </g:each>
                     </g:if>
                 </td>

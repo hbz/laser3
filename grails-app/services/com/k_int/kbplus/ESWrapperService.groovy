@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.FTControl
 import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
@@ -50,10 +50,9 @@ class ESWrapperService {
     def init() {
         log.info('ESWrapperService - init')
 
-        //With ConfigUtils.getAggrEsIndices() not possible.
-        es_indices      = AppUtils.getConfig('aggr_es_indices') as Map
-        es_cluster_name = ConfigUtils.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
-        es_host         = ConfigUtils.getAggrEsHostname() ?: ESWrapperService.ES_HOST
+        es_indices      = ConfigMapper.getAggrEsIndices()  ?: [:]
+        es_cluster_name = ConfigMapper.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
+        es_host         = ConfigMapper.getAggrEsHostname() ?: ESWrapperService.ES_HOST
 
         log.debug("| es_cluster = ${es_cluster_name}")
         log.debug("| es_indices = ${es_indices}")

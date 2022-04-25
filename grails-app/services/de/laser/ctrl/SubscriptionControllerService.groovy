@@ -182,7 +182,7 @@ class SubscriptionControllerService {
                 }
             }
             //}
-            if(ConfigUtils.getShowStatsInfo()) {
+            if(ConfigMapper.getShowStatsInfo()) {
                 pu.setBenchmark('usage')
                 // TODO: experimental asynchronous task
                 //def task_usage = task {

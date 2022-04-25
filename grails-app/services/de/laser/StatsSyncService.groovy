@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.FactService
 import de.laser.base.AbstractCounterApiSource
 import de.laser.storage.BeanStorage
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -164,7 +164,7 @@ class StatsSyncService {
     void internalDoSync() {
         try {
             log.debug("create thread pool")
-            String statsApi = ConfigUtils.getStatsApiUrl() ?: ''
+            String statsApi = ConfigMapper.getStatsApiUrl() ?: ''
             if (statsApi == '') {
                 log.error("Stats API URL not set in config")
                 errors.add("Stats API URL not set in config")
@@ -1021,7 +1021,7 @@ class StatsSyncService {
             return availableReportCache[queryParamsHash]
         }
         try {
-            URIBuilder uri = new URIBuilder(ConfigUtils.getStatsApiUrl())
+            URIBuilder uri = new URIBuilder(ConfigMapper.getStatsApiUrl())
             String baseUrl = uri.getScheme() + "://" + uri.getHost()
             String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
             String path = basePath + 'Sushiservice/reports'

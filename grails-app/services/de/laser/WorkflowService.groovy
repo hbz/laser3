@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
@@ -635,7 +635,7 @@ class WorkflowService {
                                     )
                                     doc.save()
 
-                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
                                     String fName = doc.uuid
 
                                     File folder = new File("${fPath}")

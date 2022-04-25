@@ -2,7 +2,7 @@ package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.system.SystemEvent
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 
 class GlobalDataSyncJob extends AbstractJob {
@@ -43,7 +43,7 @@ class GlobalDataSyncJob extends AbstractJob {
         try {
             log.debug("GlobalDataSyncJob");
 
-            if ( ConfigUtils.getGlobalDataSyncJobActiv() ) {
+            if ( ConfigMapper.getGlobalDataSyncJobActiv() ) {
                 log.debug("Running GlobalDataSyncJob batch job")
                 SystemEvent.createEvent('GD_SYNC_JOB_START')
 

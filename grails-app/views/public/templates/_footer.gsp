@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.AppUtils; de.laser.helper.ConfigMapper" %>
 <style>
         /** inline style here with intention:
             flex layout helps footer to stick at bottom when main high not high enough
@@ -106,7 +106,7 @@
                             ${message(code: 'landingpage.footer.4.link1')}
                        </a>
                    </div>
-                <g:if test="${ConfigUtils.getLaserSystemId() == 'LAS:eR-Productive' || ConfigUtils.getLaserSystemId() == 'local'}">
+                <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
                    <div class="item">
                         <i class="universal access icon"></i>
                        <g:link controller="public" action="wcagFeedbackForm" class="content">

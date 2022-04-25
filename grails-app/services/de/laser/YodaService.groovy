@@ -5,7 +5,7 @@ import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
 import de.laser.exceptions.SyncException
 import de.laser.storage.BeanStorage
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
@@ -46,7 +46,7 @@ class YodaService {
      */
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowDebugInfo() )
     }
 
     /**

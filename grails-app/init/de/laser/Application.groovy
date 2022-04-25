@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import org.apache.commons.logging.Log
@@ -21,7 +21,7 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     @Override
     void setEnvironment(Environment environment) {
 
-        File externalConfig = ConfigUtils.getConfigFile(environment)
+        File externalConfig = ConfigMapper.getCurrentConfigFile(environment)
 
         if (externalConfig.exists()) {
             static_logger.info("| ----->")

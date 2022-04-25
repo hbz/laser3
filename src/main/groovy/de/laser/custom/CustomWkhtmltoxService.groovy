@@ -1,6 +1,6 @@
 package de.laser.custom
 
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import grails.core.GrailsApplication
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -65,8 +65,8 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
             wrapper.footerHtml = footerFile.absolutePath
         }
 
-        String binaryFilePath = ConfigUtils.getWkhtmltopdfBinary()
-        String xvfbRunner = ConfigUtils.getWkhtmltopdfXvfbRunner()
+        String binaryFilePath = ConfigMapper.getWkhtmltopdfBinary()
+        String xvfbRunner = ConfigMapper.getWkhtmltopdfXvfbRunner()
 
         if (!(new File(binaryFilePath)).exists()) {
             throw new WkhtmltoxException("Cannot find wkhtmltopdf executable at $binaryFilePath")

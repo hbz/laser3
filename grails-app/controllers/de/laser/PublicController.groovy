@@ -3,7 +3,7 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
@@ -43,8 +43,8 @@ class PublicController {
 
             mailService.sendMail {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
-                from ConfigUtils.getNotificationsEmailFrom()
-                subject ConfigUtils.getLaserSystemId() + ' - Feedback-Mechanismus Barrierefreiheit'
+                from ConfigMapper.getNotificationsEmailFrom()
+                subject ConfigMapper.getLaserSystemId() + ' - Feedback-Mechanismus Barrierefreiheit'
                 body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:escapeService.replaceUmlaute(params.comment)])
 
             }

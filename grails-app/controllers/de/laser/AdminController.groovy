@@ -39,7 +39,7 @@ import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 
 import javax.sql.DataSource
 import java.nio.file.Files
@@ -91,7 +91,7 @@ class AdminController  {
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
-        result.mailDisabled = AppUtils.getConfig('grails.mail.disabled')
+        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled')
 
         if (params.id) {
             SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
@@ -140,19 +140,19 @@ class AdminController  {
     def testMailSending() {
         Map<String, Object> result = [:]
 
-        result.mailDisabled = AppUtils.getConfig('grails.mail.disabled')
+        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled')
 
         if (params.sendTestMail == 'Send Test Mail' && params.mailAddress) {
             if (grailsApplication.config.grails.mail.disabled == true) {
                 flash.error = 'Failed due grailsApplication.config.grails.mail.disabled = true'
             }else {
                 String currentServer = AppUtils.getCurrentServer()
-                String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+                String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
                 String mailSubject = subjectSystemPraefix + params.subject
 
                     mailService.sendMail {
                         to      params.mailAddress
-                        from    ConfigUtils.getNotificationsEmailFrom()
+                        from    ConfigMapper.getNotificationsEmailFrom()
                         subject mailSubject
                         body    params.content
                     }
@@ -730,7 +730,7 @@ class AdminController  {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -826,7 +826,7 @@ class AdminController  {
     def recoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 
@@ -870,7 +870,7 @@ class AdminController  {
     def processRecoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
 
         Closure fileCheck = { Doc doc ->
 

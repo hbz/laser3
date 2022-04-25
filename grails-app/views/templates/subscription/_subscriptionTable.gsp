@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.finance.CostItem; de.laser.helper.ConfigUtils; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.Subscription; de.laser.finance.CostItem; de.laser.helper.ConfigMapper; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -300,7 +300,7 @@
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
                                     <laser:statsLink class="ui icon button la-modern-button"
-                                                     base="${ConfigUtils.getStatsApiUrl()}"
+                                                     base="${ConfigMapper.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
                                                      action="select"

@@ -2,7 +2,7 @@ package de.laser.batch
 
 import de.laser.StatsSyncService
 import de.laser.system.SystemEvent
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 
 class StatsSyncJob extends AbstractJob {
@@ -29,7 +29,7 @@ class StatsSyncJob extends AbstractJob {
     static List<String> configFlags = ['laserStatsSyncJobActive']
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running && Boolean.valueOf(ConfigUtils.getLaserStatsSyncJobActive())
+        !jobIsRunning && !statsSyncService.running && Boolean.valueOf(ConfigMapper.getLaserStatsSyncJobActive())
     }
     boolean isRunning() {
         jobIsRunning
@@ -44,7 +44,7 @@ class StatsSyncJob extends AbstractJob {
         try {
             log.debug("Execute::statsSyncJob")
 
-            if (ConfigUtils.getLaserStatsSyncJobActive()) {
+            if (ConfigMapper.getLaserStatsSyncJobActive()) {
                 log.debug("Running Stats SYNC batch job")
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 

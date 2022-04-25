@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils" %>
+<%@ page import="de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
   <head>
@@ -20,7 +20,7 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${AppUtils.getConfig('financialImportTSVLoaderMappings.cols')}" var="mpg">
+              <g:each in="${ConfigMapper.getConfig('financialImportTSVLoaderMappings.cols')}" var="mpg">
                 <tr>
                   <td>${mpg.colname}</td>
                   <td>${mpg.desc}

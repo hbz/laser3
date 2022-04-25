@@ -3,7 +3,7 @@ package de.laser
 import com.opencsv.CSVReader
 import de.laser.auth.*
 import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
@@ -47,18 +47,18 @@ class BootStrapService {
     void init (boolean quickStart) {
 
         if (! quickStart) {
-            ConfigUtils.checkConfig()
+            ConfigMapper.checkCurrentConfig()
         }
 
         log.info '--------------------------------------------------------------------------------'
 
-        log.info("SystemId:  ${ConfigUtils.getLaserSystemId()}")
+        log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
         log.info("Server:    ${AppUtils.getCurrentServer()}")
-        log.info("Database:  ${AppUtils.getConfig('dataSource.url')}")
-        log.info("Database datasource dbCreate: ${AppUtils.getConfig('dataSource.dbCreate')}")
-        log.info("Database migration plugin updateOnStart: ${AppUtils.getPluginConfig('databasemigration.updateOnStart')}")
-        log.info("Documents: ${ConfigUtils.getDocumentStorageLocation()}")
+        log.info("Database:  ${ConfigMapper.getConfig('dataSource.url')}")
+        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate')}")
+        log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}")
+        log.info("Documents: ${ConfigMapper.getDocumentStorageLocation()}")
 
         String dsp = cacheService.getDiskStorePath()
         if (dsp) {
@@ -189,10 +189,10 @@ class BootStrapService {
             }
         }
 
-        if (AppUtils.getConfig('systemUsers')) {
+        if (ConfigMapper.getConfig('systemUsers')) {
             log.debug("found systemUsers in local config file ..")
 
-            AppUtils.getConfig('systemUsers').each { su ->
+            ConfigMapper.getConfig('systemUsers').each { su ->
                 log.debug("checking: [${su.name}, ${su.display}, ${su.roles}, ${su.affils}]")
 
                 User user = User.findByUsername(su.name)

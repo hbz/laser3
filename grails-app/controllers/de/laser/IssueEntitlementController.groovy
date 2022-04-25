@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.FactService
 import de.laser.auth.User
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
@@ -84,7 +84,7 @@ class IssueEntitlementController  {
 
       if (title_id != null &&
            org != null &&
-           supplier_id != null && ConfigUtils.getShowStatsInfo()) {
+           supplier_id != null && ConfigMapper.getShowStatsInfo()) {
           def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id),
               PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
           result.natStatSupplierId = platform?.stringValue ?: null

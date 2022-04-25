@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.DateUtils; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.ConfigMapper; de.laser.helper.DateUtils; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -283,7 +283,7 @@
                                 <dt><g:message code="package.show.usage"/></dt>
                                 <dd>
                                     <laser:statsLink class="ui basic negative"
-                                                     base="${ConfigUtils.getStatsApiUrl()}"
+                                                     base="${ConfigMapper.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
                                                      action="select"

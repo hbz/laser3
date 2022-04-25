@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.ConfigUtils; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.helper.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.IssueEntitlement" %>
 <!doctype html>
 <html>
 <head>
@@ -201,7 +201,7 @@
             <div class="content">
                 <span class="la-float-right">
                     <laser:statsLink class="ui basic negative"
-                                     base="${ConfigUtils.getStatsApiUrl()}"
+                                     base="${ConfigMapper.getStatsApiUrl()}"
                                      module="statistics"
                                      controller="default"
                                      action="select"
@@ -258,7 +258,7 @@
                             <g:each in="${v}" status="i" var="v2">
                                 <td>
                                     <laser:statsLink
-                                            base="${ConfigUtils.getStatsApiUrl()}"
+                                            base="${ConfigMapper.getStatsApiUrl()}"
                                             module="statistics"
                                             controller="default"
                                             action="select"

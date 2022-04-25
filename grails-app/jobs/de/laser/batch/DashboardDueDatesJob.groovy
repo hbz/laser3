@@ -2,7 +2,7 @@ package de.laser.batch
 
 import de.laser.DashboardDueDatesService
 import de.laser.system.SystemEvent
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 
 class DashboardDueDatesJob extends AbstractJob {
@@ -29,14 +29,14 @@ class DashboardDueDatesJob extends AbstractJob {
         setJobStart()
 
         try {
-            if (ConfigUtils.getIsUpdateDashboardTableInDatabase() || ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers()) {
+            if (ConfigMapper.getIsUpdateDashboardTableInDatabase() || ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers()) {
                 log.info("Execute::dashboardDueDatesJob - Start");
 
                 SystemEvent.createEvent('DBDD_JOB_START')
 
                 if (! dashboardDueDatesService.takeCareOfDueDates(
-                        ConfigUtils.getIsUpdateDashboardTableInDatabase(),
-                        ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers(),
+                        ConfigMapper.getIsUpdateDashboardTableInDatabase(),
+                        ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers(),
                         [:] //!!!!! flash as an empty container as placeholder! Mark that!
                 )) {
                     log.warn( 'Failed. Maybe ignored due blocked dashboardDueDatesService')

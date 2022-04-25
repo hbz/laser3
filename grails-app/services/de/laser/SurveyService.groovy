@@ -52,7 +52,7 @@ class SurveyService {
      */
     @javax.annotation.PostConstruct
     void init() {
-        from = ConfigUtils.getNotificationsEmailFrom()
+        from = ConfigMapper.getNotificationsEmailFrom()
         messageSource = BeanStorage.getMessageSource()
     }
 
@@ -641,7 +641,7 @@ class SurveyService {
      */
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
             println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
@@ -661,7 +661,7 @@ class SurveyService {
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = AppUtils.getCurrentServer()
-                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigMapper.getLaserSystemId() + " - ")
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
 
                         try {
@@ -715,7 +715,7 @@ class SurveyService {
      */
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
             println 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
@@ -735,7 +735,7 @@ class SurveyService {
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = AppUtils.getCurrentServer()
-                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+                    String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigMapper.getLaserSystemId() + " - ")
 
                     String subjectText
                     Object[] args = [surveyInfo.name]
@@ -1018,13 +1018,13 @@ class SurveyService {
      */
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
-        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
             println 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String emailReceiver = user.getEmail()
             String currentServer = AppUtils.getCurrentServer()
-            String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+            String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
 
             surveyEntries.each { survey ->
                 try {
@@ -1294,7 +1294,7 @@ class SurveyService {
                             migrated: dctx.owner.migrated,
                             owner: dctx.owner.owner
                     ).save()
-                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
                     Files.copy(source, target)

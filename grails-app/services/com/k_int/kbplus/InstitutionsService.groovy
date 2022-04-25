@@ -13,7 +13,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.storage.RDStore
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 
 import grails.gorm.transactions.Transactional
 import java.nio.file.Files
@@ -145,7 +145,7 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
-                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
 
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

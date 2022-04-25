@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import grails.plugin.springsecurity.annotation.Secured
@@ -100,7 +100,7 @@ class DocstoreController  {
                         //move the uploaded file to its actual destination (= store the file)
                         File new_File
                         try {
-                            String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
                             String fName = doc_content.uuid
 
                             File folder = new File("${fPath}")
@@ -149,7 +149,7 @@ class DocstoreController  {
 
                                     //store copies of the uploaded document files
                                     try {
-                                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
                                         String fName = doc_content2.uuid
 
                                         File folder = new File("${fPath}")

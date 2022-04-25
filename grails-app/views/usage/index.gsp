@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils" %>
+<%@ page import="de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -72,8 +72,8 @@
 <h3 class="ui header">${message(code: 'default.usage.adminPage.infoHeader')}</h3>
 <table class="ui celled la-js-responsive-table la-table table compact">
     <tr><td>SUSHI API Url</td><td>
-        <g:if test="${ConfigUtils.getStatsApiUrl()}">
-            ${ConfigUtils.getStatsApiUrl()}
+        <g:if test="${ConfigMapper.getStatsApiUrl()}">
+            ${ConfigMapper.getStatsApiUrl()}
         </g:if>
         <g:else>
             <div class="ui red basic label">SUSHI API Url required</div>

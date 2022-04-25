@@ -6,7 +6,7 @@ import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.AppUtils
 import de.laser.storage.BeanStorage
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.MigrationHelper
 import de.laser.storage.RDStore
 import net.sf.json.JSON
@@ -111,7 +111,7 @@ class SystemAnnouncement {
      * @return true if the publishing was successful, false otherwise
      */
     boolean publish() {
-        if (AppUtils.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
             println 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
             return false
         }
@@ -168,7 +168,7 @@ class SystemAnnouncement {
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
@@ -182,9 +182,9 @@ class SystemAnnouncement {
         if (isRemindCCbyEmail && ccAddress) {
             BeanStorage.getMailService().sendMail {
                 to      user.getEmail()
-                from    ConfigUtils.getNotificationsEmailFrom()
+                from    ConfigMapper.getNotificationsEmailFrom()
                 cc      ccAddress
-                replyTo ConfigUtils.getNotificationsEmailReplyTo()
+                replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }
@@ -192,8 +192,8 @@ class SystemAnnouncement {
         else {
             BeanStorage.getMailService().sendMail {
                 to      user.getEmail()
-                from    ConfigUtils.getNotificationsEmailFrom()
-                replyTo ConfigUtils.getNotificationsEmailReplyTo()
+                from    ConfigMapper.getNotificationsEmailFrom()
+                replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
             }

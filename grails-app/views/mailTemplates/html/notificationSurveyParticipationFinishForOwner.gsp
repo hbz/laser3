@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.properties.PropertyDefinition; de.laser.UserSetting; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.helper.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -94,7 +94,7 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 ${message(code: 'email.survey.finish.url', locale: language)}
 <br />
-${AppUtils.getConfig('grails.serverURL') + surveyUrl}
+${ConfigMapper.getConfig('grails.serverURL') + surveyUrl}
 <br />
 <br />
 ${message(code: 'email.profile.settings', locale: language)}

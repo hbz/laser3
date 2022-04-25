@@ -4,6 +4,7 @@ import com.k_int.kbplus.ExportService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.helper.AppUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -226,7 +227,7 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                AppUtils.getConfig('systemUsers')?.each { su ->
+                ConfigMapper.getConfig('systemUsers')?.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
                     admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)

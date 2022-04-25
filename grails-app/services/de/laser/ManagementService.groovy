@@ -2,19 +2,16 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
-import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -22,7 +19,6 @@ import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 
 import javax.servlet.http.HttpServletRequest
 import java.text.SimpleDateFormat
@@ -837,7 +833,7 @@ class ManagementService {
 
                                     File new_File
                                     try {
-                                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
                                         String fName = doc_content.uuid
 
                                         File folder = new File("${fPath}")

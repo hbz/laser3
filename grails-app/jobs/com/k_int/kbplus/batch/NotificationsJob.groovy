@@ -1,7 +1,7 @@
 package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.ChangeNotificationService
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 
 class NotificationsJob extends AbstractJob {
@@ -36,7 +36,7 @@ class NotificationsJob extends AbstractJob {
         try {
             log.debug("NotificationsJob")
 
-            if (ConfigUtils.getNotificationsJobActive()) {
+            if (ConfigMapper.getNotificationsJobActive()) {
                 if (! changeNotificationService.aggregateAndNotifyChanges()) {
                     log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
                 }

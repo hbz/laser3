@@ -1,7 +1,6 @@
 package de.laser.custom
 
-import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.BeanStorage
 import grails.core.GrailsApplication
 import liquibase.Liquibase
@@ -60,22 +59,22 @@ class CustomMigrationCallbacks {
 			println '-        ' + diff.size() + ' relevant changesets detected ..'
 			println '-        dumping current database ..'
 
-			def dataSource = AppUtils.getConfig('dataSource')
+			def dataSource = ConfigMapper.getConfig('dataSource')
 			URI uri = new URI(dataSource.url.substring(5))
 
-			String backupFile = ConfigUtils.getDeployBackupLocation() + "/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
+			String backupFile = ConfigMapper.getDeployBackupLocation() + "/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
 
 			Map<String, String> config = [
 					dbname: "${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",
 					schema: "public",
 					file  : "${backupFile}"
 			]
-			println '-           pg_dump: ' + ConfigUtils.getPgDumpPath()
+			println '-           pg_dump: ' + ConfigMapper.getPgDumpPath()
 			println '-            source: ' + database
 			println '-            target: ' + backupFile
 
 			try {
-				String cmd = ConfigUtils.getPgDumpPath() + ' -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
+				String cmd = ConfigMapper.getPgDumpPath() + ' -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
 
 				cmd.execute().waitForProcessOutput(System.out, System.err)
 

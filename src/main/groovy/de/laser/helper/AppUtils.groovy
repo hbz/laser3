@@ -22,7 +22,7 @@ class AppUtils {
 
         if (! Environment.isDevelopmentMode()) {
 
-            switch (ConfigUtils.getLaserSystemId()) {
+            switch (ConfigMapper.getLaserSystemId()) {
                 case { it.startsWith('LAS:eR-Dev') }:
                     return DEV
                     break
@@ -42,12 +42,6 @@ class AppUtils {
 
     static String getMeta(String token) {
         Holders.grailsApplication.metadata.get( token ) ?: token
-    }
-    static def getConfig(String token) {
-        ConfigUtils.readConfig( token, false )
-    }
-    static def getPluginConfig(String token) {
-        ConfigUtils.readConfig( 'grails.plugin.' + token, false )
     }
 
     // -- devtools

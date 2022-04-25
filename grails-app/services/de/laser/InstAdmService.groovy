@@ -4,11 +4,10 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
-import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -185,15 +184,15 @@ class InstAdmService {
             return
         }
 
-        model.serverURL = AppUtils.getConfig('grails.serverURL')
+        model.serverURL = ConfigMapper.getConfig('grails.serverURL')
 
         try {
 
             mailService.sendMail {
                 to      user.email
-                from    ConfigUtils.getNotificationsEmailFrom()
-                replyTo ConfigUtils.getNotificationsEmailReplyTo()
-                subject ConfigUtils.getLaserSystemId() + ' - ' + subj
+                from    ConfigMapper.getNotificationsEmailFrom()
+                replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                subject ConfigMapper.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model
             }
         }

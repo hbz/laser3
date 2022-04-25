@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.storage.BeanStorage
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
@@ -47,8 +47,8 @@ class DashboardDueDatesService {
      */
     @javax.annotation.PostConstruct
     void init() {
-        from = ConfigUtils.getNotificationsEmailFrom()
-        replyTo = ConfigUtils.getNotificationsEmailReplyTo()
+        from = ConfigMapper.getNotificationsEmailFrom()
+        replyTo = ConfigMapper.getNotificationsEmailReplyTo()
         messageSource = BeanStorage.getMessageSource()
         locale = LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")
@@ -214,7 +214,7 @@ class DashboardDueDatesService {
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
         String currentServer = AppUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, language) + " (" + org.name + ")")
         if (emailReceiver == null || emailReceiver.isEmpty()) {
             log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);

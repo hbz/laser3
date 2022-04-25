@@ -1,7 +1,6 @@
 package de.laser
 
-import de.laser.helper.AppUtils
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.system.SystemMessage
 import de.laser.system.SystemSetting
 import grails.gorm.transactions.Transactional
@@ -22,7 +21,7 @@ class SystemService {
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
 
-        if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowSystemInfo()) {
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowSystemInfo()) {
             //GlobalData Sync
             if ((GlobalRecordSource.findAllByActive(false)?.size() == GlobalRecordSource.findAll()?.size()) || GlobalRecordSource.findAll()?.size() == 0) {
                 checks.globalSync = "Global Record Source is not active"
@@ -32,23 +31,23 @@ class SystemService {
                 checks.apiSource = "Api Source is not active"
             }
 
-            if (! ConfigUtils.getNotificationsJobActive()) {
+            if (! ConfigMapper.getNotificationsJobActive()) {
                 checks.notificationsJobActive = "NotificationsJob is not active"
             }
-            if (! ConfigUtils.getGlobalDataSyncJobActiv()) {
+            if (! ConfigMapper.getGlobalDataSyncJobActiv()) {
                 checks.globalDataSyncJob = "global Data Sync Job is not active"
             }
-            if (! ConfigUtils.getIsUpdateDashboardTableInDatabase()) {
+            if (! ConfigMapper.getIsUpdateDashboardTableInDatabase()) {
                 checks.UpdateDashboardTableInDatabase = "Update Dashboard Table In Database is not active"
             }
-            if (! ConfigUtils.getIsSendEmailsForDueDatesOfAllUsers()) {
+            if (! ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers()) {
                 checks.SendEmailsForDueDatesOfAllUsers = "Send Emails for DueDates Of All Users is not active"
             }
-            if (! ConfigUtils.getReporting()) {
+            if (! ConfigMapper.getReporting()) {
                 checks.Reporting = "ElasticSearch Config for Reporting not found"
             }
 
-            if (AppUtils.getConfig('grails.mail.disabled')) {
+            if (ConfigMapper.getConfig('grails.mail.disabled')) {
                 checks.MailService = "Mail Service not active"
             }
 

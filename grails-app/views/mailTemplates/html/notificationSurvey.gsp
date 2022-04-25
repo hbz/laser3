@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.ConfigMapper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl"
        value="${"/myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
 <g:set var="renewalSurvey" value="${survey.type == RDStore.SURVEY_TYPE_RENEWAL}"/>
-<g:set var="linkToSurvey" value="${AppUtils.getConfig('grails.serverURL') + raw(surveyUrl)}"/>
+<g:set var="linkToSurvey" value="${ConfigMapper.getConfig('grails.serverURL') + raw(surveyUrl)}"/>
 
 <!doctype html>
 <html>

@@ -2,7 +2,7 @@ package de.laser.batch
 
 import de.laser.ContextService
 import de.laser.Org
-import de.laser.helper.ConfigUtils
+import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 
 class TestJob extends AbstractJob {
@@ -32,7 +32,7 @@ class TestJob extends AbstractJob {
     }
 
     def execute() {
-        if (ConfigUtils.getActivateTestJob()) {
+        if (ConfigMapper.getActivateTestJob()) {
             if (! isAvailable()) {
                 return false
             }

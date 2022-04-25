@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.helper.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%-- r:require module="annotations" / --%>
 
@@ -352,7 +352,7 @@
                                             <g:each in="${v}" status="i" var="v2">
                                                 <td>
                                                     <laser:statsLink
-                                                            base="${ConfigUtils.getStatsApiUrl()}"
+                                                            base="${ConfigMapper.getStatsApiUrl()}"
                                                             module="statistics"
                                                             controller="default"
                                                             action="select"
