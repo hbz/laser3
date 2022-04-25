@@ -240,6 +240,17 @@ class AjaxHtmlController {
     }
 
     /**
+     * Gets the data of the linked packages to the subscription which is target of the given survey
+     * @return the package details fragment for the survey view
+     */
+    @Secured(['ROLE_USER'])
+    def getIeInfos() {
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
+
+        render template: '/survey/ieInfos', model: result
+    }
+
+    /**
      * Gets the properties to the given subscription or license
      * @return the properties view for the respective details view
      */

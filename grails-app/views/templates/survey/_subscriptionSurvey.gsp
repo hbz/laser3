@@ -498,6 +498,10 @@
             <div id="packages" class="la-inline-lists"></div>
         </g:if>
 
+        <g:if test="${subscription && subscription.packages}">
+            <div id="ieInfos" class="la-inline-lists"></div>
+        </g:if>
+
     </div>
 
     <aside class="six wide column la-sidekick">
@@ -1197,6 +1201,23 @@
 
 
         JSPC.app.loadPackages();
+    </g:if>
+
+    <g:if test="${subscription && subscription.packages}">
+        JSPC.app.loadIEInfos = function () {
+                  $.ajax({
+                      url: "<g:createLink controller="ajaxHtml" action="getIeInfos"/>",
+                      data: {
+                          subscription: "${subscription.id}"
+                      }
+                  }).done(function(response){
+                      $("#ieInfos").html(response);
+                      r2d2.initDynamicSemuiStuff("#ieInfos");
+                  })
+              }
+
+
+        JSPC.app.loadIEInfos();
     </g:if>
 
 </laser:script>
