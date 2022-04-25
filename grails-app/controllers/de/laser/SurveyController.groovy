@@ -3011,44 +3011,61 @@ class SurveyController {
             response.sendError(401); return
         }
 
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = "${datetoday}_" + g.message(code: "renewalEvaluation.propertiesChanged")
 
         if(params.tab == 'participantsViewAllNotFinish'){
-            result.participants = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            result.participants = SurveyOrg.executeQuery('select so from SurveyOrg so join so.org o where so.finishDate is null and so.surveyConfig = :cfg order by o.sortname', [cfg: result.surveyConfig])
+            filename = filename +'_'+g.message(code: "surveyEvaluation.participantsViewAllNotFinish")
         }else if(params.tab == 'participantsViewAllFinish'){
-            result.participants = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            result.participants = SurveyOrg.executeQuery('select so from SurveyOrg so join so.org o where so.finishDate is not null and so.surveyConfig = :cfg order by o.sortname', [cfg: result.surveyConfig])
+            filename = filename +'_'+g.message(code: "surveyEvaluation.participantsViewAllFinish")
         }else{
             result.participants = result.surveyConfig.orgs
+            filename = filename +'_'+g.message(code: "surveyEvaluation.participantsView")
         }
 
+        if(params.exportXLSX) {
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportPropertiesChanged(result.surveyConfig, result.participants, result.contextOrg)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }else {
 
-        result.changedProperties = []
-        result.propertyDefinition = PropertyDefinition.findById(params.propertyDefinitionId)
-        PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(result.propertyDefinition.name, PropertyDefinition.SUB_PROP)
-        if(subPropDef){
-            result.participants.sort{it.org.sortname}.each{ SurveyOrg surveyOrg ->
-                Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                        [parentSub  : result.surveyConfig.subscription,
-                         participant: surveyOrg.org
-                        ])[0]
-                SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
-                SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+            result.changedProperties = []
+            result.propertyDefinition = PropertyDefinition.findById(params.propertyDefinitionId)
+            PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(result.propertyDefinition.name, PropertyDefinition.SUB_PROP)
+            if (subPropDef) {
+                result.participants.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                    Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                            [parentSub  : result.surveyConfig.subscription,
+                             participant: surveyOrg.org
+                            ])[0]
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
+                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
 
-                if(surveyResult && subscriptionProperty){
-                    String surveyValue = surveyResult.getValue()
-                    String subValue = subscriptionProperty.getValue()
-                    if (surveyValue != subValue) {
-                        Map changedMap = [:]
-                        changedMap.surveyResult = surveyResult
-                        changedMap.subscriptionProperty = subscriptionProperty
-                        changedMap.surveyValue = surveyValue
-                        changedMap.subValue = subValue
-                        changedMap.participant = surveyOrg.org
-                        result.changedProperties << changedMap
+                    if (surveyResult && subscriptionProperty) {
+                        String surveyValue = surveyResult.getValue()
+                        String subValue = subscriptionProperty.getValue()
+                        if (surveyValue != subValue) {
+                            Map changedMap = [:]
+                            changedMap.surveyResult = surveyResult
+                            changedMap.subscriptionProperty = subscriptionProperty
+                            changedMap.surveyValue = surveyValue
+                            changedMap.subValue = subValue
+                            changedMap.participant = surveyOrg.org
+                            result.changedProperties << changedMap
+                        }
                     }
+
                 }
 
             }
-
         }
 
         render template: "/survey/modal_PropertiesChanged", model: result

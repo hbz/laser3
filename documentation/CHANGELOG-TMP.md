@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4049    25.04.2022  dev     2.3         Moe     Feature     Excel Umfrage: Export von Merkmalsänderungen
+
+3882    22.04.2022  dev     2.3         Moe     Feature     Bestandsinformationen anzeigen in Umfragen
+
+4197    22.04.2022  dev     2.3         Moe     Feature     Erweiterung "medium": Encyclopedia
+
 --      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
 
 3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen

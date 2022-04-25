@@ -275,7 +275,7 @@ class SurveyConfig {
                     }
                 }*/
 
-                if (countFinish > 0 && countNotFinish == 0) {
+                if (countFinish >= 0 && countNotFinish == 0) {
                     return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
                     return ALL_RESULTS_HALF_PROCESSED_BY_ORG
@@ -479,9 +479,29 @@ class SurveyConfig {
     List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
        List<SurveyConfigProperties> surveyConfigPropertiesList = []
 
-        surveyConfigPropertiesList << surveyProperties.find {it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION}
-        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
-        surveyConfigPropertiesList << surveyProperties.findAll {it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION}.sort {it.surveyProperty.getI10n('name')}
+        LinkedHashSet<SurveyConfigProperties> propertiesParticipation = []
+        LinkedHashSet<SurveyConfigProperties> propertiesMandatory = []
+        LinkedHashSet<SurveyConfigProperties> propertiesNoMandatory = []
+
+        this.surveyProperties.each {
+            if(it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesParticipation << it
+            }
+            else if(it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesMandatory << it
+            }
+            else if(it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesNoMandatory << it
+            }
+        }
+
+        propertiesParticipation = propertiesParticipation.sort {it.surveyProperty.getI10n('name')}
+
+        propertiesMandatory = propertiesMandatory.sort {it.surveyProperty.getI10n('name')}
+
+        propertiesNoMandatory = propertiesNoMandatory.sort {it.surveyProperty.getI10n('name')}
+
+        surveyConfigPropertiesList = [propertiesParticipation, propertiesMandatory, propertiesNoMandatory]
 
         return surveyConfigPropertiesList.flatten()
 
