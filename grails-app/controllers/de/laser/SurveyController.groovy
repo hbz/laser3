@@ -3016,10 +3016,10 @@ class SurveyController {
         String filename = "${datetoday}_" + g.message(code: "renewalEvaluation.propertiesChanged")
 
         if(params.tab == 'participantsViewAllNotFinish'){
-            result.participants = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            result.participants = SurveyOrg.executeQuery('select so, o.sortname as sortname from SurveyOrg so join so.org o where so.finishDate is null and so.surveyConfig = :cfg order by sortname', [cfg: result.surveyConfig]).collect{ row -> (SurveyOrg) row[0] }
             filename = filename +'_'+g.message(code: "surveyEvaluation.participantsViewAllNotFinish")
         }else if(params.tab == 'participantsViewAllFinish'){
-            result.participants = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            result.participants = SurveyOrg.executeQuery('select so, o.sortname as sortname from SurveyOrg so join so.org o where so.finishDate is not null and so.surveyConfig = :cfg order by sortname', [cfg: result.surveyConfig]).collect{ row -> (SurveyOrg) row[0] }
             filename = filename +'_'+g.message(code: "surveyEvaluation.participantsViewAllFinish")
         }else{
             result.participants = result.surveyConfig.orgs
