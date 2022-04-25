@@ -10,7 +10,7 @@
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:debugInfo>
-            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </semui:debugInfo>
         <semui:breadcrumbs>
             <%--<semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
@@ -85,8 +85,8 @@
         %>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${total.join(' / ')}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
+        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
 
-        <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>
 </html>

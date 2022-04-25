@@ -7,14 +7,14 @@
 
 <body>
 
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${historyLinesTotal?:'0'}"/>
     </h1>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
       <table  class="ui celled la-js-responsive-table la-table table">
           <thead>

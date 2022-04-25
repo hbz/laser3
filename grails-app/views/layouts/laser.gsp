@@ -677,7 +677,7 @@
 
                 <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
                     <div id="systemMessages" class="ui message warning">
-                        <g:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
+                        <laser:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
                     </div>
                 </g:if>
                 <g:else>
@@ -695,7 +695,7 @@
 
         <sec:ifNotGranted roles="ROLE_USER">
             <!-- Footer -->
-            <g:render template="/public/templates/footer" />
+            <laser:render template="/public/templates/footer" />
             <!-- Footer End -->
         </sec:ifNotGranted>
 
@@ -760,7 +760,7 @@
         %{-- ajax login --}%
 
         <g:if test="${controllerName != 'login'}">
-            <g:render template="/templates/ajax/login" />
+            <laser:render template="/templates/ajax/login" />
         </g:if>
 
         %{-- javascript loading --}%

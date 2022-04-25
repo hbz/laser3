@@ -8,7 +8,7 @@
 
 <semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
-    <g:render template="/templates/properties/groupBindings" model="${[
+    <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: orgInstance,
             availPropDefGroups: availPropDefGroups
@@ -42,7 +42,7 @@
 
         <g:if test="${isVisible}">
 
-            <g:render template="/templates/properties/groupWrapper" model="${[
+            <laser:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: pdg,
                     propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.ORG_PROP,
@@ -81,7 +81,7 @@
         </h2>
 
         <div id="custom_props_div_props">
-            <g:render template="/templates/properties/custom" model="${[
+            <laser:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.ORG_PROP,
                     ownobj: orgInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
@@ -106,7 +106,7 @@
                 <h2 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h2>
                 <g:set var="propertyWrapper" value="private-property-wrapper-${authOrg.id}" />
                 <div id="${propertyWrapper}">
-                    <g:render template="/templates/properties/private" model="${[
+                    <laser:render template="/templates/properties/private" model="${[
                             prop_desc: PropertyDefinition.ORG_PROP, // TODO: change
                             ownobj: orgInstance,
                             propertyWrapper: "${propertyWrapper}",

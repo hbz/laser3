@@ -103,17 +103,17 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <span class="la-removed">${message(code: 'copyElementsIntoObject.legend.willBeReplaced')}</span>
 </div>
 <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <g:render template="/templates/copyElements/copyDocsAndTasks"/>
+    <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
 </g:if>
 %{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-    <g:render template="/templates/copyElements/copySubscriber"/>
+    <laser:render template="/templates/copyElements/copySubscriber"/>
 </g:elseif>--}%
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <g:render template="/templates/copyElements/copyPropertiesCompare"/>
+    <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
 </g:elseif>
 <g:else>
-    <g:render template="/templates/copyElements/copyElements"/>
+    <laser:render template="/templates/copyElements/copyElements"/>
 </g:else>
-<g:render template="/templates/copyElements/copyElementsJS"/>
+<laser:render template="/templates/copyElements/copyElementsJS"/>
 </body>
 </html>

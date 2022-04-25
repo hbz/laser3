@@ -5,10 +5,10 @@
         <title>${message(code:'laser')} : ${message(code:'license.nav.notes')}</title>
 </head>
 <body>
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
@@ -17,9 +17,9 @@
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
-    <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
+    <laser:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
 </body>
 </html>

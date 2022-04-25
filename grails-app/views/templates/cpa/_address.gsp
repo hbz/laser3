@@ -47,7 +47,7 @@
                     </g:if>
     %{--
                     <g:if test="${editable}">
-                        <g:render template="/templates/cpa/addressFormModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
+                        <laser:render template="/templates/cpa/addressFormModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
                     </g:if>
     --}%
                 </div>

@@ -200,14 +200,14 @@
     </semui:actionsDropdown>
 </g:if>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
-    <g:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription', validResponsibleUsers: taskService.getUserDropdown(institution)]}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription', validResponsibleUsers: taskService.getUserDropdown(institution)]}"/>
 </g:if>
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
-    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
     <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-        <g:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
+        <laser:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
     </g:if>
 </sec:ifAnyGranted>

@@ -29,7 +29,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
+<laser:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
 
 <div class="la-inline-lists">
 
@@ -63,7 +63,7 @@
 
         <div class="content">
             <!-- START TEMPLATE -->
-            <g:render template="/templates/title_long"
+            <laser:render template="/templates/title_long"
                       model="${[ie         : issueEntitlementInstance, tipp: issueEntitlementInstance.tipp,
                                 showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
@@ -83,7 +83,7 @@
             </g:else>
 
             <div class="la-icon-list">
-                <g:render template="/templates/tipps/coverages"
+                <laser:render template="/templates/tipps/coverages"
                           model="${[ie: issueEntitlementInstance, tipp: issueEntitlementInstance.tipp]}"/>
             </div>
 

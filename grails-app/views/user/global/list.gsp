@@ -9,13 +9,13 @@
 <body>
         <g:if test="${controllerName == 'myInstitution'}">
         %{-- myInstitution has no breadcrumb yet --}%
-            <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+            <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
         <g:if test="${controllerName == 'organisation'}">
-            <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+            <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
         <g:if test="${controllerName == 'user'}">
-            <g:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+            <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
@@ -23,17 +23,17 @@
         </h1>
 
         <semui:controlButtons>
-            <g:render template="/user/global/actions" />
+            <laser:render template="/user/global/actions" />
         </semui:controlButtons>
 
         <g:if test="${controllerName == 'myInstitution'}">
-            <g:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/nav" model="${navConfig}"/>
         </g:if>
         <g:if test="${controllerName == 'organisation'}">
-            <g:render template="/organisation/nav" model="${navConfig}"/>
+            <laser:render template="/organisation/nav" model="${navConfig}"/>
         </g:if>
 
-        <g:render template="/templates/user/filter" model="${filterConfig}"/>
+        <laser:render template="/templates/user/filter" model="${filterConfig}"/>
 
         <g:if test="${multipleAffiliationsWarning}">
             <div class="ui info message la-clear-before">${message(code:'user.edit.info')}</div>
@@ -41,7 +41,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/user/list" model="${tmplConfig}" />
+        <laser:render template="/templates/user/list" model="${tmplConfig}" />
 
 </body>
 </html>

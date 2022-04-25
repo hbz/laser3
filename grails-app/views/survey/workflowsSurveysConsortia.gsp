@@ -17,7 +17,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 
@@ -28,7 +28,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form action="workflowsSurveysConsortia" controller="survey" method="post" class="ui small form"
             params="[tab: params.tab]">
@@ -108,7 +108,7 @@
 
             </div>
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         </div>
 

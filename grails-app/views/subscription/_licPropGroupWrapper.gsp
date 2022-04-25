@@ -23,7 +23,7 @@
 
         <div id="grouped_derived_custom_props_div_${propDefGroup.id}">
 
-            <g:render template="/subscription/licPropGroup" model="${[
+            <laser:render template="/subscription/licPropGroup" model="${[
                     propList: propList,
                     ownObj: ownObj
             ]}"/>

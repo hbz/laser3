@@ -42,7 +42,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
+<laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
 <h1 class="ui left floated aligned icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.institutions.myAddressbook')}
 <semui:totalNumber total="${num_visiblePersons}"/>
@@ -50,7 +50,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
         <div class="four fields">
@@ -71,7 +71,7 @@
                            placeholder="${message(code: 'person.filter.name')}"/>
                 </div>
             </div>
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
         </div>
 
         <div class="two fields">
@@ -134,7 +134,7 @@
     </g:form>
 </semui:filter>
 
-<g:render template="/templates/cpa/person_table" model="${[
+<laser:render template="/templates/cpa/person_table" model="${[
         persons       : visiblePersons,
         showContacts  : true,
         showAddresses : true,

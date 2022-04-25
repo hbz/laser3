@@ -11,7 +11,7 @@
 <body>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
 <semui:breadcrumbs>
@@ -60,11 +60,11 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/subscription/consortiaSubscriptionFilter"/>
+<laser:render template="/templates/subscription/consortiaSubscriptionFilter"/>
 
-<g:render template="/templates/subscription/consortiaSubscriptionTable"/>
+<laser:render template="/templates/subscription/consortiaSubscriptionTable"/>
 
-<g:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
+<laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
 </body>
 </html>

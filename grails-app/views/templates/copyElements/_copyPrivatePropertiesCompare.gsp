@@ -9,7 +9,7 @@
 <body>
 <semui:form>
     <g:if test="${!fromSurvey && !isRenewSub}">
-        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+        <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
                 targetObject          : targetObject,
                 allObjects_readRights : allObjects_readRights,
@@ -23,7 +23,7 @@
 
         <g:if test="${privateProperties?.size() > 0}">
             <table class="ui celled table la-js-responsive-table la-table">
-                <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                           model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name, sourceObject: sourceObject]"/>
             </table>
         </g:if>

@@ -5,7 +5,7 @@
     <g:if test="${contextService.getUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
-            <g:render template="actionsCreate"/>
+            <laser:render template="actionsCreate"/>
 
         </g:if>
         <g:else>
@@ -118,7 +118,7 @@
                 <g:set var="orgs"
                        value="${Org.findAllByIdInList(surveyConfig.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort { it.sortname }}"/>
 
-                <g:render template="/templates/copyEmailaddresses"
+                <laser:render template="/templates/copyEmailaddresses"
                           model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
             </g:if>
             <g:else>

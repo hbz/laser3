@@ -4,7 +4,6 @@ import de.laser.ContextService
 import de.laser.helper.*
 import de.laser.system.SystemMessage
 import de.laser.system.SystemProfiler
-import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -17,7 +16,7 @@ class AjaxOpenController {
     def profiler() {
         Map<String, Object> result = [status: 'failed']
         SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
+        ProfilerUtils pu = (ProfilerUtils) cache.get(ProfilerUtils.PU_S_SYSTEMPROFILER)
 
         if (pu) {
             long delta = pu.stopSimpleBench(params.uri)

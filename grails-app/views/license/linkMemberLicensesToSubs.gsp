@@ -12,10 +12,10 @@
 <body>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
-<g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+<laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
 <semui:controlButtons>
     <%-- is as placeholder for breaking header --%>
@@ -30,15 +30,15 @@
 
 <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-<g:render template="nav" />
+<laser:render template="nav" />
 
-<g:render template="/templates/subscription/consortiaSubscriptionFilter"/>
+<laser:render template="/templates/subscription/consortiaSubscriptionFilter"/>
 <div class="ui buttons">
     <g:link action="linkToSubscription" class="ui button positive" params="${params+[id:license.id,subscription:"all",(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}"><g:message code="license.linkAll"/></g:link>
     <div class="or" data-text="${message(code:'default.or')}"></div>
     <g:link action="linkToSubscription" class="ui button negative" params="${params+[id:license.id,unlink:true,subscription:"all",(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}"><g:message code="license.unlinkAll"/></g:link>
 </div>
-<g:render template="/templates/subscription/consortiaSubscriptionTable"/>
+<laser:render template="/templates/subscription/consortiaSubscriptionTable"/>
 
 </body>
 </html>

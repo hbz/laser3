@@ -478,7 +478,7 @@
 </div><!-- .grid -->
 
     <div class="la-inline-lists">
-        <g:render template="/templates/user/membership_table" model="[userInstance: user]" />
+        <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
     </div>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">

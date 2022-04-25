@@ -9,10 +9,10 @@
 </head>
 <body>
 
-    <g:render template="breadcrumb" model="${[ license:subscription, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:subscription, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
@@ -21,14 +21,14 @@
     <semui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
         <g:set var="member" value="${Subscription.get(memberId)}" />
 
         <h4 class="ui header">${member.getNameConcatenated()}</h4>
 
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges':pcList, 'flash':flash, 'model':member, 'tmplSimpleView':true]}"/>
+        <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pcList, 'flash':flash, 'model':member, 'tmplSimpleView':true]}"/>
     </g:each>
 
 

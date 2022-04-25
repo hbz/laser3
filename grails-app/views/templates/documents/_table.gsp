@@ -175,5 +175,5 @@
 </g:form>
 <%-- a form within a form is not permitted --%>
 <g:each in="${instance.documents}" var="docctx">
-    <g:render template="/templates/documents/modal" model="${[ownobj: instance, owntp: owntp, docctx: docctx, doc: docctx.owner]}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: instance, owntp: owntp, docctx: docctx, doc: docctx.owner]}"/>
 </g:each>

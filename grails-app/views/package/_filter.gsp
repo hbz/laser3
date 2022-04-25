@@ -1,4 +1,4 @@
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="${actionName}" params="${params}" method="get" class="ui form">
         <input type="hidden" name="sort" value="${params.sort}">

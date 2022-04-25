@@ -65,13 +65,13 @@ class LaserAssetsTagLib {
             String uri = webRequest.getAttributes().getTemplateUri(attrs.template as String, webRequest.getRequest())
 
             if (attrs.get('model')) {
-                out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '], START -->'
+                out << '<!-- [template: ' + uri + '], [model: ' + (attrs.get('model') as Map).keySet().join(',') + '] -- START -->'
 
             } else {
-                out << '<!-- [template: ' + uri + '], START -->'
+                out << '<!-- [template: ' + uri + '] -- START -->'
             }
 
-            if (params.debug) {
+            if (AppUtils.isDebugMode()) {
                 out << '<div style="border:2px dotted orangered" title="' + uri + '">'
                 out << g.render(attrs)
                 out << '</div>'
@@ -79,7 +79,7 @@ class LaserAssetsTagLib {
                 out << g.render(attrs)
             }
 
-            out << '<!-- [template: ' + uri + '], END -->'
+            out << '<!-- [template: ' + uri + '] -- END -->'
         } else {
             out << g.render(attrs)
         }

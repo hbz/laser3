@@ -11,9 +11,9 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <semui:modeSwitch controller="subscription" action="index" params="${params}"/>
@@ -25,17 +25,17 @@
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <g:render template="iconSubscriptionIsChild"/>
+    <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <semui:anualRings object="${subscription}" controller="subscription" action="index"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <g:render template="message"/>
+    <laser:render template="message"/>
 </g:if>
 
 <g:if test="${enrichmentProcess}">
@@ -190,7 +190,7 @@
     <div class="row">
         <div class="column">
 
-            <g:render template="/templates/filter/tipp_ieFilter"/>
+            <laser:render template="/templates/filter/tipp_ieFilter"/>
 
         </div>
     </div><!--.row-->
@@ -351,7 +351,7 @@
                                 <td>${counter++}</td>
                                 <td>
                                     <!-- START TEMPLATE -->
-                                    <g:render template="/templates/title_short"
+                                    <laser:render template="/templates/title_short"
                                               model="${[ie: ie, tipp: ie.tipp,
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
@@ -363,7 +363,7 @@
                                 --%>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
-                                    <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
+                                    <laser:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                 </td>
                                 <td>
@@ -501,7 +501,7 @@
 <div id="magicArea">
 </div>
 
-<g:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
+<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
 
 <semui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">

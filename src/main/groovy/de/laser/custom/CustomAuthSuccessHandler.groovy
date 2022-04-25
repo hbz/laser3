@@ -31,7 +31,7 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
         }
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        cache.put(ProfilerUtils.SYSPROFILER_SESSION, new ProfilerUtils(ProfilerUtils.SYSPROFILER_SESSION))
+        cache.put(ProfilerUtils.PU_S_SYSTEMPROFILER, new ProfilerUtils(ProfilerUtils.PU_S_SYSTEMPROFILER))
 
         super.onAuthenticationSuccess(request, response, authentication)
     }

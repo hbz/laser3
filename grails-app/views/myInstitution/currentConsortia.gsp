@@ -49,7 +49,7 @@
         </g:else>
     </semui:exportDropdown>--%>
     <g:if test="${editable}">
-        <g:render template="actions"/>
+        <laser:render template="actions"/>
     </g:if>
 </semui:controlButtons>
 
@@ -57,7 +57,7 @@
 <semui:totalNumber total="${consortiaCount}"/>
 </h1>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 
 <semui:messages data="${flash}"/>
     <%
@@ -67,7 +67,7 @@
 
     <semui:filter showFilterButton="true">
         <g:form action="currentConsortia" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: configShowFilter,
                               tmplConfigFormFilter: true
@@ -76,9 +76,9 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${consortia}">
-        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
 
-            <g:render template="/templates/filter/orgFilterTable"
+            <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: consortia,
                               invertDirection: true,
                               comboType: comboType,
@@ -94,11 +94,11 @@
     </g:else>
 </g:else>
 
-    <g:render template="/templates/copyEmailaddresses" model="[orgList: totalConsortia]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalConsortia]"/>
     <semui:paginate action="currentConsortia" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaCount}" />
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
 </body>

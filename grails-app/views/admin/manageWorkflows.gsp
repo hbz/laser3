@@ -56,13 +56,13 @@
     </div>
 
     <g:if test="${key == WfWorkflow.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
     <g:elseif test="${key == WfTask.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
     </g:elseif>
     <g:elseif test="${key == WfCondition.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:elseif>
 
     <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc')}" var="wf">
@@ -227,7 +227,7 @@
     </p>
 
     <g:if test="${key == WfWorkflowPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -289,7 +289,7 @@
     </p>
 
     <g:if test="${key == WfTaskPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -402,7 +402,7 @@
     </p>
 
     <g:if test="${key == WfConditionPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">

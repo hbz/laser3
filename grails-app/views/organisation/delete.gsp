@@ -8,14 +8,14 @@
 </head>
 
 <body>
-    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         ${orgInstance?.name}
     </h1>
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
-        <g:render template="nav" />
+        <laser:render template="nav" />
     </g:if>
 
     <h2 class="ui header">[ Funktionalität unvollständig implementiert ]</h2>

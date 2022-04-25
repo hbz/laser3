@@ -30,7 +30,7 @@
     </g:if>
 
         <g:form class="ui small form clearing segment la-form" name="editCost_${idSuffix}" url="${formUrl}">
-            <g:render template="costItemInput" />
+            <laser:render template="costItemInput" />
         </g:form>
 
     <%--

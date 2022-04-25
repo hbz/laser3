@@ -4,12 +4,12 @@
     <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
         <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
-            <g:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
+            <laser:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
                                                 name: availableOptions.first().values().first(),
                                                 accessMethod: accessMethod]}"/>
         </g:if>
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY}">
-            <g:render template="name" model="${[nameOptions: [], name: '']}"/>
+            <laser:render template="name" model="${[nameOptions: [], name: '']}"/>
             <div class="field required">
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
@@ -34,7 +34,7 @@
             </div>
         </g:elseif>
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY}">
-            <g:render template="name" model="${[nameOptions: [], name: '']}"/>
+            <laser:render template="name" model="${[nameOptions: [], name: '']}"/>
         </g:elseif>
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH}">
             <div class="field required">
@@ -51,7 +51,7 @@
             </div>
         </g:elseif>
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_VPN}">
-            <g:render template="name" model="${[nameOptions: [],name: '']}"/>
+            <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
         </g:elseif>
         <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
     </g:form>

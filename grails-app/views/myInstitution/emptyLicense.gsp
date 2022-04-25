@@ -15,7 +15,7 @@
     </semui:breadcrumbs>
 
     <semui:controlButtons>
-        <g:render template="actions"/>
+        <laser:render template="actions"/>
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'license.new')}</h1>

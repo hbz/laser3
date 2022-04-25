@@ -13,7 +13,7 @@
 <g:set var="isProviderOrAgency"
        value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
 
-<g:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
+<laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
 <semui:controlButtons>
     <semui:actionsDropdown>
@@ -35,20 +35,20 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<g:render template="/templates/copyFilteredEmailAddresses"
+<laser:render template="/templates/copyFilteredEmailAddresses"
           model="[emailAddresses: emailAddresses]"/>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 </h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance]}"/>
+<laser:render template="nav" model="${[orgInstance: orgInstance]}"/>
 
 <semui:messages data="${flash}"/>
 
 <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
         <div class="three fields">
@@ -61,7 +61,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
                 </div>
             </div>
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
         </div>
 
         <div class="two fields">
@@ -100,7 +100,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 </semui:filter>
 
 <g:if test="${visiblePersons}">
-    <g:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/templates/cpa/person_table" model="${[
             persons       : visiblePersons,
             restrictToOrg : orgInstance,
             showContacts: true,

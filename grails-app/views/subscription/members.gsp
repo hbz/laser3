@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <semui:controlButtons>
         <semui:exportDropdown>
@@ -93,7 +93,7 @@
                 </g:else>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
@@ -102,12 +102,12 @@
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-    <g:render template="nav" />
-    <g:render template="/templates/filter/javascript" />
+    <laser:render template="nav" />
+    <laser:render template="/templates/filter/javascript" />
 
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                   model="[
                       tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']],
                       tmplConfigFormFilter: true
@@ -118,7 +118,7 @@
     <semui:messages data="${flash}" />
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
     <g:if test="${filteredSubChilds}">
@@ -332,8 +332,8 @@
             </g:each>
         </tbody>
         </table>
-                <g:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
-                <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+                <laser:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+                <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">

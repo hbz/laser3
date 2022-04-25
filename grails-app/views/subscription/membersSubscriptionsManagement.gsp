@@ -29,7 +29,7 @@
     ${message(code: 'subscriptionsManagement.subscriptions.members')}
 </h2>
 
-<g:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
+<laser:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
 
 <semui:messages data="${flash}"/>
 
@@ -49,31 +49,31 @@
 
 
 <g:if test="${params.tab == 'linkLicense'}">
-    <g:render template="/templates/management/linkLicense"/>
+    <laser:render template="/templates/management/linkLicense"/>
 </g:if>
 <g:elseif test="${params.tab == 'linkPackages'}">
-    <g:render template="/templates/management/linkPackages"/>
+    <laser:render template="/templates/management/linkPackages"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'properties'}">
-    <g:render template="/templates/management/properties"/>
+    <laser:render template="/templates/management/properties"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'generalProperties'}">
-    <g:render template="/templates/management/generalProperties"/>
+    <laser:render template="/templates/management/generalProperties"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'providerAgency'}">
-    <g:render template="/templates/management/providerAgency"/>
+    <laser:render template="/templates/management/providerAgency"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'multiYear'}">
-    <g:render template="/templates/management/multiYear"/>
+    <laser:render template="/templates/management/multiYear"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'notes'}">
-    <g:render template="/templates/management/notes"/>
+    <laser:render template="/templates/management/notes"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'documents'}">
-    <g:render template="/templates/management/documents"/>
+    <laser:render template="/templates/management/documents"/>
 </g:elseif>
 <g:elseif test="${params.tab == 'customerIdentifiers'}">
-    <g:render template="/templates/management/customerIdentifiers"/>
+    <laser:render template="/templates/management/customerIdentifiers"/>
 </g:elseif>
 
 

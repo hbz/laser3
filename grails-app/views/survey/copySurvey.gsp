@@ -310,7 +310,7 @@
     <semui:totalNumber total="${num_sub_rows}"/>
     </h1>
 
-    <g:render template="/templates/filter/javascript"/>
+    <laser:render template="/templates/filter/javascript"/>
     <semui:filter showFilterButton="true">
         <g:form action="copySurvey" controller="survey" method="get" class="ui small form">
             <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -353,7 +353,7 @@
             <div class="four fields">
 
                 <!-- 2-1 + 2-2 -->
-                <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+                <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
 
                 <!-- 2-3 -->
                 <div class="field">

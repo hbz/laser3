@@ -51,7 +51,7 @@
         </g:else>
     </semui:exportDropdown>
     <g:if test="${editable}">
-        <g:render template="actions"/>
+        <laser:render template="actions"/>
     </g:if>
 </semui:controlButtons>
 
@@ -59,7 +59,7 @@
 <semui:totalNumber total="${membersCount}"/>
 </h1>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 
 <semui:messages data="${flash}"/>
     <%
@@ -69,7 +69,7 @@
 
     <semui:filter showFilterButton="true">
         <g:form action="manageMembers" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: configShowFilter,
                               tmplConfigFormFilter: true
@@ -78,9 +78,9 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
-            <g:render template="/templates/filter/orgFilterTable"
+            <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,
                               tmplShowCheckbox: editable,
                               comboType: comboType,
@@ -104,11 +104,11 @@
     </g:else>
 </g:else>
 
-    <g:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
     <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${membersCount}" />
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
 </body>

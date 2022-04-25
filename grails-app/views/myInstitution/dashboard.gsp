@@ -119,7 +119,7 @@
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
-                <g:render template="/user/dueDatesView"
+                <laser:render template="/user/dueDatesView"
                           model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
@@ -259,7 +259,7 @@
 
                 </div>
             <div id="surveyWrapper">
-                <%--<g:render template="surveys"/>--%>
+                <%--<laser:render template="surveys"/>--%>
             </div>
         </div>
 
@@ -397,7 +397,7 @@
     </laser:script>
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
     </body>
 </html>

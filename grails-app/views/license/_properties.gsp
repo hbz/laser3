@@ -8,7 +8,7 @@
 
 <semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
-    <g:render template="/templates/properties/groupBindings" model="${[
+    <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: license,
             editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
@@ -23,7 +23,7 @@
             <div class="content">
                 <h2 class="ui header">${message(code:'license.properties.consortium')}</h2>
                 <div id="member_props_div">
-                    <g:render template="/templates/properties/members" model="${[
+                    <laser:render template="/templates/properties/members" model="${[
                             prop_desc: PropertyDefinition.LIC_PROP,
                             ownobj: license,
                             custom_props_div: "member_props_div"]}"/>
@@ -65,7 +65,7 @@
 
         <g:if test="${isVisible}">
 
-            <g:render template="/templates/properties/groupWrapper" model="${[
+            <laser:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: pdg,
                     propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.LIC_PROP,
@@ -112,7 +112,7 @@
         </h5>
 
         <div id="custom_props_div_props">
-            <g:render template="/templates/properties/custom" model="${[
+            <laser:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
@@ -135,7 +135,7 @@
         <h2 class="ui header">${message(code:'license.properties.private')} ${contextOrg.name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
         <div id="${propertyWrapper}">
-            <g:render template="/templates/properties/private" model="${[
+            <laser:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     propertyWrapper: "${propertyWrapper}",

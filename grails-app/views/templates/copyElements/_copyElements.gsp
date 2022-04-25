@@ -7,7 +7,7 @@
 <semui:form>
 
     <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
-        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+        <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
                 targetObject          : targetObject,
                 allObjects_readRights : allObjects_readRights,

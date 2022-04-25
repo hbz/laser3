@@ -41,7 +41,7 @@
           </g:else>
       </semui:exportDropdown>
 
-      <g:render template="actions" />
+      <laser:render template="actions" />
 
   </semui:controlButtons>
 
@@ -51,7 +51,7 @@
 
   <semui:messages data="${flash}" />
 
-  <g:render template="/templates/filter/javascript" />
+  <laser:render template="/templates/filter/javascript" />
 
   <semui:filter showFilterButton="true" class="license-searches">
       <form class="ui form">
@@ -78,7 +78,7 @@
               <div class="field">
                   <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+              <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
           </div>
           <div class="three fields">
               <div class="field">
@@ -253,7 +253,7 @@
   </g:form>
       <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
       <semui:debugInfo>
-          <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+          <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
       </semui:debugInfo>
   </body>
 </html>

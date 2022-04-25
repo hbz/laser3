@@ -8,7 +8,7 @@
 
 <semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
-    <g:render template="/templates/properties/groupBindings" model="${[
+    <laser:render template="/templates/properties/groupBindings" model="${[
         propDefGroup: propDefGroup,
         ownobj: platform,
         availPropDefGroups: availPropDefGroups
@@ -34,7 +34,7 @@
         </h2>
 
         <div id="custom_props_div_props">
-            <g:render template="/templates/properties/custom" model="${[
+            <laser:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.PLA_PROP,
                     ownobj: platform,
                     orphanedProperties: allPropDefGroups.orphanedProperties,

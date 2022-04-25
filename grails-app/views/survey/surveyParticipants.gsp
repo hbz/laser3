@@ -19,7 +19,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -28,7 +28,7 @@
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -88,21 +88,21 @@
 
             <g:if test="${params.tab == 'selectedSubParticipants'}">
                 <div class="ui bottom attached tab segment active">
-                    <g:render template="selectedSubParticipants"/>
+                    <laser:render template="selectedSubParticipants"/>
                 </div>
             </g:if>
 
 
             <g:if test="${params.tab == 'selectedParticipants'}">
                 <div class="ui bottom attached tab segment active">
-                    <g:render template="selectedParticipants"/>
+                    <laser:render template="selectedParticipants"/>
                 </div>
             </g:if>
 
 
             <g:if test="${params.tab == 'consortiaMembers'}">
                 <div class="ui bottom attached tab segment active">
-                    <g:render template="consortiaMembers"/>
+                    <laser:render template="consortiaMembers"/>
 
                 </div>
             </g:if>

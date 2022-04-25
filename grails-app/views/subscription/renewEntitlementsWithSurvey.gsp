@@ -164,7 +164,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                         <g:set var="oldEditable" value="${editable}"/>
                         <g:set var="editable" value="${false}" scope="request"/>
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
+                            <laser:render template="/templates/cpa/person_details"
                                       model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
                         <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -253,7 +253,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 <div class="row">
     <div class="column">
 
-        <g:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab == 'allIEsStats']"/>
+        <laser:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab == 'allIEsStats']"/>
 
     </div>
 </div><!--.row-->
@@ -317,7 +317,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
         <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
             <g:if test="${usages}">
-                <g:render template="/templates/survey/entitlementTableSurveyWithStats"
+                <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
                           model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
             </g:if>
             <g:else>
@@ -325,7 +325,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </g:else>
         </g:if>
         <g:else>
-            <g:render template="/templates/survey/entitlementTableSurvey"
+            <laser:render template="/templates/survey/entitlementTableSurvey"
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
         </g:else>
 

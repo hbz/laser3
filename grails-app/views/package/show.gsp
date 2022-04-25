@@ -11,8 +11,8 @@
 <body>
 
 <semui:debugInfo>
-%{--<g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
-%{--<g:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
+%{--<laser:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
+%{--<laser:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
 </semui:debugInfo>
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
@@ -35,7 +35,7 @@
     </semui:exportDropdownItem>
 </semui:exportDropdown>
 --%>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
@@ -49,11 +49,11 @@
     <g:else>${packageInstance.name}</g:else>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
 
-<g:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
+<laser:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
 
 <semui:messages data="${flash}"/>
 
@@ -213,7 +213,7 @@
                 <div class="ui card">
                     <div class="content">
 
-                        <g:render template="/templates/links/orgLinksAsList"
+                        <laser:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks    : visibleOrgs,
                                             roleObject   : packageInstance,
                                             roleRespValue: 'Specific package editor',
@@ -221,7 +221,7 @@
                                             showPersons  : true
                                   ]}"/>
 
-                        %{-- <g:render template="/templates/links/orgLinksModal"
+                        %{-- <laser:render template="/templates/links/orgLinksModal"
                                    model="${[linkType      : packageInstance?.class?.name,
                                              parent        : packageInstance.class.name + ':' + packageInstance.id,
                                              property      : 'orgs',
@@ -306,7 +306,7 @@
 
 
     %{-- <aside class="four wide column la-sidekick">
-         <g:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
+         <laser:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
      </aside><!-- .four -->--}%
 
     </div><!-- .grid -->

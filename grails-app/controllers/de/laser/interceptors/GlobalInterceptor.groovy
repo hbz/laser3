@@ -1,5 +1,6 @@
 package de.laser.interceptors
 
+import de.laser.helper.AppUtils
 import grails.core.GrailsClass
 
 class GlobalInterceptor implements grails.artefact.Interceptor {
@@ -39,6 +40,9 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
             catch (Exception e) {
                 params.id = 0
             }
+        }
+        if (params.debug) {
+            AppUtils.setDebugMode(params.debug)
         }
 
         true

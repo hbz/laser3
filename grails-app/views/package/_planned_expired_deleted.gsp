@@ -63,7 +63,7 @@
                   </g:else>
               </semui:exportDropdownItem>
           </semui:exportDropdown>
-          <g:render template="actions" />
+          <laser:render template="actions" />
       </semui:controlButtons>
 
 
@@ -78,7 +78,7 @@
               <g:else>${packageInstance.name}</g:else>
           </h1>
 
-  <g:render template="nav"/>
+  <laser:render template="nav"/>
 
 
   <semui:messages data="${flash}" />
@@ -87,7 +87,7 @@
 
   <div class="row">
       <div class="column">
-          <g:render template="/templates/filter/tipp_ieFilter"/>
+          <laser:render template="/templates/filter/tipp_ieFilter"/>
       </div>
   </div>
 
@@ -97,7 +97,7 @@
           <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
           </div>
 
-          <g:render template="/templates/tipps/table"
+          <laser:render template="/templates/tipps/table"
                     model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
       </div>
   </div>
@@ -109,13 +109,13 @@
   </g:if>
 
 
-  <%-- <g:render template="/templates/orgLinksModal"
+  <%-- <laser:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
     // TODO -- no usage found
   --%>
 
 
-  <g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
+  <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
     <laser:script file="${this.getGroovyPageFileName()}">
       JSPC.app.selectAll = function () {

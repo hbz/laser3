@@ -9,11 +9,11 @@
 </head>
 <body>
 
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:controlButtons>
         <g:if test="${accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")}">
-            <g:render template="actions" />
+            <laser:render template="actions" />
         </g:if>
     </semui:controlButtons>
 
@@ -24,9 +24,9 @@
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-<g:render template="nav" />
+<laser:render template="nav" />
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
         <div class="three fields">

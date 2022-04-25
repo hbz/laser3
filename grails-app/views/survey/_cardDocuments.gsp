@@ -80,7 +80,7 @@
                                 </g:if>
                             </g:if>
                             <g:if test="${(ownobj instanceof SurveyConfig)}">
-                                <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon blue button la-modern-button editable-cancel"
                                         data-semui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
@@ -96,7 +96,7 @@
 </g:if>
 
 <g:if test="${editable}">
-    <g:render template="/templates/documents/modal"
+    <laser:render template="/templates/documents/modal"
               model="${[ownobj: ownobj , owntp: 'surveyConfig']}"/>
 </g:if>
 

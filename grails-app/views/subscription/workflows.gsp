@@ -8,20 +8,20 @@
     </head>
 <body>
 
-    <g:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-        <g:render template="iconSubscriptionIsChild"/>
+        <laser:render template="iconSubscriptionIsChild"/>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-    <g:render template="nav" />
-    <g:render template="message"/>
+    <laser:render template="nav" />
+    <laser:render template="message"/>
 
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <g:if test="${cmd == 'delete'}">

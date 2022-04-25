@@ -22,7 +22,7 @@
 
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -31,7 +31,7 @@
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -85,7 +85,7 @@
             <div class="four wide column">
                 <button type="button" class="ui icon button blue la-modern-button right floated" data-semui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
-                <g:render template="/templates/documents/modal"
+                <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
             </div>
             <br /><br />
@@ -150,7 +150,7 @@
             </table>
 
             <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx">
-                <g:render template="/templates/documents/modal"
+                <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>
         </semui:form>

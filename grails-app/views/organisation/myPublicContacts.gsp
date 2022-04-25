@@ -48,7 +48,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/organisation/nav"/>
+<laser:render template="/organisation/nav"/>
 
 <div class="ui top attached stackable tabular menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
@@ -66,7 +66,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
-    <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
+    <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
     <br/>
 
 
@@ -116,7 +116,7 @@
         </g:form>
     </semui:filter>
 
-    <g:render template="/templates/cpa/person_table"
+    <laser:render template="/templates/cpa/person_table"
               model="${[persons       : visiblePersons,
                         showContacts  : true,
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
@@ -180,7 +180,7 @@
         </g:form>
     </semui:filter>
 
-    <g:render template="/templates/cpa/person_table"
+    <laser:render template="/templates/cpa/person_table"
               model="${[persons       : visiblePersons,
                         showAddresses : true,
                         showContacts  : true,
@@ -204,7 +204,7 @@
     <br/>
 
 
-    <g:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/templates/cpa/address_table" model="${[
             hideAddressType     : true,
             addresses           : addresses,
             tmplShowDeleteButton: true,

@@ -17,7 +17,7 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
 
     <g:if test="${formattedHistoryLines?.size() > 0}">
 

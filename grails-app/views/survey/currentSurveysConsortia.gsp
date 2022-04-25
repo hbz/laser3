@@ -27,7 +27,7 @@
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 
@@ -38,7 +38,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form">
         <div class="four fields">
@@ -124,7 +124,7 @@
 
             </div>
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         </div>
 
@@ -418,7 +418,7 @@
 </g:if>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
 </body>

@@ -86,7 +86,7 @@
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <g:render template="/templates/cpa/person_details"
+                        <laser:render template="/templates/cpa/person_details"
                                   model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -156,7 +156,7 @@
                             <semui:ieAcceptStatusIcon status="${ie.acceptStatus}"/>
 
                             <!-- START TEMPLATE -->
-                            <g:render template="/templates/title_short"
+                            <laser:render template="/templates/title_short"
                                       model="${[ie: ie, tipp: tipp,
                                                 showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->

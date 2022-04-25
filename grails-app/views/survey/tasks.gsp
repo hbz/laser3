@@ -8,10 +8,10 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -21,7 +21,7 @@
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 
@@ -41,12 +41,12 @@
     : ${message(code: 'task.plural')}
 </h2>
 
-<g:render template="/templates/tasks/table"
+<laser:render template="/templates/tasks/table"
           model="${[taskInstanceList: taskInstanceList, taskInstanceCount: taskInstanceCount]}"/>
-<g:render template="/templates/tasks/table2"
+<laser:render template="/templates/tasks/table2"
           model="${[taskInstanceList: myTaskInstanceList, taskInstanceCount: myTaskInstanceCount]}"/>
 
-<g:render template="/templates/tasks/js_taskedit"/>
+<laser:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

@@ -20,7 +20,7 @@
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+        <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
         <semui:messages data="${flash}" />
 
@@ -172,7 +172,7 @@
                                 </h2>
 
                                 <div id="custom_props_div_1">
-                                    <g:render template="/templates/properties/custom" model="${[
+                                    <laser:render template="/templates/properties/custom" model="${[
                                             prop_desc: PropertyDefinition.ORG_CONF,
                                             ownobj: orgInstance,
                                             orphanedProperties: orgInstance.propertySet,

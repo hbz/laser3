@@ -24,12 +24,12 @@
 </div>
 
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 
 <semui:filter showFilterButton="true">
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-        <g:render template="/templates/filter/orgFilter"
+        <laser:render template="/templates/filter/orgFilter"
                   model="[
                           tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
                           tmplConfigFormFilter: true
@@ -59,7 +59,7 @@
     <br />
 
 
-    <g:render template="/templates/filter/orgFilterTable"
+    <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
@@ -82,7 +82,7 @@
 
     <br />
     <br />
-    <g:render template="/templates/filter/orgFilterTable"
+    <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasNotAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']

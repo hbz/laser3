@@ -1,6 +1,6 @@
 <%@ page import="de.laser.auth.Role" %>
 <laser:serviceInjection/>
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 

@@ -44,7 +44,7 @@
                 </semui:exportDropdown>
 
                 <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                    <g:render template="actions" />
+                    <laser:render template="actions" />
                 </g:if>
 
             </semui:controlButtons>
@@ -55,10 +55,10 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/filter/javascript" />
+        <laser:render template="/templates/filter/javascript" />
         <semui:filter showFilterButton="true">
             <g:form action="list" method="get" class="ui form">
-                <g:render template="/templates/filter/orgFilter"
+                <laser:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow: [['name', 'identifier', 'type'],
                                                    ['country&region', 'libraryNetwork'],
@@ -68,7 +68,7 @@
             </g:form>
         </semui:filter>
 
-        <g:render template="/templates/filter/orgFilterTable"
+        <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'status', 'wibid', 'isil', 'type', 'sector', 'region',

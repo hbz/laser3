@@ -88,12 +88,12 @@
 
 </g:if>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 
 <semui:filter showFilterButton="true">
 <g:form action="${actionName}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-    <g:render template="/templates/filter/orgFilter"
+    <laser:render template="/templates/filter/orgFilter"
               model="[
                       tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
                       tmplConfigFormFilter: true
@@ -258,7 +258,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                             <g:each in="${surResults}" var="resultProperty">
                                 <td>
-                                    <g:render template="surveyResult"
+                                    <laser:render template="surveyResult"
                                               model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
                                 </td>
                             </g:each>
@@ -453,7 +453,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                         <g:each in="${surResults}" var="resultProperty">
                             <td>
-                                <g:render template="surveyResult"
+                                <laser:render template="surveyResult"
                                           model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
                             </td>
                         </g:each>

@@ -7,7 +7,7 @@
             <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
                                              args="${args.superOrgType}"/></h3>
 
-            <g:render template="/templates/documents/table"
+            <laser:render template="/templates/documents/table"
                       model="${[instance: subscription, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
         </div>
     </g:if>
@@ -133,7 +133,7 @@
                         <td>${sub.name}</td>
                     </g:if>
                     <td>
-                        <g:render template="/templates/documents/table"
+                        <laser:render template="/templates/documents/table"
                                   model="${[instance: sub, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
 
                     </td>

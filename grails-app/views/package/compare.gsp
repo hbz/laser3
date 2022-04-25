@@ -219,7 +219,7 @@
 			<g:if test="${pkgATipp}">		
 				<td class="${highlight }">
                                   <g:each in="${pkgATipp}" var="t">
-                                    <g:render template="compare_cell" model="[obj:t]"/>
+                                    <laser:render template="compare_cell" model="[obj:t]"/>
                                     <div style="height:3px;"></div>
                                   </g:each>
                                 </td>
@@ -229,7 +229,7 @@
 			<g:if test="${pkgBTipp}">			
 				<td class="${highlight }">
                                   <g:each in="${pkgBTipp}" var="t">
-                                    <g:render template="compare_cell" model="[obj:t]"/>
+                                    <laser:render template="compare_cell" model="[obj:t]"/>
                                     <div style="height:3px;"></div>
                                   </g:each>
                                 </td>
@@ -253,7 +253,7 @@
 		<g:set var="pkgBTipp" value="${entry.value[1]}"/>
 		<g:set var="currentTitle" value="${pkgATipp?.title ?:pkgBTipp?.title}"/>
 
-		<g:render template="compare_details"
+		<laser:render template="compare_details"
 		 model="[pkgA:pkgATipp,pkgB:pkgBTipp,currentTitle:currentTitle, pkgAName:pkgInsts.get(0).name,
 		 pkgBName:pkgInsts.get(1).name ]"/>
 </g:each>

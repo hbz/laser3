@@ -14,7 +14,7 @@
 		</semui:breadcrumbs>
 
         <semui:controlButtons>
-            <%--<g:render template="actions"/>--%>
+            <%--<laser:render template="actions"/>--%>
             <%--
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             --%>
@@ -196,7 +196,7 @@
 			</g:each>
         </div>
 
-        <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
+        <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

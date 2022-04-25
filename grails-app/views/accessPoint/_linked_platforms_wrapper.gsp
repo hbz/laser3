@@ -18,4 +18,4 @@
     </div>
 </g:form>
 
-<g:render template="linked_platforms_table"/>
+<laser:render template="linked_platforms_table"/>

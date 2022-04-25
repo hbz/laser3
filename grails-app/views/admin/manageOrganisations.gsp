@@ -20,7 +20,7 @@
 
     <semui:filter>
         <g:form action="manageOrganisations" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],

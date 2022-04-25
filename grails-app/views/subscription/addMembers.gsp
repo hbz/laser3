@@ -20,7 +20,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
@@ -32,7 +32,7 @@
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow      : [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value']],
                               tmplConfigFormFilter: true
@@ -42,7 +42,7 @@
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
-        <g:render template="/templates/filter/orgFilterTable"
+        <laser:render template="/templates/filter/orgFilterTable"
                   model="[propList         : propList,
                           orgList          : members,
                           tmplDisableOrgIds: members_disabled,

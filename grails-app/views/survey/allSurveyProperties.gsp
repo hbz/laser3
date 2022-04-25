@@ -27,7 +27,7 @@
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 

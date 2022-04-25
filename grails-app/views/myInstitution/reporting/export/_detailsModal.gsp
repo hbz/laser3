@@ -22,8 +22,8 @@
                 <label>${message(code: 'reporting.modal.export.todoData')}</label>
             </div>
             <div class="ui segments">
-                <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
-                <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+                <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
+                <laser:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
             </div>
         </div>
 

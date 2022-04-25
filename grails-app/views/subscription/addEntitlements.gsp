@@ -18,24 +18,24 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <g:render template="iconSubscriptionIsChild"/>
+    <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
-<%-- <g:render template="nav"/> --%>
+<%-- <laser:render template="nav"/> --%>
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <g:render template="message"/>
+    <laser:render template="message"/>
 </g:if>
 
 <g:set var="counter" value="${offset + 1}"/>
 
-<g:render template="/templates/filter/tipp_ieFilter"/>
+<laser:render template="/templates/filter/tipp_ieFilter"/>
 
     <semui:messages data="${flash}"/>
 
@@ -160,7 +160,7 @@
 
             <td>
                 <!-- START TEMPLATE -->
-                <g:render template="/templates/title_short"
+                <laser:render template="/templates/title_short"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                 <!-- END TEMPLATE -->
@@ -288,7 +288,7 @@
 </g:form>
 
 
-<g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
+<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

@@ -9,7 +9,7 @@
     <g:form controller="survey" action="renewalEvaluation" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id, exportClickMeExcel: true]">
 
-        <g:render template="/templates/export/individuallyExportForm"
+        <laser:render template="/templates/export/individuallyExportForm"
                   model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals'),
                             exportButtonName: message(code: 'renewalEvaluation.exportRenewal')]}"/>
 

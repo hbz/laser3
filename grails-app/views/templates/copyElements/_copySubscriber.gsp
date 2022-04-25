@@ -4,7 +4,7 @@
 <g:set var="formService" bean="formService"/>
 
 <semui:form>
-    <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+    <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
             sourceObject          : sourceObject,
             targetObject          : targetObject,
             allObjects_readRights : allObjects_readRights,

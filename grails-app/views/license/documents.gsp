@@ -7,10 +7,10 @@
 
 <body>
 
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
@@ -19,9 +19,9 @@
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
-    <g:render template="/templates/documents/table" model="${[instance:license, redirect:'documents',owntp:'license']}"/>
+    <laser:render template="/templates/documents/table" model="${[instance:license, redirect:'documents',owntp:'license']}"/>
 
 </body>
 </html>

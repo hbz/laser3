@@ -46,7 +46,7 @@
 						<fieldset>
 							<% /* f:all bean="taskInstance"/*/ %>
 
-                            <g:render template="form" />
+                            <laser:render template="form" />
 
 							<div class="ui form-actions">
 								<button type="submit" class="ui button">

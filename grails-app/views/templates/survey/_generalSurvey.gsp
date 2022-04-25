@@ -215,30 +215,30 @@
         <div class="ui one cards">
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">
-                    <g:render template="/templates/tasks/card"
+                    <laser:render template="/templates/tasks/card"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
                 </div>
 
 
                 <div id="container-notes">
-                    <g:render template="/templates/notes/card"
+                    <laser:render template="/templates/notes/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
                 </div>
 
                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
-                    <g:render template="/templates/tasks/modal_create"
+                    <laser:render template="/templates/tasks/modal_create"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 
                 </g:if>
                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                    <g:render template="/templates/notes/modal_create"
+                    <laser:render template="/templates/notes/modal_create"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </g:if>
             </g:if>
 
             <div id="container-documents">
-                <g:render template="/survey/cardDocuments"
+                <laser:render template="/survey/cardDocuments"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
         </div>

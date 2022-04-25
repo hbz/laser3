@@ -395,7 +395,7 @@
                 <td>
                     <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                         <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
-                            <g:render template="/templates/cpa/person_details" model="${[
+                            <laser:render template="/templates/cpa/person_details" model="${[
                                     personRole          : pl,
                                     tmplShowDeleteButton: false,
                                     tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
@@ -416,7 +416,7 @@
                             <g:if test="${!visiblePrivateContacts.contains(pl.prs.id)}">
                                 <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}"/>
 
-                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                <laser:render template="/templates/cpa/person_full_details" model="${[
                                         person                 : pl.prs,
                                         personContext          : org,
                                         tmplShowDeleteButton   : true,
@@ -436,7 +436,7 @@
                         </g:if>
                     <%--
                     <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
-                        <g:render template="/templates/cpa/person_details" model="${[
+                        <laser:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
                                 tmplShowDeleteButton: false,
                                 tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],

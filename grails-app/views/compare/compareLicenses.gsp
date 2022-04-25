@@ -61,16 +61,16 @@
 </semui:form>
 
 <g:if test="${objects}">
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
     <br />
     <br />
 
     <g:if test="${params.tab == 'compareProperties'}">
-        <g:render template="compareProperties"/>
+        <laser:render template="compareProperties"/>
     </g:if>
 
     <g:if test="${params.tab == 'compareElements'}">
-        <g:render template="compareElements"/>
+        <laser:render template="compareElements"/>
     </g:if>
 </g:if>
 

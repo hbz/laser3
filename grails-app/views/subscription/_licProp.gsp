@@ -12,7 +12,7 @@
                 <g:if test="${propDefGroup.isVisible}">
 
                     <!-- global -->
-                    <g:render template="/subscription/licPropGroupWrapper" model="${[
+                    <laser:render template="/subscription/licPropGroupWrapper" model="${[
                             propDefGroup: propDefGroup,
                             propDefGroupBinding: null,
                             ownObj: license
@@ -33,7 +33,7 @@
                 <g:if test="${propDefGroup[1]?.isVisible}">
 
                     <!-- local -->
-                    <g:render template="/subscription/licPropGroupWrapper" model="${[
+                    <laser:render template="/subscription/licPropGroupWrapper" model="${[
                             propDefGroup: propDefGroup[0],
                             propDefGroupBinding: propDefGroup[1],
                             ownObj: license
@@ -56,7 +56,7 @@
                     <g:if test="${propDefGroup[1]?.isVisibleForConsortiaMembers}">
 
                         <!-- member -->
-                        <g:render template="/subscription/licPropGroupWrapper" model="${[
+                        <laser:render template="/subscription/licPropGroupWrapper" model="${[
                                 propDefGroup: propDefGroup[0],
                                 propDefGroupBinding: propDefGroup[1],
                                 ownObj: license
@@ -91,7 +91,7 @@
             </h5>
 
             <div id="custom_props_div_props">
-                <g:render template="/templates/properties/orphaned" model="${[
+                <laser:render template="/templates/properties/orphaned" model="${[
                         prop_desc: PropertyDefinition.LIC_PROP,
                         ownobj: license,
                         orphanedProperties: derivedPropDefGroups.orphanedProperties,
@@ -112,7 +112,7 @@
                         (${message(code:'subscription.properties')})
                     </h5>
 
-                    <g:render template="/subscription/licPropGroup" model="${[
+                    <laser:render template="/subscription/licPropGroup" model="${[
                             propList: derivedPropDefGroups.orphanedProperties,
                             ownObj: license
                     ]}"/>

@@ -13,9 +13,9 @@
     </head>
     <body>
         <semui:debugInfo>
-            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </semui:debugInfo>
-        <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        <laser:render template="breadcrumb" model="${[ params:params ]}"/>
         <semui:controlButtons>
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
@@ -23,19 +23,19 @@
                     <g:link class="item" action="stats" params="${params+[exportXLS:true, data: 'fetchFiltered']}">${message(code:'default.usage.exports.filtered')}</g:link>
                 </semui:exportDropdownItem>
             </semui:exportDropdown>
-            <g:render template="actions" />
+            <laser:render template="actions" />
         </semui:controlButtons>
         <h1 class="ui icon header la-noMargin-top">
             <semui:headerIcon />
-            <g:render template="iconSubscriptionIsChild"/>
+            <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </h1>
         <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-        <g:render template="nav" />
+        <laser:render template="nav" />
 
         <semui:objectStatus object="${subscription}" status="${subscription.status}" />
-        <g:render template="message" />
+        <laser:render template="message" />
         <semui:messages data="${flash}" />
         <div class="ui icon info message">
             <i class="info icon"></i>
@@ -57,7 +57,7 @@
                         <h4>
                             ${platformInstanceRecord.name}
                         </h4>
-                        <g:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
+                        <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
                     </g:each>
                 </div>
             </aside>
@@ -86,7 +86,7 @@
             </div>
         </g:if>
         <g:else>
-            <g:render template="/templates/filter/javascript"/>
+            <laser:render template="/templates/filter/javascript"/>
             <semui:filter showFilterButton="true">
                 <g:form action="stats" class="ui form" method="get">
                     <g:hiddenField name="tab" value="${params.tab}"/>

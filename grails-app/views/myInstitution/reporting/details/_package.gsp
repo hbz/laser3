@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.storage.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
-<g:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/top" />
 
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
@@ -238,4 +238,4 @@
     </table>
 </div>
 
-<g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+<laser:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

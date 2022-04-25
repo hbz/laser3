@@ -20,7 +20,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -29,7 +29,7 @@
                              action="surveyEvaluation"/>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -53,7 +53,7 @@
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <semui:form>
 
-        <g:render template="evaluationParticipantsView" model="[showCheckbox: true,
+        <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                 showTransferFields: true,
                                                                 processAction: 'processTransferParticipants',
                                                                 tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>

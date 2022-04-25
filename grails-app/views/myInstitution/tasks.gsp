@@ -13,7 +13,7 @@
         </semui:breadcrumbs>
 
         <semui:controlButtons>
-            <g:render template="actions"/>
+            <laser:render template="actions"/>
         </semui:controlButtons>
 
         <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'task.plural')}</h1>
@@ -21,7 +21,7 @@
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>--%>
-        <g:render template="/templates/filter/javascript" />
+        <laser:render template="/templates/filter/javascript" />
 
         <semui:filter showFilterButton="true">
             <form class="ui form">
@@ -59,12 +59,12 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/tasks/modal_create" />
+        <laser:render template="/templates/tasks/modal_create" />
 
-        <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-        <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
+        <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
+        <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
-        <g:render template="/templates/tasks/js_taskedit"/>
+        <laser:render template="/templates/tasks/js_taskedit"/>
 
   </body>
 </html>

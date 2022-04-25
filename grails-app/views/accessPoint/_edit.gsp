@@ -14,7 +14,7 @@
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
 
-    <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
+    <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
@@ -30,7 +30,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-    <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
+    <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
     <semui:messages data="${flash}"/>
@@ -70,7 +70,7 @@
     </g:form>
 
 
-    <g:render template="link"
+    <laser:render template="link"
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 
 </body>

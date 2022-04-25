@@ -60,7 +60,7 @@
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 
 <semui:messages data="${flash}"/>
@@ -96,7 +96,7 @@
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <g:render template="/templates/cpa/person_details"
+                        <laser:render template="/templates/cpa/person_details"
                                   model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -130,7 +130,7 @@
 
             <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
-                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
                                                                                   subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
@@ -139,7 +139,7 @@
 
             <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
-                <g:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
+                <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
                                                                              costItemSums        : costItemSums,
                                                                              subscription        : surveyConfig.subscription,
                                                                              tasks               : tasks,
@@ -148,13 +148,13 @@
 
             <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
-                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
                                                                                   subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>
 
-                <g:render template="/templates/survey/entitlementSurvey"/>
+                <laser:render template="/templates/survey/entitlementSurvey"/>
 
             </g:if>
 

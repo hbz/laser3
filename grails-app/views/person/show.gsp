@@ -88,7 +88,7 @@
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance?.contacts?.toSorted()}" var="c">
 
-                                    <g:render template="/templates/cpa/contact" model="${[
+                                    <laser:render template="/templates/cpa/contact" model="${[
                                             contact: c,
                                             tmplShowDeleteButton: true,
                                             controller: 'person',
@@ -101,7 +101,7 @@
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                                <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
+                                <laser:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd>
                     </dl>
@@ -110,7 +110,7 @@
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type.each {it?.getI10n('value')}}}" var="a">
-                                    <g:render template="/templates/cpa/address" model="${[
+                                    <laser:render template="/templates/cpa/address" model="${[
                                             address: a,
                                             editable            : editable,
                                             tmplShowDeleteButton: true,
@@ -371,7 +371,7 @@
                                 <h2 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h2>
                                 <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
                                 <div id="${propertyWrapper}">
-                                    <g:render template="/templates/properties/private" model="${[
+                                    <laser:render template="/templates/properties/private" model="${[
                                             prop_desc: PropertyDefinition.PRS_PROP,
                                             ownobj: personInstance,
                                             propertyWrapper: "${propertyWrapper}",
@@ -442,7 +442,7 @@
 
 </div><!-- .grid -->
 
-<g:render template="prsRoleModal" model="[
+<laser:render template="prsRoleModal" model="[
         tmplId: 'prFunctionModal',
         tmplRoleType: 'Funktion',
         roleType: PersonRole.TYPE_FUNCTION,
@@ -450,7 +450,7 @@
         message:'person.function_new.label',
         presetOrgId: presetOrg?.id]" />
 
-<g:render template="prsRoleModal" model="[
+<laser:render template="prsRoleModal" model="[
         tmplId: 'prPositionModal',
         tmplRoleType: 'Position',
         roleType: PersonRole.TYPE_POSITION,

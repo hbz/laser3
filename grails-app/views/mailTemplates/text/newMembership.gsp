@@ -4,4 +4,4 @@ der Einrichtung ${userOrg.org.name} (${userOrg.org.shortname}) als ${userOrg.for
 
 ${serverURL}
 
-<g:render template="/mailTemplates/text/signature" />
+<laser:render template="/mailTemplates/text/signature" />

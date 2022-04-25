@@ -21,7 +21,7 @@
     </asset:script>
 </head>
 <body>
-    <g:render template="jse_tmpl" model="[pos:'oben']" />
+    <laser:render template="jse_tmpl" model="[pos:'oben']" />
 
     <script>
         console.log('script @ body > 5')
@@ -40,7 +40,7 @@
         })
     </asset:script>
 
-    <g:render template="jse_tmpl" model="[pos:'unten']" />
+    <laser:render template="jse_tmpl" model="[pos:'unten']" />
 
     <laser:remoteLink class="ui icon positive button" role="button"
                       controller="dev" action="jse" params="[xhr:true]"

@@ -40,5 +40,5 @@
     </div>
 </div>
 
-<g:render template="/subscription/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
-<g:render template="/subscription/reporting/query/helpModal" model="[modalID: 'queryHelpModal', token: token]" />
+<laser:render template="/subscription/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
+<laser:render template="/subscription/reporting/query/helpModal" model="[modalID: 'queryHelpModal', token: token]" />

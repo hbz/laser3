@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'subscription.details.copyMyElements.label')}</h1>
 
@@ -58,12 +58,12 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <span class="la-removed">${message(code: 'copyElementsIntoObject.legend.willBeReplaced')}</span>
 </div>
 <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <g:render template="/templates/copyElements/copyDocsAndTasks"/>
+    <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
 </g:if>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <g:render template="/templates/copyElements/copyPropertiesCompare"/>
+    <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
 </g:elseif>
-<g:render template="/templates/copyElements/copyElementsJS"/>
+<laser:render template="/templates/copyElements/copyElementsJS"/>
 
 </body>
 </html>

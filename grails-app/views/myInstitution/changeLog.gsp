@@ -18,7 +18,7 @@
         <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
       </semui:exportDropdownItem>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
   </semui:controlButtons>
 
   <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>

@@ -21,7 +21,7 @@
 					<g:form class="ui form" action="edit" id="${personInstance?.id}" >
 						<g:hiddenField name="version" value="${personInstance?.version}" />
 						<fieldset>
-							<g:render template="form"/>
+							<laser:render template="form"/>
 							
 							<div class="ui form-actions">
 								<button type="submit" class="ui button">

@@ -10,14 +10,14 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<g:render template="iconSubscriptionIsChild"/>
+<laser:render template="iconSubscriptionIsChild"/>
 <semui:xEditable owner="${subscription}" field="name"/>
 <semui:totalNumber total="${surveys.size()}"/>
 </h1>
@@ -25,9 +25,9 @@
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
-<g:render template="message"/>
+<laser:render template="message"/>
 
 <semui:messages data="${flash}"/>
 

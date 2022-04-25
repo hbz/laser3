@@ -18,7 +18,7 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
     boolean before() {
         SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils debugUtil = (ProfilerUtils) cache.get(ProfilerUtils.SYSPROFILER_SESSION)
+        ProfilerUtils debugUtil = (ProfilerUtils) cache.get(ProfilerUtils.PU_S_SYSTEMPROFILER)
         if (debugUtil) {
             debugUtil.startSimpleBench( ProfilerUtils.generateKey( getWebRequest() ) )
         }

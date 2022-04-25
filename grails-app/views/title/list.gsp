@@ -15,7 +15,7 @@
       <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}"/>
     </h1>
 
-    <g:render template="/templates/filter/javascript" />
+    <laser:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>

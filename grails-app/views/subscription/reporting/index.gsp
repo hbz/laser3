@@ -9,24 +9,24 @@
     </head>
 
     <body>
-        <g:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
+        <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
         <semui:controlButtons>
-            <g:render template="actions" />
+            <laser:render template="actions" />
         </semui:controlButtons>
     
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:render template="iconSubscriptionIsChild"/>
+            <laser:render template="iconSubscriptionIsChild"/>
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>
 
         <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-        <g:render template="nav" />
-        <g:render template="message"/>
-        <g:render template="/templates/reporting/helper" />
+        <laser:render template="nav" />
+        <laser:render template="message"/>
+        <laser:render template="/templates/reporting/helper" />
 
-        <g:render template="/subscription/reporting/query/query" />
+        <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
             <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>

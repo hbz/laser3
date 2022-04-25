@@ -27,7 +27,7 @@
 
     <g:if test="${dueDates}">
         <div id="container-table">
-            <g:render template="/user/tableDueDates"/>
+            <laser:render template="/user/tableDueDates"/>
         </div>
         <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getDefaultPageSize()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>

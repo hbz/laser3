@@ -16,11 +16,11 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:filter>
     <g:form action="manageProperties" method="post" class="ui form" id="${params.id}">
-        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
+        <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"

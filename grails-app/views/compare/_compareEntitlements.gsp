@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody id="entitlements">
-            <g:render template="compareEntitlementRow" model="[showPlattform: showPlattform, showPackage: showPackage, ies: ies, objects: objects]"/>
+            <laser:render template="compareEntitlementRow" model="[showPlattform: showPlattform, showPackage: showPackage, ies: ies, objects: objects]"/>
         </tbody>
     </table>
 </semui:form>

@@ -10,4 +10,4 @@ Kommentar: ${comment}
 
 
 
-<g:render template="/mailTemplates/text/signature" />
+<laser:render template="/mailTemplates/text/signature" />

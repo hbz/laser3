@@ -88,7 +88,7 @@
             ${message(code: 'default.add.label', args: [message(code: 'contact.label')])}
         </g:link>
     </g:if>
-    <% /* <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
+    <% /* <laser:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
@@ -107,7 +107,7 @@
             ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
     </g:if>
-    <% /* <g:render template="/templates/cpa/addressFormModal" model="['prsId': personInstance?.id]"/> */ %>
+    <% /* <laser:render template="/templates/cpa/addressFormModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">

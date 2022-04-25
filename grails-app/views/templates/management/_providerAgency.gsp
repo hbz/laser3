@@ -10,7 +10,7 @@
                 <div class="la-inline-lists">
                     <div class="ui card sixteen wide">
                         <div class="content">
-                            <g:render template="/templates/links/orgLinksAsList"
+                            <laser:render template="/templates/links/orgLinksAsList"
                                       model="${[roleLinks    : visibleOrgRelations,
                                                 roleObject   : subscription,
                                                 roleRespValue: 'Specific subscription editor',
@@ -19,7 +19,7 @@
                                       ]}"/>
                             <div class="ui la-vertical buttons">
 
-                                <g:render template="/templates/links/orgLinksSimpleModal"
+                                <laser:render template="/templates/links/orgLinksSimpleModal"
                                           model="${[linkType      : subscription.class.name,
                                                     parent        : genericOIDService.getOID(subscription),
                                                     property      : 'orgs',
@@ -32,7 +32,7 @@
                                                     tmplModalID   : 'modal_add_provider',
                                                     editmode      : editable
                                           ]}"/>
-                                <g:render template="/templates/links/orgLinksSimpleModal"
+                                <laser:render template="/templates/links/orgLinksSimpleModal"
                                           model="${[linkType      : subscription.class.name,
                                                     parent        : genericOIDService.getOID(subscription),
                                                     property      : 'orgs',
@@ -118,7 +118,7 @@
                     <td>
                         <div class="ui card ">
                             <div class="content">
-                                <g:render template="/templates/links/orgLinksAsList"
+                                <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks    : sub.orgRelations?.findAll {
                                               !(it.org?.id == contextService.getOrg().id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id])
                                           }.sort { it?.org?.sortname },
@@ -129,7 +129,7 @@
                                           ]}"/>
                                 <div class="ui la-vertical buttons la-js-hide-this-card">
 
-                                    <g:render template="/templates/links/orgLinksSimpleModal"
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
                                               model="${[linkType      : sub.class.name,
                                                         parent        : genericOIDService.getOID(sub),
                                                         property      : 'orgs',
@@ -142,7 +142,7 @@
                                                         tmplModalID   : 'modal_add_provider_' + sub.id,
                                                         editmode      : editable
                                               ]}"/>
-                                    <g:render template="/templates/links/orgLinksSimpleModal"
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
                                               model="${[linkType      : sub.class.name,
                                                         parent        : genericOIDService.getOID(sub),
                                                         property      : 'orgs',

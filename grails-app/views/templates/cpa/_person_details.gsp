@@ -26,7 +26,7 @@
         <g:if test="${person.contacts}">
 
             <g:each in="${person.contacts.toSorted()}" var="contact">
-                <g:render template="/templates/cpa/contact"
+                <laser:render template="/templates/cpa/contact"
                           model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
 
@@ -34,7 +34,7 @@
         <g:if test="${person.addresses}">
 
             <g:each in="${person.addresses.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
-                <g:render template="/templates/cpa/address"
+                <laser:render template="/templates/cpa/address"
                           model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 
@@ -84,7 +84,7 @@
                         <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                        <g:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
+                        <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
                     </g:if>
 
 
@@ -104,7 +104,7 @@
     <g:if test="${personRole.prs.contacts}">
         <g:each in="${personRole.prs.contacts.toSorted()}" var="contact">
             <g:if test="${tmplConfigShow.contains(contact.contentType?.value)}">
-                <g:render template="/templates/cpa/contact" model="${[
+                <laser:render template="/templates/cpa/contact" model="${[
                         contact             : contact,
                         tmplShowDeleteButton: true
                 ]}"/>
@@ -115,7 +115,7 @@
     <g:if test="${tmplConfigShow?.contains('address') && personRole.prs.addresses}">
 
         <g:each in="${personRole.prs.addresses.sort { it.type.each {it?.getI10n('value')} }}" var="address">
-            <g:render template="/templates/cpa/address"
+            <laser:render template="/templates/cpa/address"
                       model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
         </g:each>
 

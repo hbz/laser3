@@ -7,7 +7,7 @@
     <g:if test="${validFilterResult}">
         <div class="ui message success">
             <p>
-                <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
+                <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
         </div>
     </g:if>
@@ -23,9 +23,9 @@
         </div>
     </g:if>
 
-    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
+    <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
     <g:if test="${validFilterResult}">
-        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_ISSUEENTITLEMENT}"]}"/>
+        <laser:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_ISSUEENTITLEMENT}"]}"/>
     </g:if>
 </g:if>

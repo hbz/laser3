@@ -58,10 +58,10 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/filter/javascript" />
+    <laser:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="currentProviders" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
@@ -73,7 +73,7 @@
 
     <div class="la-clear-before">
         <g:if test="${orgList}">
-        <g:render template="/templates/filter/orgFilterTable"
+        <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
                           tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'privateContacts', 'numberOfSubscriptions']
@@ -89,15 +89,15 @@
         </g:else>
     </div>
 
-    <g:render template="/templates/copyEmailaddresses" model="[orgList: orgList]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: orgList]"/>
 
     <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
-    <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
+    <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
   </body>
 </html>

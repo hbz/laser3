@@ -49,7 +49,7 @@
             </semui:exportDropdown>
 
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
-                <g:render template="actions" />
+                <laser:render template="actions" />
             </g:if>
         </semui:controlButtons>
 
@@ -59,15 +59,15 @@
 
     <semui:messages data="${flash}"/>
 
-    <g:render template="/templates/subscription/subscriptionFilter"/>
+    <laser:render template="/templates/subscription/subscriptionFilter"/>
 
-    <g:render template="/templates/subscription/subscriptionTable"/>
+    <laser:render template="/templates/subscription/subscriptionTable"/>
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
-    <g:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
+    <laser:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
 
   </body>
 </html>

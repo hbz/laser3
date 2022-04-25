@@ -33,7 +33,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
@@ -118,7 +118,7 @@
 
         <div class="three fields">
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>

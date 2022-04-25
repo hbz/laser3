@@ -12,17 +12,17 @@
         </g:if>
     </semui:breadcrumbs>
     <semui:controlButtons>
-        <g:render template="actions" model="${[org:org]}"/>
+        <laser:render template="actions" model="${[org:org]}"/>
     </semui:controlButtons>
     <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>
-    <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
-    <g:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

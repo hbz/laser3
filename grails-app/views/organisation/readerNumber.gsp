@@ -22,21 +22,21 @@
 
         <g:if test="${editable}">
             <semui:controlButtons>
-                <g:render template="actions" />
+                <laser:render template="actions" />
             </semui:controlButtons>
         </g:if>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+        <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
         <semui:messages data="${flash}"/>
 
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
-        <g:render template="/readerNumber/formModal" model="[formId: 'newForScientificLibrary',withDueDate: true,title:message(code: 'readerNumber.createForScientificLibrary.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForScientificLibrary',withDueDate: true,title:message(code: 'readerNumber.createForScientificLibrary.label')]"/>
 
         <g:if test="${numbersWithSemester || numbersWithDueDate}">
             <g:if test="${numbersWithSemester}">
@@ -109,7 +109,7 @@
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate outline icon"></i>
                                     </g:link>
-                                    <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
+                                    <laser:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
                             </td>
                         </tr>

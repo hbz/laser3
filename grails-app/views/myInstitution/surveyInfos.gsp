@@ -70,7 +70,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
                             <g:set var="oldEditable" value="${editable}"/>
                             <g:set var="editable" value="${false}" scope="request"/>
                             <g:each in="${choosenOrgCPAs}" var="gcp">
-                                <g:render template="/templates/cpa/person_details"
+                                <laser:render template="/templates/cpa/person_details"
                                           model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                             </g:each>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -105,7 +105,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
         <div class="la-inline-lists">
             <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
-                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
                                                                                   subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
@@ -115,19 +115,19 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
 
             <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
-                <g:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
+                <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
                                                                              surveyResults: surveyResults]"/>
             </g:if>
 
             <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
-                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
                                                                                   costItemSums        : costItemSums,
                                                                                   subscription        : subscription,
                                                                                   visibleOrgRelations : visibleOrgRelations,
                                                                                   surveyResults       : surveyResults]"/>
 
-                <g:render template="/templates/survey/entitlementSurvey"/>
+                <laser:render template="/templates/survey/entitlementSurvey"/>
             </g:if>
 
         </div>

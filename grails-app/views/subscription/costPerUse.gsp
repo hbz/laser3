@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <semui:messages data="${flash}" />
 
@@ -17,7 +17,7 @@
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
 
-    <g:render template="nav"  />
+    <laser:render template="nav"  />
 
       <g:if test="${costItems && costItems.size() > 0}">
         <table class="ui celled la-js-responsive-table la-table table">

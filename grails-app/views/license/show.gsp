@@ -11,15 +11,15 @@
     <body>
 
         <semui:debugInfo>
-            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-            %{--<g:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />--}%
-            %{--<g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />--}%
+            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            %{--<laser:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />--}%
+            %{--<laser:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />--}%
         </semui:debugInfo>
 
-        <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+        <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
         <semui:controlButtons>
-            <g:render template="actions" />
+            <laser:render template="actions" />
         </semui:controlButtons>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
@@ -28,7 +28,7 @@
 
         <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-        <g:render template="nav" />
+        <laser:render template="nav" />
 
         <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
 
@@ -45,12 +45,12 @@
             </div>
         </g:if>
 
-        <g:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
+        <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
 
         <semui:messages data="${flash}" />
 
         <%--<g:if test="${institution.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && institution.id == license.getLicensee()?.id)}">
-            <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
+            <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
         </g:if>--%>
 
         <div class="ui stackable grid">
@@ -143,7 +143,7 @@
                     </div>
 
                 <div id="new-dynamic-properties-block">
-                    <g:render template="properties" model="${[ license: license ]}" />
+                    <laser:render template="properties" model="${[ license: license ]}" />
                 </div><!-- #new-dynamic-properties-block -->
 
                 </div>
@@ -159,7 +159,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'license.details.tmplEntity')}</h2>
-                                <g:render template="/templates/links/orgLinksAsList"
+                                <laser:render template="/templates/links/orgLinksAsList"
                                           model="${[roleLinks: visibleOrgRelations,
                                                     roleObject: license,
                                                     roleRespValue: 'Specific license editor',
@@ -167,7 +167,7 @@
                                                     showPersons: true
                                           ]}" />
 
-                                <g:render template="/templates/links/orgLinksSimpleModal"
+                                <laser:render template="/templates/links/orgLinksSimpleModal"
                                           model="${[linkType: license.class.name,
                                                     parent: license.class.name + ':' + license.id,
                                                     property: 'orgRelations',
@@ -186,7 +186,7 @@
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>
-                    <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+                    <laser:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
                 </div>
             </aside><!-- .four -->
 

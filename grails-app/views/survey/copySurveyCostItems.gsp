@@ -29,7 +29,7 @@ ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 

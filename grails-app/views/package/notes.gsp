@@ -20,7 +20,7 @@
                 <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <semui:modeSwitch controller="package" action="show" params="${params}"/>
@@ -31,9 +31,9 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
 
-    <g:render template="/templates/notes/table" model="${[instance: packageInstance, redirect: 'notes']}"/>
+    <laser:render template="/templates/notes/table" model="${[instance: packageInstance, redirect: 'notes']}"/>
 
 </body>
 </html>

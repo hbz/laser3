@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
 <laser:serviceInjection />
 
-<g:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -116,6 +116,6 @@
     </table>
 </div>
 
-<g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+<laser:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
 
 

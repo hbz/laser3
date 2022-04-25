@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -77,7 +77,7 @@
         <div class="four fields">
 
             <% /* 2-1 and 2-2 */ %>
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             <%--
                         <!-- 2-1 -->
                         <div class="field disabled">

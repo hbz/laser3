@@ -28,7 +28,7 @@
             <td>${counter++}</td>
             <td>
                 <!-- START TEMPLATE -->
-                <g:render template="/templates/title_short"
+                <laser:render template="/templates/title_short"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->
@@ -36,7 +36,7 @@
 
             <td class="coverageStatements la-js-responsive-table la-tableCard">
 
-                <g:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
+                <laser:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
 
             </td>
             <td>

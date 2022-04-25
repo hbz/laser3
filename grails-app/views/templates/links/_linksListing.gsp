@@ -78,7 +78,7 @@
                                     </g:if>
                                 </g:else>
 
-                                <g:render template="/templates/links/subLinksModal"
+                                <laser:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
                                                     tmplCss: 'icon blue la-selectable-button la-popup-tooltip la-delay',
@@ -126,7 +126,7 @@
                                 <tr>
                                     <td style="border-top: none; padding:0" colspan="3">
 
-                                            <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
+                                            <laser:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
 
                                     </td>
                                 </tr>
@@ -177,7 +177,7 @@
                 ]
             }
         %>
-        <g:render template="/templates/links/subLinksModal"
+        <laser:render template="/templates/links/subLinksModal"
                   model="${model}" />
     </div>
 </div>

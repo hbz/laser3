@@ -7,10 +7,10 @@
 
 <body>
 
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
@@ -19,14 +19,14 @@
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-    <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
-    <g:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

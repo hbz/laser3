@@ -5,7 +5,7 @@
         <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
 </head>
 <body>
-    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
@@ -14,7 +14,7 @@
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
 
       <table  class="ui celled la-js-responsive-table la-table table">

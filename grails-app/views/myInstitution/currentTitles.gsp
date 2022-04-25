@@ -71,7 +71,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 
 <semui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
@@ -239,7 +239,7 @@
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
                                 <!-- START TEMPLATE -->
-                                <g:render template="/templates/title_short"
+                                <laser:render template="/templates/title_short"
                                           model="${[ie         : null, tipp: tipp,
                                                     showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                 <!-- END TEMPLATE -->
@@ -268,7 +268,7 @@
 
                                         <div class="eight wide centered column coverageStatements la-tableCard">
 
-                                            <g:render template="/templates/tipps/coverages"
+                                            <laser:render template="/templates/tipps/coverages"
                                                       model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                         </div>
@@ -352,7 +352,7 @@
 </div>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </semui:debugInfo>
 
 </body>

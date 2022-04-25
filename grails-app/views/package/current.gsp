@@ -68,16 +68,16 @@
         <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
     </semui:exportDropdownItem>--%>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${packageInstance.name}</h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 
 <%--<sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
-    <g:render template="/templates/pendingChanges"
+    <laser:render template="/templates/pendingChanges"
               model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': packageInstance]}"/>
 </sec:ifAnyGranted>--%>
 
@@ -88,7 +88,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="column">
-            <g:render template="/templates/filter/tipp_ieFilter"/>
+            <laser:render template="/templates/filter/tipp_ieFilter"/>
         </div>
     </div>
 
@@ -99,7 +99,7 @@
                     class="detail">${num_tipp_rows}</div>
             </div>
 
-            <g:render template="/templates/tipps/table"
+            <laser:render template="/templates/tipps/table"
                       model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
         </div>
     </div>
@@ -112,7 +112,7 @@
 </g:if>
 
 
-<g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
+<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.selectAll = function () {

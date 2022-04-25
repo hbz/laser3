@@ -18,7 +18,7 @@
 
 <semui:messages data="${flash}" />
 
-<g:render template="/templates/filter/platformFilter"/>
+<laser:render template="/templates/filter/platformFilter"/>
 
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -91,7 +91,7 @@
 </table>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
 </body>

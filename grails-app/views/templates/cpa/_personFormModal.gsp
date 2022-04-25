@@ -302,7 +302,7 @@
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
                                 var="address">
-                            <g:render template="/templates/cpa/address"
+                            <laser:render template="/templates/cpa/address"
                                       model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
                         </g:each>
                     </div>
@@ -324,7 +324,7 @@
 
                 <br />
                 <br />
-                <g:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
+                <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
 
                 <div id="addressElements"></div>
             </g:if>
@@ -342,7 +342,7 @@
                             <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
                             <h2 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h2>
                             <div id="${propertyWrapper}">
-                                <g:render template="/templates/properties/private" model="${[
+                                <laser:render template="/templates/properties/private" model="${[
                                         prop_desc       : PropertyDefinition.PRS_PROP,
                                         ownobj          : personInstance,
                                         propertyWrapper: "${propertyWrapper}",

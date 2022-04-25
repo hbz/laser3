@@ -270,7 +270,7 @@
         </div>
 
         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
+            <laser:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
         </g:if>
 
 
@@ -396,7 +396,7 @@
 
                                         <g:if test="${visibleOrgRelations}">
 
-                                            <g:render template="/templates/links/orgLinksAsList"
+                                            <laser:render template="/templates/links/orgLinksAsList"
                                                       model="${[roleLinks    : visibleOrgRelations,
                                                                 roleObject   : subscription,
                                                                 roleRespValue: 'Specific subscription editor',
@@ -417,7 +417,7 @@
                                     <div id="subscription-properties" style="margin: 1em 0">
                                         <g:set var="editable" value="${false}" scope="request"/>
                                         <g:set var="editable" value="${false}" scope="page"/>
-                                        <g:render template="/subscription/properties" model="${[
+                                        <laser:render template="/subscription/properties" model="${[
                                                 subscription: subscription, calledFromSurvey: true
                                         ]}"/>
 
@@ -505,30 +505,30 @@
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">
-                    <g:render template="/templates/tasks/card"
+                    <laser:render template="/templates/tasks/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
 
                 </div>
 
                 <div id="container-notes">
-                    <g:render template="/templates/notes/card"
+                    <laser:render template="/templates/notes/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
                 </div>
 
                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
-                    <g:render template="/templates/tasks/modal_create"
+                    <laser:render template="/templates/tasks/modal_create"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 
                 </g:if>
                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                    <g:render template="/templates/notes/modal_create"
+                    <laser:render template="/templates/notes/modal_create"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </g:if>
             </g:if>
 
             <div id="container-documents">
-                <g:render template="/survey/cardDocuments"
+                <laser:render template="/survey/cardDocuments"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
 
@@ -851,12 +851,12 @@
                 <g:if test="${costItemSums.ownCosts}">
                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                         <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
-                        <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
+                        <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
                     <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
-                    <g:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
+                    <laser:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
                 </g:if>
             </div>
         </div>

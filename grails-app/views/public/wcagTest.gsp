@@ -13,7 +13,7 @@
         <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>
 
         <h2 class="ui dividing  header">1. Hauptnavigation</h2>
-        <g:render template="templatesWCAGTest/mainNavigation" />
+        <laser:render template="templatesWCAGTest/mainNavigation" />
 
         <h2 class="ui dividing header">2. Brotkrumennavigation</h2>
         <semui:breadcrumbs>
@@ -21,16 +21,16 @@
         </semui:breadcrumbs>
 
         <h2 class="ui dividing header">3. Buttons</h2>
-        <g:render template="templatesWCAGTest/button" />
+        <laser:render template="templatesWCAGTest/button" />
 
         <h2 class="ui dividing header">4. Tooltips</h2>
-        <g:render template="templatesWCAGTest/tooltip" />
+        <laser:render template="templatesWCAGTest/tooltip" />
 
         <h2 class="ui dividing  header">5. Einfache Datentabelle</h2>
-        <g:render template="templatesWCAGTest/simpleTable" />
+        <laser:render template="templatesWCAGTest/simpleTable" />
 
         <h2 class="ui dividing  header">6. Formulare</h2>
-        <g:render template="templatesWCAGTest/form" />
+        <laser:render template="templatesWCAGTest/form" />
 
 
 %{--        <h2 class="ui dividing header">7. Icons</h2>
@@ -50,21 +50,21 @@
 
 
         <h2 class="ui dividing header">7. Paginierung</h2>
-        <g:render template="templatesWCAGTest/pagination" />
+        <laser:render template="templatesWCAGTest/pagination" />
 
         <h2 class="ui dividing header">8. X-Editable</h2>
-        <g:render template="templatesWCAGTest/xeditable" />
+        <laser:render template="templatesWCAGTest/xeditable" />
 
 
         <h2 class="ui dividing header">9. Unternavigation - Alternativ zur Registernavigation</h2>
-        <g:render template="templatesWCAGTest/submenue" />
+        <laser:render template="templatesWCAGTest/submenue" />
 
         <h2 class="ui dividing header">10. Datepicker</h2>
-        <g:render template="templatesWCAGTest/datepicker" />
+        <laser:render template="templatesWCAGTest/datepicker" />
 
         <h2 class="ui dividing header">11. Modals</h2>
         <h3 class="ui dividing header">11.1. Confimation Modal</h3>
-        <g:render template="templatesWCAGTest/modal" />
+        <laser:render template="templatesWCAGTest/modal" />
 
 
 

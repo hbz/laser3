@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Links; de.laser.Subscription; de.laser.storage.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/timeline/base.part1" />
+<laser:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <%
     List orgSubList = []
@@ -71,5 +71,5 @@
     </table>
 </div>
 
-<g:render template="/subscription/reporting/details/loadJavascript"  />
-<g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+<laser:render template="/subscription/reporting/details/loadJavascript"  />
+<laser:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

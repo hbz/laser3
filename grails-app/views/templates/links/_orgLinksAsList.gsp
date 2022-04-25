@@ -70,7 +70,7 @@
                                     <i class="address plus icon"></i>
                                 </button>
 
-                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
+                        <laser:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,
                                           'roleObject': roleObject,
@@ -110,13 +110,11 @@
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/templates/cpa/contact" model="${[
                                                             contact             : email,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
-                                                    ]}">
-
-                                                        </g:render>
+                                                    ]}" />
                                                     </g:each>
                                                 </div>
                                             </div>
@@ -137,12 +135,11 @@
                                                             resp,
                                                             RDStore.CCT_EMAIL
                                                     )}" var="email">
-                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/templates/cpa/contact" model="${[
                                                                 contact             : email,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
-                                                        ]}">
-                                                        </g:render>
+                                                        ]}" />
                                                     </g:each>
                                                 </div>
                                                 <g:if test="${editmode}">
@@ -187,13 +184,11 @@
                                                             func,
                                                             RDStore.CCT_EMAIL
                                                     )}" var="email">
-                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/templates/cpa/contact" model="${[
                                                                 contact             : email,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
-                                                        ]}">
-
-                                                        </g:render>
+                                                        ]}" />
                                                     </g:each>
                                                 </div>
                                             </div>
@@ -214,13 +209,11 @@
                                                     resp,
                                                     RDStore.CCT_EMAIL
                                                     )}" var="email">
-                                                        <g:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/templates/cpa/contact" model="${[
                                                                 contact             : email,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
-                                                        ]}">
-
-                                                        </g:render>
+                                                        ]}" />
                                                     </g:each>
                                                 </div>
                                                 <g:if test="${editmode}">

@@ -57,26 +57,26 @@
 
 <body>
 %{-- help sidebar --}%
-<g:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/help_subscription_show"/>
 <section id="example">
     %{-- ICONS  --}%
-    <g:render template="frontend_icons" />
+    <laser:render template="frontend_icons" />
     %{-- DROPDOWNS --}%
-    <g:render template="frontend_dropdowns" />
+    <laser:render template="frontend_dropdowns" />
     %{-- DECKSAVER --}%
-    <g:render template="frontend_decksaver" />
+    <laser:render template="frontend_decksaver" />
     %{-- TOGGLE BUTTONS  --}%
-    <g:render template="frontend_toggleButtons" />
+    <laser:render template="frontend_toggleButtons" />
     %{-- MODALS  --}%
-    <g:render template="frontend_modals" />
+    <laser:render template="frontend_modals" />
     %{-- CONFIRMATION MODAL  --}%
-    <g:render template="frontend_confirmationModals" />
+    <laser:render template="frontend_confirmationModals" />
     %{-- RESPONSIBLE TABELLEN  --}%
-    <g:render template="frontend_responsibleTable" />
+    <laser:render template="frontend_responsibleTable" />
     %{-- LABELS --}%
-    <g:render template="frontend_labels" />
+    <laser:render template="frontend_labels" />
 </section>
 %{-- OFFENE FRAGEN WCAG  --}%
-<g:render template="frontend_wcag" />
+<laser:render template="frontend_wcag" />
 </body>
 </html>

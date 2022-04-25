@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
-<g:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -110,6 +110,6 @@
     </table>
 </div>
 
-<g:render template="/templates/copyEmailaddresses" model="[modalID: 'detailsCopyEmailModal', orgList: list]" />
+<laser:render template="/templates/copyEmailaddresses" model="[modalID: 'detailsCopyEmailModal', orgList: list]" />
 
-<g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+<laser:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

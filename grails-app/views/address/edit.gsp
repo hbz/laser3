@@ -32,7 +32,7 @@
 					<g:form class="ui form" action="edit" id="${addressInstance.id}" >
 						<g:hiddenField name="version" value="${addressInstance.version}" />
 						<fieldset>
-							<g:render template="form"/>
+							<laser:render template="form"/>
 							
 							<div class="ui form-actions">
 								<button type="submit" class="ui button">

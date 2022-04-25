@@ -13,7 +13,7 @@
   </semui:breadcrumbs>
 
   <semui:controlButtons>
-      <g:render template="actions"/>
+      <laser:render template="actions"/>
   </semui:controlButtons>
 
   <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.packages')}
@@ -22,7 +22,7 @@
 
     <semui:messages data="${flash}" />
 
-  <g:render template="/templates/filter/javascript" />
+  <laser:render template="/templates/filter/javascript" />
   <semui:filter showFilterButton="true">
           <g:form action="list" method="get" class="ui form">
 

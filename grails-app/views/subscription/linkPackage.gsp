@@ -18,7 +18,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
@@ -35,7 +35,7 @@
 
 
 <g:if test="${!error}">
-    <g:render template="/templates/filter/packageGokbFilter"/>
+    <laser:render template="/templates/filter/packageGokbFilter"/>
 </g:if>
 
 <semui:messages data="${flash}"/>

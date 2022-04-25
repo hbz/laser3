@@ -20,7 +20,7 @@
     ${platformInstance.name}
 </h1>
 
-<g:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
+<laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <semui:messages data="${flash}"/>
 
@@ -93,11 +93,11 @@
                     <h2 class="ui header">
                         <g:message code="platform.stats.header"/>
                     </h2>
-                    <g:render template="/templates/platformStatsDetails" />
+                    <laser:render template="/templates/platformStatsDetails" />
                 </div>
             </div>
             <div id="new-dynamic-properties-block">
-                <g:render template="properties" model="${[ platform: platformInstance ]}"/>
+                <laser:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->
             <div class="ui card">
                 <div class="content">
@@ -131,7 +131,7 @@
 
 
                     <div class="ui la-vertical buttons">
-                        <g:render template="/templates/links/accessPointLinksModal"
+                        <laser:render template="/templates/links/accessPointLinksModal"
                                   model="${[tmplText:message(code:'platform.link.accessPoint.button.label'),
                                             tmplID:'addLink',
                                             tmplButtonText:message(code:'platform.link.accessPoint.button.label'),

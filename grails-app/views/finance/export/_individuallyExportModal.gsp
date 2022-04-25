@@ -8,7 +8,7 @@
 
     <g:form action="financialsExport" controller="finance" params="${params+[id:params.id, exportClickMeExcel: true]}">
 
-        <g:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: (subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: (subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))]}"/>
 
     </g:form>
 

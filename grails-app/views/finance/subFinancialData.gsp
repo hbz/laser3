@@ -10,7 +10,7 @@
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:debugInfo>
-            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </semui:debugInfo>
         <semui:breadcrumbs>
             <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
@@ -85,21 +85,21 @@
 
         <h1 class="ui icon header la-noMargin-top">
             <semui:headerTitleIcon type="Subscription"/>
-            <g:render template="/subscription/iconSubscriptionIsChild"/>
+            <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
             ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
         </h1>
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-        <g:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
+        <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions || params.orgBasicMemberView}">
-            <g:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
+            <laser:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
         </g:if>
 
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
+        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
 
-        <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>
 </html>

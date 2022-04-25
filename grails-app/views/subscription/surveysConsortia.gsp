@@ -10,10 +10,10 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
@@ -24,7 +24,7 @@
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 
 <semui:messages data="${flash}"/>

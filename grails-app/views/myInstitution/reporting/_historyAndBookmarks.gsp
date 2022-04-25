@@ -45,7 +45,7 @@
                                     <strong>${BaseConfig.getFilterLabel(meta.filter.toString())}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
                                 </div>
                                 <div class="description">
-                                    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
+                                    <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
                                 </div>
                                 <div class="footer" style="color:grey">
                                     <%= filterCache.result %>
@@ -118,7 +118,7 @@
                                     </g:if>
                                 </div>
                                 <div class="description">
-                                    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: fav.getParsedLabels(), simple: true]}" />
+                                    <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: fav.getParsedLabels(), simple: true]}" />
                                 </div>
                                 <div class="footer">
                                     <semui:xEditable owner="${fav}" field="description" overwriteEditable="true" />

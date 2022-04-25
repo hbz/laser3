@@ -24,17 +24,17 @@
 <body>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-    %{--<g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
-    %{--<g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+    %{--<laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
+    %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </semui:debugInfo>
 
-<g:render template="breadcrumb"
+<laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 <g:if test="${editable_identifier || editable_customeridentifier}">
     <semui:controlButtons>
-        <g:render template="actions" model="${[
+        <laser:render template="actions" model="${[
                 org: orgInstance,
                 user: user,
                 editable: (editable_identifier || editable_customeridentifier),
@@ -47,7 +47,7 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+<laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -76,11 +76,11 @@
             </tr>
             </thead>
             <tbody>
-            <g:render template="idTableRow"
+            <laser:render template="idTableRow"
                       model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
             />
             <g:if test="${orgInstance.gokbId}">
-                <g:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>
+                <laser:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>
                 <g:set var="globalCount" value="${2}"/>
             </g:if>
             <g:else>
@@ -88,7 +88,7 @@
             </g:else>
             <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
                 <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=globalCount}"/></g:if>
-                <g:render template="idTableRow"
+                <laser:render template="idTableRow"
                           model="[orgInstance:orgInstance, tableRowNr:rowno+1, id:id, editable:editable_identifier]"
                 />
             </g:each>
@@ -98,7 +98,7 @@
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${params.tab == 'customerIdentifiers'}">
-            <g:render template="/templates/filter/javascript" />
+            <laser:render template="/templates/filter/javascript" />
             <semui:filter showFilterButton="true">
                 <g:form controller="organisation" action="ids" class="ui small form" method="get">
                     <g:hiddenField name="tab" value="customerIdentifiers"/>

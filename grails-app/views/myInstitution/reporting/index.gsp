@@ -18,7 +18,7 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <g:render template="/templates/reporting/helper" />%{--js--}%
+        <laser:render template="/templates/reporting/helper" />%{--js--}%
 
         <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
@@ -125,7 +125,7 @@
 
         <div id="filter-wrapper">
             <g:if test="${filter}">
-                <g:render template="/myInstitution/reporting/filter/form" />
+                <laser:render template="/myInstitution/reporting/filter/form" />
             </g:if>
         </div>
 
@@ -137,7 +137,7 @@
 
             <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>
 
-            <g:render template="/myInstitution/reporting/query/${filter}" />
+            <laser:render template="/myInstitution/reporting/query/${filter}" />
 
             <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
 

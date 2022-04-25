@@ -13,7 +13,7 @@
                             <div class="fields" style="margin-bottom: 0">
 
 
-                                <g:render template="/templates/properties/genericFilter"
+                                <laser:render template="/templates/properties/genericFilter"
                                           model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
 
                                 <div class="field la-field-noLabel" >
@@ -28,7 +28,7 @@
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
                             <div class="fields" style="margin-bottom: 0">
-                                <g:render template="/templates/properties/genericFilter"
+                                <laser:render template="/templates/properties/genericFilter"
                                           model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
 
                                 <div class="field la-field-noLabel">
@@ -49,7 +49,7 @@
             <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" style="margin-bottom: 0"
                     params="[tab: params.tab]">
                 <div class="two fields" style="margin-bottom: 0">
-                    <g:render template="/templates/properties/genericFilter"
+                    <laser:render template="/templates/properties/genericFilter"
                               model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
 
                     <div class="field la-field-noLabel">
@@ -69,7 +69,7 @@
                     <h3 class="ui header">${message(code: 'subscription.properties.consortium')}</h3>
 
                     <div id="member_props_div">
-                        <g:render template="/templates/properties/members" model="${[
+                        <laser:render template="/templates/properties/members" model="${[
                                 prop_desc       : PropertyDefinition.SUB_PROP,
                                 ownobj          : subscription,
                                 custom_props_div: "member_props_div"]}"/>
@@ -348,7 +348,7 @@
     <g:set var="editableOld" value="${false}"/>
 
     <g:if test="${controllerName == "myInstitution"}">
-        <g:render template="/templates/subscription/subscriptionFilter"/>
+        <laser:render template="/templates/subscription/subscriptionFilter"/>
     </g:if>
 
 

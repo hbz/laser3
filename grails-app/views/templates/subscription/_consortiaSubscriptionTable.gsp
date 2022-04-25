@@ -25,7 +25,7 @@
                 <td>
                     <g:if test="${chosenOrgCPAs}">
                         <g:each in="${chosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
+                            <laser:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
                         </g:each>
                     </g:if>
                 </td>

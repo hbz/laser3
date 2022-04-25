@@ -2,7 +2,7 @@
     <semui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
-            <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView]"/>
+            <laser:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView]"/>
             <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
@@ -28,7 +28,7 @@
             <g:each in="${dataToDisplay}" var="view">
                 <g:if test="${view == 'own'}">
                     <div data-tab="own" class="ui bottom attached tab">
-                        <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own, customerType: 'OWNER', showView: view, offset: offsets.ownOffset]"/>
+                        <laser:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own, customerType: 'OWNER', showView: view, offset: offsets.ownOffset]"/>
                     </div>
                 </g:if>
                 <g:if test="${view in ['cons','consAtSubscr']}">
@@ -53,7 +53,7 @@
 
                             <g:form action="processCostItemsBulk" name="editCost_${idSuffix}" method="post" class="ui form">
                                 <div id="bulkCostItems" class="hidden">
-                                    <g:render template="costItemInput" />
+                                    <laser:render template="costItemInput" />
                                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
                                     <div class="fields la-forms-grid">
                                         <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
@@ -87,17 +87,17 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
-                                <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                             </g:form>
                         </g:if>
                         <g:else>
-                            <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                            <laser:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                         </g:else>
                     </div>
                 </g:if>
                 <g:if test="${view == 'subscr'}">
                     <div data-tab="subscr" class="ui bottom attached tab">
-                        <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: false, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
+                        <laser:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: false, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
                     </div>
                 </g:if>
             </g:each>

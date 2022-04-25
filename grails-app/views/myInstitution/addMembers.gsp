@@ -45,7 +45,7 @@
                 </semui:exportDropdownItem>
             </g:else>
         </semui:exportDropdown>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>--%>
     
     <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
@@ -54,7 +54,7 @@
 
     <semui:filter>
         <g:form action="addMembers" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true
@@ -65,7 +65,7 @@
     <g:if test="${availableOrgs}">
     <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">
 
-        <g:render template="/templates/filter/orgFilterTable"
+        <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
                           tmplShowCheckbox: true,
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType']

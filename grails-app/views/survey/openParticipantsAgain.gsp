@@ -26,7 +26,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -36,7 +36,7 @@
 
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -87,7 +87,7 @@
 
         <semui:form>
 
-                <g:render template="evaluationParticipantsView" model="[showCheckbox: true,
+                <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                         showOpenParticipantsAgainButtons: true,
                                                                         processAction: 'processOpenParticipantsAgain',
                                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>

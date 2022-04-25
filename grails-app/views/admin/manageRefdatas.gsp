@@ -9,7 +9,7 @@
 
     <body>
         <semui:debugInfo>
-            <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
+            <laser:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
         </semui:debugInfo>
 
 		<semui:breadcrumbs>

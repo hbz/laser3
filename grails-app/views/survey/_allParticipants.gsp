@@ -3,7 +3,7 @@
 <g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig.orgs.org.id) ?: null}" />
 
 ${surveyConfigSubOrgs?.id}
-    <g:render template="/templates/filter/orgFilterTable"
+    <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyConfigOrgs,
                       tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubInfo'],
                       surveyConfig: surveyConfig

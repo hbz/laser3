@@ -27,7 +27,7 @@
         <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
                                    message="renewalEvaluation.exportRenewal"/>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -35,7 +35,7 @@ ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -220,7 +220,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
                     total="${orgsContinuetoSubscription.size()}"/></h4>
 
-            <g:render template="renewalResult" model="[participantResults: orgsContinuetoSubscription]"/>
+            <laser:render template="renewalResult" model="[participantResults: orgsContinuetoSubscription]"/>
         </div>
 
 
@@ -228,14 +228,14 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.newOrgstoSubscription.label')} <semui:totalNumber
                     total="${newOrgsContinuetoSubscription.size()}"/></h4>
 
-            <g:render template="renewalResult" model="[participantResults: newOrgsContinuetoSubscription]"/>
+            <laser:render template="renewalResult" model="[participantResults: newOrgsContinuetoSubscription]"/>
         </div>
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithTermination">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withTermination.label')} <semui:totalNumber
                     total="${orgsWithTermination.size()}"/></h4>
 
-            <g:render template="renewalResult" model="[participantResults: orgsWithTermination]"/>
+            <laser:render template="renewalResult" model="[participantResults: orgsWithTermination]"/>
         </div>
 
 
@@ -243,7 +243,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithoutResult.label')} (${message(code: 'surveys.tabs.termination')})<semui:totalNumber
                     total="${orgsWithoutResult.size()}"/></h4>
 
-            <g:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
+            <laser:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
         </div>
 
 
@@ -370,7 +370,7 @@ ${surveyInfo.name}
 
     </g:form>
 
-    <g:render template="export/individuallyExportRenewModal" model="[modalID: 'individuallyExportModal']" />
+    <laser:render template="export/individuallyExportRenewModal" model="[modalID: 'individuallyExportModal']" />
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

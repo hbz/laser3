@@ -16,7 +16,7 @@
 
     <div class="content">
         <div id="objIdentifierPanel">
-            <g:render template="/templates/meta/identifierList" model="[object: object, editable: editable, objectIds: objectIds, count: count]"/>
+            <laser:render template="/templates/meta/identifierList" model="[object: object, editable: editable, objectIds: objectIds, count: count]"/>
         </div>
         <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
             <g:if test="${editable && nsList}">

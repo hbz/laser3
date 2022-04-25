@@ -39,7 +39,7 @@
         </semui:exportDropdown>
     </g:if>
 
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -50,7 +50,7 @@
 
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -103,10 +103,10 @@
 
 </div>
 <div class="ui bottom attached tab segment active">
-    <g:render template="evaluationParticipantsView" model="[showCheckbox: false,
+    <laser:render template="evaluationParticipantsView" model="[showCheckbox: false,
                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 </div>
-<g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+<laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 </g:else>
 

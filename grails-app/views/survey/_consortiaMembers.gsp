@@ -1,12 +1,12 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.storage.RDStore;" %>
 <br />
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 
 <semui:filter showFilterButton="true">
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-        <g:render template="/templates/filter/orgFilter"
+        <laser:render template="/templates/filter/orgFilter"
                   model="[
                           tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
                           tmplConfigFormFilter: true
@@ -18,7 +18,7 @@
 <g:form action="addSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
-    <g:render template="/templates/filter/orgFilterTable"
+    <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
                       tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                       tmplDisableOrgIds: surveyConfig.orgs?.org?.id,

@@ -7,10 +7,10 @@
     <title>${message(code:'laser')} : <g:message code="user.edit.label" /></title>
 </head>
 <body>
-        <g:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
+        <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
         <semui:controlButtons>
-            <g:render template="/user/global/actions" />
+            <laser:render template="/user/global/actions" />
         </semui:controlButtons>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="user.edit.label" /></h1>
@@ -152,7 +152,7 @@
         <g:if test="${manipulateAffiliations}">
             <div class="sixteen wide column">
                 <div class="la-inline-lists">
-                    <g:render template="/templates/user/membership_table" model="[userInstance: user]" />
+                    <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
                 </div>
             </div>
         </g:if>

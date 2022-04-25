@@ -19,7 +19,7 @@
 </h1>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 
 

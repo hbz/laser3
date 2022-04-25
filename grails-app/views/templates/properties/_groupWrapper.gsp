@@ -21,7 +21,7 @@
 
         <div id="grouped_custom_props_div_${propDefGroup.id}">
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
-            <g:render template="/templates/properties/group" model="${[
+            <laser:render template="/templates/properties/group" model="${[
                     propDefGroup: propDefGroup,
                     propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,

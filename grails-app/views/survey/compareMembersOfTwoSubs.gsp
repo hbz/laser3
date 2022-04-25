@@ -49,7 +49,7 @@ ${surveyInfo.name}
 
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
 </g:if>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
@@ -478,7 +478,7 @@ ${surveyInfo.name}
 
         <g:if test="${surveyConfig.subSurveyUseForTransfer && parentSuccessorSubscription}">
 
-            <g:render template="transferParticipantsModal"/>
+            <laser:render template="transferParticipantsModal"/>
 
         </g:if>
 

@@ -98,6 +98,6 @@ ${AppUtils.getConfig('grails.serverURL') + surveyUrl}
 <br />
 <br />
 ${message(code: 'email.profile.settings', locale: language)}
-<g:render template="/mailTemplates/html/signature" />
+<laser:render template="/mailTemplates/html/signature" />
 </body>
 </html>

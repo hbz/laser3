@@ -169,13 +169,11 @@
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
-                            <g:render template="/templates/cpa/contact" model="${[
+                            <laser:render template="/templates/cpa/contact" model="${[
                                     contact             : contact,
                                     tmplShowDeleteButton: true,
                                     overwriteEditable   : false
-                            ]}">
-
-                            </g:render>
+                            ]}" />
                         </g:each>
                     </div>
                 </td>
@@ -184,7 +182,7 @@
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                            <g:render template="/templates/cpa/address" model="${[
+                            <laser:render template="/templates/cpa/address" model="${[
                                     address             : address,
                                     tmplShowDeleteButton: true,
                                     editable:             editable

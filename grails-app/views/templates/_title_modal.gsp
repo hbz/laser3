@@ -2,7 +2,7 @@
 <semui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
-    <g:render template="/templates/title_long"
+    <laser:render template="/templates/title_long"
               model="${[ie: ie, tipp: tipp,
                         showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
     <br>
@@ -21,7 +21,7 @@
         </g:else>
 
         <div class="la-icon-list">
-            <g:render template="/templates/tipps/coverages"
+            <laser:render template="/templates/tipps/coverages"
                       model="${[ie: ie, tipp: ie.tipp]}"/>
         </div>
 
@@ -132,7 +132,7 @@
         </g:else>
 
         <div class="la-icon-list">
-            <g:render template="/templates/tipps/coverages"
+            <laser:render template="/templates/tipps/coverages"
                       model="${[ie: null, tipp: tipp]}"/>
         </div>
         <br/>

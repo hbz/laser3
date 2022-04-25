@@ -27,7 +27,7 @@
                     params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -38,7 +38,7 @@
 
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -125,12 +125,12 @@
             <br />
             <br />
 
-            <g:render template="/templates/filter/javascript" />
+            <laser:render template="/templates/filter/javascript" />
 
             <semui:filter showFilterButton="true">
                 <g:form action="surveyCostItems" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-                <g:render template="/templates/filter/orgFilter"
+                <laser:render template="/templates/filter/orgFilter"
                 model="[
                                   tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
                                   tmplConfigFormFilter: true
@@ -150,7 +150,7 @@
 
                 <div class="ui basic segment">
 
-                    <g:render template="costItemInputSurvey" />
+                    <laser:render template="costItemInputSurvey" />
 
                     <g:if test="${params.tab == 'selectedSubParticipants' }">
                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
@@ -203,7 +203,7 @@
                         <br />
                         <br />
 
-                        <g:render template="/templates/filter/orgFilterTable"
+                        <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
                                           tmplShowCheckbox: true,
                                           tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
@@ -227,7 +227,7 @@
                         <br />
                         <br />
 
-                        <g:render template="/templates/filter/orgFilterTable"
+                        <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
                                           tmplShowCheckbox: true,
                                           tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
@@ -259,7 +259,7 @@
                     <br />
                     <br />
 
-                    <g:render template="/templates/filter/orgFilterTable"
+                    <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasAccess,
                                       tmplShowCheckbox: true,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
@@ -284,7 +284,7 @@
                     <br />
                     <br />
 
-                    <g:render template="/templates/filter/orgFilterTable"
+                    <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: true,
                                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItem'],

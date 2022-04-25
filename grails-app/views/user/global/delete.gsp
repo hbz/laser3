@@ -8,10 +8,10 @@
     <title>${message(code:'laser')} : ${message(code:'user.delete.label')}</title>
 </head>
 <body>
-    <g:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
+    <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="/user/global/actions" />
+        <laser:render template="/user/global/actions" />
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="user.delete.label" /></h1>

@@ -20,13 +20,13 @@
 
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-  <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
+  <laser:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
   <h2 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h2>
   <semui:messages data="${flash}"/>
 
   <div id="details">
-    <g:render template="createAccessPoint" model="[accessMethod: accessMethod, availableOptions : availableOptions]"/>
+    <laser:render template="createAccessPoint" model="[accessMethod: accessMethod, availableOptions : availableOptions]"/>
   </div>
 
 </body>

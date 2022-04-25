@@ -9,14 +9,14 @@
 </head>
 
 <body>
-    <g:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
         ${subscription.name}
     </h1>
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
-        <g:render template="nav" />
+        <laser:render template="nav" />
     </g:if>
 
     <g:if test="${delResult}">

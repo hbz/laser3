@@ -43,7 +43,7 @@
                         <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_F"
                                value="Funktionen">
-                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
                                                                           tmplId: 'prsRoleFormModal' + personRole.id + '_F',
                                                                           tmplRoleType: 'Funktion',
                                                                           roleType: PersonRole.TYPE_FUNCTION,
@@ -54,7 +54,7 @@
                         <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_P"
                                value="Positionen">
-                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
                                                                           tmplId: 'prsRoleFormModal' + personRole.id + '_P',
                                                                           tmplRoleType: 'Funktion',
                                                                           roleType: PersonRole.TYPE_POSITION,
@@ -67,7 +67,7 @@
                         <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${personRole.id}"
                                value="${message(code: 'person.contacts.label')}">
-                        <g:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
+                        <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
                     </g:if>
 
                     <g:if test="${tmplShowAddAddresses}">
@@ -89,7 +89,7 @@
             <g:each in="${person.contacts.toSorted()}" var="contact">
                 <%-- contentType should be made not nullable ... subject of kanban! --%>
                 <g:if test="${contact.contentType && tmplConfigShow.contains(contact.contentType.value)}">
-                    <g:render template="/templates/cpa/contact" model="${[
+                    <laser:render template="/templates/cpa/contact" model="${[
                             overwriteEditable   : editable,
                             contact             : contact,
                             tmplShowDeleteButton: tmplShowDeleteButton
@@ -101,7 +101,7 @@
         <g:if test="${tmplConfigShow.contains('address') && person.addresses}">
 
             <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                <g:render template="/templates/cpa/address"
+                <laser:render template="/templates/cpa/address"
                           model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 

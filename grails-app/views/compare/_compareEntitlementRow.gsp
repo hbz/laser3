@@ -7,7 +7,7 @@
     <tr>
         <td>
             <!-- START TEMPLATE -->
-            <g:render template="/templates/title_short"
+            <laser:render template="/templates/title_short"
                       model="${[ie: null, tipp: tipp,
                                 showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
             <!-- END TEMPLATE -->
@@ -18,7 +18,7 @@
                 <g:each var="ieValue" in="${ieValues.get(object)}">
                     <td class="coverageStatements la-tableCard" >
 
-                        <g:render template="/templates/tipps/coverages" model="${[ie: ieValue, tipp: ieValue.tipp]}"/>
+                        <laser:render template="/templates/tipps/coverages" model="${[ie: ieValue, tipp: ieValue.tipp]}"/>
 
                     </td>
                     <td>

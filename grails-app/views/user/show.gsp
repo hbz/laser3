@@ -6,7 +6,7 @@
     <title>${message(code:'laser')} : ${user.display}</title>
 </head>
 <body>
-      <g:render template="breadcrumb" model="${[ params:params ]}"/>
+      <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
       <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${user.username} : ${user.displayName ?: 'No username'}</h1>
 

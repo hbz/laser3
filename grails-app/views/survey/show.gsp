@@ -11,7 +11,7 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
     <semui:exportDropdown>
@@ -26,7 +26,7 @@
         </semui:exportDropdownItem>
         </g:if>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -34,7 +34,7 @@
 </h1>
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -190,7 +190,7 @@
             <g:if test="${surveyConfig}">
                 <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
 
-                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
+                    <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
                                                                 subscription: surveyConfig.subscription,
                                                                 tasks: tasks,
@@ -201,7 +201,7 @@
 
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
-                    <g:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
+                    <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
                                                                     costItemSums: costItemSums,
                                                                     subscription: surveyConfig.subscription,
                                                                     tasks: tasks,
@@ -234,7 +234,7 @@
     </div><!-- .twelve -->
 
 %{-- <aside class="four wide column la-sidekick">
-     <g:render template="asideSurvey" model="${[ownobj: surveyInfo, owntp: 'survey']}"/>
+     <laser:render template="asideSurvey" model="${[ownobj: surveyInfo, owntp: 'survey']}"/>
  </aside><!-- .four -->
 --}%
 </div><!-- .grid -->

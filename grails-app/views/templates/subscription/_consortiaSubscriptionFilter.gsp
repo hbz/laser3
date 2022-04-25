@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <%--<laser:serviceInjection />--%>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="four fields">
-            <g:render template="/templates/properties/genericFilter" model="[propList: filterPropList, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter" model="[propList: filterPropList, label:message(code: 'subscription.property.search')]"/>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <laser:select class="ui dropdown" name="form"

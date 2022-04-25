@@ -4,7 +4,7 @@
 <head>
     <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <g:render template="/templates/reporting/export/pdfStyle" />
+    <laser:render template="/templates/reporting/export/pdfStyle" />
     <style type="text/css">
     .queryChart {
         margin: 4em 0 0 0;

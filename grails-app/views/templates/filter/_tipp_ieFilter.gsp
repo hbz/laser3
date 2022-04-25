@@ -39,7 +39,7 @@
 
 </g:if>
 
-<g:render template="/templates/filter/javascript"/>
+<laser:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>

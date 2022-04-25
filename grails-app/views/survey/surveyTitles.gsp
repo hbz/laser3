@@ -11,11 +11,11 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
 
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -25,7 +25,7 @@
 
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -97,7 +97,7 @@
 
         <div class="row">
             <div class="column">
-                <g:render template="/templates/filter/tipp_ieFilter"/>
+                <laser:render template="/templates/filter/tipp_ieFilter"/>
             </div>
         </div>
 
@@ -153,7 +153,7 @@
                                 <td>${counter++}</td>
                                 <td>
                                     <!-- START TEMPLATE -->
-                                    <g:render template="/templates/title_short"
+                                    <laser:render template="/templates/title_short"
                                               model="${[ie: ie, tipp: ie.tipp,
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                                     <!-- END TEMPLATE -->
@@ -166,7 +166,7 @@
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
-                                    <g:render template="/templates/tipps/coverages"
+                                    <laser:render template="/templates/tipps/coverages"
                                               model="${[ie: ie, tipp: ie.tipp, overwriteEditable: false]}"/>
 
                                 </td>

@@ -13,11 +13,11 @@
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
 </semui:breadcrumbs>
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/> <g:message code="subscription.details.renewEntitlements.label" /></h1>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 
 <g:if test="${flash}">
@@ -30,8 +30,8 @@
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}" />
     <div class="ui grid">
         <div class="row">
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source"]}" />
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target"]}" />
+            <laser:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source"]}" />
+            <laser:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target"]}" />
         </div>
         <div class="row">
             <div class="sixteen wide column">

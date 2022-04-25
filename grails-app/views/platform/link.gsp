@@ -29,9 +29,9 @@
 </h1>
 
 <semui:messages data="${flash}" />
-<%--<g:render template="nav" />--%>
+<%--<laser:render template="nav" />--%>
 <div id="dynamicUpdate">
-  <g:render template="apLinkContent" model="result" />
+  <laser:render template="apLinkContent" model="result" />
 </div>
 </body>
 </html>

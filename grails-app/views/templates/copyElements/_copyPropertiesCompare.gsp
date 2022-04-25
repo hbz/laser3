@@ -9,7 +9,7 @@
 <body>
 <semui:form>
     <g:if test="${!fromSurvey && !isRenewSub}">
-        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+        <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
                 targetObject          : targetObject,
                 allObjects_readRights : allObjects_readRights,
@@ -23,7 +23,7 @@
         <g:if test="${sourceObject instanceof SurveyConfig}">
             <g:if test="${customProperties?.size() > 0 }">
                 <table class="ui celled table la-js-responsive-table la-table">
-                    <g:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'surveyconfig.properties'), sourceObject:sourceObject]" />
+                    <laser:render template="/templates/copyElements/propertyComparisonTableRow" model="[group:customProperties, key:message(code:'surveyconfig.properties'), sourceObject:sourceObject]" />
                 </table>
                 <div class="ui divider"></div>
             </g:if>
@@ -33,7 +33,7 @@
                 <div class="content">
                     <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextOrg.name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
-                        <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                        <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'surveyconfig.properties') + ': ' + contextService.getOrg().name]"/>
                     </table>
                 </div>
@@ -62,7 +62,7 @@
                         </h5>
 
                         <table class="ui celled table la-js-responsive-table la-table">
-                            <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                            <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                       model="[group: groupedProps.getValue().groupTree, key: groupedProps.getKey().name, propBinding: groupedProps.getValue().binding]"/>
                         </table>
 
@@ -85,7 +85,7 @@
                     </h2>
 
                     <table class="ui celled table la-js-responsive-table la-table">
-                        <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                        <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: orphanedProperties, key: message(code: 'subscription.properties'), sourceObject: sourceObject]"/>
                     </table>
 
@@ -98,7 +98,7 @@
                 <div class="content">
                     <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
-                        <g:render template="/templates/copyElements/propertyComparisonTableRow"
+                        <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
                     </table>
                 </div>

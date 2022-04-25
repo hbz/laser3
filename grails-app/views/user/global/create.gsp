@@ -10,13 +10,13 @@
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet
-        <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+        <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     </g:if>
     <g:if test="${controllerName == 'organisation'}">
-        <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+        <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     </g:if>--}%
     %{--<g:if test="${controllerName == 'user'}">--}%
-        <g:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+        <laser:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     %{--</g:if>--}%
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>

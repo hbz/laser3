@@ -20,12 +20,12 @@
                 <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <g:render template="actions"/>
+        <laser:render template="actions"/>
     </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
-    <g:render template="nav" />
+    <laser:render template="nav" />
 
     <semui:messages data="${flash}" />
 
@@ -202,7 +202,7 @@
         </div>
      </g:if>
 
-    <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
+    <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

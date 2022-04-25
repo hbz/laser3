@@ -20,7 +20,7 @@
 <semui:messages data="${flash}"/>
 
 <g:if test="${!error}">
-    <g:render template="/templates/filter/packageGokbFilter"/>
+    <laser:render template="/templates/filter/packageGokbFilter"/>
 </g:if>
 
 %{--<div class="ui icon info message">

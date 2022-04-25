@@ -7,10 +7,10 @@
 </head>
 
 <body>
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -20,7 +20,7 @@
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 
@@ -41,7 +41,7 @@
     : ${message(code: 'default.notes.label')}
 </h2>
 
-<g:render template="/templates/notes/table" model="${[instance: surveyConfig, redirect: 'notes']}"/>
+<laser:render template="/templates/notes/table" model="${[instance: surveyConfig, redirect: 'notes']}"/>
 
 </body>
 </html>

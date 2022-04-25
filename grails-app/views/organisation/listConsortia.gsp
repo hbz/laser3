@@ -19,7 +19,7 @@
             editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
         %>
         <g:if test="${editable}">
-            <g:render template="actions" />
+            <laser:render template="actions" />
         </g:if>
     </semui:controlButtons>
     
@@ -29,10 +29,10 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/filter/javascript" />
+    <laser:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="listConsortia" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
+            <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name']],
                               tmplConfigFormFilter: true
@@ -40,7 +40,7 @@
         </g:form>
     </semui:filter>
 
-    <g:render template="/templates/filter/orgFilterTable"
+    <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
                       consortiaIds: consortiaIds,
                       tmplShowCheckbox: false,

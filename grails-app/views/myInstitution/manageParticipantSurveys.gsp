@@ -29,7 +29,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
@@ -139,7 +139,7 @@
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <g:render template="/templates/cpa/person_details"
+                        <laser:render template="/templates/cpa/person_details"
                                   model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>

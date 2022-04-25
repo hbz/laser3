@@ -14,13 +14,6 @@
     <semui:crumb message="menu.yoda.cacheInfo" class="active"/>
 </semui:breadcrumbs>
 
-<%
-    // EXAMPLE:
-    sessionCache = contextService.getSessionCache()
-    sessionCache.put("test", "${new Date()}")
-    sessionCache.get("test")
-%>
-
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />

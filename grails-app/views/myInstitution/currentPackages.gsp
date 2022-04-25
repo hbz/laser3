@@ -18,7 +18,7 @@
 
 <semui:messages data="${flash}" />
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <g:form action="currentPackages" method="get" class="ui form">
         <div class="two fields">

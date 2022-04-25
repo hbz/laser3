@@ -20,7 +20,7 @@
             <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="accessPointId" value="${accessPoint.id}"/>
             <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
         </g:form>
-        <g:render template="linked_platforms_wrapper"/>
+        <laser:render template="linked_platforms_wrapper"/>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
         </span>
     </div>
     <g:if test="${linkedPlatformSubscriptionPackages}">
-        <g:render template="linked_subs_wrapper"/>
+        <laser:render template="linked_subs_wrapper"/>
     </g:if>
     <g:else>
         <p>${message(code: "accessPoint.info.noCustomLink")}</p>

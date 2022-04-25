@@ -10,7 +10,7 @@
 	</head>
 
     <body>
-        <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
             <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.my.comp_sub')}</h1>
@@ -200,12 +200,12 @@
 								</td>
 							
 								<g:if test="${subAIE}">		
-									<td class="${highlight }"><g:render template="compare_cell" model="[obj:subAIE]"/></td>
+									<td class="${highlight }"><laser:render template="compare_cell" model="[obj:subAIE]"/></td>
 								</g:if>
 								<g:else><td></td></g:else>
 								
 								<g:if test="${subBIE}">			
-									<td class="${highlight }"><g:render template="compare_cell" model="[obj:subBIE]"/></td>
+									<td class="${highlight }"><laser:render template="compare_cell" model="[obj:subBIE]"/></td>
 								</g:if>
 								<g:else><td></td></g:else>
 							</tr>							
@@ -226,7 +226,7 @@
 		<g:set var="subBIE" value="${entry.value[1]}"/>
 		<g:set var="currentTitle" value="${subAIE?.tipp?.title ?:subBIE?.tipp?.title}"/>
 
-		<g:render template="compare_details"
+		<laser:render template="compare_details"
 		 model="[subA:subAIE,subB:subBIE,currentTitle:currentTitle, subAName:subInsts.get(0).name, subBName:subInsts.get(1).name]"/>
 </g:each>
 

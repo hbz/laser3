@@ -17,7 +17,7 @@
 <semui:totalNumber total="${total}"/>
 </h1>
 
-<g:render template="/templates/filter/javascript" />
+<laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
     <form class="ui form">
         <div class="three fields">

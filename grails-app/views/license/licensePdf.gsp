@@ -177,13 +177,13 @@
             <header>
                 <h2><g:message code="default.object.links"/></h2>
             </header>
-            <g:render template="/templates/links/linksListingPdf"/>
+            <laser:render template="/templates/links/linksListingPdf"/>
         </article>
         <article>
             <header>
                 <h2><g:message code="default.object.properties"/></h2>
             </header>
-            <g:render template="/templates/properties/propertiesPdf"/>
+            <laser:render template="/templates/properties/propertiesPdf"/>
         </article>
         <article>
             <header>

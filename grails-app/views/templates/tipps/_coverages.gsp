@@ -19,7 +19,7 @@
         <div class="ui cards">
             <g:each in="${ie.coverages}" var="covStmt">
                 <div class="ui card">
-                    <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
+                    <laser:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
                 </div>
             </g:each>
 
@@ -48,7 +48,7 @@
         <div class="ui cards">
             <g:each in="${tipp.coverages}" var="covStmt">
                 <div class="ui card">
-                    <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
+                    <laser:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
                 </div>
             </g:each>
         </div>

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/timeline/base.part1" />
+<laser:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -63,5 +63,5 @@
     </table>
 </div>
 
-<g:render template="/subscription/reporting/details/loadJavascript"  />
-<g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
+<laser:render template="/subscription/reporting/details/loadJavascript"  />
+<laser:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

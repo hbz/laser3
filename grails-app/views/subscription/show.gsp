@@ -11,7 +11,7 @@
 
 <body>
 %{-- help sidebar --}%
-<g:render template="/templates/help/help_subscription_show"/>
+<laser:render template="/templates/help/help_subscription_show"/>
 <semui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
@@ -25,16 +25,16 @@
 
         <p>getCalculatedType(): ${subscription._getCalculatedType()}</p>
     </div>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-%{--<g:render template="/templates/debug/orgRoles"  model="[debug: subscription.orgRelations]" />--}%
-%{--<g:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
+%{--<laser:render template="/templates/debug/orgRoles"  model="[debug: subscription.orgRelations]" />--}%
+%{--<laser:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
 </semui:debugInfo>
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<laser:render template="breadcrumb" model="${[params: params]}"/>
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <laser:render template="actions"/>
 </semui:controlButtons>
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<g:render template="iconSubscriptionIsChild"/>
+<laser:render template="iconSubscriptionIsChild"/>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <g:if test="${editable}">
@@ -43,11 +43,11 @@
 <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
                   navPrev="${navPrevSubscription}"/>
 
-<g:render template="nav"/>
+<laser:render template="nav"/>
 
 <semui:objectStatus object="${subscription}" status="${subscription.status}"/>
-<g:render template="message"/>
-<g:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
+<laser:render template="message"/>
+<laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
 
 
 <semui:messages data="${flash}"/>
@@ -224,7 +224,7 @@
         <%--
         <div class="ui card la-js-hideable hidden">
             <div class="content">
-                <g:render template="/templates/links/orgLinksAsList"
+                <laser:render template="/templates/links/orgLinksAsList"
                           model="${[roleLinks: visibleOrgRelations,
                                     roleObject: subscription,
                                     roleRespValue: 'Specific subscription editor',
@@ -233,7 +233,7 @@
                           ]}" />
                 <div class="ui la-vertical buttons la-js-hide-this-card">
 
-                    <g:render template="/templates/links/orgLinksSimpleModal"
+                    <laser:render template="/templates/links/orgLinksSimpleModal"
                               model="${[linkType: subscription.class.name,
                                         parent: genericOIDService.getOID(subscription),
                                         property: 'orgs',
@@ -246,7 +246,7 @@
                                         tmplModalID:'modal_add_provider',
                                         editmode: editable
                               ]}" />
-                    <g:render template="/templates/links/orgLinksSimpleModal"
+                    <laser:render template="/templates/links/orgLinksSimpleModal"
                               model="${[linkType: subscription.class.name,
                                         parent: genericOIDService.getOID(subscription),
                                         property: 'orgs',
@@ -389,7 +389,7 @@
             </g:if>
 
             <div id="new-dynamic-properties-block">
-                <g:render template="properties" model="${[subscription: subscription]}"/>
+                <laser:render template="properties" model="${[subscription: subscription]}"/>
             </div><!-- #new-dynamic-properties-block -->
 
             <div class="clear-fix"></div>
@@ -401,7 +401,7 @@
                 <div class="ui card ">
                     <div class="content">
                         <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
-                        <g:render template="/templates/links/orgLinksAsList"
+                        <laser:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks    : visibleOrgRelations,
                                             roleObject   : subscription,
                                             roleRespValue: 'Specific subscription editor',
@@ -410,7 +410,7 @@
                                   ]}"/>
                         <div class="ui la-vertical buttons la-js-hide-this-card">
 
-                            <g:render template="/templates/links/orgLinksSimpleModal"
+                            <laser:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
                                                 property      : 'orgs',
@@ -423,7 +423,7 @@
                                                 tmplModalID   : 'modal_add_provider',
                                                 editmode      : editable
                                       ]}"/>
-                            <g:render template="/templates/links/orgLinksSimpleModal"
+                            <laser:render template="/templates/links/orgLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
                                                 property      : 'orgs',
@@ -450,16 +450,16 @@
                             <g:if test="${costItemSums.ownCosts}">
                                 <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                                     <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
-                                    <g:render template="financials" model="[data: costItemSums.ownCosts]"/>
+                                    <laser:render template="financials" model="[data: costItemSums.ownCosts]"/>
                                 </g:if>
                             </g:if>
                             <g:if test="${costItemSums.consCosts}">
                                 <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.consCosts')}</h2>
-                                <g:render template="financials" model="[data: costItemSums.consCosts]"/>
+                                <laser:render template="financials" model="[data: costItemSums.consCosts]"/>
                             </g:if>
                             <g:elseif test="${costItemSums.subscrCosts}">
                                 <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.subscrCosts')}</h2>
-                                <g:render template="financials" model="[data: costItemSums.subscrCosts]"/>
+                                <laser:render template="financials" model="[data: costItemSums.subscrCosts]"/>
                             </g:elseif>
                         </div>
                     </div>
@@ -468,7 +468,7 @@
             <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
-            <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+            <laser:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->

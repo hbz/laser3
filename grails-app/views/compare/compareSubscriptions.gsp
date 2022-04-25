@@ -62,7 +62,7 @@
 </semui:form>
 
 <g:if test="${objects}">
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
     <br />
     <br />
 
@@ -71,16 +71,16 @@
 
             <g:if test="${params.tab == 'compareProperties'}">
                 <div class="ui padded grid">
-                <g:render template="compareProperties"/>
+                <laser:render template="compareProperties"/>
                 </div>
             </g:if>
 
             <g:if test="${params.tab == 'compareElements'}">
-                <g:render template="compareElements"/>
+                <laser:render template="compareElements"/>
             </g:if>
 
             <g:if test="${params.tab == 'compareEntitlements'}">
-                <g:render template="compareEntitlements" model="[showPackage: true, showPlattform: true]"/>
+                <laser:render template="compareEntitlements" model="[showPackage: true, showPlattform: true]"/>
             </g:if>
 
     </div>

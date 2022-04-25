@@ -19,7 +19,7 @@
 <g:message code="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}"/>
 </h1>
 
-<g:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
+<laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
 
 <semui:messages data="${flash}"/>
 
@@ -34,7 +34,7 @@
         <div class="content">
 
             <!-- START TEMPLATE -->
-                <g:render template="/templates/title_long"
+                <laser:render template="/templates/title_long"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: false, showPlattform: false, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
@@ -52,7 +52,7 @@
             </g:else>
 
             <div class="la-icon-list">
-                <g:render template="/templates/tipps/coverages"
+                <laser:render template="/templates/tipps/coverages"
                           model="${[ie: null, tipp: tipp]}"/>
             </div>
             <br/>

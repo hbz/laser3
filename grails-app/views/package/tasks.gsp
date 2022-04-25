@@ -21,20 +21,20 @@
                 <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <g:render template="actions" />
+        <laser:render template="actions" />
     </semui:controlButtons>
     <semui:modeSwitch controller="package" action="show" params="${params}"/>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${packageInstance?.name}</h1>
 
-    <g:render template="nav"/>
+    <laser:render template="nav"/>
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-    <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
-    <g:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

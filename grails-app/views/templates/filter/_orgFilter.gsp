@@ -46,7 +46,7 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('property&value')}">
-                <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+                <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('privateContacts')}">
@@ -106,7 +106,7 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('country&region')}">
-                <g:render template="/templates/filter/orgRegionsFilter" />
+                <laser:render template="/templates/filter/orgRegionsFilter" />
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('libraryNetwork')}">

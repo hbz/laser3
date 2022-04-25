@@ -21,16 +21,16 @@
 
     <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
         <semui:controlButtons>
-          <g:render template="actions" model="[org:org]" />
+          <laser:render template="actions" model="[org:org]" />
         </semui:controlButtons>
     </g:if>
 
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+    <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/documents/table" model="${[inContextOrg: inContextOrg, instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
+    <laser:render template="/templates/documents/table" model="${[inContextOrg: inContextOrg, instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
   </body>
 </html>

@@ -7,7 +7,7 @@
     <g:if test="${validFilterResult}">
         <div class="ui message ${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE) ? 'warning' : 'success'}">
             <p>
-                <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
+                <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
             <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
                 <p><i class="icon large exclamation triangle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
@@ -35,9 +35,9 @@
         </div>
     </g:else>
 
-    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
+    <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
     <g:if test="${validFilterResult}">
-        <g:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PLATFORM}"]}" />
+        <laser:render template="/myInstitution/reporting/query/form" model="${[cfgKey: "${BaseConfig.KEY_PLATFORM}"]}" />
     </g:if>
 </g:if>

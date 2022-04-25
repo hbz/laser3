@@ -21,9 +21,9 @@
             </g:if>
         </h1>
 
-        <g:render template="nav" />
+        <laser:render template="nav" />
 
-        <g:render template="/templates/meta/identifier" model="${[object: ti, editable: editable]}" />
+        <laser:render template="/templates/meta/identifier" model="${[object: ti, editable: editable]}" />
 
         <semui:messages data="${flash}" />
 
@@ -33,7 +33,7 @@
 
                 <semui:form>
                     <!-- START TEMPLATE -->
-                    <g:render template="/templates/title_long"
+                    <laser:render template="/templates/title_long"
                               model="${[ie: null, tipp: ti,
                                         showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
                     <!-- END TEMPLATE -->

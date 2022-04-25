@@ -20,6 +20,6 @@
     </g:if>
 </div>
 
-<g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: labels]}" />
+<laser:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: labels]}" />
 
-<g:render template="/myInstitution/reporting/details/generic_tableConfig" />
+<laser:render template="/myInstitution/reporting/details/generic_tableConfig" />

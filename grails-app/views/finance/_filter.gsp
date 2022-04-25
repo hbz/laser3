@@ -8,7 +8,7 @@
 %>
 
     <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <g:render template="/templates/filter/javascript" />
+    <laser:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <%
             Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']

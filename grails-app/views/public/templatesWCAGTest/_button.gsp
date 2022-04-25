@@ -65,8 +65,8 @@
 
 <h3 class="ui dividing header">3.5. Button, der Inhalte ein- und ausblendet</h3>
 <section aria-label="Filter">
-    <g:render template="/templates/filter/javascript" />
-    <g:render template="templatesWCAGTest/toggle" />
+    <laser:render template="/templates/filter/javascript" />
+    <laser:render template="templatesWCAGTest/toggle" />
 </section>
 
 

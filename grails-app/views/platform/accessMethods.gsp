@@ -28,7 +28,7 @@
 
         <semui:messages data="${flash}" />
         
-        <g:render template="nav" contextPath="." />
+        <laser:render template="nav" contextPath="." />
 
         <g:form class="form" url="[controller: 'accessMethod', action: 'create']" method="POST">
             <table  class="ui celled la-js-responsive-table la-table table">
