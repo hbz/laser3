@@ -198,8 +198,8 @@ class ApiCostItem {
         if(costItem.issueEntitlementGroup)
             result.titleGroup = ApiIssueEntitlement.getTitleGroupMap(costItem.issueEntitlementGroup, context) //de.laser.IssueEntitlementGroup
         result.budgetCodes = costItem.budgetcodes.collect { BudgetCode bc -> bc.value }.unique()
-        result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // de.laser.finance.Order
-        result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice) //de.laser.finance.Invoice
+        result.orderNumber    = costItem.order?.orderNumber
+        result.invoiceNumber  = costItem.invoice?.invoiceNumber
         result.surveyOrg = costItem.surveyOrg ?: null
 
         ApiToolkit.cleanUp(result, true, true)

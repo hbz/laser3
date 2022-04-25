@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 
 import de.laser.Identifier
+import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Subscription
@@ -150,14 +151,15 @@ class ApiSubscription {
 
 		// RefdataValues
 
-		result.form         		= sub.form?.value
-        result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
-		result.resource     		= sub.resource?.value
-		result.status       		= sub.status?.value
-		result.kind         		= sub.kind?.value
-		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
-		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
-		result.hasPublishComponent 	= sub.hasPublishComponent ? 'Yes' : 'No'
+		result.form         			= sub.form?.value
+        result.isMultiYear  			= sub.isMultiYear ? 'Yes' : 'No'
+		result.isAutomaticRenewAnnually = sub.isAutomaticRenewAnnually ? 'Yes' : 'No'
+		result.resource     			= sub.resource?.value
+		result.status       			= sub.status?.value
+		result.kind         			= sub.kind?.value
+		result.isPublicForApi 			= sub.isPublicForApi ? 'Yes' : 'No'
+		result.hasPerpetualAccess 		= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.hasPublishComponent 		= sub.hasPublishComponent ? 'Yes' : 'No'
 
 		// References
 
@@ -171,6 +173,13 @@ class ApiSubscription {
 		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
 		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
 		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+
+		result.linkedSubscriptions = []
+
+		List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceSubscription = :subscription or li.destinationSubscription = :subscription) and li.linkType not in (:excludes)", [subscription: sub, excludes: [RDStore.LINKTYPE_FOLLOWS, RDStore.LINKTYPE_LICENSE]])
+		otherLinks.each { Links li ->
+			result.linkedSubscriptions.add([linktype: li.linkType.value, subscription: ApiStubReader.requestSubscriptionStub((Subscription) li.getOther(sub), context)])
+		}
 
 		def allOrgRoles = []
 

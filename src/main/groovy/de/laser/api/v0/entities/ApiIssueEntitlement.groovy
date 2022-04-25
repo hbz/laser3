@@ -79,6 +79,7 @@ class ApiIssueEntitlement {
         }
 
         result.globalUID        = ie.globalUID
+        result.name             = ie.name
         result.accessStartDate  = ApiToolkit.formatInternalDate(ie.accessStartDate)
         result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)
         result.lastUpdated      = ApiToolkit.formatInternalDate(ie.lastUpdated)
@@ -89,7 +90,8 @@ class ApiIssueEntitlement {
 
         result.perpetualAccessBySub 	= ApiStubReader.requestSubscriptionStub(ie.perpetualAccessBySub, context)
 
-        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // de.laser.TitleInstancePackagePlatform
+        result.coverages        = ApiCollectionReader.getCoverageCollection(ie.coverages) // de.laser.IssueEntitlementCoverage
+        result.priceItems       = ApiCollectionReader.getPriceItemCollection(ie.priceItems) //de.laser.PriceItem with pi.ie != null
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
@@ -98,7 +100,7 @@ class ApiIssueEntitlement {
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
+                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_SUBSCRIPTION, context)
                     // de.laser.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {

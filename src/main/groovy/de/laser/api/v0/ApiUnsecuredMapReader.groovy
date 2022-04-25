@@ -7,8 +7,10 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
 import de.laser.IssueEntitlementCoverage
+import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
 import de.laser.titles.TitleInstance
@@ -37,10 +39,12 @@ class ApiUnsecuredMapReader {
 
         result.globalUID        = lic.globalUID
         result.reference        = lic.reference
-        result.normReference    = lic.sortableReference
         result.calculatedType   = lic._getCalculatedType()
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
+
+        // RefdataValues
+        result.status           = lic.status?.value
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(lic.ids) // de.laser.Identifier
@@ -100,6 +104,7 @@ class ApiUnsecuredMapReader {
 
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
+        result.altnames     = ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
         result.gokbId       = pkg.gokbId
 
         // References
@@ -121,6 +126,10 @@ class ApiUnsecuredMapReader {
 
         result.globalUID    = pkg['pkg_guid']
         result.name         = pkg['pkg_name']
+        List<String> altnames = []
+        pkg['altnames'].each { altNameRow ->
+            altnames << altNameRow['altname_name']
+        }
         result.gokbId       = pkg['pkg_gokb_id']
 
         // References
@@ -243,11 +252,11 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * Returns the given issue entitlement coverage details
-     * @param coverage the {@link IssueEntitlementCoverage} to be retrieved
+     * Returns the given coverage details
+     * @param coverage the {@link AbstractCoverage} to be retrieved
      * @return a {@link Map} reflecting the issue entitlement coverage for API output
      */
-    static Map<String, Object> getIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage) {
+    static Map<String, Object> getAbstractCoverageMap(AbstractCoverage coverage) {
         if (!coverage) {
             return null
         }
@@ -263,6 +272,19 @@ class ApiUnsecuredMapReader {
         result.coverageDepth    = coverage.coverageDepth
         result.coverageNote     = coverage.coverageNote
         result.lastUpdated      = ApiToolkit.formatInternalDate(coverage.lastUpdated)
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    static Map<String, Object> getPriceItemMap(PriceItem pi) {
+        if(!pi)
+            return null
+        Map<String, Object> result = [:]
+
+        result.listPrice     = pi.listPrice
+        result.listCurrency  = pi.listCurrency?.value
+        result.localPrice    = pi.localPrice
+        result.localCurrency = pi.localCurrency?.value
 
         ApiToolkit.cleanUp(result, true, true)
     }

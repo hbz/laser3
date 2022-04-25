@@ -124,9 +124,7 @@ class ApiOAMonitor {
 
             result.globalUID    = org.globalUID
             result.gokbId       = org.gokbId
-            result.comment      = org.comment
             result.name         = org.name
-            result.scope        = org.scope
             result.shortname    = org.shortname
             result.sortname     = org.sortname
             result.region       = org.region?.value

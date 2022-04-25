@@ -104,7 +104,7 @@ class PropertyDefinitionGroup {
      */
     List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
         List result = []
-        def givenIds = getPropertyDefinitions().collect{ it.id } //continue here: wrong number delivered
+        def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {
