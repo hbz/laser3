@@ -40,12 +40,12 @@
                     <semui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
-                        <label>${message(code: 'task.status.label')}</label>
+                        <label>${message(code: 'default.status.label')}</label>
                         <laser:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
-                                  noSelection="${['' : message(code:'accessMethod.all')]}"
+                                  noSelection="${['' : message(code:'default.all')]}"
                                   optionKey="id"
                                   optionValue="value" />
                     </div>

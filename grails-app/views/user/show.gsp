@@ -19,7 +19,7 @@
           <tr>
             <th>${message(code:'user.id')}</th>
             <th>${message(code:'user.org')}</th>
-            <th>${message(code:'user.role')}</th>
+            <th>${message(code:'default.role.label')}</th>
           </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
-            <th>${message(code:'user.role')}</th>
+            <th>${message(code:'default.role.label')}</th>
           </tr>
         </thead>
         <tbody>

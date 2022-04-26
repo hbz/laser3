@@ -71,10 +71,10 @@
     <g:if test="${ie && (ie.status || showEmptyFields)}">
         <div class="item">
             <i class="grey key icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.status')}"></i>
+               data-content="${message(code: 'default.status.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.status') + ':'} ${ie.status?.getI10n('value')}
+                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.status?.getI10n('value')}
             </div>
         </div>
     </g:if>
@@ -82,10 +82,10 @@
         <g:if test="${(tipp.status || showEmptyFields)}">
             <div class="item">
                 <i class="grey key icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.status')}"></i>
+                   data-content="${message(code: 'default.status.label')}"></i>
 
                 <div class="content">
-                    ${showCompact ? '' : message(code: 'tipp.status') + ':'} ${tipp.status?.getI10n('value')}
+                    ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${tipp.status?.getI10n('value')}
                 </div>
             </div>
         </g:if>

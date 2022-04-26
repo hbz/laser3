@@ -79,7 +79,7 @@
                     <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
                         <tr>
-                            <th>${message(code:'user.role')}</th>
+                            <th>${message(code:'default.role.label')}</th>
                             <th class="la-action-info">${message(code:'default.actions.label')}</th>
                         </tr>
                         </thead>
@@ -196,7 +196,7 @@
                             </div>
 
                             <div class="field">
-                                <label for="formalRole">${message(code:'user.role')}</label>
+                                <label for="formalRole">${message(code:'default.role.label')}</label>
                                 <g:select name="formalRole" id="formalRole"
                                           from="${Role.findAllByRoleType('user')}"
                                           optionKey="id"

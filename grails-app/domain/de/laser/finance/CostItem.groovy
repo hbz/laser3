@@ -81,7 +81,7 @@ class CostItem extends AbstractBase
     @RefdataInfo(cat = RDConstants.TAX_TYPE)
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
-    @RefdataInfo(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
+    @RefdataInfo(cat = RDConstants.CURRENCY, i18n = 'default.currency.label')
     RefdataValue billingCurrency
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax

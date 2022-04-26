@@ -12,7 +12,7 @@
                 <g:message code="user.org"/>
             </g:if>
             <g:else>
-                <g:message code="profile.membership.role"/>
+                <g:message code="default.role.label"/>
             </g:else>
         </th>
         <th>${message(code:'user.enabled.label')}</th>

@@ -239,7 +239,7 @@
                 <tr>
                     %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
                     <th><g:message code="template.orgLinks.name"/></th>
-                    <th><g:message code="template.orgLinks.role"/></th>
+                    <th><g:message code="default.role.label"/></th>
                     <th><g:message code="title.edit.orglink.from"/></th>
                     <th><g:message code="title.edit.orglink.to"/></th>
                 </tr>

@@ -83,7 +83,7 @@
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting}"/>
                 <th>${message(code:'financials.amountFinal')}</th>
@@ -102,7 +102,7 @@
                 </g:if>
                 <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="billingCurrency" title="${message(code:'financials.currency')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <th>${message(code:'financials.amountFinal')}</th>

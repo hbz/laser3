@@ -9,7 +9,7 @@
         <thead>
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
-            <th>${message(code: 'profile.membership.role')}</th>
+            <th>${message(code: 'default.role.label')}</th>
             <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN')}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>

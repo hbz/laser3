@@ -21,7 +21,7 @@
         </div>
 
         <div class="field">
-            <label class="control-label">${message(code:'template.orgLinksModal.role')}</label>
+            <label class="control-label">${message(code:'default.role.label')}</label>
             <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
             <g:if test="${linkType}">
                 <g:select name="orm_orgRole"

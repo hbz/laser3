@@ -1110,10 +1110,10 @@ class ExportService {
 			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null,locale), messageSource.getMessage('subscription.endDate.label',null,locale),
 						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
 						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
-						   messageSource.getMessage('default.status.label',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale), messageSource.getMessage('financials.costInBillingCurrency',null,locale),"EUR",
+						   messageSource.getMessage('default.status.label',null,locale), messageSource.getMessage('default.currency.label',null,locale), messageSource.getMessage('financials.costInBillingCurrency',null,locale),"EUR",
 						   messageSource.getMessage('financials.costInLocalCurrency',null,locale)])
 			if(["own","cons"].indexOf(viewMode) > -1)
-				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
+				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('default.currency.label',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
 			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale), messageSource.getMessage('default.description.label',null,locale),
                            messageSource.getMessage('financials.newCosts.costsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
                            messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])

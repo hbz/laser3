@@ -44,7 +44,7 @@
                                     <li><g:message code="myinst.financeImport.issueEntitlement"/>: ${ci.issueEntitlement?.tipp?.title?.title}</li>
                                     <li><g:message code="myinst.financeImport.orderNumber"/>: ${ci.order?.orderNumber}</li>
                                     <li><g:message code="myinst.financeImport.invoiceNumber"/>: ${ci.invoice?.invoiceNumber}</li>
-                                    <li><g:message code="myinst.financeImport.currency"/>: ${ci.billingCurrency?.value}</li>
+                                    <li><g:message code="default.currency.label"/>: ${ci.billingCurrency?.value}</li>
                                     <li><g:message code="myinst.financeImport.element"/>: ${ci.costItemElement?.getI10n('value')}</li>
                                     <li><g:message code="myinst.financeImport.elementSign"/>: ${ci.costItemElementConfiguration?.getI10n('value')}</li>
                                     <li><g:message code="myinst.financeImport.taxType"/> (<g:message code="myinst.financeImport.taxRate"/>): ${ci.taxKey?.taxType?.getI10n('value')} (${ci.taxKey?.taxRate} %)</li>

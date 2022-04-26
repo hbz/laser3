@@ -76,7 +76,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'surveyInfo.status.label')}</label>
+                <label>${message(code: 'default.status.label')}</label>
                 <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -206,7 +206,7 @@
                 <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                   property="surInfo.startDate"
                                   title="${message(code: 'default.startDate.label')}"/>
-                <th rowspan="2" scope="col">${message(code: 'surveyInfo.status.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'default.status.label')}</th>
                 <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
 

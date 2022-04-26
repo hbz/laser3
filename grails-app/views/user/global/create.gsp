@@ -54,7 +54,7 @@
                                       class="ui fluid search dropdown la-not-clearable"/>
                         </div>
                         <div class="field">
-                            <label for="userRole">${message(code:'user.role')}</label>
+                            <label for="userRole">${message(code:'default.role.label')}</label>
                             <g:select id="userRole" name="formalRole"
                                       from="${Role.findAllByRoleType('user')}"
                                       optionKey="id"

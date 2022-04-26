@@ -265,7 +265,7 @@
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field">
-                    <label for="filterCICurrency"><g:message code="financials.currency"/></label>
+                    <label for="filterCICurrency"><g:message code="default.currency.label"/></label>
                     <g:select id="filterCICurrency" class="ui dropdown selection search"
                               name="filterCICurrency"
                               from="${currenciesList}"

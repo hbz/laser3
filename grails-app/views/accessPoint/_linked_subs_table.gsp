@@ -2,7 +2,7 @@
 <table id="subPkgPlatformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
   <tr>
-    <th>${message(code: "accessPoint.subscription.label")}</th>
+    <th>${message(code: "default.subscription.label")}</th>
     <th>${message(code: "accessPoint.package.label")}</th>
     <th>${message(code: "platform.label")}</th>
   </tr>

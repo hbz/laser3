@@ -215,7 +215,7 @@ class SurveyService {
 
                     if (surveyConfig.subSurveyUseForTransfer) {
                         titles.addAll([messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
-                                       messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('default.currency.label', null, LocaleContextHolder.getLocale()),
                                        messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
                     }
                 }
@@ -255,7 +255,7 @@ class SurveyService {
                         titles.addAll([messageSource.getMessage('surveyconfig.scheduledStartDate.label', null, LocaleContextHolder.getLocale()),
                                        messageSource.getMessage('surveyconfig.scheduledEndDate.label', null, LocaleContextHolder.getLocale()),
                                        messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
-                                       messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                       messageSource.getMessage('default.currency.label', null, LocaleContextHolder.getLocale()),
                                        messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale())])
                     }
                 }
@@ -504,7 +504,7 @@ class SurveyService {
                                    messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                                   messageSource.getMessage('default.currency.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.startDate.label', null, LocaleContextHolder.getLocale()),
@@ -580,7 +580,7 @@ class SurveyService {
                            messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.costItemElement', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.costInBillingCurrency', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.currency.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('default.startDate.label', null, LocaleContextHolder.getLocale()),
@@ -838,7 +838,7 @@ class SurveyService {
                            messageSource.getMessage('subscription.isPublicForApi.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('subscription.hasPerpetualAccess.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfigsInfo.newPrice', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('financials.billingCurrency', null, LocaleContextHolder.getLocale()),
+                           messageSource.getMessage('default.currency.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()),
