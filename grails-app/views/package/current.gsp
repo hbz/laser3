@@ -76,7 +76,7 @@
 <laser:render template="nav"/>
 
 
-<%--<sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+<%--<sec:ifAnyGranted roles="ROLE_ADMIN">
     <laser:render template="/templates/pendingChanges"
               model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': packageInstance]}"/>
 </sec:ifAnyGranted>--%>

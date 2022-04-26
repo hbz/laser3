@@ -132,7 +132,7 @@
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="yoda" action="appSecurity" target="_blank">${message(code:'menu.yoda.appSecurity')}</g:link>
+                        <g:link controller="yoda" action="appControllers" target="_blank">${message(code:'menu.yoda.appControllers')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="userMatrix" target="_blank">${message(code:'menu.yoda.userMatrix')}</g:link>

@@ -165,30 +165,6 @@ class PlatformController  {
         result
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def delete() {
-        Platform platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        try {
-            platformInstance.delete()
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label'), params.id])
-            redirect action: 'show', id: params.id
-            return
-        }
-    }
-
     /**
      * Currently inaccessible
      * Lists all access methods linked to the given platform

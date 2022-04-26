@@ -562,32 +562,6 @@ class PackageController {
         }
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def deleteDocuments() {
-        def ctxlist = []
-
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'package', action: params.redirectAction, id: params.instanceId
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def documents() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.institution = result.contextOrg
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-
-        result
-    }
-
     /**
      * Call to see planned titles of the package
      * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
@@ -929,7 +903,7 @@ class PackageController {
 
     @Deprecated
     def isEditable() {
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')
+        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
     }
 
     /**

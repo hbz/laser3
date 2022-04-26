@@ -224,10 +224,10 @@ class ConfigMapper {
                         }
                     }
                     if (result == null) {
-                        static_logger.warn 'Configuration key not found: ' + key + ' - called: ' + ste.toString()
+                        static_logger.warn 'Configuration key not found: ' + key + ' ; ' + ste.toString()
                     }
                     else {
-                        static_logger.warn 'Configuration key found, but no value: ' + key + ' - called: ' + ste.toString()
+                        static_logger.warn 'Configuration key found, but no value: ' + key + ' ; ' + ste.toString()
                     }
                 }
             }

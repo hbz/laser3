@@ -20,22 +20,6 @@ class TaskController  {
 
     static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
-	@Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def index() {
-        redirect action: 'list', params: params
-    }
-
-	@Deprecated
-	@Secured(['ROLE_ADMIN'])
-    def list() {
-		if (! params.max) {
-			User user   = contextService.getUser()
-			params.max  = user?.getDefaultPageSize()
-		}
-        [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
-    }
-
 	/**
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
@@ -105,19 +89,6 @@ class TaskController  {
 			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.getOrg())])
 		}
 		render template: "/templates/tasks/modal_create", model: result
-    }
-
-	@Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def show() {
-		Task taskInstance = Task.get(params.id)
-        if (! taskInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
-			redirect controller: 'myInstitution', action: 'dashboard'
-            return
-        }
-
-        [taskInstance: taskInstance]
     }
 
 	/**

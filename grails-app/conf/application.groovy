@@ -10,8 +10,7 @@ grails.gorm.default.mapping = {
 
 grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_YODA > ROLE_ADMIN
-    ROLE_ADMIN > ROLE_GLOBAL_DATA
-    ROLE_GLOBAL_DATA > ROLE_USER
+    ROLE_ADMIN > ROLE_USER
 '''
 
 // -- mail

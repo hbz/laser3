@@ -397,7 +397,7 @@ class YodaController {
      * @return a list of calls with their security level, grouped by controller
      */
     @Secured(['ROLE_YODA'])
-    def appSecurity() {
+    def appControllers() {
         Map<String, Object> result = [:]
         Map<String, Object> cList = [:]
 
@@ -509,19 +509,6 @@ class YodaController {
         ).each { usRo ->
             result.matrix[usRo[1].authority].add(usRo[0])
         }
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def pendingChanges() {
-
-        // TODO: DEBUG ONLY
-        Map<String, Object> result = [:]
-
-        result.pending = PendingChange.executeQuery(
-                "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
-        )
         result
     }
 

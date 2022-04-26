@@ -293,13 +293,9 @@ class BootStrapService {
         Role tmp = Role.findByAuthority('ROLE_YODA')    ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
              tmp = Role.findByAuthority('ROLE_ADMIN')   ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
              tmp = Role.findByAuthority('ROLE_USER')    ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_API')     ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-             tmp = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
              tmp = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
              tmp = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -484,34 +480,6 @@ class BootStrapService {
 
         Sql sql = new Sql(dataSource)
         sql.rows("SELECT * FROM grants_for_maintenance()")
-    }
-
-    /**
-     * @deprecated is replaced by {@link #setupPropertyDefinitions}
-     */
-    @Deprecated
-    void createPropertyDefinitionsWithI10nTranslations(requiredProps) {
-
-        requiredProps.each { default_prop ->
-
-            Map<String, Object> map = [
-                    token   : default_prop.name['en'],
-                    category: default_prop.descr['en'],
-                    type    : default_prop.type,
-                    hardData: BOOTSTRAP,
-                    rdc     : default_prop.cat,
-                    multiple: default_prop.multiple,
-                    logic   : default_prop.isUsedForLogic,
-                    tenant  : default_prop.tenant,
-                    i10n    : [
-                            name_de: default_prop.name?.trim(),
-                            name_en: default_prop.name?.trim(),
-                            expl_de: default_prop.expl?.trim(),
-                            expl_en: default_prop.expl?.trim()
-                    ]
-            ]
-            PropertyDefinition.construct(map)
-        }
     }
 
     /**
@@ -754,25 +722,5 @@ No Host Platform URL Content
                 IdentifierNamespace.construct(namespaceProperties)
             }
         }
-    }
-
-    /**
-     * Analyses huge tables for better query execution planning.
-     * Unused, may be activated for local testing
-     */
-    void vacuumAndAnalyseTables() {
-        Session sess = sessionFactory.currentSession
-        sess.doWork(new Work() {
-            void execute(Connection connection) throws SQLException {
-                Statement stmt = connection.createStatement()
-                stmt.execute('analyze pending_change')
-                stmt.execute('analyze issue_entitlement')
-                stmt.execute('analyze issue_entitlement_coverage')
-                stmt.execute('analyze title_instance_package_platform')
-                stmt.execute('analyze tippcoverage')
-                stmt.execute('analyze counter4report')
-                stmt.execute('analyze counter5report')
-            }
-        })
     }
 }

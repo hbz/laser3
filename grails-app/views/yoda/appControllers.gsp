@@ -2,21 +2,22 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appSecurity')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appControllers')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.appSecurity" class="active"/>
+    <semui:crumb message="menu.yoda.appControllers" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.appSecurity')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.appControllers')}</h1>
 
-<h2 class="ui header">Hierarchical Global Roles</h2>
+<h2 class="ui header">Roles and Hierarchies</h2>
 
-<div class="secInfoWrapper">
-    <div class="ui list">
+    <p><strong>Global User Roles</strong></p>
+
+    <div class="ui list secInfoWrapper">
         <div class="item">
             <span class="ROLE_YODA">ROLE_YODA</span> &rArr;
             <span class="ROLE_ADMIN">ROLE_ADMIN</span> &rArr;
@@ -24,40 +25,20 @@
             <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
         </div>
     </div>
-</div>
 
-<h2 class="ui header">Independent Global Roles</h2>
+    <p><strong>Org Roles (Customer Types)</strong></p>
 
-<div class="secInfoWrapper">
-    <div class="ui list">
-        <div class="item">
-            <span class="ROLE_GLOBAL_DATA">ROLE_GLOBAL_DATA</span> |
-            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
-            <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
-            <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span> |
-            <span class="ROLE_TICKET_EDITOR">ROLE_TICKET_EDITOR</span> |
-            <span class="ROLE_API">ROLE_API</span>
-        </div>
-    </div>
-</div>
-
-<h2 class="ui header">Hierarchical Org Roles (Customer Types)</h2>
-
-<div class="secInfoWrapper">
-    <div class="ui list">
+    <div class="ui list secInfoWrapper">
         <div class="item">
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
             <span class="ROLE_USER">ORG_BASIC_MEMBER</span> |
-            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span> |
-            <span class="ROLE_API">FAKE</span>
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span>
         </div>
     </div>
-</div>
 
-<h2 class="ui header">Hierarchical User Roles</h2>
+    <p><strong>User Org Roles</strong></p>
 
-<div class="secInfoWrapper">
-    <div class="ui list">
+    <div class="ui list secInfoWrapper">
         <div class="item">
             <span>INST_ADM</span> &rArr;
             <span>INST_EDITOR</span> &rArr;
@@ -67,9 +48,17 @@
             <span class="ROLE_YODA">ROLE_YODA</span> und <span class="ROLE_ADMIN">ROLE_ADMIN</span> liefern <code>TRUE</code>
         </div>
     </div>
-</div>
 
-<h2 class="ui header">Controller Security</h2>
+    <p><strong>User Roles without Hierarchy</strong></p>
+
+    <div class="ui list secInfoWrapper">
+        <div class="item">
+            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
+            <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span>
+        </div>
+    </div>
+
+<h2 class="ui header">App Controllers</h2>
 
 <g:each in="${controller}" var="c">
     <a href="#jumpMark_${c.key}">
@@ -318,17 +307,8 @@
 .secInfoWrapper .ROLE_USER {
     color: #1E90FF;
 }
-.secInfoWrapper .ROLE_API,
-.secInfoWrapper .ROLE_API_READER,
-.secInfoWrapper .ROLE_API_WRITER,
-.secInfoWrapper .ROLE_API_DATAMANAGER {
-    color: #87CEEB;
-    font-style: italic;
-}
 .secInfoWrapper .ROLE_ORG_EDITOR,
-.secInfoWrapper .ROLE_PACKAGE_EDITOR,
-.secInfoWrapper .ROLE_STATISTICS_EDITOR,
-.secInfoWrapper .ROLE_TICKET_EDITOR {
+.secInfoWrapper .ROLE_STATISTICS_EDITOR {
     color: #8B4513;
 }
 </style>

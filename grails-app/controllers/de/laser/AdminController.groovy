@@ -496,40 +496,6 @@ class AdminController  {
         result
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def showAffiliations() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.users = User.list()
-
-        withFormat {
-            html {
-                render(view:'showAffiliations',model:result)
-            }
-            json {
-                List r2 = []
-                result.users.each { u ->
-                    Map row = [:]
-                    row.username = u.username
-                    row.display = u.display
-                    row.email = u.email
-                    row.shibbScope = u.shibbScope
-                    row.enabled = u.enabled
-                    row.accountExpired = u.accountExpired
-                    row.accountLocked = u.accountLocked
-                    row.passwordExpired = u.passwordExpired
-                    row.affiliations = []
-                    u.affiliations.each { ua ->
-                        row.affiliations.add( [org: ua.org.shortcode, formalRole:formalRole?.authority] )
-                    }
-                    r2.add(row)
-                }
-                render r2 as JSON
-            }
-        }
-    }
-
     /**
      * Shows recorded system events; default count is 100 last entries.
      * The record listing may be filtered
