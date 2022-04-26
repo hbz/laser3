@@ -222,14 +222,14 @@ h1 .icon.h1-icon-overwrite {
 
 #showSystemInfo {
     position: fixed;
-    bottom: 72px;
-    right: 0;
+    bottom: 40px;
+    right: 10px;
 }
 
 #showDebugInfo {
     position: fixed;
-    bottom: 33px;
-    right: 0;
+    bottom: 40px;
+    right: 55px;
 }
 
 #system-profiler {

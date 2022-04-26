@@ -1,10 +1,12 @@
 package de.laser
 
+import de.laser.storage.BeanStorage
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import groovy.sql.Sql
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+
+import javax.sql.DataSource
 
 /**
  * A container service for methods used widespread in the system
@@ -32,7 +34,7 @@ class GlobalService {
      * @return a connection to the database
      */
     static Sql obtainSqlConnection() {
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        DataSource dataSource = BeanStorage.getDataSource()
         new Sql(dataSource)
     }
 }

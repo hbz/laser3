@@ -210,11 +210,25 @@ class ConfigMapper {
             }
 
             if (output == LOGGER) {
-                if (result == null) {
-                    static_logger.warn 'Configuration key not found: ' + key
-                }
-                else if (result instanceof org.grails.config.NavigableMap.NullSafeNavigator) {
-                    static_logger.warn 'Configuration key found, but no value: ' + key
+                if (result == null || result instanceof org.grails.config.NavigableMap.NullSafeNavigator) {
+                    List stack = Thread.currentThread().getStackTrace()
+                    StackTraceElement ste
+                    String methodName = stack.find { it.declaringClass == ConfigMapper.class.name && it.methodName != 'readConfig' }.getMethodName()
+                    stack.eachWithIndex { it, i ->
+                        if (it.methodName == methodName ) {
+                            int j = i+ 1
+                            while (stack[j].methodName in ['call', 'defaultCall']) {
+                                j++
+                            }
+                            ste = stack[j]
+                        }
+                    }
+                    if (result == null) {
+                        static_logger.warn 'Configuration key not found: ' + key + ' - called: ' + ste.toString()
+                    }
+                    else {
+                        static_logger.warn 'Configuration key found, but no value: ' + key + ' - called: ' + ste.toString()
+                    }
                 }
             }
             else if (output == PRINTLN) {

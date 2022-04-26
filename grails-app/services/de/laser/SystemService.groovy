@@ -24,33 +24,31 @@ class SystemService {
         if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowSystemInfo()) {
             //GlobalData Sync
             if ((GlobalRecordSource.findAllByActive(false)?.size() == GlobalRecordSource.findAll()?.size()) || GlobalRecordSource.findAll()?.size() == 0) {
-                checks.globalSync = "Global Record Source is not active"
+                checks.globalSync = "NOT active"
             }
 
             if ((ApiSource.findAllByActive(false)?.size() == ApiSource.findAll()?.size()) || ApiSource.findAll()?.size() == 0) {
-                checks.apiSource = "Api Source is not active"
+                checks.apiSource = "NOT active"
             }
 
             if (! ConfigMapper.getNotificationsJobActive()) {
-                checks.notificationsJobActive = "NotificationsJob is not active"
+                checks.notificationsJobActive = "NOT active"
             }
             if (! ConfigMapper.getGlobalDataSyncJobActiv()) {
-                checks.globalDataSyncJob = "global Data Sync Job is not active"
+                checks.globalDataSyncJob = "NOT active"
             }
             if (! ConfigMapper.getIsUpdateDashboardTableInDatabase()) {
-                checks.UpdateDashboardTableInDatabase = "Update Dashboard Table In Database is not active"
+                checks.UpdateDashboardTableInDatabase = "NOT active"
             }
             if (! ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers()) {
-                checks.SendEmailsForDueDatesOfAllUsers = "Send Emails for DueDates Of All Users is not active"
+                checks.SendEmailsForDueDatesOfAllUsers = "NOT active"
             }
             if (! ConfigMapper.getReporting()) {
                 checks.Reporting = "ElasticSearch Config for Reporting not found"
             }
-
             if (ConfigMapper.getConfig('grails.mail.disabled')) {
-                checks.MailService = "Mail Service not active"
+                checks.MailService = "NOT active"
             }
-
         }
 
         return checks
