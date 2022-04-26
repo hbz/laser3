@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2275    26.04.2022  dev     2.3         Moe     Feature     Anbieter und Vertrag bei einer allg. Umfrage verknüpfen
+
 1111    25.04.2022  dev     2.3         Andreas Feature     Aktualisierung und Aufrüstung der API
 
 4049    25.04.2022  dev     2.3         Moe     Feature     Excel Umfrage: Export von Merkmalsänderungen
