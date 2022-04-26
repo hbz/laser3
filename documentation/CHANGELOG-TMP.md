@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4200    26.04.2022  dev     2.3         Moe     Feature     Neue Sicht "Auszuwählende Titel"
+
 4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
 
 2275    26.04.2022  dev     2.3         Moe     Feature     Anbieter und Vertrag bei einer allg. Umfrage verknüpfen
