@@ -336,6 +336,11 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
           enum: <% printRefdataEnum(RDConstants.LICENSE_CATEGORY, 12) %>
+        linkedLicenses:
+          type: array
+          description: Other subscriptions related to this license instance.
+          items:
+            $ref: "#/components/schemas/Link_License"
         organisations: # mapping attr orgRelations
           type: array
           description: Organisations related to this license.
