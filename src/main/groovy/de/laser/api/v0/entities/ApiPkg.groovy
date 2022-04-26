@@ -81,16 +81,10 @@ class ApiPkg {
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
 		result.name             	= pkg.name
-		result.sortName         	= pkg.sortname
+		result.altnames     		= ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
 
-		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
-		result.cancellationAllowances = pkg.cancellationAllowances
 		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
-		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
 		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
-		result.vendorURL        	= pkg.vendorURL
-		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
-		//result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
 
 		// RefdataValues
 
@@ -100,7 +94,6 @@ class ApiPkg {
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
 		result.consistent       	= pkg.consistent?.value
-		result.isPublic         	= pkg.isPublic ? 'Yes' : 'No'
 
 		// References
 
@@ -112,12 +105,6 @@ class ApiPkg {
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
 		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
 
-		// Ignored
-		/*
-		result.persons          = exportHelperService.resolvePrsLinks(
-				pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-		) // de.laser.PersonRole
-		*/
 		ApiToolkit.cleanUp(result, true, true)
 	}
 }

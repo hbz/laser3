@@ -403,8 +403,7 @@ class CopyElementsService {
                 }
                 if (subMember.issueEntitlements && targetObject.issueEntitlements) {
                     memberHoldingsToTransfer << newSubscription
-                    //def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-                    //Sql sql = new Sql(dataSource)
+                    //Sql sql = GlobalService.obtainSqlConnection()
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
                     //packageService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
                     /*subMember.issueEntitlements?.each { ie ->
@@ -1533,8 +1532,7 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-                    def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-                    Sql sql = new Sql(dataSource)
+                    Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
                     packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
                     /*

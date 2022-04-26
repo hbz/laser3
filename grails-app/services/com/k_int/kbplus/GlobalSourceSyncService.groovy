@@ -1329,7 +1329,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
-            tippA.imprint = tippB.imprint
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
             tippA.volume = tippB.volume
@@ -1391,7 +1390,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw new SyncException("Error on saving title history data: ${the.errors}")
                     }
                     historyEvent.to.each { to ->
-                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:to.name,eventDate:historyEvent.date)
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,to:to.name,eventDate:historyEvent.date)
                         if(!the.save())
                             throw new SyncException("Error on saving title history data: ${the.errors}")
                     }
