@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.AuditService
 import de.laser.ContextService
 import de.laser.EscapeService
+import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.Org
@@ -539,8 +540,7 @@ class PendingChangeService extends AbstractLockableService {
         Map<String, Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         List pending = [], notifications = []
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
         Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] }

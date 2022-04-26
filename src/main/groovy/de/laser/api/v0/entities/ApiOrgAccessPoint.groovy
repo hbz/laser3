@@ -146,7 +146,6 @@ class ApiOrgAccessPoint {
         if(orgAccessPoint.accessMethod.value == 'openathens'){
            result."${orgAccessPoint.accessMethod.value}".name   = orgAccessPoint.name
            result."${orgAccessPoint.accessMethod.value}".entityid   = orgAccessPoint.hasProperty('entityId') ? orgAccessPoint.entityId : ''
-           result."${orgAccessPoint.accessMethod.value}".url   = orgAccessPoint.hasProperty('url') ? orgAccessPoint.url : ''
 
         }
 
@@ -168,7 +167,6 @@ class ApiOrgAccessPoint {
         if(orgAccessPoint.accessMethod.value == 'shibboleth'){
            result."${orgAccessPoint.accessMethod.value}".name   = orgAccessPoint.name
            result."${orgAccessPoint.accessMethod.value}".entityid   = orgAccessPoint.hasProperty('entityId') ? orgAccessPoint.entityId : ''
-           result."${orgAccessPoint.accessMethod.value}".url   = orgAccessPoint.hasProperty('url') ? orgAccessPoint.url : ''
         }
 
         ApiToolkit.cleanUp(result, true, true)

@@ -2,8 +2,10 @@ package de.laser.api.v0.entities
 
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -142,10 +144,8 @@ class ApiLicense {
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
-        //result.licenseType      = lic.licenseType
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
-        result.normReference    = lic.sortableReference
 
         // erms-888
         result.calculatedType   = lic._getCalculatedType()
@@ -162,6 +162,13 @@ class ApiLicense {
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // de.laser.DocContext
         //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+
+        result.linkedLicenses = []
+
+        List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceLicense = :license or li.destinationLicense = :license) and li.linkType not in (:excludes)", [license: lic, excludes: [RDStore.LINKTYPE_FOLLOWS, RDStore.LINKTYPE_LICENSE]])
+        otherLinks.each { Links li ->
+            result.linkedLicenses.add([linktype: li.linkType.value, license: ApiStubReader.requestLicenseStub((License) li.getOther(lic), context)])
+        }
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
