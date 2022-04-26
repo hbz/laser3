@@ -44,7 +44,7 @@
     <thead>
     <tr>
         <th>${message(code:'platform.link.accessPoint.grid.activeConfiguration')}</th>
-        <th>${message(code:'platform.link.accessPoint.grid.action')}</th>
+        <th>${message(code:'default.action.label')}</th>
     </tr>
     </thead>
     <tbody>

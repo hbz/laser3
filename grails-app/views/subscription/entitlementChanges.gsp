@@ -127,7 +127,7 @@
                     <th><g:message code="default.status.label"/></th>
                 </g:if>
                 <g:else>
-                    <th><g:message code="profile.dashboard.changes.action"/></th>
+                    <th><g:message code="default.action.label"/></th>
                 </g:else>
             </tr>
             </thead>

@@ -144,7 +144,7 @@
         <div class="fields">
 
             <div class="field six wide">
-                <label class="property-label">${message(code: 'propertyDefinition.descr.label')}</label>
+                <label class="property-label">${message(code: 'default.description.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                 <select name="pd_descr" id="pd_descr" class="ui dropdown">
                     <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">

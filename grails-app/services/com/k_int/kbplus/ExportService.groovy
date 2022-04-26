@@ -1114,7 +1114,7 @@ class ExportService {
 						   messageSource.getMessage('financials.costInLocalCurrency',null,locale)])
 			if(["own","cons"].indexOf(viewMode) > -1)
 				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
-			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale), messageSource.getMessage('financials.newCosts.description',null,locale),
+			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale), messageSource.getMessage('default.description.label',null,locale),
                            messageSource.getMessage('financials.newCosts.costsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
                            messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])
 			titles.eachWithIndex { titleName, int i ->

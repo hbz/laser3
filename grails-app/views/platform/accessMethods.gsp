@@ -37,7 +37,7 @@
                             <g:sortableColumn property="AccessMethod" title="${message(code: 'accessMethod.label')}" />
                             <g:sortableColumn property="validFrom" title="${message(code: 'accessMethod.valid_from')}" />
                             <g:sortableColumn property="validTo" title="${message(code: 'accessMethod.valid_to')}" />
-                            <th>${message(code: 'accessMethod.actions')}</th>
+                            <th>${message(code: 'default.action.label')}</th>
                         </tr>
                 </thead>
                 <tbody>

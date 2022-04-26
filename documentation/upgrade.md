@@ -11,7 +11,7 @@
 - Java 11
 
 See [build.gradle](../build.gradle) for details on all plugins.
-See [readme.md](./readme.md) for generell information
+See [readme.md](./readme.md) for general information.
 
 ### Setup
 

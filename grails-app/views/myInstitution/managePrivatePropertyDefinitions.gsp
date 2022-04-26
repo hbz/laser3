@@ -222,7 +222,7 @@
             <div class="fields">
 
                 <div class="field six wide required">
-                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
+                    <label class="property-label" for="pd_descr">${message(code:'default.description.label')} <g:message code="messageRequiredField" /></label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]

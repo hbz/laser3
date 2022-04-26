@@ -40,7 +40,7 @@
 					</g:if>
 				
 					<g:if test="${taskInstance?.description}">
-						<dt><g:message code="task.description.label" /></dt>
+						<dt><g:message code="default.description.label" /></dt>
 						<dd><g:fieldValue bean="${taskInstance}" field="description"/></dd>
 					</g:if>
 				

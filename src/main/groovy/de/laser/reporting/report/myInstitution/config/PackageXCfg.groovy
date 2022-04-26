@@ -197,7 +197,7 @@ class PackageXCfg extends BaseConfig {
             'package-x-nationalRange'   : [ dtc: false, es: true,                             label: 'package.nationalRange.label',   mapping: 'nationalRanges' ],
             'package-x-regionalRange'   : [ dtc: false, es: true,                             label: 'package.regionalRange.label',   mapping: 'regionalRanges' ],
             'package-x-language'        : [ dtc: false, es: true,               export: true, label: 'package.language.label',        mapping: 'languages',   rdc: RDConstants.LANGUAGE ],
-            'package-description'       : [ dtc: false, es: true,               export: true, label: 'package.description.label' ],
+            'package-description'       : [ dtc: false, es: true,               export: true, label: 'default.description.label' ],
 
             'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'package.descriptionURL.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],

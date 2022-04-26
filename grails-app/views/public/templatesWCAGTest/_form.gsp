@@ -8,7 +8,7 @@
 
     <div class="field">
         <label for="description">
-            <g:message code="task.description.label"/>
+            <g:message code="default.description.label"/>
         </label>
         <g:textArea name="description" value="" rows="5" cols="40"/>
     </div>

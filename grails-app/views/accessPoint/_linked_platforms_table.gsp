@@ -6,7 +6,7 @@
     <th>${message(code: "platform.label")}</th>
     <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') )}">
       <th>${message(code: "accessPoint.subscriptions.label")}</th>
-      <th>${message(code: 'accessPoint.platformLink.action')}</th>
+      <th>${message(code: 'default.action.label')}</th>
     </g:if>
   </tr>
   </thead>

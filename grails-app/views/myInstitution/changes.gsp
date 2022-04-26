@@ -31,7 +31,7 @@
                     <th><g:message code="profile.dashboard.changes.object"/></th>
                     <th><g:message code="profile.dashboard.changes.event"/></th>
                     <th><g:message code="default.date.label"/></th>
-                    <th><g:message code="profile.dashboard.changes.action"/></th>
+                    <th><g:message code="default.action.label"/></th>
                 </tr>
             </thead>
             <tbody>

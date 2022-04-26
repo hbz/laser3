@@ -194,7 +194,7 @@ class FinanceController  {
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
                 titles.addAll(message(code: 'financials.taxRate'), [message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
-            titles.addAll([message(code: 'financials.costItemElement'), message(code: 'financials.newCosts.description'),
+            titles.addAll([message(code: 'financials.costItemElement'), message(code: 'default.description.label'),
                            message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()

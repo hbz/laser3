@@ -335,7 +335,7 @@
                     <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
                 </div>
                 <div class="field">
-                    <label>${message(code:'financials.newCosts.description')}</label>
+                    <label>${message(code:'default.description.label')}</label>
                     <input type="text" name="newDescription" placeholder="${message(code:'default.description.label')}" value="${costItem?.costDescription}"/>
                 </div><!-- .field -->
             </fieldset> <!-- 2/3 field -->

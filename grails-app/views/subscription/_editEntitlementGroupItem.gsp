@@ -17,7 +17,7 @@
                                 <tr>
                                 <th>${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'issueEntitlementGroup.name.label')}</th>
-                                <th>${message(code: 'issueEntitlementGroup.description.label')}</th>
+                                <th>${message(code: 'default.description.label')}</th>
                                 <th>${message(code: 'issueEntitlementGroup.items.label')}</th>
                                     <th></th>
                                 </tr>

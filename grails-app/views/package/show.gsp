@@ -241,7 +241,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt>${message(code: 'package.show.description')}</dt>
+                            <dt>${message(code: 'default.description.label')}</dt>
                             <dd>
                                 <g:if test="${packageInstanceRecord.description}">
                                     ${packageInstanceRecord.description}

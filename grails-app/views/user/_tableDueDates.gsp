@@ -7,7 +7,7 @@
         <th>${message(code:'default.date.label')}</th>
         <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
         <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.visibility.label')}</th>
-        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.status.label')}</th>
+        <th style="width:8em; text-align: center">${message(code:'default.status.label')}</th>
     </tr>
     </thead>
     <tbody>
