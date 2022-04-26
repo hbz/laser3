@@ -850,8 +850,7 @@ class YodaService {
      */
     @Transactional
     void matchPackageHoldings() {
-        DataSource dataSource = BeanStorage.getDataSource()
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         sql.withTransaction {
             List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +
                     "(select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) as pkg_cnt, " +

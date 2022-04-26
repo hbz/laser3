@@ -51,7 +51,6 @@ class StatsSyncService {
     ExecutorService executorService
     FactService factService
     GlobalService globalService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     Map queryParams = [:]
     List errors = []
     Map<String,List> availableReportCache = [:]
@@ -224,7 +223,6 @@ class StatsSyncService {
             }
             http.shutdown()
             Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
-            DataSource dataSource = BeanStorage.getDataSource()
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
                 /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :deleted',
@@ -236,7 +234,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 //TitleInstancePackagePlatform.withNewSession {
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
@@ -345,7 +343,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false

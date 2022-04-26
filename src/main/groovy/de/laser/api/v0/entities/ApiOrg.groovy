@@ -1,7 +1,10 @@
 package de.laser.api.v0.entities
 
+import de.laser.Combo
 import de.laser.Identifier
 import de.laser.Org
+import de.laser.OrgSubjectGroup
+import de.laser.RefdataValue
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.storage.RDStore
@@ -82,18 +85,29 @@ class ApiOrg {
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
-        result.globalUID    = org.globalUID
-        result.gokbId       = org.gokbId
-        result.comment      = org.comment
-        result.name         = org.name
-        result.scope        = org.scope
-        result.shortname    = org.shortname
-        result.sortname     = org.sortname
-        result.region       = org.region?.value
-        result.country      = org.country?.value
-        result.libraryType  = org.libraryType?.value
-        result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
-        result.eInvoice  = org.eInvoice ? 'Yes' : 'No'
+        result.globalUID           = org.globalUID
+        result.gokbId              = org.gokbId
+        result.name                = org.name
+        result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
+        result.shortname           = org.shortname
+        result.sortname            = org.sortname
+        result.lastUpdated         = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
+        result.eInvoice            = org.eInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.url                 = org.url
+        result.urlGov              = org.urlGov
+        result.linkResolverBaseURL = org.linkResolverBaseURL
+        result.legalPatronName     = org.legalPatronName
+
+        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
+        result.links               = []
+
+        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
+        links.each { Combo c ->
+            if(c.fromOrg == org)
+                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
+            else if(c.toOrg == org)
+                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
+        }
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -101,9 +115,16 @@ class ApiOrg {
         // RefdataValues
 
         result.eInvoicePortal = org.eInvoicePortal?.value
-        result.sector       = org.sector?.value
-        result.type         = org.orgType?.collect{ it.value }
-        result.status       = org.status?.value
+        result.region         = org.region?.value
+        result.country        = org.country?.value
+        result.libraryType    = org.libraryType?.value
+        result.funderType     = org.funderType?.value
+        result.funderHskType  = org.funderHskType?.value
+        result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
+        result.libraryNetwork = org.libraryNetwork?.value
+        result.sector         = org.sector?.value
+        result.type           = org.orgType?.collect{ it.value }
+        result.status         = org.status?.value
 
         // References
 

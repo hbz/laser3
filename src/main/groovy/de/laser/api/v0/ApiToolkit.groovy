@@ -2,9 +2,12 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.OrgSetting
+import de.laser.RefdataValue
 import de.laser.helper.Constants
+import groovy.sql.GroovyRowResult
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.RandomStringUtils
+import org.codehaus.groovy.ant.Groovy
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
@@ -68,6 +71,25 @@ class ApiToolkit {
         [
             API_LEVEL_WRITE
         ]
+    }
+
+    static String getStartOfYearRing() {
+        Calendar calendar = GregorianCalendar.getInstance()
+        calendar.set(Calendar.DAY_OF_YEAR, 1)
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.format(DATE_TIME_PATTERN)
+    }
+
+    static String getEndOfYearRing() {
+        Calendar calendar = GregorianCalendar.getInstance()
+        calendar.set(Calendar.MONTH, 11) //java calendar months range between 0-11
+        calendar.set(Calendar.DAY_OF_MONTH, 31)
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.format(DATE_TIME_PATTERN)
     }
 
     /**
@@ -231,5 +253,31 @@ class ApiToolkit {
         }
 
         [identifier, timestamp]
+    }
+
+    static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
+        Map<Long, List<GroovyRowResult>> result = [:]
+        rows.each { GroovyRowResult row ->
+            List<GroovyRowResult> resList = result.get(row[tippKey])
+            if(!resList)
+                resList = []
+            resList << row
+            result.put(row[tippKey], resList)
+        }
+        result
+    }
+
+    static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows) {
+        Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
+        priceItemRows.each { GroovyRowResult piRow ->
+            Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
+            if(!priceItemMap)
+                priceItemMap = [:]
+            if(piRow['pi_list_currency']) {
+                priceItemMap.put(piRow['pi_list_currency'], piRow)
+                priceItems.put(piRow['pi_ie_fk'], priceItemMap)
+            }
+        }
+        priceItems
     }
 }

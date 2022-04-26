@@ -1074,7 +1074,6 @@ class FilterService {
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         boolean filterSet = false
-        //continue here: order title fields down to tipp endpoints
         if(forBase == 'Package')
             base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
         else if(forBase == 'Platform')

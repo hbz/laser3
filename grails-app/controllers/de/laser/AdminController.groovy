@@ -590,8 +590,7 @@ class AdminController  {
     def databaseCollations() {
         Map<String, Object> result = [:]
 
-        DataSource dataSource = BeanStorage.getDataSource()
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
 
         result.allTables = DatabaseUtils.getAllTablesWithCollations()
 
@@ -678,8 +677,7 @@ class AdminController  {
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
-        DataSource dataSource = BeanStorage.getDataSource()
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result

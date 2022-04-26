@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 
 import de.laser.Identifier
+import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Subscription
@@ -140,28 +141,25 @@ class ApiSubscription {
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
 		result.globalUID            	= sub.globalUID
-		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
-		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
-		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 		result.calculatedType       	= sub._getCalculatedType()
 
 		// RefdataValues
 
-		result.form         		= sub.form?.value
-		result.isSlaved     		= sub.isSlaved ? 'Yes' : 'No'
-        result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
-		result.resource     		= sub.resource?.value
-		result.status       		= sub.status?.value
-		result.type         		= sub.type?.value
-		result.kind         		= sub.kind?.value
-		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
-		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.form         			= sub.form?.value
+        result.isMultiYear  			= sub.isMultiYear ? 'Yes' : 'No'
+		result.isAutomaticRenewAnnually = sub.isAutomaticRenewAnnually ? 'Yes' : 'No'
+		result.resource     			= sub.resource?.value
+		result.status       			= sub.status?.value
+		result.kind         			= sub.kind?.value
+		result.isPublicForApi 			= sub.isPublicForApi ? 'Yes' : 'No'
+		result.hasPerpetualAccess 		= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.hasPublishComponent 		= sub.hasPublishComponent ? 'Yes' : 'No'
 
 		// References
 
@@ -175,6 +173,13 @@ class ApiSubscription {
 		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
 		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
 		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+
+		result.linkedSubscriptions = []
+
+		List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceSubscription = :subscription or li.destinationSubscription = :subscription) and li.linkType not in (:excludes)", [subscription: sub, excludes: [RDStore.LINKTYPE_FOLLOWS, RDStore.LINKTYPE_LICENSE]])
+		otherLinks.each { Links li ->
+			result.linkedSubscriptions.add([linktype: li.linkType.value, subscription: ApiStubReader.requestSubscriptionStub((Subscription) li.getOther(sub), context)])
+		}
 
 		def allOrgRoles = []
 
@@ -210,12 +215,12 @@ class ApiSubscription {
 		}
 
 		if (isInvoiceTool) {
-			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems)
+			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems, context)
 		}
 		else {
 			Collection<CostItem> filtered = sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
 
-			result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
+			result.costItems = ApiCollectionReader.getCostItemCollection(filtered, context)
 		}
 
 		ApiToolkit.cleanUp(result, true, true)
