@@ -151,7 +151,7 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
+
 2275    26.04.2022  dev     2.3         Moe     Feature     Anbieter und Vertrag bei einer allg. Umfrage verknüpfen
 
 1111    25.04.2022  dev     2.3         Andreas Feature     Aktualisierung und Aufrüstung der API
