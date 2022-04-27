@@ -6,6 +6,9 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 - updating outdated schemata
 - added new virtual object: `DeweyDecimalClassification`
+- added new virtual object: `Link_License`
+- added new virtual object: `Link_Org`
+- added new virtual object: `Link_Subscription`
 - added new virtual object: `Package_in_CostItem`
 - added new virtual object: `PriceItemCollection`
 - added new virtual object: `TitleGroup`

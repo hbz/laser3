@@ -208,7 +208,7 @@
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${(((docctx.owner.contentType == 1) || (docctx.owner.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
                                     </g:if>

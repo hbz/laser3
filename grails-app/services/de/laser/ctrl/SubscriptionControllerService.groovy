@@ -1342,6 +1342,18 @@ class SubscriptionControllerService {
 
             }
 
+            if(params.tab == 'toBeSelectedIEs') {
+                Map allQuery = filterService.getIssueEntitlementQuery(params, baseSub)
+                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + allQuery.query, allQuery.queryParams)
+                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+                List<Long> selectedTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
+                List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
+                allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
+                allQuery.queryParams.tippIds = toBeSelectedTippIDs
+                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
+
+            }
+
             if (result.hasPerpetualAccess) {
                 params.hasPerpetualAccess = result.hasPerpetualAccess
             }
@@ -1349,6 +1361,7 @@ class SubscriptionControllerService {
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
             result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
+            result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
             result.num_ies_rows = sourceIEs.size()
 

@@ -48,7 +48,7 @@
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
-                                        <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                        <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                             <g:if test="${docctx.owner?.title}">
                                                 ${docctx.owner.title}
                                             </g:if>
@@ -103,7 +103,7 @@
                                     <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
                                         <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element">
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
                                                         ${docctx.owner.title}
                                                     </g:if>

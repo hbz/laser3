@@ -38,6 +38,10 @@ class SurveyInfo {
     boolean isMandatory = false
     boolean isRenewalSent = false
 
+    License license
+
+    Org provider
+
     static hasMany = [
             surveyConfigs: SurveyConfig
     ]
@@ -48,6 +52,8 @@ class SurveyInfo {
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
         isRenewalSent (nullable:true)
+        license (nullable:true)
+        provider (nullable:true)
     }
 
     static transients = ['editable', 'completedforOwner'] // mark read-only accessor methods
@@ -71,6 +77,9 @@ class SurveyInfo {
         isSubscriptionSurvey column: 'surin_is_subscription_survey'
         isMandatory column: 'surin_is_mandatory'
         isRenewalSent column: 'surin_is_renewal_sent'
+
+        license column: 'surin_license'
+        provider column: 'surin_provider'
     }
 
     /**
