@@ -24,31 +24,55 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
+
+        <div class="header">KBART Exports</div>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
-                               tab           : 'allIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                               tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </semui:exportDropdownItem>
+
+        <g:if test="${countCurrentIEs > 0}">
+
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportKBart   : true,
+                                   tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
+            </semui:exportDropdownItem>
+        </g:if>
+
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
+        </semui:exportDropdownItem>
+
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
+        </semui:exportDropdownItem>
+
+        <div class="divider"></div>
+
+        <div class="header">${message(code: 'default.button.exports.xls')}s</div>
+
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
-                               tab           : 'allIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                               tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </semui:exportDropdownItem>
-        <g:if test="${showStatisticByParticipant}">
-            <semui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
-                        params="${[surveyConfigID : surveyConfig.id,
-                                   exportForImport: true,
-                                   tab            : 'allIEs']}">
-                    ${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}" + "${message(code: 'default.stats.label')}"
-                </g:link>
-            </semui:exportDropdownItem>
-        </g:if>
+
         <g:if test="${countCurrentIEs > 0}">
             <semui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -56,24 +80,39 @@
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
                                    tab           : 'currentIEs']}">
-                    ${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentTitles')}"
+                    ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
             </semui:exportDropdownItem>
         </g:if>
-        <semui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
-                               tab           : 'selectedIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
-        </semui:exportDropdownItem>
+
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
-                               tab           : 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
+                               tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
         </semui:exportDropdownItem>
+
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
+        </semui:exportDropdownItem>
+
+
+        <g:if test="${showStatisticByParticipant}">
+            <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID : surveyConfig.id,
+                                   exportForImport: true,
+                                   tab            : 'allIEs']}">
+                    ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
+                </g:link>
+            </semui:exportDropdownItem>
+        </g:if>
 
         <g:if test="${showStatisticByParticipant}">
             <semui:exportDropdownItem>
@@ -274,6 +313,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
                     counts="${countAllIEs}"/>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
+                    text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
+                    counts="${toBeSelectedIEs}"/>
     <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"

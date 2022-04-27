@@ -210,6 +210,17 @@
 
             </div>
         </div>
+
+        <div class="ui card">
+            <g:render template="/survey/linksProviderOrLicense"
+                      model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
+        </div>
+
+        <div class="ui card">
+            <g:render template="/survey/linksProviderOrLicense"
+                      model="[linkType: 'Provider', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
+        </div>
+
     </div>
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">

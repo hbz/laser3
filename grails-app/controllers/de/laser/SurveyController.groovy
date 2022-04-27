@@ -4800,4 +4800,56 @@ class SurveyController {
 
         result
     }
+
+    /**
+     * Set link to license or provider
+     * @return a redirect to the referer
+     */
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> setProviderOrLicenseLink() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if(params.license){
+            License license = genericOIDService.resolveOID(params.license)
+            result.surveyInfo.license = license ?: result.surveyInfo.license
+
+            if (!result.surveyInfo.save(flush: true)) {
+                flash.error = g.message(code: 'surveyInfo.link.fail')
+            }
+        }
+
+        if(params.provider){
+            Org provider = genericOIDService.resolveOID(params.provider)
+            result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+
+            if (!result.surveyInfo.save(flush: true)) {
+                flash.error = g.message(code: 'surveyInfo.link.fail')
+            }
+        }
+
+        if(params.unlinkLicense){
+            result.surveyInfo.license = null
+
+            if (!result.surveyInfo.save(flush: true)) {
+                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+            }
+        }
+
+        if(params.unlinkProvider){
+            result.surveyInfo.provider = null
+
+            if (!result.surveyInfo.save(flush: true)) {
+                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
 }
