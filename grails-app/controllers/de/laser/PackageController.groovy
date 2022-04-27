@@ -970,44 +970,6 @@ class PackageController {
 
     @Deprecated
     @Secured(['ROLE_ADMIN'])
-    def notes() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-        result
-    }
-
-/*
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def tasks() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-
-        int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
-        result.taskInstanceCount = result.taskInstanceList.size()
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user, result.packageInstance)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
-        log.debug(result.taskInstanceList.toListString())
-
-        result
-    }
-    */
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
     @Transactional
     def history() {
         Map<String, Object> result = [:]

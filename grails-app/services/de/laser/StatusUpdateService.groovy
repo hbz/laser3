@@ -388,35 +388,6 @@ class StatusUpdateService extends AbstractLockableService {
     }
 
     /**
-     * Triggered from the Yoda menu
-     * Loops through all {@link Doc}ument objects without owner but with a {@link DocContext} for a {@link Subscription} or {@link License} and assigns the ownership
-     * to the respective subscriber/licensee.
-     */
-    @Deprecated
-    void assignNoteOwners() {
-        Set<DocContext> docsWithoutOwner = DocContext.executeQuery('select dc from DocContext dc where dc.owner.owner = null and (dc.subscription != null or dc.license != null)')
-        docsWithoutOwner.each { DocContext dc ->
-            Org documentOwner
-            if(dc.subscription) {
-                if(dc.isShared) {
-                    documentOwner = dc.subscription.getConsortia()
-                }
-                else
-                    documentOwner = dc.subscription.getSubscriber()
-                log.debug("now processing note ${dc.owner.id} for subscription ${dc.subscription.id} whose probable owner is ${documentOwner}")
-            }
-            else if(dc.license) {
-                documentOwner = dc.license.getLicensee()
-                log.debug("now processing note ${dc.owner.id} for license ${dc.license.id} whose probable owner is ${documentOwner}")
-            }
-            if(documentOwner) {
-                dc.owner.owner = documentOwner
-                dc.owner.save()
-            }
-        }
-    }
-
-    /**
      * Triggered from the Admin menu
      * Takes every test subscription, processes them by name and counts their respective years up by one
      * @deprecated Micha says new users should start from a clean environment, the feature is not required any more

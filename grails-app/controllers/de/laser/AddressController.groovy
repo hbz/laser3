@@ -32,7 +32,7 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         Address.withTransaction {
@@ -118,7 +118,7 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         Address.withTransaction {
@@ -175,7 +175,7 @@ class AddressController  {
     /**
      * Deletes the given address
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         Address.withTransaction {

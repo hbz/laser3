@@ -433,13 +433,13 @@ class YodaController {
                             ]
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
-                                if (da.ctrlService() == 2) {
+                                if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
                                     mInfo.refactoring = 'done'
                                 }
                             }
                             if (da.wtc()) {
                                 mInfo.wtc = da.wtc()
-                                if (da.wtc() == 2) {
+                                if (da.wtc() == DebugInfo.WITH_TRANSACTION) {
                                     mInfo.refactoring = 'done'
                                 }
                             }
@@ -1056,27 +1056,6 @@ class YodaController {
     }
     */
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def migratePackageIdentifiers() {
-        IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
-        Set<Identifier> idList = Identifier.executeQuery("select ident from Identifier ident where ident.pkg != null and lower(ident.ns.ns) = 'isil'")
-        if(idList) {
-            // TODO [ticket=1789]
-            Identifier.executeUpdate("update Identifier ident set ident.ns = :isilPaketsigel where ident.pkg != null and lower(ident.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
-            //Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
-            flash.message = "Changes performed on ${idList.size()} package identifiers ..."
-        }
-        redirect controller: 'home'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def assignNoteOwners() {
-        statusUpdateService.assignNoteOwners()
-        redirect controller: 'home'
-    }
-
     /**
      * Enables/disables a boolean setting flag
      */
@@ -1240,14 +1219,6 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def updateTaxRates(){
-        flash.message = "Kosten werden in das neue Steuermodell überführt ..."
-        financeService.updateTaxRates()
-        redirect(url: request.getHeader('referer'))
-    }
-
     /**
      * Checks the subscription-license linkings on member level and reveals those where the participant is not linked directly to the member license
      */
@@ -1283,61 +1254,6 @@ class YodaController {
             oo.save()
         }
         redirect(action: 'checkOrgLicRoles')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def updateCustomerType(){
-        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
-        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-
-        List<Org> consOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :cons", [cons: cons])
-        List<Org> instOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :inst", [inst: inst])
-
-        int consCount = 0
-        consOrgs.each{ o ->
-            def oss = OrgSetting.get(o, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                log.debug ('Setting customer type for org: ' + o.id)
-                OrgSetting.add(o, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM', 'org'))
-                consCount++
-            }
-        }
-
-        int instCount = 0
-        instOrgs.each{ o ->
-            if (o.setDefaultCustomerType()) { instCount++ }
-        }
-
-        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Teilnehmer gesetzt."
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def insertEditUris() {
-        //ERMS-1758
-        List<ApiSource> apiSources = ApiSource.findAllByEditUrlIsNull()
-        List<GlobalRecordSource> globalRecordSources = GlobalRecordSource.findAllByEditUriIsNull()
-        apiSources.each { ApiSource aps ->
-            aps.editUrl = aps.baseUrl
-            aps.save()
-        }
-        globalRecordSources.each { GlobalRecordSource grs ->
-            grs.editUri = grs.uri
-            grs.save()
-        }
-        flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
-        redirect controller: 'home', action: 'index'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def generateBatchUID() {
-        flash.message = "Setze UID für Domänen ..."
-        identifierService.checkNullUIDs()
-        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -1393,38 +1309,6 @@ class YodaController {
         result.subscriptions = subList
         result.licenses = licList
 
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def replaceUserSettingDashboardReminderPeriod() {
-        Map<String, Object> result = [:]
-        User.withTransaction { TransactionStatus status ->
-            try {
-                def users = User.findAll()
-                print users
-                users.each { user ->
-                    int oldPeriod = 30
-                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
-                    user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
-                }
-                result.users = users
-                flash.message = 'Das Ersetzen des Usersetting DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
-            } catch (Exception ex) {
-                status.setRollbackOnly()
-                flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersetting DASHBOARD_REMINDER_PERIOD: ' + ex.message
-                flash.error += '<br /><br /><strong>Es wurde ein Rollback durchgeführt!</strong>'
-            }
-        }
         result
     }
 
@@ -1511,132 +1395,4 @@ class YodaController {
 
         render view: 'databaseMigration', model: result
     }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def cleanUpSurveys() {
-        Map<String, Object> result = [:]
-
-        def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
-        def count = 0
-        def resultMap = []
-        subSurveys.each { surConfig ->
-
-
-            def parentSubscription = surConfig?.subscription
-            def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
-            def parentSuccessorSubscription = surConfig?.subscription?._getCalculatedSuccessor()
-            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-            parentSubChilds.each { sub ->
-                if (sub._getCalculatedSuccessor()) {
-                    sub.getAllSubscribers().each { org1 ->
-
-                        def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
-                        if(surveyResult?.size() > 0) {
-                            count++
-                            Map newMap = [:]
-                            //println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
-                            newMap.surveyResult = surveyResult?.id ?: ""
-                            newMap.subName = sub.name
-                            newMap.subId = sub.id
-                            newMap.orgName = org1.name
-                            newMap.sortName = org1?.sortname
-                            newMap.propertiesSize = surveyResult?.size()
-                            newMap.info = 'Nachfolger Lizenz vorhanden'
-                            //println("")
-                            resultMap << newMap
-                        }else{
-                            count++
-                            Map newMap = [:]
-                            //println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
-                            newMap.surveyResult = 'Kein Umfrage'
-                            newMap.subName = sub.name
-                            newMap.subId = sub.id
-                            newMap.orgName = org1.name
-                            newMap.sortName = org1?.sortname
-                            newMap.propertiesSize = 0
-                            newMap.info = 'Nachfolger Lizenz vorhanden'
-                            //println("")
-                            resultMap << newMap
-                        }
-
-                    }
-
-                } else {
-                   /* if (property?.isRefdataValueType()) {
-                        if (sub?.propertySet?.find {
-                            it?.type?.id == property?.id
-                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-
-                            sub?.getAllSubscribers().each { org ->
-                                def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
-                                if(surveyResult?.size() > 0) {
-                                    count++
-                                    Map newMap = [:]
-                                    println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
-                                    newMap.surveyResult = surveyResult?.id ?: ""
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = surveyResult?.size()
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }else{
-                                    count++
-                                    Map newMap = [:]
-                                    println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
-                                    newMap.surveyResult = 'Kein Umfrage'
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = 0
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }
-
-                            }
-                        }
-                    }*/
-                }
-            }
-
-        }
-        def output = JsonOutput.toJson(resultMap)
-
-        //println(output)
-
-        response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        List titles = [
-
-        ]
-        List rows = []
-        resultMap.each { newMap ->
-            List row = []
-
-            row.add(newMap.subName)
-            row.add(newMap.subId)
-            row.add(newMap.sortName)
-            row.add(newMap.orgName)
-            row.add(newMap.propertiesSize)
-            row.add(newMap.info)
-            row.add(newMap.surveyResult)
-
-            rows.add(row)
-        }
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles,rows,','))
-        }
-        out.close()
-
-        result
-
-        redirect action: 'dashboard'
-    }
-
 }

@@ -24,7 +24,7 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
@@ -95,7 +95,7 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasAffiliation("INST_USER")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def edit() {
 		Task.withTransaction {
@@ -179,7 +179,7 @@ class TaskController  {
 	 * Call to delete the given task instance
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = 2)
+	@DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		Task.withTransaction {

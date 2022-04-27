@@ -832,7 +832,7 @@
             type: string
             description: The billing currency of the cost item. Maps to the RefdataCategory "${RDConstants.CURRENCY}".
             enum: <% printRefdataEnum(RDConstants.CURRENCY, 12) %>
-            example: ${de.laser.helper.RDStore.CURRENCY_EUR}
+            example: ${de.laser.storage.RDStore.CURRENCY_EUR}
           billingSumRounding:
             type: string #mapped to boolean
             description: Should the billing sum be rounded? Maps to the RefdataCategory "${RDConstants.Y_N}".

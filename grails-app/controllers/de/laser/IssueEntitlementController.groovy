@@ -22,32 +22,13 @@ class IssueEntitlementController  {
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    def index() {
-        redirect action: 'list', params: params
-    }
-
-    /**
-     * @deprecated all listings of local holdings go over the subscription controller; this method lacks the subscription context.
-     * Use {@link SubscriptionController#index()} instead
-     */
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    def list() {
-        params.max = params.max ?: contextService.getUser().getDefaultPageSize()
-        [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
-    }
-
     /**
      * @deprecated The method {@link SubscriptionController#processAddEntitlements()} does the entitlement adding;
      * use {@link SubscriptionController#addEntitlements()} resp. {@link SubscriptionService#issueEntitlementEnrichment(java.io.InputStream, java.util.Set, de.laser.Subscription, boolean, boolean)}
      * instead
      */
     @Deprecated
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
@@ -57,7 +38,7 @@ class IssueEntitlementController  {
      * Shows the given issue entitlement details
      * @return
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")',wtc = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
       Map<String, Object> result = [:]
@@ -150,13 +131,13 @@ class IssueEntitlementController  {
 
     }
 
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 0)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
     }
 
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")',wtc = 2)
+    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->

@@ -306,68 +306,6 @@ class ApiManager {
         result
     }
 
-    //@Deprecated
-    /*
-    static write(String obj, JSONObject data, Org contextOrg) {
-
-        return // closed ..
-
-        def result
-
-        // TODO check isDataManager, etc for contextOrg
-
-        // check existing resources
-        boolean conflict = false
-
-        if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
-
-            data.identifiers?.each { ident ->
-                def hits = ApiOrg.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
-                if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
-                    conflict = true
-                }
-            }
-            def hits = ApiOrg.findOrganisationBy('name', data.name.trim())
-            if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Org) {
-                conflict = true
-            }
-
-            if (conflict) {
-                return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
-            }
-
-            result = ApiWriter.importOrganisation(data, contextOrg)
-        }
-        else if (NOT_SUPPORTED && 'license'.equalsIgnoreCase(obj)) {
-
-            result = ApiWriter.importLicense(data, contextOrg)
-        }
-        else if (NOT_SUPPORTED && 'subscription'.equalsIgnoreCase(obj)) {
-
-            data.identifiers?.each { ident ->
-                def hits = ApiSubscription.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
-                if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
-                    conflict = true
-                }
-            }
-            def hits = ApiSubscription.findSubscriptionBy('identifier', data.identifier)
-            if (hits == Constants.HTTP_PRECONDITION_FAILED || hits instanceof Subscription) {
-                conflict = true
-            }
-
-            if (conflict) {
-                return ['result': Constants.HTTP_CONFLICT, 'debug': 'debug']
-            }
-
-            result = ApiWriter.importSubscription(data, contextOrg)
-        }
-        else {
-            result = Constants.HTTP_NOT_IMPLEMENTED
-        }
-        result
-    }
-*/
-
     /**
      * Builds the response depending in the request and the requested object parameters
      * @param request the {@link HttpServletRequest} request object

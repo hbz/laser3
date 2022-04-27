@@ -1652,15 +1652,6 @@ class FinanceService {
 
     //---------------------------------------------- poison cupboard ---------------------------------------------
 
-    @Deprecated
-    void updateTaxRates() {
-        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 7 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_7])
-        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxRate = 19 and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAXABLE_19])
-        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_EXEMPT,value: RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE)])
-        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_TAXABLE,value: RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE)])
-        CostItem.executeUpdate('update CostItem ci set ci.taxKey = :key where ci.taxCode = :value and ci.taxKey = null',[key:CostItem.TAX_TYPES.TAX_NOT_APPLICABLE,value: RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE)])
-    }
-
     /**
      * Currently unused; should backwards-correct cost items to calculate the costs in local currency
      * @param dryRun do the execution or not?

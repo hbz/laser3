@@ -54,7 +54,7 @@ class DocstoreController  {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugInfo(wtc = 2)
+    @DebugInfo(wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(['ROLE_USER'])
     def uploadDocument() {
         Doc.withTransaction { TransactionStatus ts ->

@@ -89,7 +89,7 @@
             <th>#</th>
             <th style="text-transform: none !important;">COLLATE: ${collate_de}</th>
             <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}</th>
-            <th>Current Query Result</th>
+            <th>Current: HQL Result</th>
         </tr>
     </thead>
         <tbody>
@@ -130,7 +130,7 @@
             <th>#</th>
             <th style="text-transform: none !important;">COLLATE: ${collate_en}</th>
             <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}</th>
-            <th>Current Query Result</th>
+            <th>Current: HQL Result</th>
         </tr>
         </thead>
         <tbody>

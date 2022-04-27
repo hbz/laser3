@@ -929,42 +929,6 @@ class AdminController  {
         redirect(controller:'home')
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    Map<String,Object> listDuplicateTitles() {
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String,Object> result = sessionCache.get("AdminController/titleRemap/result")
-        if(!result) {
-            result = yodaService.listDuplicateTitles()
-            sessionCache.put("AdminController/titleRemap/result",result)
-        }
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def executeTiCleanup() {
-        log.debug("WARNING: bulk deletion of title entries triggered! Start nuking!")
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String,Object> result = (Map<String,Object>) sessionCache.get("AdminController/titleRemap/result")
-        if(result) {
-            try {
-                yodaService.executeTiCleanup(result)
-                sessionCache.remove("AdminController/titleRemap/result")
-                redirect(controller:'title',action: 'index')
-            }
-            catch (CleanupException e) {
-                log.error("failure on merging titles ... rollback!")
-                e.printStackTrace()
-                redirect(controller:'admin',action: 'listDuplicateTitles')
-            }
-        }
-        else {
-            log.error("data missing, rebuilding data")
-            redirect(controller:'admin',action: 'listDuplicateTitles')
-        }
-    }
-
     /**
      * Lists all organisations (i.e. institutions, providers, agencies), their customer types, GASCO entry, legal information and API information
      */

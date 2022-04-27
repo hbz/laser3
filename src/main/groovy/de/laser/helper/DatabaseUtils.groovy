@@ -71,7 +71,7 @@ class DatabaseUtils {
         DataSource dataSource = BeanStorage.getDataSource()
         Sql sql = new Sql(dataSource)
 
-        List<GroovyRowResult> rows = sql.rows( "select relname as tablename, n_tup_ins - n_tup_del as rowcount from pg_stat_all_tables join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
+        List<GroovyRowResult> rows = sql.rows( "select relname as tablename, reltuples as rowcount from pg_class join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
