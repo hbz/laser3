@@ -6,6 +6,9 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 - updating outdated schemata
 - added new virtual object: `DeweyDecimalClassification`
+- added new virtual object: `Link_License`
+- added new virtual object: `Link_Org`
+- added new virtual object: `Link_Subscription`
 - added new virtual object: `Package_in_CostItem`
 - added new virtual object: `PriceItemCollection`
 - added new virtual object: `TitleGroup`
@@ -17,6 +20,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 - added new attribute: `CostItemCollection.finalCostRounding`
 - added new attribute: `IssueEntitlement_in_CostItem.priceItems`
 - added new attribute: `IssueEntitlement_in_CostItem.status`
+- added new attribute: `License.linkedLicenses`
 - added new attribute: `LicenseStub.startDate`
 - added new attribute: `LicenseStub.endDate`
 - added new attribute: `Organisation.altNames`
@@ -30,6 +34,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 - added new attribute: `Package_in_Subscription.altnames`
 - added new attribute: `Subscription.hasPublishComponent`
 - added new attribute: `Subscription.isAutomaticRenewAnnually`
+- added new attribute: `Subscription.linkedSubscriptions`
 - added new attribute: `TitleInstancePackagePlatform_in_Subscription.accessType`
 - added new attribute: `TitleInstancePackagePlatform_in_Subscription.altnames`
 - added new attribute: `TitleInstancePackagePlatform_in_Subscription.dateFirstInPrint`

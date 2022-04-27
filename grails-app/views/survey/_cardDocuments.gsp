@@ -24,7 +24,7 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>
