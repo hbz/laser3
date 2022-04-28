@@ -99,8 +99,6 @@ class LicenseController {
             )
 
             log.debug("pc result is ${result.pendingChanges}");
-            // refactoring: replace link table with instanceOf
-            // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
             if (result.license.isSlaved && ! pendingChanges.isEmpty()) {
                 log.debug("Slaved lincence, auto-accept pending changes")
@@ -119,8 +117,6 @@ class LicenseController {
         }
 
         // ---- pendingChanges : end
-
-        //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
         pu.setBenchmark('tasks')
 
@@ -226,7 +222,6 @@ class LicenseController {
                         [lic: result.license.id]
                 )*/
         result.existingLicensorIdList = []
-        // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
 
         List bm = pu.stopBenchmark()
         result.benchMark = bm
@@ -263,34 +258,6 @@ class LicenseController {
             response.outputStream.withStream { it << pdf }
         }
         else result
-        /*withFormat {
-        html result
-
-      /*json   def map = exportService.addLicensesToMap([:], [result.license])
-
-        def json = map as JSON
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-        response.contentType = "application/json"
-        render json.toString()
-      }
-      xml {
-        def doc = exportService.buildDocXML("Licenses")
-
-        exportService.addLicensesIntoXML(doc, doc.getDocumentElement(), [result.license])
-
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-        response.contentTypexml"
-        exportService.streamOutXML(doc, response.outputStream)
-      }
-      csv {
-          response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-          response.contentType = "text/csv"
-          ServletOutputStream out = response.outputStream
-          //exportService.StreamOutLicenseCSV(out,null,[result.license])
-          out.close()
-
-      }
-      */
   }
 
     /**
@@ -364,52 +331,6 @@ class LicenseController {
                             ],
                             InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                 }
-
-                /*--
-                    not longer used? -> remove and refactor params
-
-
-                License licenseCopy
-                List<Org> members = []
-
-                Map<String, Object> copyParams = [
-                        lic_name: "${result.license.reference}",
-                        isSlaved: params.isSlaved,
-                        asOrgType: orgType,
-                        copyStartEnd: true
-                ]
-
-                params.list('selectedOrgs').each { it ->
-                    Org fo = Org.findById(Long.valueOf(it))
-                    members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
-                }
-
-                members.each { cm ->
-                    String postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
-
-                    if (result.license) {
-                        copyParams['lic_name'] = copyParams['lic_name'] + " (${postfix})"
-
-                        if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(
-                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                            // licenseCopy.sortableReference = subLicense.sortableReference
-                        }
-                        else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(
-                                    result.license, copyParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                        }
-                        else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
-                            licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                        }
-
-                        if (licenseCopy) {
-                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save(flush:true)
-                        }
-                    }
-                }
-                --*/
-
             }
         if(licenseCopy) {
             redirect action: 'show', params: [id: licenseCopy.id]
@@ -732,9 +653,6 @@ class LicenseController {
         String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
-        //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
-        //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
-
         String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
@@ -763,7 +681,6 @@ class LicenseController {
 
     result.historyLinesTotal = AuditLogEvent.executeQuery(base_query, query_params).size()
     result
-
   }
 
     /**
@@ -842,19 +759,6 @@ class LicenseController {
 
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
-
-    /**
-     * Should create an empty license?
-     * @deprecated use {@link MyInstitutionController#emptyLicense()} instead
-     */
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-  def create() {
-    Map<String, Object> result = [:]
-    result.user = contextService.getUser()
-    result
-  }
 
     /**
      * Entry point for copying a license

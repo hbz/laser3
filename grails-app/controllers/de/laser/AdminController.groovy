@@ -524,31 +524,6 @@ class AdminController  {
         dataloadService.dataCleanse()
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def updateQASubscriptionDates() {
-        if (AppUtils.getCurrentServer() in [AppUtils.QA, AppUtils.LOCAL]) {
-            def updateReport = statusUpdateService.updateQASubscriptionDates()
-            if(updateReport instanceof Boolean)
-                flash.message = message(code:'subscription.qaTestDateUpdate.success')
-            else {
-                flash.error = message(code:'subscription.qaTestDateUpdate.updateError',updateReport)
-            }
-        }
-        else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def manageContentItems() {
-    Map<String, Object> result = [:]
-
-        result.items = ContentItem.list()
-
-        result
-    }
-
     /**
      * Enumerates the database collations currently used in the tables
      */
@@ -871,55 +846,6 @@ class AdminController  {
         }
         redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
 
-    }
-
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def newContentItem() {
-    if ( ( params.key != null ) && ( params.content != null ) && ( params.key.length() > 0 ) && ( params.content.length() > 0 ) ) {
-
-            String locale = ( ( params.locale != null ) && ( params.locale.length() > 0 ) ) ? params.locale : ''
-
-            if ( ContentItem.findByKeyAndLocale(params.key,locale) != null ) {
-                flash.message = 'Content item already exists'
-            }
-            else {
-                ContentItem.lookupOrCreate(params.key, locale, params.content)
-            }
-        }
-
-        redirect(action:'manageContentItems')
-        return
-    }
-
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def editContentItem() {
-    Map<String, Object> result = [:]
-    def idparts = params.id?.split(':')
-    if ( idparts.length > 0 ) {
-      def key = idparts[0]
-      String locale = idparts.length > 1 ? idparts[1] : ''
-
-            ContentItem contentItem = ContentItem.findByKeyAndLocale(key,locale)
-            if ( contentItem != null ) {
-                result.contentItem = contentItem
-            }
-            else {
-                flash.message="Unable to locate content item for key ${idparts}"
-                redirect(action:'manageContentItems');
-            }
-            if ( request.method.equalsIgnoreCase("post")) {
-                contentItem.content = params.content
-                contentItem.save()
-                redirect(action:'manageContentItems')
-            }
-        }
-        else {
-            flash.message="Unable to parse content item id ${params.id} - ${idparts}"
-            redirect(action:'manageContentItems')
-        }
-        result
     }
 
     @Deprecated

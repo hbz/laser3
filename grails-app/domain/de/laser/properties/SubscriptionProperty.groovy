@@ -11,6 +11,7 @@ import de.laser.storage.BeanStorage
 import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
+import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * The class's name is what it does: a property (general / custom or private) to a {@link Subscription}.
@@ -138,7 +139,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
             // legacy ++
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {

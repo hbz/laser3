@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.json.JSONElement
+import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * A class to retain identifiers for objects. Identifiers may be for example ISBNs for books ISSNs for journals, ISILs for packages, VIAF or other normed tokens for organisations.
@@ -395,7 +396,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
             // legacy ++
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {

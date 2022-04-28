@@ -1001,24 +1001,6 @@ select distinct oap from OrgAccessPoint oap
        }
   }
 
-    @Deprecated
-    String dropdownNamingConventionWithoutOrg() {
-        dropdownNamingConventionWithoutOrg(BeanStorage.getContextService().getOrg())
-    }
-
-    @Deprecated
-    String dropdownNamingConventionWithoutOrg(Org contextOrg){
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        String period = startDate ? sdf.format(startDate)  : ''
-
-        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
-        period = period ? '('+period+')' : ''
-
-        String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
-
-        return name + ' - ' + statusString + ' ' +period
-    }
-
     /**
      * Gets the subscription which is instance of this subscription (i.e. member subscriptions of this consortial parent subscription)
      * and where the given institution is the subscriber

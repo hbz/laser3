@@ -483,8 +483,6 @@ class MyInstitutionController  {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
 
-        //log.debug("query = ${base_qry}");
-        //log.debug("params = ${qry_params}");
         pu.setBenchmark('execute query')
         log.debug("select l ${base_qry}")
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
@@ -1469,8 +1467,6 @@ join sub.orgRelations or_sub where
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        //def cache = contextService.getCache('MyInstitutionController/currentPackages/', contextService.ORG_SCOPE)
 
         List currentSubIds = []
         List idsCategory1  = []

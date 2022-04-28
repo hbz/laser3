@@ -291,7 +291,6 @@
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</semui:link>
 
                                 <div class="divider"></div>
@@ -316,7 +315,6 @@
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</semui:link>
                                 <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</semui:link>--%> <%-- property groups are always private?? --%>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageContentItems">${message(code:'menu.admin.manageContentItems')}</semui:link>
 
                                 <div class="divider"></div>
 
