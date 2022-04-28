@@ -40,7 +40,7 @@
 
 <div class="${hasErrors(bean: numbersInstance, field: 'org', 'error')} required">
 	<label for="org">
-		<g:message code="numbers.org.label" default="Org" />
+		<g:message code="org.label" />
 		<span class="required-indicator">*</span>
 	</label>
 	<g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" required="" value="${numbersInstance?.org?.id}" class="many-to-one"/>

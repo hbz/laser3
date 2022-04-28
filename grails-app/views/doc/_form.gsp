@@ -28,7 +28,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'uuid', 'error')} ">
 	<label for="uuid">
-		<g:message code="doc.uuid.label" default="Uuid" />
+		<g:message code="default.uuid.label" />
 		
 	</label>
 	<g:textField name="uuid" value="${docInstance?.uuid}"/>
@@ -36,7 +36,7 @@
 
 <div class="field ${hasErrors(bean: docInstance, field: 'contentType', 'error')} ">
 	<label for="contentType">
-		<g:message code="doc.contentType.label" default="Content Type" />
+		<g:message code="default.contentType.label" />
 		
 	</label>
 	<g:field type="number" name="contentType" value="${docInstance.contentType}"/>

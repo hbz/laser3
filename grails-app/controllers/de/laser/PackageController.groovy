@@ -462,7 +462,7 @@ class PackageController {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.editable = isEditable()
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
@@ -602,7 +602,7 @@ class PackageController {
         log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.editable = isEditable()
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
@@ -901,11 +901,6 @@ class PackageController {
         }
     }
 
-    @Deprecated
-    def isEditable() {
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-    }
-
     /**
      * Links the given package to the given subscription and creates issue entitlements
      * of the current package holding. If the package was not available in the app,
@@ -986,7 +981,7 @@ class PackageController {
         }
 
         result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 

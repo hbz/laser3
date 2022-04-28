@@ -5,7 +5,11 @@ import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import grails.core.GrailsApplication
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.Action
+import grails.web.mapping.UrlMappingData
+import org.grails.core.DefaultGrailsControllerClass
 import org.grails.exceptions.ExceptionUtils
+import org.grails.web.mapping.DefaultUrlMappingParser
 
 /**
  * This controller handles the server code mapping output
@@ -49,7 +53,7 @@ class ServerCodesController {
                 result.mailString += "Cause: " + root.message + nl
             }
         }
-        render view:'error' , model: result
+        render view:'error', model: result
     }
 
     /**
@@ -57,7 +61,7 @@ class ServerCodesController {
      */
     def forbidden() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        render view:'forbidden' , model: result
+        render view:'forbidden', model: result
     }
 
     /**
@@ -65,7 +69,21 @@ class ServerCodesController {
      */
     def notFound() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        render view:'notFound' , model: result
+
+        UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
+        DefaultGrailsControllerClass controller = grailsApplication.controllerClasses.find { it.logicalPropertyName == umd.tokens[0] }
+        if (controller) {
+            result.alternatives = controller.clazz.declaredMethods.findAll{
+                it.getAnnotation(Action) && it.name in ['index', 'list', 'show']
+            }.collect{
+                if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
+                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, params: [id: umd.tokens[2]], absolute: true)}"
+                } else {
+                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)}"
+                }
+            }
+        }
+        render view:'notFound', model: result
     }
 
     /**
@@ -73,6 +91,6 @@ class ServerCodesController {
      */
     def unavailable() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        render view:'unavailable' , model: result
+        render view:'unavailable', model: result
     }
 }

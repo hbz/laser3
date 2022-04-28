@@ -108,62 +108,6 @@ class TitleController  {
         result
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-  def batchUpdate() {
-        log.debug( params.toMapString() )
-        SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
-        User user = contextService.getUser()
-
-      params.each { p ->
-      if ( p.key.startsWith('_bulkflag.')&& (p.value=='on'))  {
-        def tipp_id_to_edit = p.key.substring(10);
-        def tipp_to_bulk_edit = TitleInstancePackagePlatform.get(tipp_id_to_edit)
-        boolean changed = false
-
-        if ( tipp_to_bulk_edit != null ) {
-            def bulk_fields = [
-                    [ formProp:'start_date', domainClassProp:'startDate', type:'date'],
-                    [ formProp:'start_volume', domainClassProp:'startVolume'],
-                    [ formProp:'start_issue', domainClassProp:'startIssue'],
-                    [ formProp:'end_date', domainClassProp:'endDate', type:'date'],
-                    [ formProp:'end_volume', domainClassProp:'endVolume'],
-                    [ formProp:'end_issue', domainClassProp:'endIssue'],
-                    [ formProp:'coverage_depth', domainClassProp:'coverageDepth'],
-                    [ formProp:'coverage_note', domainClassProp:'coverageNote'],
-                    [ formProp:'hostPlatformURL', domainClassProp:'hostPlatformURL']
-            ]
-
-            bulk_fields.each { bulk_field_defn ->
-                if ( params["clear_${bulk_field_defn.formProp}"] == 'on' ) {
-                    log.debug("Request to clear field ${bulk_field_defn.formProp}");
-                    tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = null
-                    changed = true
-                }
-                else {
-                    def proposed_value = params['bulk_'+bulk_field_defn.formProp]
-                    if ( ( proposed_value != null ) && ( proposed_value.length() > 0 ) ) {
-                        log.debug("Set field ${bulk_field_defn.formProp} to ${proposed_value}");
-                        if ( bulk_field_defn.type == 'date' ) {
-                            tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = formatter.parse(proposed_value)
-                        }
-                        else {
-                            tipp_to_bulk_edit[bulk_field_defn.domainClassProp] = proposed_value
-                        }
-                        changed = true
-                    }
-                }
-            }
-          if (changed)
-             tipp_to_bulk_edit.save()
-        }
-      }
-    }
-
-    redirect(controller:'title', action:'show', id:params.id);
-  }
-
     /**
      * Shows the history events related to the given title
      * @return a list of history events

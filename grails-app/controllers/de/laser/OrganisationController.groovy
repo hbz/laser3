@@ -1308,13 +1308,6 @@ class OrganisationController  {
         redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
-    def edit() {
-        redirect controller: 'organisation', action: 'show', params: params
-        return
-    }
-
     /**
      * Call to delete the given organisation, offering substitution candidates
      * @return the deletion view
@@ -1345,30 +1338,6 @@ class OrganisationController  {
         }
 
         render view: 'delete', model: result
-    }
-
-    /**
-     * Was used to link two organisations by combo
-     * @deprecated Use {@link #linkOrgs()} instead
-     */
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def addOrgCombo(Org fromOrg, Org toOrg) {
-        RefdataValue comboType = RefdataValue.get(params.comboTypeTo)
-        log.debug("Processing combo creation between ${fromOrg} AND ${toOrg} with type ${comboType}")
-        def dupe = Combo.executeQuery("from Combo as c where c.fromOrg = :fromOrg and c.toOrg = :toOrg", [fromOrg: fromOrg, toOrg: toOrg])
-      
-      if (! dupe) {
-          Combo consLink = new Combo(fromOrg:fromOrg,
-                                 toOrg:toOrg,
-                                 status:null,
-                                 type:comboType)
-          consLink.save()
-      }
-      else {
-        flash.message = "This Combo already exists!"
-      }
     }
 
     /**

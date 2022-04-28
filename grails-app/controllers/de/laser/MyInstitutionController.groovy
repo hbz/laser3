@@ -1644,12 +1644,9 @@ join sub.orgRelations or_sub where
     @Secured(['ROLE_YODA'])
     def changeLog() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        def exporting = ( params.format == 'csv' ? true : false )
-
         result.institutional_objects = []
 
-        if ( exporting ) {
+        if ( params.format == 'csv' ) {
           result.max = 1000000;
           result.offset = 0;
         }

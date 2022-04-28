@@ -158,7 +158,7 @@ class LoginController {
   @Transactional
   def resetForgottenPassword() {
     if(!params.forgotten_username) {
-      flash.error = g.message(code:'menu.user.forgottenPassword.userMissing')
+      flash.error = g.message(code:'menu.user.forgottenPassword.userMissing') as String
     }
     else {
       User user = User.findByUsername(params.forgotten_username)
@@ -166,12 +166,12 @@ class LoginController {
         String newPassword = PasswordUtils.getRandomUserPassword()
         user.password = newPassword
         if (user.save()) {
-          flash.message = message(code: 'user.newPassword.successNoOutput')
+          flash.message = message(code: 'user.newPassword.successNoOutput') as String
 
           instAdmService.sendMail(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
         }
       }
-      else flash.error = g.message(code:'menu.user.forgottenPassword.userError')
+      else flash.error = g.message(code:'menu.user.forgottenPassword.userError') as String
     }
     redirect action: 'auth'
   }

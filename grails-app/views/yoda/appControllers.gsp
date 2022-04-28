@@ -197,9 +197,6 @@
                                         <g:elseif test="${info.key == 'wtc'}">
                                             <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                         </g:elseif>
-                                        <g:elseif test="${info.key == 'deprecated'}">
-                                            <em>&larr; Deprecated</em>
-                                        </g:elseif>
                                         <g:elseif test="${info.key == 'modifiers'}">
                                             <g:if test="${info.value.private == true}">
                                                 <strong class="modifier">private</strong>
@@ -207,6 +204,9 @@
                                             <g:if test="${info.value.static == true}">
                                                 <strong class="modifier">static</strong>
                                             </g:if>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'deprecated'}">
+                                            <em>&larr; Deprecated</em>
                                         </g:elseif>
 
                                     </g:each>
@@ -235,7 +235,7 @@
     background-color: #f5f5f5;
 }
 .secInfoWrapper .permitAll {
-    padding: 1px 5px;
+    padding: 1px 3px;
     color: #fff;
     background-color: #ff0066;
 }
@@ -247,13 +247,12 @@
 .secInfoWrapper .ctrlService_1,
 .secInfoWrapper .wtc_2,
 .secInfoWrapper .ctrlService_2 {
-    margin-right: 1em;
-    padding: 1px 5px;
+    margin-left: 0.5em;
+    padding: 1px 3px;
     min-width: 90px;
     text-align: center;
     font-weight: normal;
     background-color: #eee;
-    float: left;
 }
 
 .secInfoWrapper .warning {

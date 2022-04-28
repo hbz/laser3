@@ -13,6 +13,12 @@ class AjaxOpenController {
     ContextService contextService
 
     @Secured(['permitAll'])
+    def test() {
+        Map test = [ a: 1, b: 2, status: 'test_only', time: System.currentTimeMillis() ]
+        render test as JSON
+    }
+
+    @Secured(['permitAll'])
     def profiler() {
         Map<String, Object> result = [status: 'failed']
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -31,14 +37,8 @@ class AjaxOpenController {
         render result as JSON
     }
 
-    @Secured(['permitAll']) // TODO
+    @Secured(['permitAll'])
     def messages() {
         render template: '/templates/systemMessages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
-    }
-
-    @Secured(['permitAll']) // TODO
-    def test() {
-        Map test = [ a: 1, b: 2, status: 'test_only', time: System.currentTimeMillis() ]
-        render test as JSON
     }
 }

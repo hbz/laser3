@@ -2,20 +2,22 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.datamanager.ann')}</title>
+        <title>${message(code:'laser')} : ${message(code:'announcement.plural')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.datamanager.ann" class="active" />
+            <semui:crumb message="announcement.plural" class="active" />
         </semui:breadcrumbs>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'menu.datamanager.ann')}
+            ${message(code:'announcement.plural')}
         </h1>
 
+        <br />
+        <br />
         <g:message code="profile.dashboardItemsTimeWindow" args="${itemsTimeWindow}" />
 
         <br />

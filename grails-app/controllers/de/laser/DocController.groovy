@@ -18,39 +18,6 @@ class DocController  {
 
     static allowedMethods = [delete: 'POST']
 
-	@Deprecated
-	@Secured(['ROLE_ADMIN'])
-    def index() {
-        redirect action: 'list', params: params
-    }
-
-	@Deprecated
-	@Secured(['ROLE_ADMIN'])
-    def list() {
-      	Map<String, Object> result = [:]
-      	result.user = contextService.getUser()
-
-		params.max = params.max ?: result.user?.getDefaultPageSize()
-
-      	result.docInstanceList = Doc.list(params)
-      	result.docInstanceTotal = Doc.count()
-      	result
-    }
-
-	@Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    def show() {
-		Doc docInstance = Doc.get(params.id)
-        if (!docInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        [docInstance: docInstance]
-    }
-
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
 	 */
