@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4073   28.04.2022   dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
+
 4200    26.04.2022  dev     2.3         Moe     Feature     Neue Sicht "Auszuwählende Titel"
 
 4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
