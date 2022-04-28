@@ -16655,8 +16655,8 @@ a.ui.basic.label:hover {
   background-color: #fee8d2;
 }
 
-.ui.blue.circular.label:hover,
-.ui.blue.circular.label:focus {
+a .ui.circular.label:hover,
+a .ui.circular.label:focus {
   border-radius: 0;
   -webkit-transition: border-radius;
   transition: border-radius;
