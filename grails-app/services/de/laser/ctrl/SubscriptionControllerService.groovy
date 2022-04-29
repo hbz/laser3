@@ -440,11 +440,12 @@ class SubscriptionControllerService {
                     c5CheckParams.endDate = queryParams.endDate
                 }
                 Session sess = sessionFactory.getCurrentSession()
-                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :refSub and ie_accept_status_rv_fk = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or c5r_title_fk is null)'+sqlDateRange)
+                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :refSub and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
                 query.setParameter('customer', c5CheckParams.customer.id)
                 query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
                 query.setParameter('refSub', refSub.id)
                 query.setParameter('acceptStatus', RDStore.IE_ACCEPT_STATUS_FIXED.id)
+                query.setParameter('current', RDStore.TIPP_STATUS_CURRENT.id)
                 if(c5CheckParams.startDate)
                     query.setParameter('startDate', new Timestamp(c5CheckParams.startDate.getTime()))
                 if(c5CheckParams.endDate)
@@ -496,8 +497,14 @@ class SubscriptionControllerService {
                     else result.reportType = params.reportType
                     filter += " and lower(r.reportType) in (:reportType) "
                     queryParams.reportType = result.reportType
-                    Set availableMetricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    Set availableMetricTypes = [], availableAccessTypes = []
+                    List metricAccessRows = Counter5Report.executeQuery('select r.metricType, r.accessType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    metricAccessRows.each { rows ->
+                        availableMetricTypes << rows[0]
+                        availableAccessTypes << rows[1]
+                    }
                     result.metricTypes = availableMetricTypes
+                    result.accessTypes = availableAccessTypes
                     if(!params.metricType) {
                         if(availableMetricTypes)
                             result.metricType = availableMetricTypes[0]
@@ -574,7 +581,7 @@ class SubscriptionControllerService {
                     c5CheckParams.endDate = queryParams.endDate
                 }
                 if(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams)?.get(0) == 0) {
-                    if(filter) {
+                    if(params.data == 'fetchFiltered' && params.reportType && params.metricType) {
                         filter += " and r.reportType in (:reportType) "
                         queryParams.reportType = params.reportType
                         filter += " and r.metricType = :metricType "
@@ -601,7 +608,7 @@ class SubscriptionControllerService {
                     result.revision = 'counter4'
                 }
                 else {
-                    if(filter) {
+                    if(params.data == 'fetchFiltered' && params.reportType && params.metricType) {
                         filter += " and lower(r.reportType) in (:reportType) "
                         queryParams.reportType = params.reportType
                         filter += " and r.metricType = :metricType "
@@ -693,13 +700,19 @@ class SubscriptionControllerService {
                 filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                 queryParams.endDate = filterTime.getTime()
             }
-            startTime.set(2018, 0, 1)
+            startTime.set(Calendar.DAY_OF_YEAR, 1)
             endTime.setTime(new Date())
         }
-        while(startTime.before(endTime)) {
-            monthsInRing << startTime.getTime()
-            startTime.add(Calendar.MONTH, 1)
+        if(params.tab && params.tab != 'total' && params.exportXLS && params.data != 'fetchAll') {
+            monthsInRing << DateUtils.getSDF_yearMonth().parse(params.tab)
         }
+        else {
+            while(startTime.before(endTime)) {
+                monthsInRing << startTime.getTime()
+                startTime.add(Calendar.MONTH, 1)
+            }
+        }
+
         if(params.data != 'fetchAll') {
             if(params.series_names) {
                 filter += " and title.seriesName in (:seriesName) "
@@ -1478,6 +1491,14 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                    result.bulkProcessRunning = true
+                }
+            }
             if (result.subscription.packages) {
                 result.pkgs = []
                     result.subscription.packages.each { sp ->
@@ -1609,16 +1630,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
             boolean bulkProcessRunning = false
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
-                    bulkProcessRunning = true
-                }
-            }
             if(params.addUUID && !bulkProcessRunning) {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
@@ -1982,7 +1994,11 @@ class SubscriptionControllerService {
             params.subscription = result.subscription
             params.issueEntitlementStatus = ie_current
             params.addEntitlements = true
-            Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages?.pkg)
+            List packages = []
+            if(params.pkgfilter)
+                packages << Package.get(params.pkgfilter)
+            else packages = result.subscription.packages?.pkg
+            Map<String, Object> query = filterService.getTippQuery(params, packages)
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
@@ -1998,6 +2014,9 @@ class SubscriptionControllerService {
                 Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
+                if(!params.pagination) {
+                    checkedCache.put('checked', [:])
+                }
                 if (params.kbartPreselect && !params.pagination) {
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
@@ -2073,6 +2092,7 @@ class SubscriptionControllerService {
                             errorList.add(messageSource.getMessage('subscription.details.addEntitlements.duplicatePriceColumn', null, locale))
                         } else isUniqueListpriceColumn = true
                     }
+                    Set<String> selectedTippIds = []
                     //after having read off the header row, pop the first row
                     rows.remove(0)
                     rows.eachWithIndex { row, int i ->
@@ -2080,14 +2100,14 @@ class SubscriptionControllerService {
                         ArrayList<String> cols = row.split('\t')
                         Map<String, Object> idCandidate = [:]
                         String ieCandIdentifier
-                        if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                        if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol]?.trim()?.isEmpty()) {
                             identifiers.zdbIds.add(cols[colMap.zdbCol])
                             idCandidate = [namespaces: namespaces.zdb, value: cols[colMap.zdbCol]]
                             if (issueEntitlementOverwrite[cols[colMap.zdbCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
                             else ieCandIdentifier = cols[colMap.zdbCol]
                         }
-                        if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                        if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol]?.trim()?.isEmpty()) {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.eissn)
@@ -2097,7 +2117,7 @@ class SubscriptionControllerService {
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]]
                         }
-                        if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                        if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol]?.trim()?.isEmpty()) {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.issn)
@@ -2198,23 +2218,20 @@ class SubscriptionControllerService {
                             }
                         }
                         if (ieCandIdentifier) {
+                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED, value: ieCandIdentifier]
+                            //check where indices are needed!
+                            List<String> matches = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and id.value = :value',unfilteredParams)
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
-                            issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
+                            matches.each { String match ->
+                                issueEntitlementOverwrite[match] = ieCandidate
+                                selectedTippIds << match
+                            }
                         }
                     }
                     result.checked = [:]
-                    Map<String, Object> unfilteredParams = [pkg:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED]
-                    Set<String> selectedTippIds = [], identifierValues = []
-                    identifiers.values().each { subList ->
-                        if(subList instanceof List)
-                            identifierValues.addAll(subList)
-                    }
-                    identifierValues.collate(32700).each { List<String> chunk ->
-                        unfilteredParams.idList = chunk
-                        selectedTippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg = :pkg and tipp.status != :deleted and id.value in (:idList)',unfilteredParams))
-                        selectedTippIds.removeAll(addedTipps)
-                    }
+                    result.issueEntitlementOverwrite = issueEntitlementOverwrite
+                    selectedTippIds.removeAll(addedTipps)
                     selectedTippIds.each { String wekbId ->
                         //println("located tipp: ${wekbId}")
                         result.checked[wekbId] = "checked"
@@ -2340,42 +2357,38 @@ class SubscriptionControllerService {
         }
         else {
             Locale locale = LocaleContextHolder.getLocale()
-            RefdataValue ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
-            int addTitlesCount = 0
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache?.get('issueEntitlementCandidates')
+            Map issueEntitlementCandidates = cache && cache.containsKey('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    executorService.execute({
-                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
-                            checked.each { k, v ->
-                                if(v == 'checked') {
-                                    try {
-                                        if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                            if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                                                log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
-                                        }
-                                        else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
-                                            log.debug("Added tipp ${k} to sub ${result.subscription.id}")
-                                        }
-                                        addTitlesCount++
-                                        if(addTitlesCount > 0 && addTitlesCount % 10000 == 0) {
-                                            log.debug("interim flush at ${addTitlesCount}")
-                                            ts.flush()
-                                        }
+                    //executorService.execute({
+                        //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED.id, false)
+                        //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
+                        /*
+                        checked.each { k, v ->
+                            if(v == 'checked') {
+                                try {
+                                    /*
+                                | Boolean.valueOf(params.uploadPriceInfo))  {
+                                        if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                                            log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
                                     }
-                                    catch (EntitlementCreationException e) {
-                                        result.error = e.getMessage()
+                                    else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
+                                        log.debug("Added tipp ${k} to sub ${result.subscription.id}")
                                     }
+
+                                }
+                                catch (EntitlementCreationException e) {
+                                    result.error = e.getMessage()
                                 }
                             }
                         }
-                        Object[] args = [addTitlesCount]
-                        result.message = messageSource.getMessage('subscription.details.addEntitlements.titlesAddToSub',args,locale)
-                    })
+                        */
+                        //}
+                    //})
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -2385,11 +2398,11 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, ie_accept_status))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, RDStore.IE_ACCEPT_STATUS_FIXED))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
