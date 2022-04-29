@@ -890,7 +890,6 @@ class CopyElementsService {
                         e.printStackTrace()
                     }
                 })
-                executorService.shutdown()
             }
 
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
