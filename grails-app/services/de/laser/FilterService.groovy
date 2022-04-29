@@ -3,12 +3,10 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.web.sitemesh.Grails5535Factory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.DateFormat
@@ -1421,19 +1419,19 @@ class FilterService {
             qry_params.date = new Date()
         }*/
 
-        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+        if (params.ddcs && params.ddcs != "" && listReaderWrapper(params, 'ddcs')) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
             qry_params.ddcs = listReaderWrapper(params, 'ddcs').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && params.list('languages')) {
+        if (params.languages && params.languages != "" && listReaderWrapper(params, 'languages')) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
             qry_params.languages = listReaderWrapper(params, 'languages').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
-        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             base_qry += ' and ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
                 base_qry += " lower(tipp.subjectReference) like '%"+subRef.trim().toLowerCase()+"%' "
@@ -1495,7 +1493,7 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true

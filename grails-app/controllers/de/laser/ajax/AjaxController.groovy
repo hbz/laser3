@@ -519,7 +519,6 @@ class AjaxController {
 
       if(params.index == 'all') {
           Map<String, Object> filterParams = JSON.parse(params.filterParams) as Map<String, Object>
-          println filterParams
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
