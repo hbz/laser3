@@ -677,7 +677,11 @@ class SurveyService {
                                     ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                                 }
 
-                                List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                                List surveyResults = []
+
+                                surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                    surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                                }
 
                                 if (isNotificationCCbyEmail && ccAddress) {
                                     mailService.sendMail {
@@ -772,7 +776,11 @@ class SurveyService {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                             }
 
-                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                            List surveyResults = []
+
+                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                            }
 
                             if (isNotificationCCbyEmail && ccAddress) {
                                 mailService.sendMail {
