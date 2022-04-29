@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.LocaleHelper; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
 
 <%
-    String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+    String locale = LocaleHelper.getCurrentLang()
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
 %>
 

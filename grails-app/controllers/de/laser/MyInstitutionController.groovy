@@ -45,7 +45,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -3672,7 +3671,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        result.languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        result.languageSuffix = LocaleHelper.getCurrentLang()
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
@@ -3761,7 +3760,7 @@ join sub.orgRelations or_sub where
                     }
                 //}
 
-        result.languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        result.languageSuffix = LocaleHelper.getCurrentLang()
 
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->

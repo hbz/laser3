@@ -300,8 +300,7 @@ abstract class BaseDetailsExport {
         String msg = '[reporting.export.custom.' + token + ']'
         try {
             MessageSource messageSource = BeanStorage.getMessageSource()
-            Locale locale = LocaleContextHolder.getLocale()
-            msg = messageSource.getMessage('reporting.export.custom.' + token, null, locale)
+            msg = messageSource.getMessage('reporting.export.custom.' + token, null, LocaleContextHolder.getLocale())
         }
         catch (Exception e) {
             println e.getMessage()

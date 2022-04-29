@@ -8,8 +8,6 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.LocaleHelper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.workflow.WfWorkflow
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -232,7 +230,7 @@ class FinanceControllerService {
      * @return a {@link Map} containing generic parameters for manipulating cost items
      */
     Map<String,Object> getEditVars(Org org) {
-        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.getCurrentLang()
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),

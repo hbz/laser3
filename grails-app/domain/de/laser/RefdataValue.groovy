@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -150,7 +149,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         else {
             String q = "%${params.q.trim().toLowerCase()}%"
 
-            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.getCurrentLang()) {
                 case 'en':
                     matches = RefdataValue.executeQuery("select rdv from RefdataValue rdv where lower(rdv.value_en) like :q", [q: q])
                     break

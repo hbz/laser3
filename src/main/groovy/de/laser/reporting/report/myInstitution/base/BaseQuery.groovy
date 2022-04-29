@@ -292,10 +292,10 @@ class BaseQuery {
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
 
-        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        String lang = LocaleHelper.getCurrentLang()
 
         result.data = idList ? Org.executeQuery(
-                dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name_" + locale,
+                dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name_" + lang,
                 [idList: idList, ctxOrg: ctxOrg]
         ) : []
 
@@ -303,11 +303,11 @@ class BaseQuery {
             d[1] = PropertyDefinition.get(d[0]).getI10n('name')
 
             List<Long> obj2IdList =  Org.executeQuery(
-                    dataDetailsHqlPart + ' and (prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
+                    dataDetailsHqlPart + ' and (prop.isPublic = true) and pd.id = :d order by pd.name_' + lang,
                     [idList: idList, d: d[0]]
             )
             List<Long> obj3IdList =  Org.executeQuery(
-                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg and prop.isPublic != true) and pd.id = :d order by pd.name_' + locale,
+                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg and prop.isPublic != true) and pd.id = :d order by pd.name_' + lang,
                     [idList: idList, d: d[0], ctxOrg: ctxOrg]
             )
             int obj2IdListSize = obj2IdList.size()
@@ -380,8 +380,6 @@ class BaseQuery {
     static String getChartLabel(String token) {
         //println 'getChartLabel(): ' + token
         MessageSource messageSource = BeanStorage.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
-
-        messageSource.getMessage('reporting.chart.result.' + token, null, locale)
+        messageSource.getMessage('reporting.chart.result.' + token, null, LocaleContextHolder.getLocale())
     }
 }

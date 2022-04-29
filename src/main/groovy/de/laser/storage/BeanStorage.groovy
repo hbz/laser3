@@ -29,6 +29,7 @@ import grails.plugins.mail.MailService
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
+import org.springframework.context.MessageSourceResolvable
 
 import javax.sql.DataSource
 
@@ -50,8 +51,20 @@ class BeanStorage {
         Holders.grailsApplication.mainContext.getBean('groovyPageRenderer') as PageRenderer
     }
     static MessageSource getMessageSource() {
-        // PluginAwareResourceBundleMessageSource
-        Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
+
+        if (false) {
+            messageSource.metaClass.getMessage = { String code ->
+                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+            }
+            messageSource.metaClass.getMessage = { String code, Object[] args ->
+                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+            }
+            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
+                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+            }
+        }
+        messageSource
     }
     static SpringSecurityService getSpringSecurityService() {
         Holders.grailsApplication.mainContext.getBean('springSecurityService') as SpringSecurityService

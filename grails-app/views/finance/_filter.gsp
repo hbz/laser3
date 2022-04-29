@@ -3,7 +3,7 @@
 <laser:serviceInjection />
 
 <%
-    String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+    String locale = LocaleHelper.getCurrentLang()
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
 %>
 

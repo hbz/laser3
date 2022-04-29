@@ -3,14 +3,12 @@ package de.laser.properties
 import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
 import de.laser.CacheService
-import de.laser.I10nTranslation
 import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * Properties may be grouped in groups defined by their type ({@link PropertyDefinition}); a group contains may contain n {@link PropertyDefinitionGroupItem}s.
@@ -158,7 +156,7 @@ class PropertyDefinitionGroup {
         }
 
         cache.get('propDefs').each { it ->
-            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.getCurrentLang()) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
                         result.add([id:"${it.id}", text:"${it.en}"])

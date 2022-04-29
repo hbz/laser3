@@ -47,7 +47,6 @@ import de.laser.stats.Counter5Report
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
-import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
@@ -789,7 +788,7 @@ class AjaxJsonController {
         else if(params.cat)
             rdc = RefdataCategory.getByDesc(params.cat)
         if (rdc) {
-            String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+            String locale = LocaleHelper.getCurrentLang()
             String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
 
             List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])

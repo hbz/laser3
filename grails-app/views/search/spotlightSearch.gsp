@@ -2,7 +2,7 @@
 <%
     List result = []
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-    String languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+    String languageSuffix = LocaleHelper.getCurrentLang()
 
     hits.each { hit ->
 

@@ -605,14 +605,13 @@ class ControlledListService {
      * @return a set of possible title types
      */
     Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> titleTypes = []
 
         titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
 
         if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleContextHolder.getLocale())
         }
         titleTypes
     }
@@ -624,14 +623,13 @@ class ControlledListService {
      * @return a set of possible title types
      */
     Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<String> titleTypes = []
 
         if(subscription.packages){
             titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
         }
         if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleContextHolder.getLocale())
         }
         titleTypes
     }
@@ -644,7 +642,6 @@ class ControlledListService {
      * @return a set of possible coverage depths
      */
     Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> coverageDepths = []
 
@@ -660,7 +657,6 @@ class ControlledListService {
      * @return a set of possible coverage depths
      */
     Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> coverageDepths = []
 
         if(subscription.packages){
@@ -678,14 +674,13 @@ class ControlledListService {
      * @return a set of possible series
      */
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> seriesName = []
 
         seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status order by seriesName", [pkg: pkg, status: tippStatus])
 
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleContextHolder.getLocale())
         }
         seriesName
     }
@@ -697,14 +692,13 @@ class ControlledListService {
      * @return a set of possible series
      */
     Set<String> getAllPossibleSeriesBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<String> seriesName = []
 
         if(subscription.packages){
             seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) order by seriesName", [pkg: subscription.packages.pkg])
         }
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleContextHolder.getLocale())
         }
         seriesName
     }
@@ -717,11 +711,10 @@ class ControlledListService {
      * @return a set of possible Dewey decimal classification entries
      */
     Set<RefdataValue> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+LocaleHelper.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_" + LocaleHelper.getCurrentLang(), [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
@@ -733,11 +726,10 @@ class ControlledListService {
      * @return a set of possible Dewey decimal classification entries
      */
     Set<RefdataValue> getAllPossibleDdcsBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> ddcs = []
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+LocaleHelper.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_" + LocaleHelper.getCurrentLang(), [pkg: subscription.packages.pkg]))
         }
         ddcs
     }
@@ -750,11 +742,10 @@ class ControlledListService {
      * @return a set of possible languages
      */
     Set<RefdataValue> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> languages = []
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+LocaleHelper.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_" + LocaleHelper.getCurrentLang(), [pkg: pkg, status: tippStatus]))
 
         languages
     }
@@ -766,11 +757,10 @@ class ControlledListService {
      * @return a set of possible language entries
      */
     Set<RefdataValue> getAllPossibleLanguagesBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> languages = []
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+LocaleHelper.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_" + LocaleHelper.getCurrentLang(), [pkg: subscription.packages.pkg]))
         }
         languages
     }
@@ -783,14 +773,13 @@ class ControlledListService {
      * @return a set of subject references
      */
     Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         SortedSet<String> subjects = new TreeSet<String>()
 
         List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
 
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleContextHolder.getLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -810,7 +799,6 @@ class ControlledListService {
      * @return a set of possible subject references
      */
     Set<String> getAllPossibleSubjectsBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
 
@@ -818,7 +806,7 @@ class ControlledListService {
             rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
         }
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleContextHolder.getLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -839,14 +827,13 @@ class ControlledListService {
      * @return a set of years of first online publication
      */
     Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> subjects = []
 
         subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status order by YEAR(dateFirstOnline)", [pkg: pkg, status: tippStatus])
 
         if(subjects.size() == 0){
-            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleContextHolder.getLocale())
         }
 
         subjects
@@ -859,14 +846,13 @@ class ControlledListService {
      * @return a set of possible years of first online publication
      */
     Set<String> getAllPossibleDateFirstOnlineYearBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<String> yearsFirstOnline = []
 
         if(subscription.packages){
             yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT])
         }
         if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleContextHolder.getLocale())
         }
 
         yearsFirstOnline
@@ -880,16 +866,12 @@ class ControlledListService {
     * @return a set of publishers
     */
     Set<String> getAllPossiblePublisherByPackage(Package pkg,String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> publishers = []
 
         //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus]))
         publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg = :pkg and status = :status order by publisherName", [pkg: pkg, status: tippStatus]))
 
-        /*if(publishers.size() == 0){
-            publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
-        }*/
         publishers
     }
 
@@ -900,17 +882,12 @@ class ControlledListService {
      * @return a set of possible publishers
      */
     Set<String> getAllPossiblePublisherBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<String> publishers = []
 
         if(subscription.packages){
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current order by publisherName", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]))
         }
-        /*if(publishers.size() == 0){
-            publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
-        }*/
-
 
         publishers
     }

@@ -355,7 +355,7 @@ class AjaxController {
         boolean defaultOrder = true
 
         if (config == null) {
-            String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+            String locale = LocaleHelper.getCurrentLang()
             defaultOrder = false
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [

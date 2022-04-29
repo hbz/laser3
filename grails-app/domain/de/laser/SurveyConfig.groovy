@@ -8,7 +8,6 @@ import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import org.grails.web.json.JSONElement
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -162,7 +161,7 @@ class SurveyConfig {
      * @return the translation for the given survey type
      */
     static getLocalizedValue(key) {
-        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.getCurrentLang()
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {

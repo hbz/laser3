@@ -5,7 +5,6 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.I10nTranslation
 import de.laser.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
@@ -17,7 +16,6 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
@@ -396,7 +394,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         List<PropertyDefinition> matches = []
 
-        switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
+        switch (LocaleHelper.getCurrentLang()) {
             case 'en':
                 String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_en) like :name"
                 matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
@@ -531,7 +529,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static String getLocalizedValue(String key){
-        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.getCurrentLang()
 
         if (PropertyDefinition.validTypes.containsKey(key)) {
             return (PropertyDefinition.validTypes.get(key)."${locale}") ?: PropertyDefinition.validTypes.get(key)

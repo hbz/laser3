@@ -5,7 +5,7 @@
 <% SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
 String period
-String languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+String languageSuffix = LocaleHelper.getCurrentLang()
 %>
 
 <!doctype html>

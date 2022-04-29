@@ -16,9 +16,6 @@ class OrganisationQuery extends BaseQuery {
 
         ContextService contextService = BeanStorage.getContextService()
 
-        //MessageSource messageSource = BeanStorage.getMessageSource()
-        //Locale locale = LocaleContextHolder.getLocale()
-
         //println 'OrganisationQuery.query()'
         //println params
 

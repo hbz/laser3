@@ -347,7 +347,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   @Deprecated
   String getAvailabilityStatusAsString() {
 	  String result
-	  def loc = LocaleContextHolder.locale?.toString()
 	  Date as_at = new Date()
       Date tipp_access_start_date = getDerivedAccessStartDate()
       Date tipp_access_end_date = getDerivedAccessEndDate()

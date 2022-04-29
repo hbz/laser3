@@ -6,7 +6,6 @@ import de.laser.helper.LocaleHelper
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * A reference data category represents a controlled list which contains one or more reference data values. Like the entries, the list name can be translated itself.
@@ -93,7 +92,7 @@ class RefdataCategory extends AbstractI10n {
         else {
             String q = "%${params.q.trim().toLowerCase()}%"
 
-            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.getCurrentLang()) {
                 case 'en':
                     matches = RefdataCategory.executeQuery("select rc from RefdataCategory rc where lower(rc.desc_en) like :q", [q: q])
                     break

@@ -1675,14 +1675,13 @@ class CopyElementsService {
      * @return true if the saving was successful, false otherwise
      */
     private boolean save(obj, flash) {
-        Locale locale = LocaleContextHolder.getLocale()
         if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
         } else {
             log.error("Problem saving ${obj.errors}")
             Object[] args = [obj]
-            flash.error += messageSource.getMessage('default.save.error.message', args, locale)
+            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleContextHolder.getLocale())
             return false
         }
     }
@@ -1694,12 +1693,11 @@ class CopyElementsService {
      * @return (actually) true if the deletion was successful
      */
     private boolean delete(obj, flash) {
-        Locale locale = LocaleContextHolder.getLocale()
         if (obj) {
             obj.delete()
             log.debug("Delete ${obj} ok")
         } else {
-            flash.error += messageSource.getMessage('default.delete.error.general.message', null, locale)
+            flash.error += messageSource.getMessage('default.delete.error.general.message', null, LocaleContextHolder.getLocale())
         }
     }
 

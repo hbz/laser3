@@ -418,8 +418,7 @@ class BaseConfig {
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
         MessageSource messageSource = BeanStorage.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
-        messageSource.getMessage(token, null, locale)
+        messageSource.getMessage(token, null, LocaleContextHolder.getLocale())
     }
 
     static String getConfigLabel(def token) {

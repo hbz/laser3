@@ -546,9 +546,7 @@ class SubscriptionReport {
 
     static String getMessage(String token) {
         MessageSource messageSource = BeanStorage.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
-
-        messageSource.getMessage('reporting.local.subscription.' + token, null, locale)
+        messageSource.getMessage('reporting.local.subscription.' + token, null, LocaleContextHolder.getLocale())
     }
 
     static String getQueryLabel(String qKey, List qValues) {

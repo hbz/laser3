@@ -35,7 +35,6 @@ import groovy.sql.Sql
 import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigMapper
 
@@ -1028,7 +1027,7 @@ SELECT * FROM (
                 identifierNamespaceInstance: idnsInstance,
                 globalNamespaceStats: globalNamespaceStats,
                 detailsStats: detailsStats,
-                currentLang: LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
+                currentLang: LocaleHelper.getCurrentLang()
         ]
     }
 
@@ -1299,7 +1298,7 @@ SELECT * FROM (
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleHelper.getCurrentLang()),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult

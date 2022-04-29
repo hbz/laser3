@@ -4,6 +4,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class LocaleHelper {
 
+    static String getCurrentLang() {
+        decodeLocale(LocaleContextHolder.getLocale())
+    }
+
     /**
      * Decodes the given {@link Locale} constant to determine the translation field to look for
      * @param locale the locale constant (as {@link Locale}) to decipher

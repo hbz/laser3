@@ -144,7 +144,7 @@
         </div>
     </g:form>
 
-    <g:set var="languageSuffix" value="${LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())}"/>
+    <g:set var="languageSuffix" value="${LocaleHelper.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.app.updateDropdown = function() {
