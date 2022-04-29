@@ -91,11 +91,11 @@
                     </td>
                     <g:if test="${ownobj instanceof License}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" class="la-dont-break-out"/>
                         </td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
                     <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
