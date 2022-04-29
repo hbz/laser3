@@ -21,6 +21,8 @@
 
 4197    22.04.2022  dev     2.3         Moe     Feature     Erweiterung "medium": Encyclopedia
 
+--      21.04.2022  rc-2.2  2.2.14      Andreas Bug         Instandsetzung und Performanzverbesserung bei Laden der Nutzungsdaten
+
 --      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
 
 3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen
