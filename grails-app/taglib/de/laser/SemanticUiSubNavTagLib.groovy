@@ -56,7 +56,7 @@ class SemanticUiSubNavTagLib {
         Integer counts = attrs.counts ? attrs.counts as Integer : null
 
         if(tooltip != "") {
-            linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
         }
 
         if (counts) {
