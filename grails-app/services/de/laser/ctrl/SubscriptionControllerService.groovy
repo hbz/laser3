@@ -24,7 +24,6 @@ import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
@@ -283,15 +282,7 @@ class SubscriptionControllerService {
                 pu.setBenchmark('non-inherited member properties')
                 List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                 if(childSubs) {
-                    String localizedName
-                    switch(LocaleContextHolder.getLocale()) {
-                        case [ Locale.GERMANY, Locale.GERMAN ]:
-                            localizedName = "name_de"
-                            break
-                        default:
-                            localizedName = "name_en"
-                            break
-                    }
+                    String localizedName = LocaleHelper.getLocalizedAttributeName('name')
                     String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
                     Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
 

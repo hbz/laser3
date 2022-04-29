@@ -1427,25 +1427,6 @@ join sub.orgRelations or_sub where
                     out.flush()
                     out.close()
                 }
-                /*json {
-                    Map map = [:]
-                    exportService.addTitlesToMap(map, result.titles)
-                    def content = map as JSON
-
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                    response.contentType = "application/json"
-
-                    render content
-                }
-                xml {
-                    def doc = exportService.buildDocXML("TitleList")
-                    exportService.addTitleListXML(doc, doc.getDocumentElement(), result.titles)
-
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    exportService.streamOutXML(doc, response.outputStream)
-                }
-                */
             }
         }
     }
@@ -3477,14 +3458,7 @@ join sub.orgRelations or_sub where
         }*/
         //result.validSubChilds = validSubChildren
 
-        String localizedName
-        switch(LocaleContextHolder.getLocale()) {
-            case [ Locale.GERMANY, Locale.GERMAN ]:
-                localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
@@ -3698,7 +3672,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        result.languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
@@ -3787,7 +3761,7 @@ join sub.orgRelations or_sub where
                     }
                 //}
 
-        result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        result.languageSuffix = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
 
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->

@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.userMatrix')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.userRoleMatrix')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.userMatrix" class="active"/>
+    <semui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userMatrix')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userRoleMatrix')}</h1>
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">

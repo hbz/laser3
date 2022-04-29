@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractI10n
+import de.laser.helper.LocaleHelper
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -92,7 +93,7 @@ class RefdataCategory extends AbstractI10n {
         else {
             String q = "%${params.q.trim().toLowerCase()}%"
 
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     matches = RefdataCategory.executeQuery("select rc from RefdataCategory rc where lower(rc.desc_en) like :q", [q: q])
                     break
@@ -126,7 +127,7 @@ class RefdataCategory extends AbstractI10n {
         if (! category_name) {
             return []
         }
-        String i10nAttr = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+        String i10nAttr = LocaleHelper.getLocalizedAttributeName('value')
         String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.${i10nAttr}"
 
         RefdataValue.executeQuery( query, [category: category_name.toLowerCase()] )
@@ -141,7 +142,7 @@ class RefdataCategory extends AbstractI10n {
         if (! category_names) {
             return []
         }
-        String i10nAttr = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+        String i10nAttr = LocaleHelper.getLocalizedAttributeName('value')
         String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) in (:categories) order by rdv.${i10nAttr}"
 
         RefdataValue.executeQuery( query, [categories: category_names.collect{it.toLowerCase()}] )

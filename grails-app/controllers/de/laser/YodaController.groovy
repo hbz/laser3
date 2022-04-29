@@ -497,7 +497,7 @@ class YodaController {
      * @return a list of global roles and to whom they have been granted
      */
     @Secured(['ROLE_YODA'])
-    def userMatrix() {
+    def userRoleMatrix() {
         Map<String, Object> result = [:]
 
         result.matrix = [:]

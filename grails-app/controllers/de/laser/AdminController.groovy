@@ -6,7 +6,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.helper.AppUtils
 import de.laser.helper.DatabaseUtils
-import de.laser.storage.BeanStorage
+import de.laser.helper.LocaleHelper
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
@@ -19,17 +19,14 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
- 
-import de.laser.exceptions.CleanupException
+
 import de.laser.storage.RDStore
-import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTaskPrototype
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -42,7 +39,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.helper.ConfigMapper
 
-import javax.sql.DataSource
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -68,9 +64,7 @@ class AdminController  {
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    StatusUpdateService statusUpdateService
     WorkflowService workflowService
-    YodaService yodaService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -1034,7 +1028,7 @@ SELECT * FROM (
                 identifierNamespaceInstance: idnsInstance,
                 globalNamespaceStats: globalNamespaceStats,
                 detailsStats: detailsStats,
-                currentLang: I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                currentLang: LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
         ]
     }
 
@@ -1305,7 +1299,7 @@ SELECT * FROM (
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult

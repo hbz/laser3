@@ -23,7 +23,6 @@ class DocstoreController  {
 
     ContextService contextService
     DocstoreControllerService docstoreControllerService
-    // GenericOIDService genericOIDService
     MessageSource messageSource
 
     /**
@@ -41,9 +40,6 @@ class DocstoreController  {
             switch (doc.contentType) {
                 case Doc.CONTENT_TYPE_STRING:
                     break
-            //case Doc.CONTENT_TYPE_DOCSTORE:
-            //    docstoreService.retrieve(params.id, response, doc.mimeType, filename)
-            //    break
                 case Doc.CONTENT_TYPE_FILE:
                     doc.render(response, filename)
                     break

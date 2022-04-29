@@ -1,10 +1,10 @@
 package de.laser.reporting.report.myInstitution.base
 
-import de.laser.I10nTranslation
 import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
+import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
@@ -292,7 +292,7 @@ class BaseQuery {
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
 
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
 
         result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name_" + locale,

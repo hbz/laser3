@@ -1,6 +1,7 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
+import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
@@ -175,7 +176,7 @@ class OrgExport extends BaseDetailsExport {
                         coList.addAll( personList )
                     }
                     if (RDStore.REPORTING_CONTACT_TYPE_ADDRESSES.id in f.value) {
-                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org order by type.value_" + I10nTranslation.decodeLocale( LocaleContextHolder.getLocale() )
+                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org order by type.value_" + LocaleHelper.decodeLocale( LocaleContextHolder.getLocale() )
                         List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org] )
                         List addressList = []
 

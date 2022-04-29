@@ -8,6 +8,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
+import de.laser.helper.LocaleHelper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -471,15 +472,7 @@ class ManagementService {
                     result.filteredSubscriptions = validSubChildren
                     List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                     if (childSubs) {
-                        String localizedName
-                        switch (LocaleContextHolder.getLocale()) {
-                            case [ Locale.GERMANY, Locale.GERMAN ]:
-                                localizedName = "name_de"
-                                break
-                            default:
-                                localizedName = "name_en"
-                                break
-                        }
+                        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
                         String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
                         Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: result.institution])
                         result.memberProperties = memberProperties

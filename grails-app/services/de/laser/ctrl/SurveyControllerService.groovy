@@ -15,6 +15,7 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.TaskService
 import de.laser.auth.User
+import de.laser.helper.LocaleHelper
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -191,7 +192,7 @@ class SurveyControllerService {
                 newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
                     if (result.properties) {
-                        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
                         //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                         String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
@@ -220,7 +221,7 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                    String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                     String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
@@ -317,7 +318,7 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                    String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                     String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"

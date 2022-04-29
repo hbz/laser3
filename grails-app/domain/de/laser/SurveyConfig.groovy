@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.finance.CostItem
+import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
@@ -161,7 +162,7 @@ class SurveyConfig {
      * @return the translation for the given survey type
      */
     static getLocalizedValue(key) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {

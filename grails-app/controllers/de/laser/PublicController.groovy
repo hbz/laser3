@@ -40,19 +40,16 @@ class PublicController {
     def sendFeedbackForm() {
 
         try {
-
             mailService.sendMail {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
                 from ConfigMapper.getNotificationsEmailFrom()
                 subject ConfigMapper.getLaserSystemId() + ' - Feedback-Mechanismus Barrierefreiheit'
                 body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:escapeService.replaceUmlaute(params.comment)])
-
             }
         }
         catch (Exception e) {
             println "Unable to perform email due to exception ${e.message}"
         }
-//        redirect controller: 'public', action: 'sendFeedbackForm', params: params, id: copyLicense.id
     }
 
     /**

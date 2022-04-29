@@ -135,7 +135,7 @@
                         <g:link controller="yoda" action="appControllers" target="_blank">${message(code:'menu.yoda.appControllers')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="userMatrix" target="_blank">${message(code:'menu.yoda.userMatrix')}</g:link>
+                        <g:link controller="yoda" action="userRoleMatrix" target="_blank">${message(code:'menu.yoda.userRoleMatrix')}</g:link>
                     </div>
                 </div>
             </div>

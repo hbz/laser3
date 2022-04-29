@@ -8,6 +8,8 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.LocaleHelper
+import de.laser.helper.MigrationHelper
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
@@ -79,11 +81,6 @@ class LicenseController {
         def admin_role = Role.findAllByAuthority("INST_ADM")
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) ", [user: result.user, role: admin_role])
 
-        //def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
-
-        //String filename = "license_${escapeService.escapeString(license_reference_str)}"
-        //result.onixplLicense = result.license.onixplLicense
-
         // ---- pendingChanges : start
 
         pu.setBenchmark('pending changes')
@@ -125,19 +122,12 @@ class LicenseController {
             def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
             result << preCon
 
-            String i10value = LocaleContextHolder.getLocale().getLanguage() == Locale.GERMAN.getLanguage() ? 'value_de' : 'value_en'
+            String i10value = LocaleHelper.getLocalizedAttributeName('value')
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = OrgRole.executeQuery(
                     "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
                     [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
             )
-
-            /*result.license.orgRelations?.each { or ->
-                if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
-                    result.visibleOrgRelations << or
-                }
-            }*/
-            //result.visibleOrgRelations.sort { it.org.sortname }
 
         pu.setBenchmark('properties')
 
@@ -166,15 +156,7 @@ class LicenseController {
                 pu.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
-                    String localizedName
-                    switch(LocaleContextHolder.getLocale()) {
-                        case [ Locale.GERMANY, Locale.GERMAN ]:
-                            localizedName = "name_de"
-                            break
-                        default:
-                            localizedName = "name_en"
-                            break
-                    }
+                    String localizedName = LocaleHelper.getLocalizedAttributeName('name')
                     String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"
                     Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics,context:result.institution] )
                     result.memberProperties = memberProperties
@@ -314,10 +296,6 @@ class LicenseController {
             response.sendError(401); return
         }
         result.institution = contextService.getOrg()
-
-        // TODO: not longer used? -> remove and refactor params
-        //RefdataValue role_lic      = OR_LICENSEE_CONS
-        //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
         License licenseCopy
             if (accessService.checkPerm(" ORG_CONSORTIUM")) {

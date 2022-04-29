@@ -734,12 +734,7 @@ class PersonController  {
                         break;
                 }
             }
-
-            // TODO duplicate check
-            /* if(PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.responsibilityType = ${roleRdv.id} and PR.${typeTODOHERE} = ${subject.id}")) {
-           log.debug("ignore adding PersonRole because of existing duplicate")
-       }
-       else */ if (result) {
+            if (result) {
                 if (result.save()) {
                     log.debug("adding PersonRole ${result}")
                 }

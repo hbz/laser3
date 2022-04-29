@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
 import de.laser.CacheService
 import de.laser.I10nTranslation
+import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStorage
 import de.laser.helper.EhcacheWrapper
 import groovy.util.logging.Slf4j
@@ -157,7 +158,7 @@ class PropertyDefinitionGroup {
         }
 
         cache.get('propDefs').each { it ->
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
                         result.add([id:"${it.id}", text:"${it.en}"])

@@ -1,6 +1,6 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.helper.LocaleHelper; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
 
-<g:set var="languageSuffix" value="${I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())}"/>
+<g:set var="languageSuffix" value="${LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())}"/>
 
 <div class="field">
     <label for="filterCountry">${message(code: 'org.country.label')}</label>

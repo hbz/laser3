@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItemElementConfiguration
+import de.laser.helper.LocaleHelper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
@@ -231,7 +232,7 @@ class FinanceControllerService {
      * @return a {@link Map} containing generic parameters for manipulating cost items
      */
     Map<String,Object> getEditVars(Org org) {
-        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+        String locale = LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),

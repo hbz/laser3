@@ -1,6 +1,7 @@
 package de.laser.system
 
 import de.laser.I10nTranslation
+import de.laser.helper.LocaleHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -75,7 +76,7 @@ class SystemMessage {
      * @return the localized content of the system message (German or English)
      */
     String getLocalizedContent() {
-        switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
+        switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
             case 'de':
                 return content_de
                 break;

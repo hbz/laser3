@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractI10n
+import de.laser.helper.LocaleHelper
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -149,7 +150,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         else {
             String q = "%${params.q.trim().toLowerCase()}%"
 
-            switch (I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())) {
+            switch (LocaleHelper.decodeLocale(LocaleContextHolder.getLocale())) {
                 case 'en':
                     matches = RefdataValue.executeQuery("select rdv from RefdataValue rdv where lower(rdv.value_en) like :q", [q: q])
                     break
