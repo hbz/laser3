@@ -93,11 +93,11 @@
                     </td>
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
                     <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
