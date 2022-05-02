@@ -29,7 +29,7 @@
         <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
         <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>

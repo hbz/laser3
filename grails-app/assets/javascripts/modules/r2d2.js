@@ -748,6 +748,12 @@ r2d2 = {
             var gostObject = $(this).next('.js-gost');
             _buildConfirmationModal(gostObject[0]);
         });
+
+        // tables
+        $(ctxSel + ' .la-hover-table tbody tr td').hover(
+            function(){ $(this).parent('tr').addClass('la-active') },
+            function(){ $(this).parent('tr').removeClass('la-active') }
+        )
     },
 
 

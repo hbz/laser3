@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemProfiler')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.profilerLoadtime')}</title>
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </head>
 <body>
@@ -16,9 +16,9 @@
     <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
 
     <nav class="ui secondary menu">
-        <g:link controller="yoda" action="systemProfiler" class="item active">Ladezeiten</g:link>
-        <g:link controller="yoda" action="activityProfiler" class="item">Nutzerzahlen</g:link>
-        <g:link controller="yoda" action="timelineProfiler" class="item">Seitenaufrufe</g:link>
+        <g:link controller="yoda" action="profilerLoadtime" class="item active">Ladezeiten</g:link>
+        <g:link controller="yoda" action="profilerActivity" class="item">Nutzerzahlen</g:link>
+        <g:link controller="yoda" action="profilerTimeline" class="item">Seitenaufrufe</g:link>
 
         <div style="position:absolute; right:0">
             <g:select name="archive" id="archive" class="ui dropdown"
@@ -26,7 +26,7 @@
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
                     var selection = $(this).val()
-                    var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'systemProfiler')}?archive=" + selection
+                    var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'profilerLoadtime')}?archive=" + selection
                     window.location.href = link
                 })
             </laser:script>
@@ -41,7 +41,7 @@
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-js-responsive-table la-table compact table" id="heatTable">
+        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
             <thead>
             <tr>
                 <th>Url</th>
@@ -122,7 +122,7 @@
 
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-js-responsive-table la-table compact table" id="globalTable">
+        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -207,7 +207,7 @@
                 </div>
             </div>
         </div>
-        <table class="ui celled la-js-responsive-table la-table compact table" id="contextTable">
+        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -272,11 +272,6 @@
            }
         }
     })
-
-    $('.table tr').hover(
-        function(){ $(this).addClass('trHover') },
-        function(){ $(this).removeClass('trHover') }
-    )
 </laser:script>
 
 <style>

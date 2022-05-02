@@ -2,21 +2,21 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.quartzInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemQuartz')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.quartzInfo" class="active"/>
+    <semui:crumb message="menu.yoda.systemQuartz" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemQuartz')}</h1>
 
 <g:each in="${quartz}" var="groupKey, group">
     <%--<h3 class="ui header">${groupKey}</h3>--%>
 
-    <table class="ui celled la-js-responsive-table la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
                 <th>Job</th>

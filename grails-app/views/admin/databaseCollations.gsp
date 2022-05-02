@@ -31,7 +31,7 @@
             </g:each>
         </select>
     </div>
-    <table class="ui celled la-js-responsive-table la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
                 <th>#</th>
@@ -83,7 +83,7 @@
             <option value="title">Titel</option>
         </select>
     </div>
-    <table class="ui celled la-js-responsive-table la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
     <thead>
         <tr>
             <th>#</th>
@@ -99,10 +99,10 @@
                         <g:set var="phbk_de" value="${examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
-                        <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="positive"'} else { print 'class="negative"'} %>>
+                        <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
                             ${examples[cat].get(collate_de)[i]}
                         </td>
-                        <td <% if (examples[cat].get(current_de)[i] == phbk_de){ print 'class="positive"'} else { print 'class="negative"'} %>>
+                        <td <% if (examples[cat].get(current_de)[i] == phbk_de){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
                             ${examples[cat].get(current_de)[i]}
                         </td>
                         <td>
@@ -124,7 +124,7 @@
             <option value="title">Titel</option>
         </select>
     </div>
-    <table class="ui celled la-js-responsive-table la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
             <th>#</th>
@@ -140,10 +140,10 @@
                         <g:set var="phbk_en" value="${examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
-                        <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="positive"'} else { print 'class="negative"'} %>>
+                        <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
                             ${examples[cat].get(collate_en)[i]}
                         </td>
-                        <td <% if (examples[cat].get(current_en)[i] == phbk_en){ print 'class="positive"'} else { print 'class="negative"'} %>>
+                        <td <% if (examples[cat].get(current_en)[i] == phbk_en){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
                             ${examples[cat].get(current_en)[i]}
                         </td>
                         <td>

@@ -90,17 +90,15 @@ class YodaController {
      * @return the list of configurations done on grails.util.Holders.config and the local config files
      */
     @Secured(['ROLE_YODA'])
-    def appConfig() {
+    def systemConfiguration() {
         Map result = [:]
 
         result.blacklist = [
                 'jira', 'dataSource', 'dataSource.password'
         ]
         result.editable = true
-
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
-
-            result
+        result
     }
 
     /**
@@ -114,7 +112,7 @@ class YodaController {
      * </ul>
      */
     @Secured(['ROLE_YODA'])
-    def quartzInfo() {
+    def systemQuartz() {
         Map result = [:]
 
         // DEBUG ONLY: changeNotificationService.aggregateAndNotifyChanges()
@@ -166,7 +164,7 @@ class YodaController {
      * @return a list of the current cache entries, grouped by user / global / session caches
      */
     @Secured(['ROLE_YODA'])
-    def cacheInfo() {
+    def systemCache() {
         Map result = [:]
 
         result.grailsApp = grailsApplication
@@ -200,7 +198,7 @@ class YodaController {
             params.remove('type')
             params.remove('cache')
 
-            redirect controller: 'yoda', action: 'cacheInfo', params: params
+            redirect controller: 'yoda', action: 'systemCache', params: params
             return
         }
 
@@ -212,7 +210,7 @@ class YodaController {
      * @return a list of graphs showing when how many users were recorded
      */
     @Secured(['ROLE_YODA'])
-    def activityProfiler() {
+    def profilerActivity() {
         Map result = [:]
 
         Map<String, Object> activity = [:]
@@ -288,7 +286,7 @@ class YodaController {
      * @return the view calling the currently available threads, their running state (or daemon), CPU time, thread group, priority
      */
     @Secured(['ROLE_YODA'])
-    def appThreads() {
+    def systemThreads() {
         return [:]
     }
 
@@ -298,7 +296,7 @@ class YodaController {
      * @see SystemActivityProfiler
      */
     @Secured(['ROLE_YODA'])
-    def systemProfiler() {
+    def profilerLoadtime() {
         Map<String, Object> result = [:]
 
         result.globalMatrix = [:]
@@ -357,7 +355,7 @@ class YodaController {
      * @return a listing of graphs when which page has been called how many times
      */
     @Secured(['ROLE_YODA'])
-    def timelineProfiler() {
+    def profilerTimeline() {
         Map<String, Object> result = [:]
 
         List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
@@ -659,7 +657,7 @@ class YodaController {
         else if(StatsSyncService.running)
             log.info("sync is already running, not starting again ...")
         else log.info("form token expired, doing nothing ...")
-        redirect(controller: 'yoda', action: 'appThreads')
+        redirect(controller: 'yoda', action: 'systemThreads')
     }
 
     /**
@@ -992,7 +990,7 @@ class YodaController {
      * @see SystemSetting
      */
     @Secured(['ROLE_YODA'])
-    def settings() {
+    def systemSettings() {
         Map<String, Object> result = [:]
         result.settings = SystemSetting.executeQuery('select s from SystemSetting s where s.name != \'MaintenanceMode\' order by s.name asc')
         result

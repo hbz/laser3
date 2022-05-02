@@ -17,7 +17,7 @@
 
     <h2 class="ui header">Meta</h2>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
             <tr><th class="seven wide">Datenbank</th><th class="nine wide"></th></tr>
         </thead>
@@ -48,7 +48,7 @@
 
     <h2 class="ui header">Aktivität</h2>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
             <tr>
                 <th>PID</th>
@@ -73,7 +73,7 @@
 
     <h2 class="ui header">Nutzung (schnelle Berechnung)</h2>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
         <tr>
             <th>#</th>

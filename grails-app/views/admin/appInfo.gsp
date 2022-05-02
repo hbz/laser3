@@ -15,7 +15,7 @@
 
     <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.appInfo')}</h1>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">App</th><th class="nine wide"></th></tr>
         </thead>
@@ -32,7 +32,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Build</th><th class="nine wide"></th></tr>
         </thead>
@@ -44,7 +44,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
         </thead>
@@ -66,7 +66,7 @@
         <tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">ES Index</th><th class="nine wide"></th></tr>
         </thead>
@@ -80,7 +80,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
         </thead>
@@ -90,7 +90,7 @@
     </table>
 
     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch')}">
-        <table class="ui celled la-js-responsive-table la-table table compact">
+        <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
             </thead>
@@ -122,7 +122,7 @@
         </table>
     </g:if>
 
-    <table class="ui celled la-js-responsive-table la-table table compact">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">STATS Sync Service</th><th class="nine wide"></th></tr>
         </thead>

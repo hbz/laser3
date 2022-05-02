@@ -85,7 +85,7 @@
     </semui:filter>
 
 <div>
-    <table class="ui sortable celled la-js-responsive-table la-table compact table">
+    <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
             <th>${message(code:'default.number')}</th>

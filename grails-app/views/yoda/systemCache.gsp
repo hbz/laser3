@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.cacheInfo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemCache')}</title>
 </head>
 <body>
 
@@ -11,10 +11,10 @@
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.cacheInfo" class="active"/>
+    <semui:crumb message="menu.yoda.systemCache" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemCache')}</h1>
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>
@@ -23,13 +23,13 @@
     <p>ID: ${sessionCache.getSession().id}</p>
 
     <g:link class="ui button small"
-            controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
+            controller="yoda" action="systemCache" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
 
     <g:if test="${sessionCache.list().size() > 0}">
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="cacheInfo" params="${[key: entry.key]}" target="_blank"><i class="icon list alternate outline"></i> ${entry.key}</g:link>
+                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon list alternate outline"></i> ${entry.key}</g:link>
                 </dt>
                 <dd>
                      ${entry.value} <em>(${entry.value.class?.name})</em>
@@ -76,7 +76,7 @@
 
             <div class="ui segment">
 
-                <g:link class="ui button small" controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
+                <g:link class="ui button small" controller="yoda" action="systemCache" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
 
                 <button class="ui button small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 

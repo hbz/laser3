@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.activityProfiler')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.profilerActivity')}</title>
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </head>
 <body>
@@ -15,9 +15,9 @@
     <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
 
     <nav class="ui secondary menu">
-        <g:link controller="yoda" action="systemProfiler" class="item">Ladezeiten</g:link>
-        <g:link controller="yoda" action="activityProfiler" class="item active">Nutzerzahlen</g:link>
-        <g:link controller="yoda" action="timelineProfiler" class="item">Seitenaufrufe</g:link>
+        <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>
+        <g:link controller="yoda" action="profilerActivity" class="item active">Nutzerzahlen</g:link>
+        <g:link controller="yoda" action="profilerTimeline" class="item">Seitenaufrufe</g:link>
     </nav>
 
     <table class="ui celled la-js-responsive-table la-table compact wide table">

@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appConfig')} </title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemConfiguration')} </title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.appConfig" class="active"/>
+    <semui:crumb message="menu.yoda.systemConfiguration" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.appConfig')}</h1>
+<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.systemConfiguration')}</h1>
 
 <%
     Set<String> dubs = []
@@ -42,7 +42,7 @@
 <span class="ui label"><i class="icon certificate" style="color:${colors['java']}"></i>java</span>
 <span class="ui label"><i class="icon certificate" style="color:${colors['spring']}"></i>spring</span>
 
-<table class="ui sortable celled la-js-responsive-table la-table compact table">
+<table class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
     <thead>
     <tr>
         <th></th>

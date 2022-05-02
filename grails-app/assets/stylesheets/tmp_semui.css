@@ -201,10 +201,16 @@ h1 .icon.h1-icon-overwrite {
 
 .ui.la-table.table tr td[class^=table-td] { vertical-align: top; }
 .ui.la-table.table tr td.table-td-info    { }
-.ui.la-table.table tr td.table-td-ok      { background-color: rgba(0,255,0, 0.1); }
-.ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
-.ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
+.ui.la-table.table tr td.table-td-ok      { background-color: rgba(152,181,0, 0.1); }
+.ui.la-table.table tr td.table-td-warning { background-color: rgba(251,189,8, 0.1); }
+.ui.la-table.table tr td.table-td-error   { background-color: rgba(187, 22,0, 0.1); }
 
+/* la-hover-table */
+
+.ui.table.la-hover-table tr.la-active {
+    outline: 1px solid #175784;
+    outline-offset: -1px;
+}
 
 /* loadingIndicator */
 
