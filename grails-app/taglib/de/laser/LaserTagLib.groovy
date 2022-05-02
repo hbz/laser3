@@ -1,10 +1,13 @@
 package de.laser
 
-class LaserInjectionTagLib {
+import de.laser.helper.LocaleHelper
+
+class LaserTagLib {
 
     static namespace = "laser"
 
     // <laser:serviceInjection/>
+
     def serviceInjection = { attrs, body ->
 
         g.set( var:'accessService',             bean:'accessService' )
@@ -31,14 +34,22 @@ class LaserInjectionTagLib {
         g.set( var:'yodaService',               bean:'yodaService' )
     }
 
-    // TODO: in progress
+    // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />
 
-    def templateInfo = { attrs, body ->
+    def select = { attrs, body ->
+        attrs.optionValue = attrs.optionValue + "_" + LocaleHelper.getCurrentLang()
+        out << g.select(attrs)
+    }
 
-        out << '<!-- \n'
-        if (attrs.source) {
-            out << attrs.source.getProperties().get('groovyPageFileName') + '\n'
+    def statsLink = {attrs, body ->
+        if (attrs.module) {
+            attrs.base = attrs.base ? attrs.base+"/${attrs.module}" : "/${attrs.module}"
+            attrs.remove('module')
         }
-        out << '\n --!>'
+        if (!attrs.params.packages){
+            attrs.params.remove('packages')
+        }
+        def cleanLink = g.link(attrs, body)
+        out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
     }
 }

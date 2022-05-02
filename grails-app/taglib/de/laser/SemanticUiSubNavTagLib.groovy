@@ -8,9 +8,6 @@ class SemanticUiSubNavTagLib {
     AccessService accessService
     ContextService contextService
 
-    //static defaultEncodeAs = [taglib:'html']
-    //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
-
     static namespace = "semui"
 
     // <semui:subNav actionName="${actionName}">

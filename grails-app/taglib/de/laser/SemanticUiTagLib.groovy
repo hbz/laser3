@@ -28,9 +28,6 @@ class SemanticUiTagLib {
     TagLibraryLookup gspTagLibraryLookup
     YodaService yodaService
 
-    //static defaultEncodeAs = [taglib:'html']
-    //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
-
     static namespace = "semui"
 
     // <semui:messages data="${flash}" />

@@ -142,7 +142,7 @@ class BaseConfig {
         Map<String, Object> cfg = [:]
         // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
             cfg = getCurrentConfig( filter )
         }
         else if (filter in ['org']) {

@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
-import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 
 class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
