@@ -15,38 +15,6 @@
         <semui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
-
-    <%--<semui:controlButtons>
-        <semui:exportDropdown>
-            <g:if test="${filterSet}">
-                <semui:exportDropdownItem>
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="myInstitution" action="addMembers"
-                            params="${params+[exportXLS:true]}">
-                        ${message(code:'default.button.exports.xls')}
-                    </g:link>
-                </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="myInstitution" action="addMembers"
-                            params="${params+[format:'csv']}">
-                        ${message(code:'default.button.exports.csv')}
-                    </g:link>
-                </semui:exportDropdownItem>
-            </g:if>
-            <g:else>
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="addMembers" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                </semui:exportDropdownItem>
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="addMembers" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                </semui:exportDropdownItem>
-            </g:else>
-        </semui:exportDropdown>
-        <laser:render template="actions" />
-    </semui:controlButtons>--%>
     
     <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
 

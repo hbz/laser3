@@ -16,9 +16,6 @@
                     <i class="exclamation alternate triangle icon"  id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
                 </semui:msg>
             </g:if>
-            %{--<g:else>--}%
-                %{--<semui:msg class="positive" header="${message(code: 'default.info.label')}" text="${message_lastUpdated} ${dateString}" />--}%
-            %{--</g:else>--}%
 
     </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">

@@ -37,7 +37,6 @@ class YodaService {
     GlobalService globalService
     GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
-    LinkGenerator grailsLinkGenerator
     PackageService packageService
 
     /**

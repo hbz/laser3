@@ -162,9 +162,6 @@
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate)+isDone}'--}%
-                               %{--<g:if test='${dashDueDate.isDone}'>checked='checked'</g:if>--}%
-                        %{--/>--}%
                     </laser:remoteLink>
                 </g:if>
                 <g:else>
@@ -180,19 +177,8 @@
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
-                               %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
-                        %{--/>--}%
                     </laser:remoteLink>
                 </g:else>
-                    %{--<hr />--}%
-                    %{--<semui:xEditableBoolean owner="${dashDueDate.dueDateObject}" field="isDone" />--}%
-                    %{--<div class="ui checkbox">--}%
-                        %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%
-                               %{--<g:if test='${dashDueDate.dueDateObject.isDone}'>checked='checked'</g:if>--}%
-                            %{--onchange=""--}%
-                        %{--/>--}%
-                    %{--</div>--}%
                 </td>
             </tr>
         </g:if>

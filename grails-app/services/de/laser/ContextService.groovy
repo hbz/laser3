@@ -49,7 +49,6 @@ class ContextService {
                         scw.put('contextOrg', context)
                     }
                 }
-
                 if (context) {
                     return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
                 }

@@ -1,6 +1,6 @@
 package de.laser
 
-import com.opencsv.CSVReader
+import liquibase.util.csv.opencsv.CSVReader
 import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper
@@ -14,15 +14,10 @@ import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
 import org.hibernate.SQLQuery
-import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.hibernate.jdbc.Work
 import org.hibernate.type.TextType
 
 import javax.sql.DataSource
-import java.sql.Connection
-import java.sql.SQLException
-import java.sql.Statement
 import java.text.SimpleDateFormat
 
 /**
@@ -104,32 +99,20 @@ class BootStrapService {
             log.debug("setupAdminUsers ..")
             setupAdminUsers()
 
-            if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
-                log.warn("there are user org rows with no role set. Please update the table to add role FKs")
-            }
-            // def auto_approve_memberships = SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
-
-            SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
-            if (mailSent) {
-                mailSent.delete()
-            }
-
-            SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
-            // SystemSetting.findByName('StatusUpdateInterval') ?: new SystemSetting(name: 'StatusUpdateInterval', tp: SystemSetting.CONTENT_TYPE_STRING, value: '300').save()
-
-            // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
+            log.debug("setupSystemSettings ..")
+            setupSystemSettings()
 
             log.debug("setOrgRoleGroups ..")
             setOrgRoleGroups()
 
-            log.debug("setupOnixPlRefdata ..")
-            setupOnixPlRefdata()
-
-            log.debug("setupContentItems ..")
-            setupContentItems()
-
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
+
+            log.debug("setupContentItems .. deprecated")
+            setupContentItems()
+
+            log.debug("setupOnixPlRefdata .. deprecated")
+            setupOnixPlRefdata()
 
             log.debug("checking database ..")
             if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
@@ -347,6 +330,18 @@ class BootStrapService {
         createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
         createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
         createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+    }
+
+    def setupSystemSettings() {
+
+        SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
+        if (mailSent) {
+            mailSent.delete()
+        }
+
+        SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
+        // SystemSetting.findByName('StatusUpdateInterval') ?: new SystemSetting(name: 'StatusUpdateInterval', tp: SystemSetting.CONTENT_TYPE_STRING, value: '300').save()
+        // SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
     }
 
     /**

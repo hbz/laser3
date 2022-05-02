@@ -9,26 +9,6 @@
     <body>
         <table class="ui table">
             <tbody>
-                <%--<tr>
-                    <th colspan="2">Duplicate TIPPs</th>
-                </tr>
-                <g:each in="${duplicateTIPPKeys}" var="key">
-                    <tr>
-                        <td colspan="2">
-                            ${key}
-                        </td>
-                    </tr>
-                </g:each>
-                <tr>
-                    <th colspan="2">Merge TIPP IDs</th>
-                </tr>
-                <g:each in="${excludes}" var="ex">
-                    <tr>
-                        <td colspan="2">
-                            ${ex}
-                        </td>
-                    </tr>
-                </g:each>--%>
                 <tr>
                     <th>Deleted TIPPs without we:kb record</th>
                     <th>Deleted TIPPs with we:kb record</th>

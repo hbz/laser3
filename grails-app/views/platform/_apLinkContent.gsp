@@ -3,17 +3,6 @@
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
         <div class="fields">
             <div class="field">
-                <%-- <g:select class="ui dropdown" name="institutions"
-                          from="${institution}"
-                          optionKey="id"
-                          optionValue="name"
-                          value="${selectedInstitution} "
-                          onchange="${remoteFunction (
-                                  action: 'dynamicApLink',
-                                  params: '{platform_id:'+platformInstance.id+', institution_id:this.value}',
-                                  update: [success: 'dynamicUpdate', failure: 'failure'],
-                          )}"/>
-                --%>
                 <g:select class="ui dropdown" name="institutions"
                           from="${institution}"
                           optionKey="id"

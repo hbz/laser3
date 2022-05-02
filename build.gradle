@@ -24,8 +24,6 @@ buildscript {
         // https://github.com/n0mer/gradle-git-properties
         classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'   // 2.4.0 available
 
-        // classpath 'gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0'    // -- nn --
-
         // -- dependency resolving issue
 
         classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' // TODO - remove
@@ -43,7 +41,6 @@ apply plugin: 'org.grails.grails-gsp'
 apply plugin: 'org.grails.grails-doc'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'com.bertramlabs.asset-pipeline'
-// apply plugin: 'com.github.erdi.webdriver-binaries'        // -- nn --
 
 // ---[ plugin: database migration ! before dependencies configuration
 
@@ -100,16 +97,6 @@ dependencies {
     runtime 'javax.xml.bind:jaxb-api:2.3.1'
 //    runtime 'org.glassfish.web:el-impl:2.1.2-b03'                         // -- nn --
 //    runtime 'com.h2database:h2'                                           // -- nn --
-//    testCompile "io.micronaut:micronaut-inject-groovy"                    // -- nn --
-//    testCompile "org.grails:grails-gorm-testing-support"                  // -- nn --
-//    testCompile "org.mockito:mockito-core"                                // -- nn --
-//    testCompile "org.grails:grails-web-testing-support"                   // -- nn --
-//    testCompile "org.grails.plugins:geb"                                  // -- nn --
-//    testCompile "org.seleniumhq.selenium:selenium-remote-driver:3.14.0"   // -- nn --
-//    testCompile "org.seleniumhq.selenium:selenium-api:3.14.0"             // -- nn --
-//    testCompile "org.seleniumhq.selenium:selenium-support:3.14.0"         // -- nn --
-//    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:3.14.0"   // -- nn --
-//    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:3.14.0"  // -- nn --
 
     // --------------------------------------------------
 
@@ -146,7 +133,6 @@ dependencies {
     // -- more
 
     compile 'commons-io:commons-io:2.11.0'                      // from 2.6
-    compile 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
     compile 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
     compile 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
     compile 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
@@ -160,11 +146,6 @@ dependencies {
     implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' // TODO - remove
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
-
-//webdriverBinaries {           // -- nn --
-//    chromedriver '2.45.0'
-//    geckodriver '0.24.0'
-//}
 
 springBoot {
     mainClassName = 'de.laser.Application'
@@ -202,7 +183,6 @@ buildProperties {
 
         Properties properties = new Properties()
         grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
-
         File BuildInfoFile = new File("${project.rootDir}/git.properties")
         BuildInfoFile.withInputStream { properties.load(it) } // read props from file
 
@@ -262,10 +242,3 @@ apply from: 'laserTasks.gradle'
 tasks.withType(GroovyCompile) {
     configure(groovyOptions) { forkOptions.jvmArgs = ['-Xmx1024m'] }
 }
-
-//tasks.withType(Test) {        // -- nn --
-//    systemProperty 'geb.env', System.getProperty('geb.env')
-//    systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
-//    systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
-//    systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
-//}

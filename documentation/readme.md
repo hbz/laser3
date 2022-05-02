@@ -46,23 +46,23 @@ Use BeanStorage for static and non-static access to services and other beans.
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
 A migration to *de.laser.http.BasicHttpClient* should take place.
 
+### CSV
+
+*Opencsv* has been removed. New code should use *liquibase.util.csv*.
+
 ### Apache Commons Lang
 
 Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
 
-### ...
-
-#### Apache Commons IO
-
-*org.apache.commons.io* is only used in one file.
+### .. todo?
 
 #### ExecutorGrailsPlugin
 
 *org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
 
-#### Opencsv
+#### Apache Commons IO
 
-*com.opencsv:opencsv* is only used in one file.
+*org.apache.commons.io* is only used in one file.
 
 #### Juniversalchardet
 

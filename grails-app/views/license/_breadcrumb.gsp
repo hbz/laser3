@@ -1,14 +1,6 @@
 <laser:serviceInjection />
 
 <semui:breadcrumbs>
-    <%-- TODO: breadcrumb refactoring
-    <g:if test="${license?.getLicensee() && license?.getLicensee()?.id == contextService.getOrg().id}">
-        <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensee()?.getDesignation()}" />
-    </g:if>
-    <g:elseif test="${license?.getLicensingConsortium()?.id == contextService.getOrg().id}">
-        <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensingConsortium()?.getDesignation()}" />
-    </g:elseif>
-    --%>
 
     <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 

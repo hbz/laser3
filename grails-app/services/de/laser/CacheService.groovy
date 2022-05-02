@@ -52,8 +52,7 @@ class CacheService implements ApplicationContextAware {
             }
             cache = cacheManager.getCache(cacheName)
         }
-
-        return cache
+        cache
     }
 
     /* --- */
@@ -155,10 +154,6 @@ class CacheService implements ApplicationContextAware {
     }
 
     /* --- */
-
-    List getKeys() {
-        cache.getKeys()
-    }
 
     /**
      * Stores the given value under the given key on the given cache

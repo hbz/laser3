@@ -221,12 +221,6 @@
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</semui:link>
-                                </sec:ifAnyGranted>
-
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <div class="divider"></div>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</semui:link>
-
                                     <div class="divider"></div>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</semui:link>
                                 </sec:ifAnyGranted>

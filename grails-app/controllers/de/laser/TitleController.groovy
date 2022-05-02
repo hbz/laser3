@@ -5,14 +5,9 @@ import de.laser.helper.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
 import de.laser.auth.User
- 
-import de.laser.helper.DateUtils
-import de.laser.storage.RDConstants
-import grails.gorm.transactions.Transactional
+
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-
-import java.text.SimpleDateFormat
 
 /**
  * This controller manages calls for title listing
@@ -40,15 +35,12 @@ class TitleController  {
     def list() {
         log.debug("titleSearch : ${params}")
 
-        // TODO: copied from index() because no list() given | DB_QUERY
-
         Map<String, Object> result = [:]
 
             params.rectype = "TitleInstancePackagePlatform" // Tells ESSearchService what to look for
             //params.showAllTitles = true
             result.user = contextService.getUser()
             params.max = params.max ?: result.user.getDefaultPageSize()
-
 
             if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
@@ -58,7 +50,6 @@ class TitleController  {
 
             def old_q = params.q
             def old_sort = params.sort
-
 
             params.sort = params.sort ?: "name.keyword"
 
@@ -83,9 +74,7 @@ class TitleController  {
             result.filterSet = true
         }
 
-
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         result
     }
 
@@ -102,7 +91,6 @@ class TitleController  {
             redirect action: 'list'
             return
         }
-
         result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
 
         result
@@ -140,7 +128,6 @@ class TitleController  {
     result.historyLines = org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent.executeQuery('select e '+base_query+' order by e.lastUpdated desc', query_params, limits);
     result.num_hl = org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent.executeQuery('select e.id '+base_query, query_params).size()
     result.formattedHistoryLines = []
-
 
     result.historyLines.each { hl ->
 
@@ -180,41 +167,4 @@ class TitleController  {
 
     result
   }
-
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def dmIndex() {
-    log.debug("dmIndex ${params}");
-
-    if(params.search == "yes"){
-      params.offset = 0
-      params.remove("search")
-    }
-      Map<String, Object> result = [:]
-      User user = contextService.getUser()
-      SwissKnife.setPaginationParams(result, params, user)
-
-    result.availableStatuses = RefdataCategory.getAllRefdataValues(RDConstants.TITLE_STATUS)
-    def ti_status = null
-    
-    if(params.status){
-      ti_status = result.availableStatuses.find { it.value == params.status }
-    }
-    
-    def criteria = TitleInstance.createCriteria()
-    result.hits = criteria.list(max: result.max, offset:result.offset){
-        if(params.q){
-          ilike("title","${params.q}%")
-        }
-        if(ti_status){
-          eq('status',ti_status)
-        }
-        order("sortTitle", params.order?:'asc')
-    }
-
-    result.totalHits = result.hits.totalCount
-
-    result
-  }
-
 }

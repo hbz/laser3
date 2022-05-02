@@ -25,16 +25,6 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-<%-- TODO [ticket=1142,1996]
-<semui:exportDropdown>
-    <semui:exportDropdownItem>
-        <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
-    </semui:exportDropdownItem>
-    <semui:exportDropdownItem>
-        <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
-    </semui:exportDropdownItem>
-</semui:exportDropdown>
---%>
     <laser:render template="actions"/>
 </semui:controlButtons>
 

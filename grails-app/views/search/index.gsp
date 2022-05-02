@@ -1,6 +1,5 @@
 <%@ page import="de.laser.helper.LocaleHelper; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext; de.laser.SurveyConfig; de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
-<%-- r:require module="annotations" / --%>
 
 <% SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 

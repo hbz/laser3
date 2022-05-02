@@ -1,7 +1,5 @@
 <%@ page import="de.laser.ReaderNumber;de.laser.Org" %>
 
-
-
 <div class="${hasErrors(bean: numbersInstance, field: 'type', 'error')} required">
 	<label for="type">
 		<g:message code="readerNumber.referenceGroup.label" />

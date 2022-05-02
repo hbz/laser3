@@ -134,7 +134,6 @@ class UserService {
                         log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
                     }
                 }
-
                 user.getSetting(UserSetting.KEYS.DASHBOARD, org)
                 user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             }
@@ -217,7 +216,6 @@ class UserService {
         }
 
         //TODO: log.debug("affiliationCheck(): ${user} - ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck} -> ${check}")
-
         check
     }
 
@@ -229,7 +227,6 @@ class UserService {
     void setupAdminAccounts(Map<String,Org> orgs) {
         List adminUsers = ConfigMapper.getConfig('adminUsers') as List
         List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
-        //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
                                        'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'

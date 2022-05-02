@@ -22,9 +22,6 @@
             <semui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentLicenses" params="${[compare: true]+params}" message="menu.my.comp_lic" />
         </semui:actionsDropdown>
     </g:if>
-
-        %{--<semui:actionsDropdownItem controller="licenseCompare" action="index" message="menu.my.comp_lic" />
-        <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.copy" />--}%
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">

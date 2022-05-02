@@ -3,26 +3,6 @@
 
 <laser:serviceInjection />
 
-
-<%--
-    def jsonSource = []
-
-    cost_items.each{ ci ->
-        def or = OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', RDConstants.ORGANISATIONAL_ROLE))
-
-        jsonSource << [
-                "name": "${or.org.sortname}",
-                "type": "${or.org.orgType}",
-                "federal": "${or.org.region}",
-                "cost": "${ci.costInLocalCurrency}"
-        ]
-    }
-
-    //println jsonSource
-
-    def jb = new groovy.json.JsonBuilder(jsonSource)
-    println jb.toPrettyString()
---%>
 <%
     int colspan1 = 3
     int colspan2 = 7

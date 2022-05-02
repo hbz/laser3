@@ -84,8 +84,6 @@ class SurveyService {
         }else{
             return false
         }
-
-
     }
 
     @Deprecated
@@ -138,7 +136,6 @@ class SurveyService {
         result.total = configOrders.size()
 
         return result
-
     }
 
     @Deprecated
@@ -631,7 +628,6 @@ class SurveyService {
             sheetData.put(escapeService.escapeString(messageSource.getMessage('survey.exportSurveyCostItems', null, LocaleContextHolder.getLocale())), [titleRow: titles, columnData: surveyData])
 
         }
-
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
@@ -704,9 +700,7 @@ class SurveyService {
                         }
                 }
             }
-
         }
-
     }
 
     /**
@@ -799,9 +793,7 @@ class SurveyService {
                     }
                 }
             }
-
         }
-
     }
 
     /**
@@ -942,15 +934,10 @@ class SurveyService {
                             row.add([field: surveyResult.ownerComment ?: '', style: null])
                             row.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
-
-
                         surveyData.add(row)
-
 
                 sheetData.put(escapeService.escapeString(messageSource.getMessage('surveyInfo.members', null, LocaleContextHolder.getLocale())), [titleRow: titles, columnData: surveyData])
             }
-
-
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
@@ -961,7 +948,6 @@ class SurveyService {
     def emailsToSurveyUsers(List surveyInfoIds){
 
         def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
-
         def orgs = surveys?.surveyConfigs?.orgs?.org?.flatten()
 
         if(orgs)
@@ -984,9 +970,7 @@ class SurveyService {
                     sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
                 }
             }
-
         }
-
     }
 
     /**
@@ -1158,7 +1142,6 @@ class SurveyService {
         result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).size()
 
         return result
-
     }
 
     /**
@@ -1172,15 +1155,11 @@ class SurveyService {
         //private Property
         PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, contextOrg).each { it ->
             props << it
-
         }
-
         //global Property
         PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
             props << it
-
         }
-
         props.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
 
         return props
@@ -1714,7 +1693,6 @@ class SurveyService {
                 ie = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, titleInstancePackagePlatform)
             }
         }
-
         return ie
     }
 
@@ -1734,7 +1712,6 @@ class SurveyService {
         }else {
             return false
         }
-
     }
 
     def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
@@ -1781,9 +1758,7 @@ class SurveyService {
                     changedProperties.add([])
                 }
             }
-
         }
-
         sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: changedProperties])
 
         return exportService.generateXLSXWorkbook(sheetData)

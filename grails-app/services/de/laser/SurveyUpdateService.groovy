@@ -51,7 +51,6 @@ class SurveyUpdateService extends AbstractLockableService {
                 )
                 //
                 surveyService.emailsToSurveyUsers(readySurveysIds)
-
             }
 
             // Started -> Completed
