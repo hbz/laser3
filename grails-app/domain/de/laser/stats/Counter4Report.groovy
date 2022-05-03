@@ -75,9 +75,9 @@ class Counter4Report extends AbstractReport {
         reportInstitution   column: 'c4r_report_institution_fk', index: 'c4r_ri_idx'
         reportType          column: 'c4r_report_type', index: 'c4r_rt_idx'
         category            column: 'c4r_category'
-        metricType          column: 'c4r_metric_type'
-        reportFrom          column: 'c4r_report_from' //for JR5, this will be the start of YOP
-        reportTo            column: 'c4r_report_to' //for JR5, this will be the end of YOP
+        metricType          column: 'c4r_metric_type', index: 'c4r_metric_type_idx'
+        reportFrom          column: 'c4r_report_from', index: 'c4r_report_from_idx' //for JR5, this will be the start of YOP
+        reportTo            column: 'c4r_report_to', index: 'c4r_report_to_idx' //for JR5, this will be the end of YOP
         reportCount         column: 'c4r_report_count'
     }
 

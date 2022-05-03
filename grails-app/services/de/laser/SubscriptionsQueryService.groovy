@@ -283,32 +283,37 @@ class SubscriptionsQueryService {
                     qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
                     filterSet = true
                 }
-                else base_qry += ")" //opened in line 253 or 257
+                else base_qry += ")" //opened in line 268 or 272
             }
-            else base_qry += ")" //opened in line 253 or 257
+            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 268 or 272
+        }
+        if (params.status == 'FETCH_ALL' && params.hasPerpetualAccess) {
+            base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
+            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            filterSet = true
         }
 
 
         if (params.form) {
-            base_qry += "and s.form.id in (:form) "
+            base_qry += " and s.form.id in (:form) "
             qry_params.put('form', params.list("form").collect { Long.parseLong(it) })
             filterSet = true
         }
 
         if (params.resource) {
-          base_qry += "and s.resource.id in (:resources) "
+          base_qry += " and s.resource.id in (:resources) "
           qry_params.put('resources', params.list("resource").collect { Long.parseLong(it) })
             filterSet = true
         }
 
         if (params.isPublicForApi) {
-            base_qry += "and s.isPublicForApi = :isPublicForApi "
+            base_qry += " and s.isPublicForApi = :isPublicForApi "
             qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true
         }
 
         if (params.hasPublishComponent) {
-            base_qry += "and s.hasPublishComponent = :hasPublishComponent"
+            base_qry += " and s.hasPublishComponent = :hasPublishComponent "
             qry_params.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true
         }

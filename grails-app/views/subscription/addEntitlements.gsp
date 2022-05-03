@@ -168,7 +168,6 @@
 
             <td>
                 <g:if test="${(tipp.titleType == 'Book')}">
-                    <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
                    %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstInPrint')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
                     <%--${tipp.title.dateFirstInPrint}--%>--}%
@@ -298,22 +297,36 @@
     }
 
     JSPC.app.updateSelectionCache = function (index,checked) {
+        let filterParams = {
+                    filter: "${params.filter}",
+                    pkgFilter: "${params.pkgfilter}",
+                    asAt: "${params.asAt}",
+                    series_names: ${params.list("series_names")},
+                    subject_references: ${params.list("subject_references")},
+                    ddcs: ${params.list("ddcs")},
+                    languages: ${params.list("languages")},
+                    yearsFirstOnline: ${params.list("yearsFirstOnline")},
+                    identifier: "${params.identifier}",
+                    title_types: ${params.list("title_types")},
+                    publishers: ${params.list("pulishers")},
+                    coverageDepth: ${params.list("coverageDepth")},
+                    hasPerpetualAccess: "${params.hasPerpetualAccess}"
+        };
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
-                data: {
-                    sub: ${subscription.id},
-                    index: index,
-                    <g:if test="${params.pkgfilter}">
-                        packages: ${params.pkgfilter},
-                    </g:if>
-                    referer: "${actionName}",
-                    checked: checked
-                }
-            }).done(function(result){
+            method: "post",
+            data: {
+                sub: ${subscription.id},
+                index: index,
+                filterParams: JSON.stringify(filterParams),
+                referer: "${actionName}",
+                checked: checked
+            }
+        }).done(function(result){
 
-            }).fail(function(xhr,status,message){
-                console.log("error occurred, consult logs!");
-            });
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     }
 
     $("#select-all").change(function() {

@@ -1041,11 +1041,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
-                        case "Technical Support":
-                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                        case "Metadata Contact":
+                            contact.rdType = RDStore.PRS_FUNC_METADATA
                             break
                         case "Service Support":
                             contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                            break
+                        case "Technical Support":
+                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
                             break
                         default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
                             break

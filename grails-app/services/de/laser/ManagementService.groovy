@@ -426,7 +426,6 @@ class ManagementService {
                             subscriptionService.addToMemberSubscription(result.subscription, memberSubsToLink, pkg_to_link, params.processOption == 'linkwithIE')
                         }
                     })
-                    executorService.shutdown()
                 }
             } else {
                 if (selectedSubs.size() < 1) {

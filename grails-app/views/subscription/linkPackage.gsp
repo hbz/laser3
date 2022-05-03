@@ -143,8 +143,8 @@
                 </td>
                 <td class="right aligned">
                     <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
-
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                        <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
+                        <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
                                 data-addUUID="${record.uuid}"
                                 data-packageName="${record.name}"
                                 data-semui="modal"
