@@ -514,6 +514,7 @@ class AjaxController {
       Map checked = cache.get('checked')
 
       if(params.index == 'all') {
+          Map<String, Object> filterParams = JSON.parse(params.filterParams) as Map<String, Object>
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
@@ -559,11 +560,13 @@ class AjaxController {
 
           }
           else {
-              Set<Long> pkgFilter = []
-              if (params.pkgFilter)
-                  pkgFilter << params.long('pkgFilter')
-              else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
-              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)', [pkgFilter: pkgFilter, sub: params.long("sub")])
+              Set<Package> pkgFilter = []
+              if (filterParams.pkgFilter)
+                  pkgFilter << Package.get(filterParams.pkgFilter)
+              else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
+              Map<String, Object> tippFilter = filterService.getTippQuery(filterParams, pkgFilter.toList())
+              String query = tippFilter.query.replace("select tipp.id", "select tipp.gokbId").replace("order by lower(tipp.sortname) asc", "")
+              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query+" and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)", tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
                   newChecked[e] = params.checked == 'true' ? 'checked' : null
               }
@@ -593,10 +596,12 @@ class AjaxController {
       Map success = [success:false]
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      if(!issueEntitlementCandidates)
+          issueEntitlementCandidates = [:]
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)
           ieCandidate = [:]
-      if(params.coverage) {
+      if(params.coverage != 'false') {
           def ieCoverage
           Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
           Matcher matcher = pattern.matcher(params.prop)

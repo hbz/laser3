@@ -253,7 +253,7 @@
         </div>
 
         <g:if test="${controllerName == 'subscription' && showStatsFilter}">
-            <div class="two fields">
+            <div class="${accessTypes ? print('three') : print('two')} fields">
                 <div class="field">
                     <label for="metricType"><g:message code="default.usage.metricType"/></label>
                     <select name="metricType" id="metricType" class="ui selection dropdown">
@@ -269,6 +269,24 @@
                         </g:if>
                     </select>
                 </div>
+
+                <g:if test="${accessTypes}">
+                    <div class="field">
+                        <label for="accessType"><g:message code="default.usage.accessType"/></label>
+                        <select name="accessType" id="accessType" class="ui selection dropdown">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${accessTypes}" var="accessType">
+                                <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
+                                        value="${accessType}">
+                                    ${accessType}
+                                </option>
+                            </g:each>
+                            <g:if test="${accessTypes.size() == 0}">
+                                <option value="<g:message code="default.stats.noAccess" />"><g:message code="default.stats.noAccess" /></option>
+                            </g:if>
+                        </select>
+                    </div>
+                </g:if>
 
                 <div class="field">
                     <label for="reportType"><g:message code="default.usage.reportType"/></label>

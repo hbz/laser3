@@ -122,6 +122,7 @@
                                    exportXLSStats     : true,
                                    data             : 'fetchAll',
                                    tab           : 'allIEsStats',
+                                   loadFor       : 'allIEsStats',
                                    tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
@@ -131,6 +132,7 @@
                                    exportXLSStats     : true,
                                    data             : 'fetchAll',
                                    tab           : 'holdingIEsStats',
+                                   loadFor       : 'holdingIEsStats',
                                    tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
             </semui:exportDropdownItem>
         </g:if>
