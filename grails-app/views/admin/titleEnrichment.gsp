@@ -9,7 +9,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+    <semui:crumb message="menu.admin" controller="admin" action="index" />
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon/>Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content</h1>

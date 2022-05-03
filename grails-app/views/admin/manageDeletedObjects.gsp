@@ -8,7 +8,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+    <semui:crumb message="menu.admin" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.deletedObjects" class="active"/>
 </semui:breadcrumbs>
 

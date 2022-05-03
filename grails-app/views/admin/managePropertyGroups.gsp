@@ -9,7 +9,7 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+            <semui:crumb message="menu.admin" controller="admin" action="index" />
             <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
         </semui:breadcrumbs>
 

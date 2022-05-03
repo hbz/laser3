@@ -10,7 +10,7 @@
 <laser:serviceInjection />
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.systemCache" class="active"/>
 </semui:breadcrumbs>
 

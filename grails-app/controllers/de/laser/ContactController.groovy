@@ -91,14 +91,6 @@ class ContactController  {
 		] // TODO
     }
 
-	@Deprecated
-	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def edit() {
-		redirect controller: 'contact', action: 'show', params: params
-		return // ----- deprecated
-    }
-
 	/**
 	 * Deletes the given contact entity
 	 * @return the contact list in case of success; the details view otherwise

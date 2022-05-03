@@ -2,16 +2,22 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.datamanager')} ${message(code:'default.dashboard')}</title>
   </head>
 
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb message="menu.datamanager.dash" class="active"/>
+      <semui:crumb message="menu.datamanager" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.datamanager.dash')}</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top">
+      <i class="circular icon pencil" style="background-color:#b5c334; border-color:#b5c334; color:white;"></i>
+      ${message(code:'menu.datamanager')}
+    </h1>
+
+  <br />
+  <br />
 
     <semui:messages data="${flash}" />
 

@@ -187,7 +187,7 @@
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</semui:link>
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</semui:link>
                                 </sec:ifAnyGranted>
@@ -233,6 +233,8 @@
                             </a>
 
                             <div class="menu" role="menu">
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="index">${message(code:'default.dashboard')}</semui:link>
+
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
                                         ${message(code:'menu.admin.sysAdmin')}
@@ -240,6 +242,7 @@
                                     </div>
 
                                     <div class="menu" role="menu">
+
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</semui:link>
@@ -323,7 +326,7 @@
 
                             <div class="menu" role="menu">
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">Dashboard</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</semui:link>
 
                                 <div class="item " role="menuitem" aria-haspopup="true">
                                     <div class="title">

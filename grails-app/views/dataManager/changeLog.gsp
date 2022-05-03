@@ -8,7 +8,7 @@
   <body>
   
     <semui:breadcrumbs>
-      <semui:crumb message="menu.datamanager.dash" controller="dataManager" action="index"/>
+      <semui:crumb message="menu.datamanager" controller="dataManager" action="index"/>
       <semui:crumb message="menu.datamanager.changelog" class="active"/>
 
       <li class="dropdown la-float-right">

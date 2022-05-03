@@ -9,7 +9,7 @@
         <semui:crumb controller="organisation" action="users" message="menu.institutions.users" id="${orgInstance.id}"/>
     </g:elseif>
     <g:elseif test="${controllerName == 'user'}">
-        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb message="menu.admin" controller="admin" action="index"/>
         <semui:crumb controller="user" action="list" message="user.show_all.label" />
     </g:elseif>
 
@@ -23,7 +23,7 @@
         <semui:crumb class="active" message="user.edit.label" />
     </g:if>
     <g:if test="${actionName == 'show'}">
-        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb message="menu.admin" controller="admin" action="index"/>
         <semui:crumb controller="user" action="list" message="user.show_all.label" />
         <semui:crumb class="active" text="${user.displayName?:'No username'}" />
     </g:if>

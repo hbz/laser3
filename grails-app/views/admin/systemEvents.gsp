@@ -8,7 +8,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+    <semui:crumb message="menu.admin" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.systemEvents" class="active"/>
 </semui:breadcrumbs>
 
@@ -18,21 +18,21 @@
         <form id="filter" class="ui form">
             <div class="five fields">
                 <div class="field">
-                    <label>Category</label>
+                    <label>${message(code:'default.category.label')}</label>
                     <g:select name="filter_category" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.CATEGORY.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_category}"
                     />
                 </div>
                 <div class="field">
-                    <label>Relevance</label>
+                    <label>${message(code:'default.relevance.label')}</label>
                     <g:select name="filter_relevance" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.RELEVANCE.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_relevance}"
                     />
                 </div>
                 <div class="field">
-                    <label>Source</label>
+                    <label>${message(code:'default.source.label')}</label>
                     <g:select name="filter_source" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.getAllSources( events )}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_source}"
@@ -89,13 +89,13 @@
         <thead>
         <tr>
             <th>${message(code:'default.number')}</th>
-            <g:sortableColumn property="category" title="Category"/>
-            <g:sortableColumn property="relevance" title="Relevance"/>
-            <th>Source</th>
-            <th>Event</th>
+            <th>${message(code:'default.category.label')}</th>
+            <th>${message(code:'default.relevance.label')}</th>
+            <th>${message(code:'default.source.label')}</th>
+            <th>${message(code:'default.event.label')}</th>
             <%--<th>Message</th>--%>
             <th>Payload</th>
-            <g:sortableColumn property="created" title="Date"/>
+            <th>${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>

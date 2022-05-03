@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
+      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
       <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </semui:breadcrumbs>
 

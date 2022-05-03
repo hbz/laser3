@@ -3,17 +3,20 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Yoda Dashboard</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.yoda')} ${message(code:'default.dashboard')}</title>
 </head>
 
 <body>
     <laser:serviceInjection />
 
     <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda.dash" class="active"/>
+        <semui:crumb message="menu.yoda" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Yoda Dashboard</h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top">
+        <i class="circular icon stethoscope" style="background-color:#c12e34; border-color:#c12e34; color:white;"></i>
+        ${message(code:'menu.yoda')}
+    </h1>
 
     <h2 class="ui header">&nbsp;</h2>
 

@@ -10,51 +10,12 @@ import de.laser.SurveyConfig
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
-import org.apache.commons.io.IOUtils
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 /**
  * This service is one step behind {@link de.laser.ctrl.DocstoreControllerService} and contains helper methods for document retrieval
  */
 @Transactional
 class DocstoreService {
-
-    @Deprecated
-  File zipDirectory(File directory) throws IOException {
-    File testZip = File.createTempFile("bag.", ".zip");
-    String path = directory.getAbsolutePath();
-    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(testZip));
-
-    ArrayList<File> fileList = getFileList(directory);
-    for (File file : fileList) {
-      ZipEntry ze = new ZipEntry(file.getAbsolutePath().substring(path.length() + 1));
-      zos.putNextEntry(ze);
-  
-      FileInputStream fis = new FileInputStream(file);
-      IOUtils.copy(fis, zos);
-      fis.close();
-  
-      zos.closeEntry();
-    }
-  
-    zos.close();
-    return testZip;
-  }
-
-    @Deprecated
-  ArrayList<File> getFileList(File file) {
-    ArrayList<File> fileList = new ArrayList<File>();
-    if (file.isFile()) {
-      fileList.add(file);
-    }
-    else if (file.isDirectory()) {
-      for (File innerFile : file.listFiles()) {
-        fileList.addAll(getFileList(innerFile));
-      }
-    }
-    return fileList;
-  }
 
     /**
      * Deletes a document with the given parameter map.

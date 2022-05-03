@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsVersion
-        classpath 'org.grails.plugins:hibernate5:7.0.5'
+        classpath 'org.grails.plugins:hibernate5:7.0.6'                                             // from 7.0.5
 
         // https://github.com/grails/grails-database-migration
         classpath 'org.grails.plugins:database-migration:3.1.0'                                     // from 3.0.3
@@ -85,7 +85,7 @@ dependencies {
     compile 'org.grails.plugins:scaffolding'
     compile 'org.grails.plugins:events'
     compile 'org.grails.plugins:hibernate5'
-    compile 'org.hibernate:hibernate-core:5.4.33.Final'                     // from 5.4.18.Final
+    compile 'org.hibernate:hibernate-core:5.6.8.Final'                      // from 5.4.18.Final, 5.4.33.Final
     compile 'org.grails.plugins:gsp'
 
     compile 'io.micronaut:micronaut-http-client'
@@ -124,11 +124,11 @@ dependencies {
     compile 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache
-    compile 'org.hibernate:hibernate-ehcache:5.4.33.Final'              // from 5.1.16.Final
+    compile 'org.hibernate:hibernate-ehcache:5.6.8.Final'               // from 5.1.16.Final, 5.4.33.Final
     // https://mvnrepository.com/artifact/net.sf.ehcache/ehcache
     compile 'net.sf.ehcache:ehcache:2.10.9.2'                           // from 2.10.6
-//    compile 'org.hibernate:hibernate-jcache:5.4.33.Final'       // instead of hibernate-ehcache:5.1.16.Final
-//    compile 'org.ehcache:ehcache:3.9.9'                         // instead of net.sf.ehcache:ehcache:2.10.9.2
+//    compile 'org.hibernate:hibernate-jcache:5.4.33.Final'             // instead of hibernate-ehcache:5.1.16.Final
+//    compile 'org.ehcache:ehcache:3.9.9'                               // instead of net.sf.ehcache:ehcache:2.10.9.2
 
     // -- more
 
@@ -137,7 +137,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
     compile 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
     compile 'org.codehaus.gpars:gpars:1.2.1'
-    compile 'org.liquibase:liquibase-core:3.10.1'               // from 3.5.5 : + org.grails.plugins:database-migration
+    compile 'org.liquibase:liquibase-core:3.10.3'               // from 3.5.5, 3.10.1 : + org.grails.plugins:database-migration
 
     runtime 'org.postgresql:postgresql:42.3.3'                  // from 42.3.0
 
@@ -209,7 +209,7 @@ assets {
     minifyJs = true
     minifyCss = true
     minifyOptions = [
-            languageMode: 'ES6',
+            languageMode:   'ES6',
             targetLanguage: 'ES5_STRICT'
     ]
     skipNonDigests = true

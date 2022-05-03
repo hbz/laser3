@@ -2,11 +2,9 @@ package de.laser
 
 import com.k_int.kbplus.DataloadService
 import com.k_int.kbplus.ESWrapperService
-import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.finance.CostItem
 import de.laser.helper.*
@@ -18,7 +16,6 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
@@ -27,7 +24,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.web.Action
-import groovy.json.JsonOutput
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -36,9 +32,7 @@ import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
-import org.springframework.transaction.TransactionStatus
 
-import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -62,11 +56,9 @@ class YodaController {
     DataloadService dataloadService
     DeletionService deletionService
     ESWrapperService ESWrapperService
-    ExportService exportService
     FinanceService financeService
     FormService formService
     GlobalSourceSyncService globalSourceSyncService
-    IdentifierService identifierService
     def quartzScheduler
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
@@ -996,64 +988,6 @@ class YodaController {
         result
     }
 
-    /*
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def migrateCollectiveSubscriptions() {
-        Map<String, Object> result = [:]
-
-        result.subRoles = Subscription.executeQuery(
-            'select sub, role from Subscription sub join sub.orgRelations role, OrgSetting os ' +
-            '  where os.org = role.org ' +
-            '  and role.roleType.value like \'Subscriber\' ' +
-            '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
-        )
-
-        result.subConsRoles = Subscription.executeQuery(
-                'select sub, role from Subscription sub join sub.orgRelations role, OrgSetting os ' +
-                        '  where os.org = role.org ' +
-                        '  and role.roleType.value like \'Subscriber_Consortial\' ' +
-                        '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' ' +
-                        '    and not exists (select check from OrgRole check where check.org = role.org and check.sub = sub ' +
-                        '    and check.roleType.value like \'Subscription Collective\' )'
-        )
-
-        if (params.cmd == 'migrate') {
-            result.subRoles.each{ so ->
-                Subscription sub = so[0]
-                OrgRole role 	 = so[1]
-
-				if (sub._getCalculatedType() == Subscription.TYPE_LOCAL) {
-					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
-					role.save()
-
-					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-					sub.save()
-				}
-            }
-
-            // todo: IGNORED for 0.20
-
-            result.subConsRoles.each{ so ->
-                Subscription sub = so[0]
-                OrgRole role 	 = so[1]
-
-                if (sub._getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
-                    OrgRole newRole = new OrgRole(
-                            org: role.org,
-                            sub: sub,
-                            roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                    )
-                    newRole.save()
-                }
-            }
-
-        }
-
-        result
-    }
-    */
-
     /**
      * Enables/disables a boolean setting flag
      */
@@ -1071,7 +1005,7 @@ class YodaController {
             s.save()
         }
 
-        redirect action:'settings'
+        redirect action:'systemSettings'
     }
 
     /**
@@ -1089,7 +1023,7 @@ class YodaController {
                 grailsApplication.config.grails.mail.disabled = true
         }
 
-        redirect action:'settings'
+        redirect action:'systemSettings'
     }
 
     @Deprecated

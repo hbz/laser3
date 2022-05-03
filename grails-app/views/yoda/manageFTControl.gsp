@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
         <semui:crumb text="FTControl" class="active" />
     </semui:breadcrumbs>
 

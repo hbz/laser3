@@ -72,7 +72,18 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def index() { }
+    def index() {
+        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
+        )).list()
+
+        Map<String, Object> result = [
+                dbmVersion  : dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown'],
+                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc'])
+        ]
+
+        result
+    }
 
     /**
      * This method manages system-wide announcements. Those are made if system-relevant messages need to be transmit to every

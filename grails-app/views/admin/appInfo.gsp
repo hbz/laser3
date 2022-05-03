@@ -9,7 +9,7 @@
 <body>
 
     <semui:breadcrumbs>
-        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb message="menu.admin" controller="admin" action="index"/>
         <semui:crumb message="menu.admin.appInfo" class="active"/>
     </semui:breadcrumbs>
 
@@ -17,7 +17,7 @@
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">App</th><th class="nine wide"></th></tr>
+            <tr><th class="seven wide">Application</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
             <tr><td>App name</td><td> ${AppUtils.getMeta('info.app.name')}</td></tr>
@@ -50,7 +50,7 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url').split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} <br/> ${dbmVersion[1]} <br/> ${DateUtils.getSDF_NoZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
             <tr><td>Collations</td><td>
                 <%
