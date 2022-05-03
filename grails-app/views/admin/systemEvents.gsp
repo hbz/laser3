@@ -100,34 +100,47 @@
         </thead>
         <tbody>
         <g:each in="${events}" var="el" status="i">
+            <%
+                String tdClass = 'table-td-yoda-blue'
+                switch (el.relevance?.value?.toLowerCase()) {
+                    case 'info' :
+                        tdClass = 'table-td-yoda-blank'; break
+                    case 'ok' :
+                        tdClass = 'table-td-yoda-green'; break
+                    case 'warning' :
+                        tdClass = 'table-td-yoda-yellow'; break
+                    case 'error' :
+                        tdClass = 'table-td-yoda-red'; break
+                }
+            %>
             <tr
                     data-category="${el.category}"
                     data-relevance="${el.relevance}"
                     data-source="${el.source}"
                     class="hidden"
             >
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${i+1}.
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${el.category}
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${el.relevance}
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${el.source}
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${el.event}
                 </td>
-                <%--<td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <%--<td class="${tdClass}">
                     ${el.descr}
                 </td>--%>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     ${el.payload?.replaceAll(',', ', ')}
                 </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                <td class="${tdClass}">
                     <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
                 </td>
             </tr>

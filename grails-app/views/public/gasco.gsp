@@ -89,7 +89,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/GASCO-Logo-2_klein.jpg')}"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/logo-small.jpg')}"/>
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -128,8 +128,6 @@
             <th>${message(code:'sidewide.number')}</th>
             <th>${message(code:'gasco.table.product')}</th>
             <th>${message(code:'gasco.table.provider')}</th>
-            %{--Task ERMS-587: Temporäres Ausblenden dieser Spalte--}%
-            %{--<th>${message(code:'gasco.licenceType')}</th>--}%
             <th>
                 <div id="js-consortium-header">
                     ${message(code:'gasco.table.consortium')}</div>
@@ -174,10 +172,6 @@
                             ${role.org?.name}<br />
                         </g:each>
                     </td>
-                    %{--Task ERMS-587: Temporäres Ausblenden dieser Spalte--}%
-                    %{--<td>--}%
-                        %{--${sub.type?.getI10n('value')}--}%
-                    %{--</td>--}%
                     <td>
 
                     ${gasco_verhandlername ?: sub.getConsortia()?.name}

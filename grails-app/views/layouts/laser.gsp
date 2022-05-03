@@ -105,7 +105,6 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
 
-
                                 <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
@@ -211,8 +210,6 @@
 
                                     <div class="divider"></div>
 
-                                    <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="license" action="create">${message(code:'license.template.new')}</semui:link>--%>
-                                    <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</semui:link>--%>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</semui:link>
@@ -351,7 +348,6 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="userRoleMatrix">${message(code:'menu.yoda.userRoleMatrix')}</semui:link>
 
-                                        <%--<a class="item" role="menuitem" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
                                     </div>
                                 </div>
 
@@ -461,7 +457,6 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="freezeSubscriptionHoldings">${message(code:'menu.admin.freezeSubscriptionHoldings')}</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</semui:link>--%>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</semui:link>
                                         <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</semui:link>
                                         <semui:link generateElementId="true" class="item role="menuitem" js-open-confirm-modal"

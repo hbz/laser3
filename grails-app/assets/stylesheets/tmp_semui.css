@@ -191,19 +191,14 @@ body.myInstitution_dashboard .ui.tab .item .header {
     color: rgba(0,0,0,0.3)
 }
 
-/* auditable icon for object names and titles */
-h1 .icon.h1-icon-overwrite {
-    margin-right: 5px !important;
-    font-size: 0.8em !important;
-}
+/* table-td-colors @ yoda/admin */
 
-/* table-td-colors @ admin->systemEvents */
-
-.ui.la-table.table tr td[class^=table-td] { vertical-align: top; }
-.ui.la-table.table tr td.table-td-info    { }
-.ui.la-table.table tr td.table-td-ok      { background-color: rgba(152,181,0, 0.1); }
-.ui.la-table.table tr td.table-td-warning { background-color: rgba(251,189,8, 0.1); }
-.ui.la-table.table tr td.table-td-error   { background-color: rgba(187, 22,0, 0.1); }
+.ui.la-table.table tr td[class^=table-td]       { vertical-align: top; }
+.ui.la-table.table tr td.table-td-yoda-blank    { }
+.ui.la-table.table tr td.table-td-yoda-green    { background-color: rgba(145, 204, 117, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-yellow   { background-color: rgba(250, 200,  88, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-red      { background-color: rgba(238, 102, 102, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-blue     { background-color: rgba( 84, 112, 198, 0.15); }
 
 /* la-hover-table */
 

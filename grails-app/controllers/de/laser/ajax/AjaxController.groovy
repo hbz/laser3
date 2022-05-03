@@ -2064,14 +2064,7 @@ class AjaxController {
     if ( value ) {
       switch ( value.class ) {
         case RefdataValue.class:
-
-          if ( value.icon != null ) {
-            result="<span class=\"select-icon ${value.icon}\"></span>";
-            result += value.value ? value.getI10n('value') : not_set
-          }
-          else {
             result = value.value ? value.getI10n('value') : not_set
-          }
           break
         default:
           if(value instanceof String){

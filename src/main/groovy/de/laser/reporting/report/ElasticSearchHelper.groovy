@@ -5,7 +5,6 @@ import de.laser.ApiSource
 import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
-import de.laser.helper.AppUtils
 import de.laser.http.BasicHttpClient
 import de.laser.helper.ConfigMapper
 import de.laser.reporting.export.myInstitution.PackageExport

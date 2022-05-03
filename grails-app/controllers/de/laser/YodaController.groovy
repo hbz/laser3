@@ -122,14 +122,14 @@ class YodaController {
 
         Map<String, Object> groups = [:]
         for (String groupName : quartzScheduler.getJobGroupNames()) {
-            def group = []
+            List group = []
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                 def clazz = Class.forName(key.getName())
                 def cf  = clazz.configFlags
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
-                def nft = triggers.collect{ it.nextFireTime ?: null }
+                List nft = triggers.collect{ it.nextFireTime ?: null }
 
                 def getUsedServices = { clz ->
                     clz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
@@ -145,7 +145,7 @@ class YodaController {
                         available: applicationContext.getBean(key.getName()).isAvailable()
                 ]
 
-                def crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
+                List crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
 
                 if (crx) {
                     map << ['cronEx': crx.get(0).cronExpression]

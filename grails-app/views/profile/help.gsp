@@ -26,9 +26,7 @@
             <p>
                 <g:message code="help.contentHelp.manuel.content"/>:
                 <a href="https://service-wiki.hbz-nrw.de/display/LAS/Startseite" class="header" target="_blank">https://service-wiki.hbz-nrw.de/display/LAS/Startseite</a>
-
             </p>
-
         </div>
     </div>
 
@@ -39,11 +37,8 @@
     <div class="content">
         <div class="ui relaxed divided list">
             <p>
-
                 <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties')}</g:link>
-
             </p>
-
         </div>
     </div>
 

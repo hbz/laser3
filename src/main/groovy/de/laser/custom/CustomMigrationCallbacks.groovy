@@ -2,6 +2,7 @@ package de.laser.custom
 
 import de.laser.helper.ConfigMapper
 import de.laser.storage.BeanStorage
+import de.laser.system.SystemEvent
 import grails.core.GrailsApplication
 import liquibase.Liquibase
 import liquibase.changelog.ChangeSet
@@ -56,7 +57,7 @@ class CustomMigrationCallbacks {
 		if (! diff.empty) {
 			println '--------------------------------------------------------------------------------'
 			println '-     Database migration'
-			println '-        ' + diff.size() + ' relevant changesets detected ..'
+			println '-        ' + diff.size() + ' relevant changesets found ..'
 			println '-        dumping current database ..'
 
 			def dataSource = ConfigMapper.getConfig('dataSource')
@@ -69,14 +70,20 @@ class CustomMigrationCallbacks {
 					schema: "public",
 					file  : "${backupFile}"
 			]
-			println '-           pg_dump: ' + ConfigMapper.getPgDumpPath()
-			println '-            source: ' + database
-			println '-            target: ' + backupFile
+			String pgDump = ConfigMapper.getPgDumpPath()
+
+			println '-           pg_dump : ' + pgDump
+			println '-            source : ' + database
+			println '-            target : ' + backupFile
 
 			try {
-				String cmd = ConfigMapper.getPgDumpPath() + ' -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
-
-				cmd.execute().waitForProcessOutput(System.out, System.err)
+				if ( pgDump ) {
+					String cmd = pgDump + ' -x ' + (config.collect { '--' + it.key + '=' + it.value }).join(' ')
+					cmd.execute().waitForProcessOutput(System.out, System.err)
+				}
+				else {
+					println '-           Backup ignored, because no config for pg_dump'
+				}
 
 			} catch (Exception e) {
 				println '-           error: ' + e.getMessage()

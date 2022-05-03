@@ -14,78 +14,69 @@
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemQuartz')}</h1>
 
 <g:each in="${quartz}" var="groupKey, group">
-    <%--<h3 class="ui header">${groupKey}</h3>--%>
-
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
                 <th>Job</th>
                 <th>Services</th>
                 <th>Config</th>
-                <th>Status</th>
                 <th>s  m  h  DoM  M  DoW  Y</th>
                 <th>Nächste Ausführung</th>
             </tr>
         </thead>
         <tbody>
             <g:each in="${group}" var="job">
+                <%
+                    String tdClass   = ''
+                    String tdStyle   = ''
+
+                    boolean isActive = true
+
+                    if (job.configFlags) {
+                        job.configFlags.split(',').each { flag ->
+                            isActive = isActive && (currentConfig.get(flag.trim()) && ! (currentConfig.get(flag.trim()) in [null, false]))
+                        }
+                    }
+
+                    if (job.running) {
+                        tdClass = 'table-td-yoda-green'
+                    }
+                    else if (! job.nextFireTime) {
+                        tdClass = 'table-td-yoda-red'
+                        tdStyle = 'color:grey'
+                    }
+                    else if (isActive) {
+                        tdClass = 'table-td-yoda-green'
+                    }
+                    else if (job.available) {
+                        tdClass = 'table-td-yoda-yellow'
+                        tdStyle = 'color:grey'
+                    }
+                %>
                 <tr>
-                    <td>
+                    <td class="${tdClass}" style="${tdStyle}">
                         ${job.name}
                     </td>
-                    <td>
+                    <td class="${tdClass}" style="${tdStyle}">
                         <g:each in="${job.services}" var="srv">
                             ${srv} <br />
                         </g:each>
                     </td>
-                    <td>
+                    <td class="${tdClass}" style="${tdStyle}">
                         <g:each in="${job.configFlags.split(',')}" var="flag">
                             <g:if test="${currentConfig.get(flag.trim())}">
                                 ${flag} = ${currentConfig.get(flag.trim())} <br />
                             </g:if>
                             <g:else>
-                                <span style="color:lightgrey;font-style:italic">${flag}</span> <br />
+                                ${flag} <br />
                             </g:else>
                         </g:each>
                     </td>
-
-                    <%
-                        boolean isActive = true
-
-                        if (job.configFlags) {
-                            job.configFlags.split(',').each { flag ->
-                                isActive = isActive && (currentConfig.get(flag.trim()) && ! (currentConfig.get(flag.trim()) in [null, false]))
-                            }
-                        }
-                    %>
-
-                    <td style="text-align:center">
-                        <g:if test="${job.running}">
-                            <i class="ui big icon play circle green"></i>
-                        </g:if>
-                        <g:else>
-                            <g:if test="${! job.nextFireTime}">
-                                <i class="ui icon exclamation circle red"></i>
-                            </g:if>
-                            <g:elseif test="${isActive}">
-                                <i class="ui icon play green"></i>
-                            </g:elseif>
-                            <g:elseif test="${job.available}">
-                                <i class="ui icon question yellow"></i>
-                            </g:elseif>
-                        </g:else>
-                    </td>
-                    <td>
+                    <td class="${tdClass}" style="${tdStyle}">
                         <code>${job.cronEx}</code>
                     </td>
-                    <td>
-                        <g:if test="${isActive}">
-                            ${job.nextFireTime}
-                        </g:if>
-                        <g:else>
-                            <span style="color:lightgrey">${job.nextFireTime}</span>
-                        </g:else>
-                        <%--<g:formatDate format="${message(code:'default.date.format.noZ')}" date="${job.nextFireTime}" />--%>
+                    <td class="${tdClass}" style="${tdStyle}">
+                        ${job.nextFireTime}
                     </td>
                 </tr>
             </g:each>

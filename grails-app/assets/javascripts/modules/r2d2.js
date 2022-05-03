@@ -15,7 +15,6 @@ r2d2 = {
                     } else {
                         if( ! $(this).hasClass("la-calendar-selected") ) {
                             $(this).addClass("la-calendar-selected");
-                            //r2d2.countSettedFilters();
                         }
                     }
                 }
@@ -42,7 +41,6 @@ r2d2 = {
                         return day + '.' + month + '.' + year;
                     }
                     else if ('yyyy-mm-dd' == JSPC.vars.dateFormat) {
-                        //console.log('yyyy-mm-dd');
                         return year + '-' + month + '-' + day;
                     }
                     else {
@@ -191,7 +189,6 @@ r2d2 = {
                 html = '';
             if (message !== undefined && type !== undefined) {
                 html += '' + '<div class="message ' + type + '">';
-                // message type
                 if (type == 'empty') {
                     html += '' + '<div class="header">' + JSPC.dict.get('search.API.heading.noResults', JSPC.currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
                 } else {
@@ -245,7 +242,6 @@ r2d2 = {
                     return response;
                 },
                 onError: function(errorMessage) {
-                    // invalid response
                 }
             }
         });
@@ -495,6 +491,12 @@ r2d2 = {
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
+        // tables
+        $(ctxSel + ' .la-hover-table tbody tr td').hover(
+            function(){ $(this).parent('tr').addClass('la-active') },
+            function(){ $(this).parent('tr').removeClass('la-active') }
+        )
+
         // DROPDOWN
 
         // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
@@ -508,7 +510,6 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: false
         });
-
 
         // all search dropdowns but la-not-clearable at user/create view
         // search dropdown
@@ -748,12 +749,6 @@ r2d2 = {
             var gostObject = $(this).next('.js-gost');
             _buildConfirmationModal(gostObject[0]);
         });
-
-        // tables
-        $(ctxSel + ' .la-hover-table tbody tr td').hover(
-            function(){ $(this).parent('tr').addClass('la-active') },
-            function(){ $(this).parent('tr').removeClass('la-active') }
-        )
     },
 
 
@@ -790,7 +785,7 @@ r2d2 = {
             }
 
             // COUNT ALL SELECTIONS IN TOTAL
-            var total = dropdownFilter + inputTextFilter + calendarFilter +checkboxFilter;
+            var total = dropdownFilter + inputTextFilter + calendarFilter + checkboxFilter;
 
             if (total == 0) {
                 $('.la-js-filter-total').addClass('hidden');

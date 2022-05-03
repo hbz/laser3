@@ -99,10 +99,10 @@
                         <g:set var="phbk_de" value="${examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
-                        <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
+                        <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>
                             ${examples[cat].get(collate_de)[i]}
                         </td>
-                        <td <% if (examples[cat].get(current_de)[i] == phbk_de){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
+                        <td <% if (examples[cat].get(current_de)[i] == phbk_de){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>
                             ${examples[cat].get(current_de)[i]}
                         </td>
                         <td>
@@ -140,10 +140,10 @@
                         <g:set var="phbk_en" value="${examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
-                        <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
+                        <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>
                             ${examples[cat].get(collate_en)[i]}
                         </td>
-                        <td <% if (examples[cat].get(current_en)[i] == phbk_en){ print 'class="table-td-ok"'} else { print 'class="table-td-error"'} %>>
+                        <td <% if (examples[cat].get(current_en)[i] == phbk_en){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>
                             ${examples[cat].get(current_en)[i]}
                         </td>
                         <td>

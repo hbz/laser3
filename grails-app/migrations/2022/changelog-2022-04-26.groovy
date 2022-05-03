@@ -1,6 +1,6 @@
 databaseChangeLog = {
 
-    changeSet(author: "klober (generated)", id: "1650975495869-1") {
+    changeSet(author: "klober (modified)", id: "1650975495869-1") {
 
         grailsChange {
             change {
@@ -10,6 +10,10 @@ databaseChangeLog = {
             }
             rollback {}
         }
+    }
+
+    changeSet(author: "klober (generated)", id: "1650975495869-2") {
+        dropColumn(columnName: "rdv_icon", tableName: "refdata_value")
     }
 
 

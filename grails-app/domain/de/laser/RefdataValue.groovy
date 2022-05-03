@@ -38,9 +38,6 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     String expl_de
     String expl_en
 
-    // N.B. This used to be ICON but in the 2.x series this was changed to be a css class which denotes an icon
-    // Please stick with the change to store css classes in here and not explicit icons
-    String icon
     //For cases were we want to present a specific group of values, eg License/Sub related
     String group
 
@@ -67,7 +64,6 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
               value_en column: 'rdv_value_en', index:'rdv_value_en_idx'
                expl_de column: 'rdv_explanation_de', type: 'text'
                expl_en column: 'rdv_explanation_en', type: 'text'
-                  icon column: 'rdv_icon'
                  group column: 'rdv_group'
               isHardData column: 'rdv_is_hard_data'
               order    column: 'rdv_order'
@@ -78,7 +74,6 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     }
 
     static constraints = {
-        icon     (nullable: true)
         group    (nullable: true,  blank:false)
         order    (nullable: true)
         value_de (nullable: true, blank: false)

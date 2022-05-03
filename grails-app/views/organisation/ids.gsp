@@ -6,18 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    %{--<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}" />--}%
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
-
-    %{--<g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">--}%
-        %{--<g:set var="entityName" value="${message(code: 'default.provider.label')}"/>--}%
-    %{--</g:if>--}%
-    %{--<g:elseif test="${institutionalView}">--}%
-        %{--<g:set var="entityName" value="${message(code: 'org.institution.label')}"/>--}%
-    %{--</g:elseif>--}%
-    %{--<g:else>--}%
-        %{--<g:set var="entityName" value="${message(code: 'org.label')}"/>--}%
-    %{--</g:else>--}%
     <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
 </head>
 

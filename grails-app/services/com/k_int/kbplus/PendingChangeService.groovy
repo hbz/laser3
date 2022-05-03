@@ -180,14 +180,6 @@ class PendingChangeService extends AbstractLockableService {
                                 if(target_object.save()) {
                                     saveWithoutError = true
                                 }
-
-                                //FIXME: is this needed anywhere?
-                                /*def change_audit_object = null
-                                if ( change?.license ) change_audit_object = pendingChange?.license;
-                                if ( change?.subscription ) change_audit_object = pendingChange?.subscription;
-                                if ( change?.pkg ) change_audit_object = pendingChange?.pkg;
-                                def change_audit_id = change_audit_object.id
-                                def change_audit_class_name = change_audit_object.class.name*/
                             }
                         }
                         break
@@ -225,10 +217,8 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_OBJECT_UPDATE :
-                        // TODO [ticket=1894]
-                        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+
                         if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
-                            //def target_object = genericOIDService.resolveOID(payload.changeTarget);
                             def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                             if ( target_object ) {
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
@@ -260,8 +250,6 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_COVERAGE_ADD:
-                        // TODO [ticket=1894]
-                        //IssueEntitlement target = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(target) {
                             Map newCovData = payload.changeDoc
@@ -281,8 +269,6 @@ class PendingChangeService extends AbstractLockableService {
 
                     case EVENT_COVERAGE_UPDATE:
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        // TODO [ticket=1894]
-                        //IssueEntitlementCoverage target = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         Map changeAttrs = payload.changeDoc
                         if(target) {
@@ -303,8 +289,6 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_COVERAGE_DELETE:
-                        // TODO [ticket=1894]
-                        //IssueEntitlementCoverage cov = genericOIDService.resolveOID(payload.changeTarget)
                         IssueEntitlementCoverage cov = (IssueEntitlementCoverage) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         if(cov) {
                             if(cov.delete()) {
@@ -363,8 +347,6 @@ class PendingChangeService extends AbstractLockableService {
     private void processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
-        // TODO [ticket=1894]
-        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
         if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
             //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
             String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
@@ -376,8 +358,6 @@ class PendingChangeService extends AbstractLockableService {
                     return
                 }
 
-                //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
-                //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
                 String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
                 def srcObject = genericOIDService.resolveOID(srcOID.replace('Custom','').replace('Private',''))
 
@@ -456,8 +436,6 @@ class PendingChangeService extends AbstractLockableService {
     private void processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
-        // TODO [ticket=1894]
-        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
         if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
             //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
             String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget

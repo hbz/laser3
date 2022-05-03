@@ -19,11 +19,6 @@
                 <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
-        <%--<semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>--%>
 
         <%
             editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
