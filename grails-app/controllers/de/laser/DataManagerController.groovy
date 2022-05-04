@@ -32,7 +32,6 @@ class DataManagerController  {
     GokbService gokbService
     YodaService yodaService
 
-    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def index() { 
     Map<String, Object> result = [:]

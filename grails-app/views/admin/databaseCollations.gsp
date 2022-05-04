@@ -47,7 +47,14 @@
                 <tr class="${! row.collation_name ? 'current' : row.collation_name}">
                     <td>${i+1}</td>
                     <td>${row.table_name}</td>
-                    <td>${row.column_name}</td>
+                    <td>
+                        <g:if test="${row.column_name.endsWith('_de') || row.column_name.endsWith('_en')}">
+                            <strong><em>${row.column_name}</em></strong>
+                        </g:if>
+                        <g:else>
+                            ${row.column_name}
+                        </g:else>
+                    </td>
                     <td>${row.data_type}</td>
                     <td>${row.index_name}</td>
                     <g:if test="${! row.collation_name}">
@@ -86,10 +93,10 @@
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
     <thead>
         <tr>
-            <th>#</th>
-            <th style="text-transform: none !important;">COLLATE: ${collate_de}</th>
-            <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}</th>
-            <th>Current: HQL Result</th>
+            <th></th>
+            <th style="text-transform: none !important;">DEFAULT: ${collate_de}</th>
+            <th>Aktive Sortierung</th>
+            <th>${DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}</th>
         </tr>
     </thead>
         <tbody>
@@ -127,10 +134,10 @@
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
-            <th>#</th>
-            <th style="text-transform: none !important;">COLLATE: ${collate_en}</th>
-            <th style="text-transform: none !important;">COLLATE: ${DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}</th>
-            <th>Current: HQL Result</th>
+            <th></th>
+            <th style="text-transform: none !important;">DEFAULT: ${collate_en}</th>
+            <th>Aktive Sortierung</th>
+            <th>${DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}</th>
         </tr>
         </thead>
         <tbody>

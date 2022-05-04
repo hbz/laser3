@@ -1,4 +1,4 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.helper.LocaleHelper; java.lang.management.ManagementFactory" %>
 <!doctype html>
 <html>
 <head>
@@ -14,8 +14,8 @@
     </semui:breadcrumbs>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top">
-        <i class="circular icon stethoscope" style="background-color:#c12e34; border-color:#c12e34; color:white;"></i>
-        ${message(code:'menu.yoda')}
+        <i class="circular icon dna" style="background-color:#d12e34; border-color:#d12e34; color:white;"></i>
+        ~ ${message(code:'menu.yoda')}
     </h1>
 
     <h2 class="ui header">&nbsp;</h2>

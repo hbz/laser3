@@ -13,8 +13,8 @@
     </semui:breadcrumbs>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top">
-        <i class="circular icon sliders horizontal" style="background-color:#f3a43b; border-color:#f3a43b; color:white;"></i>
-        ${message(code:'menu.admin')}
+        <i class="circular icon trophy" style="background-color:#f3a43b; border-color:#f3a43b; color:white;"></i>
+        ~ ${message(code:'menu.admin')}
     </h1>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">

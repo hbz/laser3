@@ -13,7 +13,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top">
       <i class="circular icon pencil" style="background-color:#b5c334; border-color:#b5c334; color:white;"></i>
-      ${message(code:'menu.datamanager')}
+      ~ ${message(code:'menu.datamanager')}
     </h1>
 
   <br />
