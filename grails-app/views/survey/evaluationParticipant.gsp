@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})</title>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="surveyResult.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
