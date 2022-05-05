@@ -2597,7 +2597,11 @@ class SurveyController {
 
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            executorService.execute({
+                Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
+                surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            })
+            executorService.shutdown()
 
         }
 
