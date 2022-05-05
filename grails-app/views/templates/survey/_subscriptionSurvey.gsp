@@ -1117,7 +1117,7 @@
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${surveyResult.urlValue}">
-                                    <semui:linkIcon/>
+                                    <semui:linkIcon href="${surveyResult.urlValue}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">

@@ -23,13 +23,13 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-        %{--<semui:exportDropdown>
+        <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" controller="survey" action="generatePdfForParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
                 </g:link>
             </semui:exportDropdownItem>
-        </semui:exportDropdown>--}%
+        </semui:exportDropdown>
     <semui:actionsDropdown>
         <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
             <semui:actionsDropdownItem action="renewEntitlements" controller="survey"
