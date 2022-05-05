@@ -7,12 +7,10 @@ import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
-import groovy.util.logging.Slf4j
 
 /**
  * An API representation of a {@link Platform}
  */
-@Slf4j
 class ApiPlatform {
 
     /**

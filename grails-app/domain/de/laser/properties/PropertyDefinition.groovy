@@ -12,8 +12,6 @@ import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedType
 import groovy.util.logging.Slf4j
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -39,8 +37,6 @@ import javax.validation.UnexpectedTypeException
  */
 @Slf4j
 class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {
-
-    static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
     /**
      * general property viewable by everyone if public flag is true
@@ -214,7 +210,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             PropertyDefinition.typeIsValid(type)
 
             if (map.tenant && !tenant) {
-                static_logger.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
+                log.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
             }
 
             PropertyDefinition pd
@@ -226,7 +222,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             }
 
             if (!pd) {
-                static_logger.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
+                log.debug("INFO: no match found; creating new property definition for (${token}, ${category}, ${type}), tenant: ${tenant}")
 
                 boolean multipleOccurrence = (category == PropertyDefinition.SVY_PROP) ? false : multiple
 
@@ -276,7 +272,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             return result[0]
         }
         else {
-            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, tenant is null )")
+            log.debug("WARNING: multiple matches found ( ${name}, ${descr}, tenant is null )")
             return result[0]
         }
     }
@@ -299,7 +295,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             return result[0]
         }
         else {
-            static_logger.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
+            log.debug("WARNING: multiple matches found ( ${name}, ${descr}, ${tenant.id} )")
             return result[0]
         }
     }
@@ -415,7 +411,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             }
         }
 
-        static_logger.debug("found property definitions: ${c1} -> ${c2} -> ${result.size()}")
+        log.debug("found property definitions: ${c1} -> ${c2} -> ${result.size()}")
 
         result
     }

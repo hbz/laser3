@@ -7,8 +7,7 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
@@ -25,9 +24,8 @@ import org.springframework.context.i18n.LocaleContextHolder
  * @see TitleInstancePackagePlatform#ids
  * @see Package#ids
  */
+@Slf4j
 class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
-
-    static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
     Identifier instanceOf
@@ -200,7 +198,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         if (! ident.isEmpty()) {
             if (ident.size() > 1) {
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
-                static_logger.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
+                log.debug("WARNING: multiple matches found for ( ${value}, ${ns}, ${reference} )")
             }
             ident = ident.first()
         }
@@ -208,12 +206,12 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         if (! ident) {
             Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
 			if (ns.isUnique && identifierInDB && value != "Unknown") {
-                static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
 //                factoryResult.result = identifierInDB
                 ident = identifierInDB
 			} else {
-                static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+                log.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
                 if(parent)
                     ident.instanceOf = parent
@@ -272,7 +270,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             return ref
         }
 
-        static_logger.debug("WARNING: identifier #${this.id}, refCount: ${refCount}")
+        log.debug("WARNING: identifier #${this.id}, refCount: ${refCount}")
         return null
     }
 
@@ -317,7 +315,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * Triggers after the insertion of the identifier; prefixes a shortened ISIL by DE if it does start by a number
      */
     def afterInsert() {
-        static_logger.debug("afterInsert")
+        log.debug("afterInsert")
 
         // -- moved from def afterInsert = { .. }
         if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
@@ -341,11 +339,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
     def afterUpdate() {
-        static_logger.debug("afterUpdate")
+        log.debug("afterUpdate")
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
     def afterDelete() {
-        static_logger.debug("afterDelete")
+        log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
@@ -358,7 +356,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * @return
      */
     def beforeUpdate() {
-        static_logger.debug("beforeUpdate")
+        log.debug("beforeUpdate")
         value = value?.trim()
       // TODO [ticket=1789]
       //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
@@ -494,7 +492,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     @Deprecated
   static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
-        static_logger.log("loc canonical identifier")
+        log.log("loc canonical identifier")
 
       value = value?.trim()
       ns = ns?.trim()
@@ -519,13 +517,13 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
               if(result.save())
                   result
               else {
-                  static_logger.log("error saving identifier")
-                  static_logger.log(result.errors.toString())
+                  log.log("error saving identifier")
+                  log.log(result.errors.toString())
               }
           }
           else {
-              static_logger.log("error saving namespace")
-              static_logger.log(namespace.errors.toString())
+              log.log("error saving namespace")
+              log.log(namespace.errors.toString())
           }
       }
   }
@@ -577,7 +575,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         List result = []
 
         String objType = object.getClass().getSimpleName()
-        LogFactory.getLog(this).debug("lookupObjectsByIdentifierString(${objType}, ${identifierString})")
+        log.debug( "lookupObjectsByIdentifierString(${objType}, ${identifierString})" )
 
         if (objType) {
 
@@ -592,7 +590,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                 default:
                     break
             }
-            LogFactory.getLog(this).debug("components: ${idstrParts} : ${result}")
+            log.debug( "components: ${idstrParts} : ${result}" )
         }
 
         result

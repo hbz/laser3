@@ -3,12 +3,12 @@ package de.laser.stats
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * A COUNTER report representation according to the COUNTER format, revision 4 (https://www.projectcounter.org/code-of-practice-sections/usage-reports/)
  */
+@Slf4j
 class Counter4Report extends AbstractReport {
 
     /**
@@ -64,7 +64,6 @@ class Counter4Report extends AbstractReport {
     }
 
     String category
-    static Log static_logger = LogFactory.getLog(Counter4Report)
 
     static mapping = {
         id                  column: 'c4r_id', index: 'c4r_id_idx'
@@ -127,7 +126,7 @@ class Counter4Report extends AbstractReport {
             if(!c4report.save())
                 throw new CreationException("error on creating counter 4 report: ${c4report.errors.getAllErrors().toListString()}")
         }
-        else static_logger.debug("no change registered for ${c4report.reportInstitution}/${c4report.title.name}/${c4report.reportFrom}/${c4report.reportTo}")
+        else log.debug("no change registered for ${c4report.reportInstitution}/${c4report.title.name}/${c4report.reportFrom}/${c4report.reportTo}")
         c4report
     }
 

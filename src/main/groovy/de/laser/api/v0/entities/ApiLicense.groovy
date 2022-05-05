@@ -5,18 +5,15 @@ import de.laser.License
 import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Subscription
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * An API representation of a {@link License}
  */
-@Slf4j
 class ApiLicense {
 
     /**

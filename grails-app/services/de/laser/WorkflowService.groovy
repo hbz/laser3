@@ -21,8 +21,6 @@ class WorkflowService {
     static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
 
-    //static Log static_logger = LogFactory.getLog(WorkflowService)
-
     /**
      * Subclass to parse parameters
      */

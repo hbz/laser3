@@ -6,7 +6,6 @@ import de.laser.CacheService
 import de.laser.helper.LocaleHelper
 import de.laser.storage.BeanStore
 import de.laser.helper.EhcacheWrapper
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -18,7 +17,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
  * is used in groups by multiple tenants, it shows up in the context organisation's group.
  * @see de.laser.base.AbstractPropertyWithCalculatedLastUpdated
  */
-@Slf4j
 class PropertyDefinitionGroup {
 
     String name

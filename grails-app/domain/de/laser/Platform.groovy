@@ -10,8 +10,6 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -20,8 +18,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
  * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
  */
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
-
-  static Log static_logger = LogFactory.getLog(Platform)
 
   String gokbId
   String name

@@ -1,8 +1,5 @@
 package de.laser
 
-
-import groovy.util.logging.Slf4j
-
 /**
  * This is the linking table from a {@link DashboardDueDate} to the connected object; stored are the internationalised attribute value and names for the reminders to be sent out or posted
  * @see DashboardDueDate
@@ -11,7 +8,6 @@ import groovy.util.logging.Slf4j
  * @see Task
  * @see SurveyInfo
  */
-@Slf4j
 class DueDateObject {
 
     String attribute_name

@@ -7,13 +7,11 @@ import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * An API representation of a {@link Package}
  */
-@Slf4j
 class ApiPkg {
 
     /**

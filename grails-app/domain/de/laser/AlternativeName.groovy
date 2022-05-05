@@ -2,8 +2,7 @@ package de.laser
 
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * A container class to retain alternative names of an entity; a such entity may be
@@ -14,6 +13,7 @@ import org.apache.commons.logging.LogFactory
  *     <li>{@link Org}</li>
  * </ul>
  */
+@Slf4j
 class AlternativeName implements CalculatedLastUpdated, Comparable {
 
     Long id
@@ -22,8 +22,6 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    static Log static_logger = LogFactory.getLog(AlternativeName)
 
     static belongsTo = [
         tipp: TitleInstancePackagePlatform,
@@ -68,19 +66,19 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
 
     @Override
     def afterInsert() {
-        static_logger.debug("afterInsert")
+        log.debug("afterInsert")
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     @Override
     def afterUpdate() {
-        static_logger.debug("afterUpdate")
+        log.debug("afterUpdate")
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
+        log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
@@ -106,12 +104,12 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
             else if(configMap.org)
                 altName.org = configMap.org
             if(!altName.save()) {
-                static_logger.error("error on creating alternative name: ${altName.getErrors().getAllErrors().toListString()}")
+                log.error("error on creating alternative name: ${altName.getErrors().getAllErrors().toListString()}")
             }
             altName
         }
         else {
-            static_logger.error("No reference object specified for AlternativeName!")
+            log.error("No reference object specified for AlternativeName!")
             null
         }
     }

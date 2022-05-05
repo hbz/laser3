@@ -1,11 +1,8 @@
 package de.laser.properties
 
-import groovy.util.logging.Slf4j
-
 /**
  * A group entry, showing the membership of the {@link PropertyDefinition} to a {@link PropertyDefinitionGroup}
  */
-@Slf4j
 class PropertyDefinitionGroupItem {
 
     Date dateCreated

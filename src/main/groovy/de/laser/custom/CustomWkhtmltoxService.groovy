@@ -2,16 +2,15 @@ package de.laser.custom
 
 import de.laser.helper.ConfigMapper
 import grails.core.GrailsApplication
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 
+@Slf4j
 class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
 
     static transactional = false
-    static Log log = LogFactory.getLog( CustomWkhtmltoxService )
 
     def mailMessageContentRenderer
     GrailsApplication grailsApplication

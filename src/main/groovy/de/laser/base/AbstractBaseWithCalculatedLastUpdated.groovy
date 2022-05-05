@@ -2,8 +2,7 @@ package de.laser.base
 
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  *  class Test extends AbstractBaseWithCalculatedLastUpdated
@@ -12,26 +11,24 @@ import org.apache.commons.logging.LogFactory
  *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
  *
  */
-
+@Slf4j
 abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
         implements CalculatedLastUpdated {
 
-    static Log static_logger = LogFactory.getLog(AbstractBaseWithCalculatedLastUpdated)
-
     protected void afterInsertHandler() {
-        static_logger.debug("afterInsertHandler()")
+        log.debug("afterInsertHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     protected void afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler()")
+        log.debug("afterUpdateHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     protected void afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler()")
+        log.debug("afterDeleteHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }

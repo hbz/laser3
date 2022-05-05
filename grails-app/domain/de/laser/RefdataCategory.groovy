@@ -3,8 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractI10n
 import de.laser.helper.LocaleHelper
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
@@ -14,9 +13,8 @@ import grails.web.servlet.mvc.GrailsParameterMap
  * @see RefdataValue
  * @see de.laser.properties.PropertyDefinition
  */
+@Slf4j
 class RefdataCategory extends AbstractI10n {
-
-    static Log static_logger = LogFactory.getLog(RefdataCategory)
 
     String desc
     String desc_de
@@ -63,7 +61,7 @@ class RefdataCategory extends AbstractI10n {
             RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
 
             if (!rdc) {
-                static_logger.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
+                log.debug("INFO: no match found; creating new refdata category for ( ${token}, ${i10n} )")
                 rdc = new RefdataCategory(desc: token) // todo: token
             }
 

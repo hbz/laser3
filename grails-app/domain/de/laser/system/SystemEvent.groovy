@@ -3,7 +3,6 @@ package de.laser.system
 import de.laser.storage.BeanStore
 import de.laser.helper.MigrationHelper
 import grails.converters.JSON
-import groovy.util.logging.Slf4j
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -13,7 +12,6 @@ import java.time.LocalDate
  * This class reflects cronjob-related event records and serves to mark events. Depending on the relevance of the event, this event appears in a mail reminder sent to all developers (every morning at 7 o'clock AM;
  * this time may be defined by a cronjob script on a server instance directly). The system events may be reviewed in /admin/systemEvents where every event is listed and cronjob runnings may be checked
  */
-@Slf4j
 class SystemEvent {
 
     @Transient

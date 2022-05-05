@@ -2,12 +2,12 @@ package de.laser.stats
 
 import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * A COUNTER report representation according to the COUNTER format, revision 5 (https://www.projectcounter.org/code-of-practice-five-sections/5-delivery-counter-reports/)
  */
+@Slf4j
 class Counter5Report extends AbstractReport {
 
     /**
@@ -100,7 +100,6 @@ class Counter5Report extends AbstractReport {
 
     String accessType
     String accessMethod
-    static Log static_logger = LogFactory.getLog(Counter5Report)
 
     static mapping = {
         id                  column: 'c5r_id', index: 'c5r_id_idx'
@@ -171,7 +170,7 @@ class Counter5Report extends AbstractReport {
         }
         else {
             String entityName = c5report.title ? c5report.title.name : c5report.platform.name
-            static_logger.debug("no change registered for ${c5report.reportInstitution}/${entityName}/${c5report.reportFrom}/${c5report.reportTo}")
+            log.debug("no change registered for ${c5report.reportInstitution}/${entityName}/${c5report.reportFrom}/${c5report.reportTo}")
         }
         c5report
     }

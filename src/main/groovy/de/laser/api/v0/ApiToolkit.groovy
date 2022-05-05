@@ -2,12 +2,9 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.OrgSetting
-import de.laser.RefdataValue
 import de.laser.helper.Constants
 import groovy.sql.GroovyRowResult
-import groovy.util.logging.Slf4j
 import org.apache.commons.lang.RandomStringUtils
-import org.codehaus.groovy.ant.Groovy
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
@@ -16,7 +13,6 @@ import java.text.SimpleDateFormat
 /**
  * This class is a toolbox for checkings and validations during the API usage
  */
-@Slf4j
 class ApiToolkit {
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'

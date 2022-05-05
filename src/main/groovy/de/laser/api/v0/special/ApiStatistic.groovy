@@ -13,12 +13,10 @@ import de.laser.helper.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.converters.JSON
-import groovy.util.logging.Slf4j
 
 /**
  * This class in a special endpoint implementation exclusively for the National Statistics Server (Nationaler Statistikserver)
  */
-@Slf4j
 class ApiStatistic {
 
     /**

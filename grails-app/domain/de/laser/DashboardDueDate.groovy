@@ -4,7 +4,6 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.auth.User
 import de.laser.helper.SqlDateUtils
-import groovy.util.logging.Slf4j
 
 /**
  * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link DueDateObject}
@@ -12,7 +11,6 @@ import groovy.util.logging.Slf4j
  * @see DashboardDueDatesService
  * @see de.laser.batch.DashboardDueDatesJob
  */
-@Slf4j
 class DashboardDueDate {
 
     User responsibleUser

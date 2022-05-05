@@ -3,8 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractI10n
 import de.laser.helper.LocaleHelper
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -25,11 +24,10 @@ import java.text.SimpleDateFormat
  * @see AbstractI10n
  * @see de.laser.properties.PropertyDefinition
  */
+@Slf4j
 class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
     final static String CLASS = RefdataValue.class // introduced for refactoring -> RefdataValue.class.name
-
-    static Log static_logger = LogFactory.getLog(RefdataValue)
 
     String value
     String value_de
@@ -112,7 +110,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             RefdataValue rdv = RefdataValue.findByOwnerAndValueIlike(cat, token)
 
             if (!rdv) {
-                static_logger.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
+                log.debug("INFO: no match found; creating new refdata value for ( ${token} @ ${rdc}, ${i10n} )")
                 rdv = new RefdataValue(owner: cat, value: token)
             }
 

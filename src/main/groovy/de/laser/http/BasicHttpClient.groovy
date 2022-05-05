@@ -1,24 +1,16 @@
 package de.laser.http
 
-import com.k_int.kbplus.GlobalSourceSyncService
-import de.laser.GlobalRecordSource
-import de.laser.exceptions.SyncException
 import grails.converters.JSON
 import groovy.json.JsonOutput
+import groovy.util.logging.Slf4j
 import groovy.util.slurpersupport.GPathResult
-import groovyx.net.http.HTTPBuilder
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.web.json.JSONObject
 
+@Slf4j
 class BasicHttpClient {
-
-    static Log static_logger = LogFactory.getLog(BasicHttpClient)
-
-    // --->
 
     static enum Method {
         GET,
@@ -74,7 +66,7 @@ class BasicHttpClient {
             client = HttpClient.create(this.url)
         }
         catch(Exception e) {
-            static_logger.error e.getMessage()
+            log.error e.getMessage()
         }
         this
     }
@@ -104,7 +96,7 @@ class BasicHttpClient {
     HttpResponse request(Method method, Map<String, String> customHeaders, ResponseType responseType, PostType postType, def body, Closure onSuccess, Closure onFailure) {
         HttpResponse response
 
-        static_logger.debug '[ request ] ' + url + ' (Method: ' + method + ', Accept: ' + responseType + ', Content-Type: ' + postType + ')'
+        log.debug '[ request ] ' + url + ' (Method: ' + method + ', Accept: ' + responseType + ', Content-Type: ' + postType + ')'
 
         if (method == Method.GET) { 
             response = innerGET(responseType, customHeaders) 
@@ -114,7 +106,7 @@ class BasicHttpClient {
         }
 
         int sc = response ? response.code() : -1
-        static_logger.debug '[ request ] httpStatusCode: ' + sc
+        log.debug '[ request ] httpStatusCode: ' + sc
 
         if (sc >= 200 && sc < 300) {
             if (onSuccess) {
@@ -123,13 +115,13 @@ class BasicHttpClient {
         }
         else if (sc >= 300 && sc < 400) {
             if (onSuccess) {
-                static_logger.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
+                log.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
                 onFailure.call(response, response.getBody())
             }
         }
         else if (sc >= 400) {
             if (onFailure) {
-                static_logger.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
+                log.warn '[ request ] ' + url + ' > '+ sc + response.getStatus().getReason()
                 onFailure.call(response, response.getBody())
             }
         }
@@ -154,7 +146,7 @@ class BasicHttpClient {
             response = client.toBlocking().exchange(request, responseType.parserType)
         }
         catch(Exception e) {
-            static_logger.error '[ innerGET ] ' + e.getMessage()
+            log.error '[ innerGET ] ' + e.getMessage()
             e.printStackTrace()
         }
         response
@@ -196,10 +188,10 @@ class BasicHttpClient {
 
 
                     if (warning) {
-                        static_logger.warn '[ innerPOST ] too complex URLENC found! Check payload to avoid possible problems'
+                        log.warn '[ innerPOST ] too complex URLENC found! Check payload to avoid possible problems'
                     }
                 }
-                static_logger.debug '[ innerPOST ] payload: ' + body.toString()
+                log.debug '[ innerPOST ] payload: ' + body.toString()
             }
             HttpRequest request = HttpRequest.POST(url.toURI(), body)
 
@@ -211,7 +203,7 @@ class BasicHttpClient {
             response = client.toBlocking().exchange(request, responseType.parserType)
         }
         catch(Exception e) {
-            static_logger.error '[ innerPOST ] ' + e.getMessage()
+            log.error '[ innerPOST ] ' + e.getMessage()
             e.printStackTrace()
         }
         response
@@ -238,11 +230,11 @@ class BasicHttpClient {
             }
 
             if (result?.getClass() != responseType.returnType) {
-                static_logger.warn '[ getParsedResponse ] return type ' + result.getClass() + ' != ' + responseType.returnType
+                log.warn '[ getParsedResponse ] return type ' + result.getClass() + ' != ' + responseType.returnType
             }
         }
         catch (Exception e) {
-            static_logger.error '[ getParsedResponse ] ' + e.getMessage()
+            log.error '[ getParsedResponse ] ' + e.getMessage()
             e.printStackTrace()
         }
         result

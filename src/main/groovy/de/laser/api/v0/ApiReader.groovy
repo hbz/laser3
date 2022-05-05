@@ -2,12 +2,10 @@ package de.laser.api.v0
 //import com.k_int.kbplus.OnixplLicense
 
 import de.laser.helper.Constants
-import groovy.util.logging.Slf4j
 
 /**
  * This class is an enum which formats are supported per endpoints. It contains no methods
  */
-@Slf4j
 class ApiReader {
 
     static SUPPORTED_FORMATS = [

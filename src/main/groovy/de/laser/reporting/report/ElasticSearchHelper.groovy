@@ -12,13 +12,11 @@ import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
 
+@Slf4j
 class ElasticSearchHelper {
-
-    static Log static_logger = LogFactory.getLog(ElasticSearchHelper)
 
     static final int ELASTICSEARCH_CHUNKSIZE = 500
 
@@ -97,7 +95,7 @@ class ElasticSearchHelper {
                 Map rConfig = ConfigMapper.getConfig('reporting') as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
 
-                static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
+                log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 
                 while (pkgList) {
                     // print ' ~' + pkgList.size()
@@ -131,7 +129,7 @@ class ElasticSearchHelper {
                 }
             }
             catch (Exception e) {
-                static_logger.error e.getMessage()
+                log.error e.getMessage()
             }
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
@@ -148,7 +146,7 @@ class ElasticSearchHelper {
                 Map rConfig = ConfigMapper.getConfig('reporting') as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
 
-                static_logger.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
+                log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 
                 while (pkgList) {
                     // print ' ~' + pkgList.size()
@@ -182,7 +180,7 @@ class ElasticSearchHelper {
                 }
             }
             catch (Exception e) {
-                static_logger.error e.getMessage()
+                log.error e.getMessage()
             }
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }

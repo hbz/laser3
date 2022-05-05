@@ -6,16 +6,12 @@ import de.laser.finance.CostItem
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 /**
  * This class reflects - as a property like {@link de.laser.properties.SubscriptionProperty} - the survey participant's answer to a survey.
  * The survey is reflected by the {@link SurveyConfig} class.
  */
 class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements CalculatedLastUpdated {
-
-    static Log static_logger = LogFactory.getLog(SurveyResult)
 
     PropertyDefinition type
     boolean isPublic = false

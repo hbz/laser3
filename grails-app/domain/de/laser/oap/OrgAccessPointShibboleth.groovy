@@ -1,11 +1,9 @@
 package de.laser.oap
 
-import groovy.util.logging.Slf4j
 
 /**
  * A Shibboleth (https://shibboleth.atlassian.net/wiki/home) configuration.
  */
-@Slf4j
 class OrgAccessPointShibboleth extends OrgAccessPoint{
 
     String entityId

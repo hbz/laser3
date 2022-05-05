@@ -4,14 +4,12 @@ package de.laser
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
-import groovy.util.logging.Slf4j
 
 /**
  * An access method to a given {@link Platform}; the given access method may be restricted to a certain timespan. The access method itself is one value of the controlled list of access methods
  * @see RDConstants#ACCESS_METHOD
  * @see Platform
  */
-@Slf4j
 class PlatformAccessMethod extends AbstractBase {
 
     Date validFrom

@@ -4,8 +4,7 @@ import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * This is the class to group identifiers by their vocabulary type. The namespace defines moreover the type of object the
@@ -16,9 +15,8 @@ import org.apache.commons.logging.LogFactory
  * {@link AdminController#manageNamespaces()}) in the database or hard-coded in the method {@link BootStrapService#setIdentifierNamespace()}.
  * Identifier namespaces belong to the internationalisable classes; the name and description strings may be translated to German
  */
+@Slf4j
 class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated {
-
-    static Log static_logger = LogFactory.getLog(IdentifierNamespace)
 
     public static final String UNKNOWN    = "Unknown"
 
@@ -157,15 +155,15 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     }
 
     def afterInsert() {
-        static_logger.debug("afterInsert")
+        log.debug("afterInsert")
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
     def afterUpdate() {
-        static_logger.debug("afterUpdate")
+        log.debug("afterUpdate")
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
     def afterDelete() {
-        static_logger.debug("afterDelete")
+        log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 

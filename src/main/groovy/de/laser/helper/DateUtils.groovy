@@ -1,16 +1,14 @@
 package de.laser.helper
 
 import de.laser.storage.BeanStore
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+@Slf4j
 class DateUtils {
-
-    static Log static_logger = LogFactory.getLog(DateUtils)
 
     public static final String DATE_FORMAT_NOTIME_NOPOINT   = 'default.date.format.notimenopoint'
     public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'
@@ -29,7 +27,7 @@ class DateUtils {
             return new SimpleDateFormat(format)
         }
         else {
-            static_logger.debug("WARNING: no date format found for ( ${token}, ${locale} )")
+            log.debug("WARNING: no date format found for ( ${token}, ${locale} )")
 
         }
         return null
@@ -108,7 +106,7 @@ class DateUtils {
                     parsed_date = next.parse(value)
                 }
                 catch (Exception e) {
-                    //static_logger.debug("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
+                    //log.debug("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
                 }
             }
         }

@@ -4,7 +4,6 @@ package de.laser
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
-import org.apache.commons.logging.LogFactory
 
 /**
  * A physical address of a {@link Person} or an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link Contact} domain
@@ -239,7 +238,7 @@ class Address {
                 }
             }
 
-            LogFactory.getLog(this).debug(info)
+            log.debug( info )
             result
         }
     }

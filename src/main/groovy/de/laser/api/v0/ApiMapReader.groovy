@@ -5,9 +5,7 @@ import de.laser.Org
 import de.laser.Person
 import de.laser.TitleInstancePackagePlatform
 import groovy.sql.GroovyRowResult
-import groovy.util.logging.Slf4j
 
-@Slf4j
 class ApiMapReader {
 
     /**

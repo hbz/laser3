@@ -3,12 +3,10 @@ package de.laser.properties
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
-import groovy.util.logging.Slf4j
 
 /**
  * This is a configuration class reflecting the visibility setting of a {@link PropertyDefinitionGroup}.
  */
-@Slf4j
 class PropertyDefinitionGroupBinding {
 
     boolean isVisible = false // default value: will overwrite existing groups

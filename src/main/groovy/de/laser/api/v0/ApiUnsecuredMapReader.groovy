@@ -9,19 +9,15 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
-import de.laser.IssueEntitlementCoverage
 import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
-import de.laser.titles.TitleInstance
 import groovy.sql.GroovyRowResult
-import groovy.util.logging.Slf4j
 
 /**
  * This class delivers objects which do not need further authentication because they do not need any or authorisation
  * has already been done elsewhere. It represents the bottommost level of the API output tree
  */
-@Slf4j
 class ApiUnsecuredMapReader {
 
     // -------------------- STUBS --------------------

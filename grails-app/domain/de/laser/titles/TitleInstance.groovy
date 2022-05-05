@@ -10,10 +10,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
-import groovy.util.logging.Slf4j
 import org.apache.commons.lang.StringUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 import java.text.Normalizer
 import java.text.SimpleDateFormat
@@ -31,14 +28,11 @@ import java.util.regex.Pattern
  * @see TitleInstancePackagePlatform
  */
 @Deprecated
-@Slf4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
     // AuditableTrait
     //static auditable = true
     //static controlledProperties = ['title']
-
-  static Log static_logger = LogFactory.getLog(TitleInstance)
 
   static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}");
 

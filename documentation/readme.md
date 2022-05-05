@@ -41,6 +41,10 @@ Use BeanStore for static and non-static access to services and other beans.
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
 
+### Logging
+
+Use **@Slf4j** as class annotation to enable logging with *log* in static contexts.
+
 ### HTTPBuilder
 
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.

@@ -7,17 +7,15 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.grails.taglib.GroovyPageAttributes
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 
+@Slf4j
 class SwissKnife {
-
-    static Log static_logger = LogFactory.getLog(SwissKnife) // TODO
 
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
         MessageSource messageSource = BeanStore.getMessageSource()
@@ -58,7 +56,7 @@ class SwissKnife {
             }
             else {
                 println("WARNING: SwissKnife.checkMessageKey() -> key '${key}' not found for locale '${locale}'")
-                static_logger.warn("SwissKnife.checkMessageKey() -> key '${key}' not found for locale '${locale}'")
+                log.warn("SwissKnife.checkMessageKey() -> key '${key}' not found for locale '${locale}'")
             }
         }
         return false

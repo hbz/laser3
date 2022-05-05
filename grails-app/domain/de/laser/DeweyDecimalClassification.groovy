@@ -4,8 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * A container class to retain Dewey decimal classifications of titles and packages.
@@ -14,6 +13,7 @@ import org.apache.commons.logging.LogFactory
  * @see Package
  * @see Language
  */
+@Slf4j
 class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
     Long id
@@ -23,8 +23,6 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    static Log static_logger = LogFactory.getLog(DeweyDecimalClassification)
 
     static belongsTo = [
         tipp: TitleInstancePackagePlatform,
@@ -63,19 +61,19 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
     @Override
     def afterInsert() {
-        static_logger.debug("afterInsert")
+        log.debug("afterInsert")
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     @Override
     def afterUpdate() {
-        static_logger.debug("afterUpdate")
+        log.debug("afterUpdate")
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
+        log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
@@ -97,12 +95,12 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
             else if(configMap.pkg)
                 ddc.pkg = configMap.pkg
             if(!ddc.save()) {
-                static_logger.error("error on creating ddc: ${ddc.getErrors().getAllErrors().toListString()}")
+                log.error("error on creating ddc: ${ddc.getErrors().getAllErrors().toListString()}")
             }
             ddc
         }
         else {
-            static_logger.error("No reference object specified for DDC!")
+            log.error("No reference object specified for DDC!")
             null
         }
     }

@@ -4,10 +4,8 @@ import de.laser.Doc
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.json.JsonSlurper
-import groovy.util.logging.Slf4j
 
 @Deprecated
-@Slf4j
 class ApiKbartConverter {
 
     static final KBART2_HEADER = [

@@ -4,8 +4,7 @@ import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * This is an abstract property which contains configurations and settings for the object it is belonging to.
@@ -29,10 +28,9 @@ import org.apache.commons.logging.LogFactory
  * Moreover, a property may contain a note.
  * {@link de.laser.properties.LicenseProperty} may moreover contain a paragraph of the license describing or referring to this property.
  */
+@Slf4j
 abstract class AbstractPropertyWithCalculatedLastUpdated
         implements CalculatedLastUpdated, Serializable {
-
-    static Log static_logger = LogFactory.getLog(AbstractPropertyWithCalculatedLastUpdated)
 
     /*
     abstract PropertyDefinition type
@@ -53,11 +51,11 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract Date lastUpdatedCascading
     */
     protected void beforeInsertHandler() {
-        static_logger.debug("beforeInsertHandler()")
+        log.debug("beforeInsertHandler()")
     }
 
     protected void afterInsertHandler() {
-        static_logger.debug("afterInsertHandler()")
+        log.debug("afterInsertHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
@@ -77,22 +75,22 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
-        static_logger.debug("beforeUpdateHandler() " + changes.toMapString())
+        log.debug("beforeUpdateHandler() " + changes.toMapString())
         return changes
     }
 
     protected void afterUpdateHandler() {
-        static_logger.debug("afterUpdateHandler()")
+        log.debug("afterUpdateHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     protected void beforeDeleteHandler() {
-        static_logger.debug("beforeDeleteHandler()")
+        log.debug("beforeDeleteHandler()")
     }
 
     protected void afterDeleteHandler() {
-        static_logger.debug("afterDeleteHandler()")
+        log.debug("afterDeleteHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
@@ -176,7 +174,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
      */
     def static parseValue(String value, String type){
         def result
-        static_logger.debug( value + " << " + type )
+        log.debug( value + " << " + type )
 
         switch (type){
             case [ Integer.toString(), Integer.class.name ]:

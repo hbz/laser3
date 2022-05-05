@@ -2,14 +2,12 @@ package de.laser.helper
 
 import grails.config.Config
 import grails.util.Holders
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 import org.springframework.core.env.Environment
 
+@Slf4j
 class ConfigMapper {
 
-    static Log static_logger = LogFactory.getLog(ConfigMapper)
-    
     static final int NO_OUTPUT = 0
     static final int LOGGER = 1
     static final int PRINTLN = 2
@@ -83,7 +81,7 @@ class ConfigMapper {
     }
 
     static void checkCurrentConfig() {
-        static_logger.info('ConfigMapper - checkCurrentConfig')
+        log.info('ConfigMapper - checkCurrentConfig')
 
         println ": --------------------------------------------->"
         CONTROLLED_CONFIGURATION_LIST.each { cc ->
@@ -224,10 +222,10 @@ class ConfigMapper {
                         }
                     }
                     if (result == null) {
-                        static_logger.warn 'Configuration key not found: ' + key + ' ; ' + ste.toString()
+                        log.warn 'Configuration key not found: ' + key + ' ; ' + ste.toString()
                     }
                     else {
-                        static_logger.warn 'Configuration key found, but no value: ' + key + ' ; ' + ste.toString()
+                        log.warn 'Configuration key found, but no value: ' + key + ' ; ' + ste.toString()
                     }
                 }
             }

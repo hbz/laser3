@@ -11,13 +11,11 @@ import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
-import groovy.util.logging.Slf4j
 
 /**
  * This class is responsible for delivering stubs, i.e. object fragments with just the essential details
  * and identifiers in order to request full object details if necessary
  */
-@Slf4j
 class ApiStubReader {
 
     // ################### HELPER ###################

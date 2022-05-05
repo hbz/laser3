@@ -6,7 +6,6 @@ import de.laser.reporting.report.ReportingCache
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
 
 /**
@@ -14,7 +13,6 @@ import org.grails.web.json.JSONElement
  * current setting is then persisted as JSON string in {@link #filterMap}
  * @see User
  */
-@Slf4j
 class ReportingFilter {
 
     User   owner

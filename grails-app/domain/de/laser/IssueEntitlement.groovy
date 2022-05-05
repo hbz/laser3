@@ -10,8 +10,7 @@ import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -35,6 +34,7 @@ import java.text.Normalizer
  * @see TitleInstancePackagePlatform
  * @see Subscription
  */
+@Slf4j
 class IssueEntitlement extends AbstractBase implements Comparable {
 
     @Deprecated
@@ -70,8 +70,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     Date dateCreated
     Date lastUpdated
-
-    static Log static_logger = LogFactory.getLog(IssueEntitlement)
 
     static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
@@ -147,7 +145,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
      */
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
-        static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
+        log.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
@@ -178,7 +176,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
               throw new EntitlementCreationException(ic.errors)
           }
         }
-          static_logger.debug("creating price items for ${tipp}")
+          log.debug("creating price items for ${tipp}")
           Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
         if(tippPriceItems) {
             tippPriceItems.each { PriceItem tp ->

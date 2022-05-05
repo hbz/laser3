@@ -1,7 +1,6 @@
 package de.laser.base
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  *  class Test extends AbstractBase
@@ -11,11 +10,10 @@ import org.apache.commons.logging.LogFactory
  *
  */
 
+@Slf4j
 abstract class AbstractBase {
 
     String globalUID
-
-    static Log static_logger = LogFactory.getLog(AbstractBase)
 
     void setGlobalUID() {
 
@@ -29,7 +27,7 @@ abstract class AbstractBase {
 
     protected void beforeInsertHandler() {
 
-        static_logger.debug("beforeInsertHandler()")
+        log.debug("beforeInsertHandler()")
 
         if (! globalUID) {
             setGlobalUID()
@@ -50,13 +48,13 @@ abstract class AbstractBase {
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
-        static_logger.debug("beforeUpdateHandler() " + changes.toMapString())
+        log.debug("beforeUpdateHandler() " + changes.toMapString())
         return changes
     }
 
     protected void beforeDeleteHandler() {
 
-        static_logger.debug("beforeDeleteHandler()")
+        log.debug("beforeDeleteHandler()")
     }
 
     abstract def beforeInsert() /* { beforeInsertHandler() } */

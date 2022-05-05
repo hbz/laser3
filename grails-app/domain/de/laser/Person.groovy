@@ -8,8 +8,6 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 /**
  * A person is a contact entity; it does not need to be a person in the strict sense but also a collective or a
@@ -24,8 +22,6 @@ import org.apache.commons.logging.LogFactory
  */
 @Slf4j
 class Person extends AbstractBaseWithCalculatedLastUpdated {
-
-    static Log static_logger = LogFactory.getLog(Person)
 
     String       title
     String       first_name

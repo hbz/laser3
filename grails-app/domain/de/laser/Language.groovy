@@ -4,8 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import groovy.util.logging.Slf4j
 
 /**
  * A container class to retain language classifications of titles and packages.
@@ -14,6 +13,7 @@ import org.apache.commons.logging.LogFactory
  * @see Package
  * @see DeweyDecimalClassification
  */
+@Slf4j
 class Language implements CalculatedLastUpdated, Comparable {
 
     Long id
@@ -23,8 +23,6 @@ class Language implements CalculatedLastUpdated, Comparable {
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    static Log static_logger = LogFactory.getLog(Language)
 
     static belongsTo = [
         tipp: TitleInstancePackagePlatform,
@@ -63,19 +61,19 @@ class Language implements CalculatedLastUpdated, Comparable {
 
     @Override
     def afterInsert() {
-        static_logger.debug("afterInsert")
+        log.debug("afterInsert")
         BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     @Override
     def afterUpdate() {
-        static_logger.debug("afterUpdate")
+        log.debug("afterUpdate")
         BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     @Override
     def afterDelete() {
-        static_logger.debug("afterDelete")
+        log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
@@ -97,13 +95,13 @@ class Language implements CalculatedLastUpdated, Comparable {
             else if(configMap.pkg)
                 lang.pkg = configMap.pkg
             if(!lang.save()) {
-                static_logger.error("error on creating lang: ${lang.getErrors().getAllErrors().toListString()}")
+                log.error("error on creating lang: ${lang.getErrors().getAllErrors().toListString()}")
                 null
             }
             else lang
         }
         else {
-            static_logger.error("No reference object specified for Language!")
+            log.error("No reference object specified for Language!")
             null
         }
     }

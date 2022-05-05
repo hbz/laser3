@@ -4,7 +4,6 @@ package de.laser
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
 import groovy.util.logging.Slf4j
-import org.apache.commons.logging.LogFactory
 
 /**
  * A contact address for a given {@link Person} or {@link Org}. Note that physical addresses are stored as {@link Address}es;
@@ -123,7 +122,7 @@ class Contact implements Comparable<Contact>{
             String info = "saving new contact: ${content} ${contentType} ${type}"
 
             if (!content) {
-                LogFactory.getLog(this).debug(info + " > ignored; empty content")
+                log.debug( info + " > ignored; empty content" )
                 return
             }
 
@@ -153,7 +152,7 @@ class Contact implements Comparable<Contact>{
                 }
             }
 
-            LogFactory.getLog(this).debug(info)
+            log.debug( info )
             result
         }
     }
