@@ -670,7 +670,10 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportCustom(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //subscription given, all packages
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -769,7 +772,10 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportCustom(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1192,7 +1198,7 @@ class SubscriptionController {
         else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom(result.ieIDs,IssueEntitlement.class.name)
+            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id],IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1255,11 +1261,12 @@ class SubscriptionController {
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
 
+            List<Long> toBeSelectedTippIDs = []
             if(params.tab == 'toBeSelectedIEs') {
                 List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
 
                 List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus ", [sub: ctrlResult.result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
+                toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
                 exportIEIDs = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.tipp.id in (:tippIds) and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs])
 
@@ -1300,7 +1307,7 @@ class SubscriptionController {
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+                Map<String, List> export = exportService.generateTitleExportCustom([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
                 export.titles << "Pick"
 
                 Map sheetData = [:]
@@ -1314,7 +1321,7 @@ class SubscriptionController {
             else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportCustom(exportIEIDs, IssueEntitlement.class.name)
+                Map<String, List> export = exportService.generateTitleExportCustom([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)

@@ -190,4 +190,15 @@ class I10nTranslation {
         decodeLocale(locale.toString())
     }
 
+    static String getRefdataValueColumn(Locale locale) {
+        switch(decodeLocale(locale.toString())) {
+            case 'de': 'rdv_value_de'
+                break
+            case 'fr': 'rdv_value_fr'
+                break
+            default: 'rdv_value_en'
+                break
+        }
+    }
+
 }
