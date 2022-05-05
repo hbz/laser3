@@ -64,17 +64,19 @@ class OrganisationService {
      * @return a String containing the CSV output or the Excel sheet containing the output
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
+        Locale locale = LocaleContextHolder.getLocale()
+
         List<String> titles = [
-                messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),
-                messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),
+                messageSource.getMessage('org.sortname.label',null, locale),
+                messageSource.getMessage('org.shortname.label',null, locale),
                 'Name'
         ]
         if(addHigherEducationTitles) {
-            titles.add(messageSource.getMessage('org.libraryType.label',null,LocaleContextHolder.getLocale()))
-            titles.add(messageSource.getMessage('org.libraryNetwork.label',null,LocaleContextHolder.getLocale()))
-            titles.add(messageSource.getMessage('org.funderType.label',null,LocaleContextHolder.getLocale()))
-            titles.add(messageSource.getMessage('org.region.label',null,LocaleContextHolder.getLocale()))
-            titles.add(messageSource.getMessage('org.country.label',null,LocaleContextHolder.getLocale()))
+            titles.add(messageSource.getMessage('org.libraryType.label',null, locale))
+            titles.add(messageSource.getMessage('org.libraryNetwork.label',null, locale))
+            titles.add(messageSource.getMessage('org.funderType.label',null, locale))
+            titles.add(messageSource.getMessage('org.region.label',null, locale))
+            titles.add(messageSource.getMessage('org.country.label',null, locale))
         }
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)

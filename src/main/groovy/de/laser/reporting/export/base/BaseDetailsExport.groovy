@@ -25,11 +25,13 @@ import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.time.Year
 
+@Slf4j
 abstract class BaseDetailsExport {
 
     static String FIELD_TYPE_PROPERTY               = BaseConfig.FIELD_TYPE_PROPERTY
@@ -303,7 +305,7 @@ abstract class BaseDetailsExport {
             msg = messageSource.getMessage('reporting.export.custom.' + token, null, LocaleContextHolder.getLocale())
         }
         catch (Exception e) {
-            println e.getMessage()
+            log.error e.getMessage()
         }
 
         msg

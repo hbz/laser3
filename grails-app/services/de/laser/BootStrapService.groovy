@@ -356,10 +356,10 @@ class BootStrapService {
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
         if (! ['RefdataCategory', 'RefdataValue', 'PropertyDefinition'].contains(objType)) {
-            println "WARNING: invalid object type ${objType}!"
+            log.warn "getParsedCsvData() - invalid object type ${objType}!"
         }
         else if (! csvFile.exists()) {
-            println "WARNING: ${filePath} not found!"
+            log.warn "getParsedCsvData() - ${filePath} not found!"
         }
         else {
             csvFile.withReader { reader ->

@@ -14,7 +14,9 @@ import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class LicenseFilter extends BaseFilter {
 
     static Map<String, Object> filter(GrailsParameterMap params) {
@@ -103,7 +105,7 @@ class LicenseFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' --- ' + pType +' not implemented --- '
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
@@ -260,7 +262,7 @@ class LicenseFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' --- ' + pType +' not implemented --- '
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

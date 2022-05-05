@@ -123,7 +123,7 @@ class ElasticSearchHelper {
                                 }
                             },
                         { resp ->
-                                println (resp.statusLine)
+                                log.warn (resp.statusLine)
                             }
                     )
                 }
@@ -174,7 +174,7 @@ class ElasticSearchHelper {
                                 }
                             },
                             { resp ->
-                                println (resp.statusLine)
+                                log.warn (resp.statusLine)
                             }
                     )
                 }

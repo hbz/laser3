@@ -2,9 +2,11 @@ package de.laser.storage
 
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-//@CompileStatic
+//@CompileStati
+@Slf4j
 class RDStore {
 
     public static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
@@ -275,7 +277,7 @@ class RDStore {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 
         if (! result) {
-            println "WARNING: No RefdataValue found by RDStore for value:'${value}', category:'${category}'"
+            log.warn "No RefdataValue found for value:'${value}', category:'${category}'"
         }
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
     }
@@ -284,7 +286,7 @@ class RDStore {
         PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SVY_PROP, null)
 
         if (! result) {
-            println "WARNING: No PropertyDefinition found by RDStore for name:'${name}', descr:'${PropertyDefinition.SVY_PROP}'"
+            log.warn "No PropertyDefinition found for name:'${name}', descr:'${PropertyDefinition.SVY_PROP}'"
         }
 
         (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy(result)

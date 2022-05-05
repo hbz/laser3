@@ -3,9 +3,11 @@ package de.laser.reporting.report
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.SessionCacheWrapper
+import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat
 
+@Slf4j
 class ReportingCache {
 
     static final CTX_GLOBAL         = 'MyInstitutionController/reporting/'
@@ -28,7 +30,7 @@ class ReportingCache {
     // ---
 
     static ReportingCache initSubscriptionCache(long id, String token) {
-        println 'initSubscriptionCache( ' + token + ' )'
+        log.debug 'initSubscriptionCache( ' + token + ' )'
 
         Subscription sub = Subscription.get(id)
         String filterResult = sub.name

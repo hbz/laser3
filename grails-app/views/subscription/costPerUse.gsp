@@ -1,5 +1,4 @@
 <%@ page import="de.laser.Subscription" %>
-<%-- r:require module="annotations" / --%>
 
 <!doctype html>
 <html>

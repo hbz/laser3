@@ -24,12 +24,14 @@ import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 
 import java.time.Year
 
+@Slf4j
 class BaseConfig {
 
     static String KEY_MYINST                    = 'myInstitution'
@@ -149,7 +151,7 @@ class BaseConfig {
             cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
         }
         else {
-            println '|--- BaseConfig.getCurrentConfigByFilter() failed'
+            log.warn 'getCurrentConfigByFilter() failed'
         }
         cfg
     }

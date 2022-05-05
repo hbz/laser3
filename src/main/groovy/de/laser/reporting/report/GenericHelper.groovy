@@ -5,11 +5,13 @@ import de.laser.base.AbstractBase
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.lang.reflect.Field
 
+@Slf4j
 class GenericHelper {
 
     static Map<String, Object> getField(Map<String, Object> objConfig, String fieldName) {
@@ -18,7 +20,7 @@ class GenericHelper {
             field
         }
         else {
-            println '- GenericHelper.getField() ' + fieldName + ' for ' + objConfig.meta + ' not found'
+            log.warn 'getField() ' + fieldName + ' for ' + objConfig.meta + ' not found'
             null
         }
     }
@@ -85,7 +87,7 @@ class GenericHelper {
 
             Map<String, Object> rdv = BaseConfig.getCustomImplRefdata(field.customImplRdv ?: fieldName)
             if (!rdv) {
-                println '>> ' + fieldName + ' : ' + type + ' not found!'
+                log.warn '>> ' + fieldName + ' : ' + type + ' not found'
             }
             label = rdv.get('label')
         }
@@ -94,7 +96,7 @@ class GenericHelper {
 
             Map<String, Object> rdv = BaseConfig.getElasticSearchRefdata(fieldName)
             if (!rdv) {
-                println '>> ' + fieldName + ' : ' + type + ' not found!'
+                log.warn '>> ' + fieldName + ' : ' + type + ' not found'
             }
             label = rdv.get('label')
         }

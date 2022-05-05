@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 
-public class FactoryResult {
+class FactoryResult {
     Object result = null
     List existingDuplicates = []
     List<String> status = []

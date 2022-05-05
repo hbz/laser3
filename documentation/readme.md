@@ -43,7 +43,7 @@ Use BeanStore for static and non-static access to services and other beans.
 
 ### Logging
 
-Use **@Slf4j** as class annotation to enable logging with *log* in static contexts.
+*Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts. 
 
 ### HTTPBuilder
 

@@ -39,11 +39,9 @@
                         <thead>
                         <tr>
                             <th></th>
-                            %{--<th>${message(code:'propertyDefinition.key.label')}</th>--}%
                             <th>${message(code:'default.name.label')}</th>
                             <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'default.type.label')}</th>
-                            <%--<th class="la-action-info">${message(code:'default.actions.label')}</th>--%>
                         </tr>
                         </thead>
                         <tbody>
@@ -67,14 +65,6 @@
                                             </span>
                                         </g:if>
                                     </td>
-                                    %{--<td>--}%
-                                        %{--<g:if test="${pd.isUsedForLogic}">--}%
-                                            %{--<span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>--}%
-                                        %{--</g:if>--}%
-                                        %{--<g:else>--}%
-                                            %{--${fieldValue(bean: pd, field: "name")}--}%
-                                        %{--</g:else>--}%
-                                    %{--</td>--}%
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
@@ -104,31 +94,6 @@
                                             (${refdataValues.join('/')})
                                         </g:if>
                                     </td>
-                                    <%--<td class="x">
-
-                                        <g:if test="${false}">
-                                        <sec:ifAnyGranted roles="ROLE_YODA">
-                                            <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
-                                                            data-xcg-pd="${pd.class.name}:${pd.id}"
-                                                            data-xcg-type="${pd.type}"
-                                                            data-xcg-rdc="${pd.refdataCategory}"
-                                                            data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                    ><i class="exchange icon"></i></button>
-                                                </span>
-                                            </g:if>
-                                        </sec:ifAnyGranted>
-
-                                        <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
-                                            <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: PropertyDefinition.class.name +':' + pd.id]}" class="ui icon negative button">
-                                                <i class="trash alternate outline icon"></i>
-                                            </g:link>
-                                        </g:if>
-                                        </g:if>
-                                    </td>--%>
-
                                 </tr>
                             </g:each>
 

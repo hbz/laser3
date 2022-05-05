@@ -42,7 +42,6 @@ class PasswordUtils {
         while (! isUserPasswordValid(password)) {
             password = RandomStringUtils.random(16, 0, range.size() - 1, false, false, range)
         }
-        //println password
         password
     }
 

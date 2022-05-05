@@ -221,7 +221,7 @@ class WorkflowService {
             result.task = task
             result.status = OP_STATUS_ERROR
 
-            println '--- NOT IMPLEMENTED ---'
+            log.info '--- NOT IMPLEMENTED ---'
         }
         result
     }
@@ -257,7 +257,7 @@ class WorkflowService {
             result.condition = condition
             result.status = OP_STATUS_ERROR
 
-            println '--- NOT IMPLEMENTED ---'
+            log.info '--- NOT IMPLEMENTED ---'
         }
         result
     }

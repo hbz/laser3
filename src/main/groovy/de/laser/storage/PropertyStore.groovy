@@ -1,8 +1,10 @@
 package de.laser.storage
 
 import de.laser.properties.PropertyDefinition
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@Slf4j
 class PropertyStore {
 
     public static final PLA_COUNTER_REGISTRY_URL    = getPropertyDefinition('COUNTER Registry URL', PropertyDefinition.PLA_PROP)
@@ -30,7 +32,7 @@ class PropertyStore {
         PropertyDefinition result = PropertyDefinition.getByNameAndDescr(name, descr)
 
         if (! result) {
-            println "WARNING: No PropertyDefinition found by PropertyStore for name:'${name}', descr:'${descr}'"
+            log.warn "No PropertyDefinition found for name:'${name}', descr:'${descr}'"
         }
         (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy( result)
     }

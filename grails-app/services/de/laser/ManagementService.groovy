@@ -586,7 +586,7 @@ class ManagementService {
                             }
                         }
                         args = [deletedProperties]
-                        result.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, LocaleContextHolder.getLocale())
+                        result.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, locale)
                     }
             } else {
                 if (selectedSubs.size() < 1) {

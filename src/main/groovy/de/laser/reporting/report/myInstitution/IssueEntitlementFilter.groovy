@@ -10,9 +10,11 @@ import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 
 // not ready for use
 @UnderDevelopment
+@Slf4j
 class IssueEntitlementFilter extends BaseFilter {
 
     static int TMP_QUERY_CONSTRAINT = 30000
@@ -95,7 +97,7 @@ class IssueEntitlementFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' --- ' + pType +' not implemented --- '
+                    log.info ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
@@ -156,7 +158,7 @@ class IssueEntitlementFilter extends BaseFilter {
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
                     else {
-                        println ' --- ' + pType + ' not implemented --- '
+                        log.info ' --- ' + pType + ' not implemented --- '
                     }
                 }
 

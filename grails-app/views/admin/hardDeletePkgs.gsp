@@ -3,7 +3,6 @@
   <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} Admin::Package Delete</title>
-      <%-- r:require module="annotations" / --%>
   </head>
 
     <body>

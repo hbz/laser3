@@ -1205,7 +1205,7 @@ class YodaController {
             subList.each { sub ->
                 try {
                     if (!sub.derivedSubscriptions) {
-                        println '-----> deleting subscription: ' + sub.id
+                        log.info '-----> deleting subscription: ' + sub.id
                         deletionService.deleteSubscription(sub, false)
                     }
                 } catch (Exception e) {
@@ -1222,7 +1222,7 @@ class YodaController {
             licList.each { lic ->
                 try {
                     if (!lic.derivedLicenses) {
-                        println '-----> deleting license: ' + lic.id
+                        log.info '-----> deleting license: ' + lic.id
                         deletionService.deleteLicense(lic, false)
                     }
                 } catch (Exception e) {

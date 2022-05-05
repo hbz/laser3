@@ -1,6 +1,5 @@
 <%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
-<%-- r:require module="annotations" --%>
 
 <!doctype html>
 <html>

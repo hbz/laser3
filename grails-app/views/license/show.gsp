@@ -1,6 +1,5 @@
 <%@ page import="de.laser.Subscription;de.laser.License;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
 <!doctype html>
-<%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
 <html>
   <head>
@@ -12,8 +11,6 @@
 
         <semui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-            %{--<laser:render template="/templates/debug/orgRoles"  model="[debug: license.orgRelations]" />--}%
-            %{--<laser:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />--}%
         </semui:debugInfo>
 
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>

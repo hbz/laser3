@@ -536,10 +536,11 @@ class ControlledListService {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        Locale locale = LocaleContextHolder.getLocale()
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { DocContext it ->
-                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:genericOIDService.getOID(it[0])])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null, locale)}) ${it[0].name}",value:genericOIDService.getOID(it[0])])
             }
         }
         if(params.license == "true") {
@@ -548,7 +549,7 @@ class ControlledListService {
                 License license = (License) it[0]
                 String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
                 String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
-                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:genericOIDService.getOID(license)])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null, locale)}) ${it[1]} - (${licenseStartDate} - ${licenseEndDate})",value:genericOIDService.getOID(license)])
             }
         }
         if(params.subscription == "true") {
@@ -577,13 +578,13 @@ class ControlledListService {
                 else dateString += ""
                 dateString += ")"
                 */
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }
         if(params.package == "true") {
             List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
             allPackages.each { DocContext it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
             }
         }
         result

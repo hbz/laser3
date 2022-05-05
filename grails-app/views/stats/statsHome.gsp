@@ -10,17 +10,6 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin" controller="admin" action="index"/>
             <semui:crumb message="menu.admin.statistics" class="active"/>
-
-            <%--
-            <li class="dropdown la-float-right">
-                <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>
-                <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
-                    <li>
-                        <g:link controller="stats" action="statsHome" params="${[format:'csv']}">CSV</g:link>
-                    </li>
-                </ul>
-            </li>
-            --%>
         </semui:breadcrumbs>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>

@@ -52,9 +52,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterSubProviders" from="" name="filterSubProviders" multiple="" value="${params.filterSubProviders}"
-                        class="ui fluid search dropdown" optionKey="id" optionValue="name" noSelection="${['' : message(code:'default.select.all.label')]}"
-                    />--%>
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field">
@@ -96,13 +93,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterCISPkg" class="ui fluid search dropdown" multiple=""
-                              name="filterCISPkg"
-                              from=""
-                              optionValue="text"
-                              optionKey="id"
-                              noSelection="['':message(code:'default.select.all.label')]"
-                              value="${filterPresets?.filterCISPkg}" />--%>
                 </div>
             </div><!-- .three -->
 
@@ -115,12 +105,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterCIBudgetCode" class="ui dropdown search selection"
-                              name="filterCIBudgetCode"
-                              from=""
-                              optionKey="id" optionValue="value"
-                              value="${filterPresets?.filterCIBudgetCode}"
-                              noSelection="${['':message(code:'default.select.all.label')]}" /> --%>
                 </div>
 
                 <div class="field">
@@ -131,11 +115,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
-                              name="filterCIInvoiceNumber"
-                              from=""
-                              value="${filterPresets?.filterCIInvoiceNumber}"
-                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
                 <div class="field">
@@ -146,11 +125,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterCIOrderNumber" class="ui dropdown search selection"
-                              name="filterCIOrderNumber"
-                              from=""
-                              value="${filterPresets?.filterCIOrderNumber}"
-                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
             </div><!-- .three -->
 
@@ -163,11 +137,6 @@
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>
-                    <%--<g:select id="filterCIReference" class="ui dropdown search selection"
-                              name="filterCIReference"
-                              from=""
-                              value="${filterPresets?.filterCIReference}"
-                              noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
                 <div class="field">

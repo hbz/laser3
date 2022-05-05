@@ -24,7 +24,6 @@
                     %>
                     <g:if test="${validSubChilds}">
                         <label for="newLicenseeTargets">Für folgende Teilnehmer kopieren</label>
-                        <%--from="${[[id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"--%>
                         <g:select name="newLicenseeTargets" id="newLicenseeTargets" class="ui search dropdown" multiple="multiple"
                                   from="${validSubChilds}"
                                   optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"

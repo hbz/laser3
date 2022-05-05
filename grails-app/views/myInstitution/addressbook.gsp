@@ -1,9 +1,7 @@
 <%@ page
         import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory"
 %>
-
 <!doctype html>
-<%-- r:require module="annotations" / --%>
 
 <html>
 <head>

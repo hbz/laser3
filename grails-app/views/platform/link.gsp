@@ -1,5 +1,4 @@
 <%@ page import="de.laser.Platform" %>
-<%-- r:require module="annotations" / --%>
 <!doctype html>
 <html>
 <head>

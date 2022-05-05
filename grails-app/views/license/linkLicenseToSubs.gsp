@@ -2,8 +2,6 @@
 <laser:serviceInjection />
 <!doctype html>
 
-<%-- r:require module="annotations" / --%>
-
 <html>
     <head>
         <meta name="layout" content="laser" />

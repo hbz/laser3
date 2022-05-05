@@ -634,7 +634,6 @@ class PackageController {
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
-        //println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
         result.filename = filename

@@ -58,7 +58,6 @@
                     </td>
                     <td>
                         ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <%--${subscription.hasPerpetualAccess?.getI10n('value')}--%>
                         <semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
                     </td>
                     <td>

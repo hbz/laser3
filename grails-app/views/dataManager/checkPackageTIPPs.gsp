@@ -14,8 +14,6 @@
 
 <h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and we:kb</h1>
 
-%{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%
-
 <div class="ui grid">
 
     <div>
@@ -26,7 +24,6 @@
                     <tr>
                         <th>${message(code:'package.show.pkg_name')} in we:kb</th>
                         <th>${message(code:'package.show.pkg_name')} in LAS:eR</th>
-                        <%--<th>${message(code:'consortium.label')}</th>--%>
                         <th>${message(code:'tipp.plural')} in we:kb</th>
                         <th>${message(code:'tipp.plural')} in LAS:eR</th>
                     </thead>

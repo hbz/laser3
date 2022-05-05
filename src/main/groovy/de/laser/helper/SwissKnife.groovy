@@ -55,8 +55,7 @@ class SwissKnife {
                 return true
             }
             else {
-                println("WARNING: SwissKnife.checkMessageKey() -> key '${key}' not found for locale '${locale}'")
-                log.warn("SwissKnife.checkMessageKey() -> key '${key}' not found for locale '${locale}'")
+                log.warn("checkMessageKey() -> key '${key}' not found for locale '${locale}'")
             }
         }
         return false

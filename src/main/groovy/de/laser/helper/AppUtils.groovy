@@ -5,7 +5,9 @@ import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class AppUtils {
 
     public static final PROD    = 'PROD'
@@ -87,7 +89,7 @@ class AppUtils {
         GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
 
         if (! dc) {
-            println "WARNING: AppUtils.getDomainClass( ${qualifiedName} ) found no result"
+            log.warn "Found no result - getDomainClass( ${qualifiedName} )"
         }
         dc
     }
@@ -101,7 +103,7 @@ class AppUtils {
             if (dc) { break }
         }
         if (! dc) {
-            println "WARNING: AppUtils.getDomainClassGeneric( ${name} ) found no result"
+            log.warn "Found no result - getDomainClassGeneric( ${name} )"
         }
         dc
     }

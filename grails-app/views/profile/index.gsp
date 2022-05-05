@@ -411,12 +411,6 @@
                     </h2>
 
                     <div class="ui form">
-                        <%-- TODO: check this
-                        <div class="field">
-                            <label>${message(code: 'profile.info_icon')}</label>
-                            <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="${RDConstants.Y_N}" />
-                        </div>
-                        --%>
                         <div class="field">
                             <label>${message(code: 'profile.theme')}</label>
                             <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />

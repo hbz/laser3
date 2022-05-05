@@ -3,6 +3,7 @@ package de.laser.auth
 import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.base.AbstractI10n
+import groovy.util.logging.Slf4j
 
 /**
  * A role a {@link User} or an {@link Org} may have, attributing certain {@link Perm}s, depending to the {@link PermGrant}s granted to the role
@@ -10,6 +11,7 @@ import de.laser.base.AbstractI10n
 //@GrailsCompileStatic
 //@EqualsAndHashCode(includes='authority')
 //@ToString(includes='authority', includeNames=true, includePackage=false)
+@Slf4j
 class Role extends AbstractI10n {
 
 	/**
@@ -65,7 +67,7 @@ class Role extends AbstractI10n {
 			String i10n = I10nTranslation.get(this, parts[0], parts[1])
 			return (i10n ? i10n : "${fallback}")
 		} else {
-			println '---> Role.propertyMissing( ' + name + ' )'
+			log.debug '---> propertyMissing( ' + name + ' )'
 			return name
 		}
 	}

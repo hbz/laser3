@@ -28,15 +28,16 @@ class LocalQueryExport extends BaseQueryExport {
 
         // todo --
         MessageSource messageSource = BeanStore.getMessageSource()
+        Locale locale = LocaleContextHolder.getLocale()
 
         if ( queryCache.labels.tooltip ) {
             result.cols.add( queryCache.labels.tooltip ) // simple
         }
         else {
-            result.cols.add( messageSource.getMessage('default.period.label', null, LocaleContextHolder.getLocale()) )
+            result.cols.add( messageSource.getMessage('default.period.label', null, locale) )
         }
         if ( ! chart) {
-            result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) ) // simple
+            result.cols.add( messageSource.getMessage('default.count.label', null, locale) ) // simple
         }
         else {
             result.cols.addAll( chart )

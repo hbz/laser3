@@ -3,9 +3,11 @@ package de.laser.helper
 import de.laser.storage.BeanStore
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 
 import javax.sql.DataSource
 
+@Slf4j
 class DatabaseUtils {
 
     static final String DE_U_CO_PHONEBK_X_ICU   = "de-u-co-phonebk-x-icu"
@@ -21,7 +23,7 @@ class DatabaseUtils {
                 server_encoding: (sql.firstRow('show server_encoding').values().join(',') ?: 'unkown')
             ]
         } catch (Exception e) {
-            println e.getMessage()
+            log.error e.getMessage()
             [ server_version: 'unkown', server_encoding: 'unkown' ]
         }
     }
