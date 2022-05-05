@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.helper.AppUtils
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 class DataConsistencyService {
 
     DeletionService deletionService
-    ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+    ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
     /**
      * Checks the duplicates of organisation, package and platform names

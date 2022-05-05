@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import de.laser.ContextService
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
@@ -63,13 +63,13 @@ class AppUtils {
     // -- debug mode
 
     static boolean isDebugMode() {
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         sessionCache.get( AU_S_DEBUGMODE ) == 'on'
     }
 
     static void setDebugMode(String status) {
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
         if (status?.toLowerCase() in ['true', 'on']) {
             sessionCache.put( AU_S_DEBUGMODE, 'on' )

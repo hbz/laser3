@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigMapper" %>
+<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -73,7 +73,7 @@
         <tbody>
             <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
             <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <tr><td>Current indicies</td><td>${BeanStorage.getESWrapperService().es_indices}</td></tr>
+            <tr><td>Current indicies</td><td>${BeanStore.getESWrapperService().es_indices}</td></tr>
             <g:each in="${esinfos}" var="es">
                 <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
             </g:each>

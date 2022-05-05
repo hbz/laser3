@@ -33,9 +33,9 @@ Localization dependent logic should be managed by *de.laser.helper.LocaleHelper*
 ### Service usage in domain classes
 
 Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.
-Use BeanStorage for static and non-static access to services and other beans.
+Use BeanStore for static and non-static access to services and other beans.
 
-    de.laser.storage.BeanStorage
+    de.laser.storage.BeanStore
 
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService

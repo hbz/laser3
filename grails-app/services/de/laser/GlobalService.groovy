@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 import org.hibernate.Session
@@ -34,7 +34,7 @@ class GlobalService {
      * @return a connection to the database
      */
     static Sql obtainSqlConnection() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         new Sql(dataSource)
     }
 }

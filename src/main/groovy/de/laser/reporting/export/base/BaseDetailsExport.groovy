@@ -9,7 +9,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.reporting.export.LocalExportHelper
@@ -162,11 +162,11 @@ abstract class BaseDetailsExport {
         clazz.class.package.toString().endsWith('.myInstitution')
     }
     static boolean ctxConsortium() {
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
         contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'
     }
     static boolean ctxInst() {
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
         contextService.getOrg().getCustomerType() == 'ORG_INST'
     }
 
@@ -299,7 +299,7 @@ abstract class BaseDetailsExport {
     static String getExportLabel(String token) {
         String msg = '[reporting.export.custom.' + token + ']'
         try {
-            MessageSource messageSource = BeanStorage.getMessageSource()
+            MessageSource messageSource = BeanStore.getMessageSource()
             msg = messageSource.getMessage('reporting.export.custom.' + token, null, LocaleContextHolder.getLocale())
         }
         catch (Exception e) {

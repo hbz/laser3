@@ -33,7 +33,7 @@ import org.springframework.context.MessageSourceResolvable
 
 import javax.sql.DataSource
 
-class BeanStorage {
+class BeanStore {
 
     static def get(String bean) {
         Holders.grailsApplication.mainContext.getBean(bean)

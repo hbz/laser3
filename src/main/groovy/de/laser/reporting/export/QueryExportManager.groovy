@@ -1,6 +1,6 @@
 package de.laser.reporting.export
 
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
@@ -55,7 +55,7 @@ class QueryExportManager {
     }
 
     static String buildRowCSV(List<Object> row) {
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
         row.collect{ col ->
             boolean enclose = false
@@ -83,7 +83,7 @@ class QueryExportManager {
     }
 
     static List<String> buildRowPDF(List<Object> row) {
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
         row.collect{ col ->
             if (! col) {

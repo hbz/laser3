@@ -3,7 +3,7 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.exceptions.CreationException
 import de.laser.finance.PriceItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -345,7 +345,7 @@ class PendingChange {
      * @return the resolved object
      */
     def resolveOID() {
-        BeanStorage.getGenericOIDService().resolveOID(oid)
+        BeanStore.getGenericOIDService().resolveOID(oid)
     }
 
     /**
@@ -406,11 +406,11 @@ class PendingChange {
         if (prefix) {
             def parsed
             try {
-                parsed = BeanStorage.getMessageSource().getMessage(prefix + parsedParams[0], null, locale)
+                parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0], null, locale)
             }
             catch (Exception e1) {
                 try {
-                    parsed = BeanStorage.getMessageSource().getMessage(prefix + parsedParams[0] + '.label', null, locale)
+                    parsed = BeanStore.getMessageSource().getMessage(prefix + parsedParams[0] + '.label', null, locale)
                 }
                 catch (Exception e2) {
                     parsed = prefix + parsedParams[0]
@@ -438,7 +438,7 @@ class PendingChange {
             parsedParams[1] = rdv1.getI10n('value')
             parsedParams[2] = rdv2.getI10n('value')
         } else if (type == 'date') {
-            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(BeanStorage.getMessageSource().getMessage('default.date.format', null, locale))
+            //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(BeanStore.getMessageSource().getMessage('default.date.format', null, locale))
             //TODO JSON @ Wed Jan 03 00:00:00 CET 2018
 
             //def date1 = parsedParams[1] ? sdf.parse(parsedParams[1]) : null

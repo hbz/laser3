@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PDStorage; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.helper.DateUtils; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <laser:render template="/myInstitution/reporting/details/top" />
@@ -96,7 +96,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-shibbolethAuthentication">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_SHIBBOLETH.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_SHIBBOLETH.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="shibbolethAuthentication" records="${esRecords}" />
@@ -116,7 +116,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-proxySupported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_PROXY.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_PROXY.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
@@ -156,7 +156,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_COUNTER_R3_REPORTS.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R3_REPORTS.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
@@ -166,7 +166,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR4Supported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_COUNTER_R4_REPORTS.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_REPORTS.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4Supported" records="${esRecords}" />
@@ -176,7 +176,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR5Supported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_COUNTER_R5_REPORTS.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_REPORTS.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5Supported" records="${esRecords}" />
@@ -186,7 +186,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR4SushiApiSupported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_COUNTER_R4_SUSHI_API.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_SUSHI_API.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR4SushiApiSupported" records="${esRecords}" />
@@ -196,7 +196,7 @@
                     <laser:reportDetailsTableTD config="${dtConfig}" field="platform-counterR5SushiApiSupported">
 
                         <g:if test="${useLocalFields}">
-                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PDStorage.PLA_COUNTER_R5_SUSHI_API.id}" />
+                            <laser:reportObjectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_SUSHI_API.id}" />
                         </g:if>
                         <g:else>
                             <laser:reportDetailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />

@@ -7,7 +7,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -26,8 +26,8 @@ class SubscriptionFilter extends BaseFilter {
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
-        ContextService contextService = BeanStorage.getContextService()
-        SubscriptionsQueryService subscriptionsQueryService = BeanStorage.getSubscriptionsQueryService()
+        ContextService contextService = BeanStore.getContextService()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])

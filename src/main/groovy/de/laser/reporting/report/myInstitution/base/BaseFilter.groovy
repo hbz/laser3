@@ -2,7 +2,7 @@ package de.laser.reporting.report.myInstitution.base
 
 import de.laser.ContextService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.properties.PropertyDefinition
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -17,7 +17,7 @@ class BaseFilter {
     }
 
     static List<String> getRestrictedConfigSources(Map<String, Object> config) {
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         if (contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])) {
             config.source
@@ -64,7 +64,7 @@ class BaseFilter {
 
     static String getPropertyFilterSubQuery(String hqlDc, String hqlVar, Long pdId, Long pValue, Map<String, Object> queryParams) {
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         String pvQuery = ''
         if (pValue) {

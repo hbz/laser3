@@ -2,7 +2,7 @@ package de.laser.reporting.export.local
 
 import de.laser.*
 import de.laser.helper.LocaleHelper
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.oap.*
@@ -79,8 +79,8 @@ class OrgExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        MessageSource messageSource = BeanStore.getMessageSource()
 
         Org org = obj as Org
         List content = []
@@ -206,7 +206,7 @@ class OrgExport extends BaseDetailsExport {
                 }
                 else if (key == '@-org-readerNumber') {
 
-                    OrganisationService organisationService = BeanStorage.getOrganisationService()
+                    OrganisationService organisationService = BeanStore.getOrganisationService()
 
                     List entries = []
                     List<Long> semIdList = f.value.findAll{ it.startsWith('sem-') }.collect{ Long.parseLong( it.replace('sem-', '') ) }

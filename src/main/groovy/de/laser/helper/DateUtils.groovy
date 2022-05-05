@@ -1,6 +1,6 @@
 package de.laser.helper
 
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.MessageSource
@@ -21,7 +21,7 @@ class DateUtils {
     private DateUtils(){}
 
     static SimpleDateFormat getSimpleDateFormatByToken(String token) {
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
         String format = messageSource.getMessage(token, null, locale)
 

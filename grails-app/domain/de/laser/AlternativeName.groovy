@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -69,19 +69,19 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
     @Override
     def afterInsert() {
         static_logger.debug("afterInsert")
-        BeanStorage.getCascadingUpdateService().update(this, dateCreated)
+        BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
 
     @Override
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        BeanStorage.getCascadingUpdateService().update(this, lastUpdated)
+        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
 
     @Override
     def afterDelete() {
         static_logger.debug("afterDelete")
-        BeanStorage.getCascadingUpdateService().update(this, new Date())
+        BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
     @Override

@@ -1,7 +1,7 @@
 package de.laser.custom
 
 import de.laser.helper.ConfigMapper
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.system.SystemEvent
 import grails.core.GrailsApplication
 import liquibase.Liquibase
@@ -16,7 +16,7 @@ class CustomMigrationCallbacks {
 	GrailsApplication grailsApplication
 
 	static void _localChangelogMigration() {
-		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStorage.getDataSource())
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
 		int count1 = (sql.rows("select * from databasechangelog where filename like 'done/pre%'")).size()
 		int count2 = (sql.rows("select * from databasechangelog where filename like 'changelog-2021-%'")).size()

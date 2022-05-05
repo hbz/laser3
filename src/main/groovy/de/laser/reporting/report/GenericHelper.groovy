@@ -2,7 +2,7 @@ package de.laser.reporting.report
 
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import org.springframework.context.MessageSource
@@ -48,7 +48,7 @@ class GenericHelper {
         Map<String, Object> field = getField(objConfig, fieldName)
         String type = field?.type
 
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {

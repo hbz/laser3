@@ -2,7 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.annotations.UnderDevelopment
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -25,8 +25,8 @@ class IssueEntitlementFilter extends BaseFilter {
         List<String> whereParts         = [ 'where ie.id in (:issueEntitlementIdList)']
         Map<String, Object> queryParams = [ issueEntitlementIdList: [] ]
 
-        ContextService contextService = BeanStorage.getContextService()
-        SubscriptionsQueryService subscriptionsQueryService = BeanStorage.getSubscriptionsQueryService()
+        ContextService contextService = BeanStore.getContextService()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_ISSUEENTITLEMENT)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ISSUEENTITLEMENT, filterSource)])

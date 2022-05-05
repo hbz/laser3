@@ -2,7 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
@@ -141,7 +141,7 @@ class User {
      * Encodes the submitted password
      */
     protected void encodePassword() {
-        password = BeanStorage.getSpringSecurityService().encodePassword(password)
+        password = BeanStore.getSpringSecurityService().encodePassword(password)
     }
 
     // TODO -> rename to getAffiliations() -> remove
@@ -250,7 +250,7 @@ class User {
      * @return does the user have the given INST-role AND ROLE constant granted?
      */
     boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        BeanStorage.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStorage.getContextService().getOrg())
+        BeanStore.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStore.getContextService().getOrg())
     }
 
     /**
@@ -260,7 +260,7 @@ class User {
      * @return does the user have the given INST_-role for the given org?
      */
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        BeanStorage.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+        BeanStore.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
     /**
@@ -271,7 +271,7 @@ class User {
         boolean lia = false
 
         affiliations.each { aff ->
-            if (BeanStorage.getInstAdmService().isUserLastInstAdminForOrg(this, aff.org)) {
+            if (BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, aff.org)) {
                 lia = true
             }
         }
@@ -284,6 +284,6 @@ class User {
      */
     @Override
     String toString() {
-        BeanStorage.getYodaService().showDebugInfo() ? display + ' (' + id + ')' : display
+        BeanStore.getYodaService().showDebugInfo() ? display + ' (' + id + ')' : display
     }
 }

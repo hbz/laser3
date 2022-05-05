@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.oap.OrgAccessPoint
@@ -99,7 +99,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   def afterDelete() {
     super.afterDeleteHandler()
 
-    BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+    BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
   @Override
   def afterInsert() {
@@ -194,7 +194,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @return a {@link Map} of {@link PropertyDefinitionGroup}s, ordered by sorted, global, local and orphaned property definitions
    */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-      BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+      BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
   /**
@@ -240,7 +240,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @return a {@link List} of {@link Map}s in the format [id: id, text: text], containing the selectable records
    */
   static def refdataFind(GrailsParameterMap params) {
-    GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
+    GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 
     genericOIDService.getOIDMapList( Platform.findAllByNameIlike("${params.q}%", params), 'name' )
   }

@@ -6,7 +6,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -25,7 +25,7 @@ class PackageFilter extends BaseFilter {
         List<String> whereParts         = [ 'where pkg.id in (:packageIdList)']
         Map<String, Object> queryParams = [ packageIdList: [] ]
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PACKAGE)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PACKAGE, filterSource)])

@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.exceptions.CreationException
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -93,7 +93,7 @@ class Links {
             context = key
         }
         else if(key instanceof GString || key instanceof String) {
-            context = BeanStorage.getGenericOIDService().resolveOID(key)
+            context = BeanStore.getGenericOIDService().resolveOID(key)
         }
         else {
             log.error("No context key!")

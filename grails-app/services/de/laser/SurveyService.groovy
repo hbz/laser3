@@ -12,7 +12,7 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
@@ -54,7 +54,7 @@ class SurveyService {
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigMapper.getNotificationsEmailFrom()
-        messageSource = BeanStorage.getMessageSource()
+        messageSource = BeanStore.getMessageSource()
     }
 
     /**

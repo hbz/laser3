@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
@@ -80,7 +80,7 @@ class BaseDetails {
 
     static String getFieldLabelforColumn(String key, String field) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
         Map<String, Map> esdConfig = BaseConfig.getCurrentConfigElasticsearchData(key)
 
         // println ' > BaseDetails.getFieldLabelforColumn() ' + key + ' + ' + field

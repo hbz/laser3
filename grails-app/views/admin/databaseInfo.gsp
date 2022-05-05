@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStorage; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigMapper" %>
+<%@ page import="de.laser.helper.DatabaseUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; de.laser.helper.DateUtils; grails.util.Environment; de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>

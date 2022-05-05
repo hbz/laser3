@@ -1,7 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.PendingChangeService
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
@@ -338,15 +338,15 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
         // -- moved from def afterInsert = { .. }
 
-        BeanStorage.getCascadingUpdateService().update(this, dateCreated)
+        BeanStore.getCascadingUpdateService().update(this, dateCreated)
     }
     def afterUpdate() {
         static_logger.debug("afterUpdate")
-        BeanStorage.getCascadingUpdateService().update(this, lastUpdated)
+        BeanStore.getCascadingUpdateService().update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")
-        BeanStorage.getCascadingUpdateService().update(this, new Date())
+        BeanStore.getCascadingUpdateService().update(this, new Date())
     }
 
     Date _getCalculatedLastUpdated() {
@@ -383,7 +383,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             changes.oldMap.put( prop, this.getPersistentValue(prop) )
             changes.newMap.put( prop, this.getProperty(prop) )
         }
-        BeanStorage.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
 
     /**
@@ -398,7 +398,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
             Locale locale = LocaleContextHolder.getLocale()
             ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
-            String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
+            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             if (contentItemDesc) {
                 description = contentItemDesc.content
             }
@@ -432,7 +432,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                 ]
 
                 if(childId.sub) {
-                    PendingChange newPendingChange = BeanStorage.getChangeNotificationService().registerPendingChange(
+                    PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                             PendingChange.PROP_SUBSCRIPTION,
                             childId.sub,
                             childId.sub.getSubscriber(),
@@ -450,7 +450,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                     }
                 }
                 else if(childId.lic) {
-                    PendingChange newPendingChange = BeanStorage.getChangeNotificationService().registerPendingChange(
+                    PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                             PendingChange.PROP_LICENSE,
                             childId.lic,
                             childId.lic.getLicensee(),
@@ -471,7 +471,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
             slavedPendingChanges.each { spc ->
                 log.debug('autoAccept! performing: ' + spc)
-                BeanStorage.getPendingChangeService().performAccept(spc)
+                BeanStore.getPendingChangeService().performAccept(spc)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('Identifier.deleted')) {

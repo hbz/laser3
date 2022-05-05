@@ -4,7 +4,7 @@ import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -106,8 +106,8 @@ class SubscriptionExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
-        ContextService contextService = BeanStorage.getContextService()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
 
         Subscription sub = obj as Subscription
         List content = []

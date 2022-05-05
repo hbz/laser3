@@ -1,7 +1,7 @@
 package de.laser.helper
 
 import de.laser.CacheService
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import groovy.transform.CompileStatic
 import net.sf.ehcache.Cache
 
@@ -14,7 +14,7 @@ class EhcacheWrapper {
 
     final static String SEPARATOR = '_'
 
-    CacheService cacheService = BeanStorage.getCacheService()
+    CacheService cacheService = BeanStore.getCacheService()
 
     private Cache cache // net.sf.ehcache.Cache
     private String keyPrefix

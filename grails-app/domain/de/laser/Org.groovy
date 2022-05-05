@@ -7,7 +7,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.properties.OrgProperty
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -278,8 +278,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         //ugliest HOTFIX ever #2
         if(!Thread.currentThread().name.contains("Sync")) {
-            if (BeanStorage.getContextService().getOrg()) {
-                createdBy = BeanStorage.getContextService().getOrg()
+            if (BeanStore.getContextService().getOrg()) {
+                createdBy = BeanStore.getContextService().getOrg()
             }
         }
 
@@ -290,7 +290,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -431,7 +431,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @see de.laser.properties.PropertyDefinitionGroup
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -484,7 +484,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
      */
     static def refdataFind(GrailsParameterMap params) {
-        GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
+        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 
         genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
@@ -559,7 +559,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = BeanStorage.getContextService().getOrg()
+            Org ctxOrg = BeanStore.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
                     " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -594,7 +594,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             )
         }
         else {
-            Org ctxOrg = BeanStorage.getContextService().getOrg()
+            Org ctxOrg = BeanStore.getContextService().getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
                             " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
@@ -740,7 +740,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
     String dropdownNamingConvention() {
-        return dropdownNamingConvention(BeanStorage.getContextService().getOrg())
+        return dropdownNamingConvention(BeanStore.getContextService().getOrg())
     }
 
     /**

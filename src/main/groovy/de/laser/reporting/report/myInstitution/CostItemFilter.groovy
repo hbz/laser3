@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.GenericHelper
@@ -29,8 +29,8 @@ class CostItemFilter extends BaseFilter {
         switch (filterSource) {
             case 'consortia-cost':
 
-                FinanceService financeService = BeanStorage.getFinanceService()
-                FinanceControllerService financeControllerService = BeanStorage.getFinanceControllerService()
+                FinanceService financeService = BeanStore.getFinanceService()
+                FinanceControllerService financeControllerService = BeanStore.getFinanceControllerService()
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('max', 1000000 as String)

@@ -2,7 +2,7 @@ package de.laser.finance
 
 import com.k_int.kbplus.GenericOIDService
 import de.laser.Org
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -65,7 +65,7 @@ class Invoice {
         if (! owner) {
             return []
         }
-        GenericOIDService genericOIDService = BeanStorage.getGenericOIDService()
+        GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 
         genericOIDService.getOIDMapList(
                 Invoice.findAllByOwnerAndInvoiceNumberIlike(owner, "%${params.q}%", params),

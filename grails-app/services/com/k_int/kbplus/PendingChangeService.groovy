@@ -18,7 +18,7 @@ import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import de.laser.SubscriptionService

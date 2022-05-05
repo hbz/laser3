@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -24,7 +24,7 @@ class OrganisationFilter extends BaseFilter {
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
         Map<String, Object> queryParams = [ orgIdList: [] ]
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, 'org')
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_ORGANISATION, filterSource)])
@@ -229,7 +229,7 @@ where (consOr.roleType = :consRoleType)
 
     static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         List<Long> idList = Org.executeQuery( '''
             select distinct(prov.org.id) from OrgRole prov 

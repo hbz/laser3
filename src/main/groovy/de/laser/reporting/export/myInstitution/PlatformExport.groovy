@@ -4,7 +4,7 @@ import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.Platform
 import de.laser.RefdataValue
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.ElasticSearchHelper
@@ -78,8 +78,8 @@ class PlatformExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
-        ContextService contextService = BeanStorage.getContextService()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
 
         Platform plt = obj as Platform
         List content = []

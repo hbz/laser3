@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseUtils; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStorage" %>
+<%@ page import="de.laser.helper.DatabaseUtils; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
 <!doctype html>
 <html>
 <head>

@@ -2,7 +2,7 @@ package de.laser.system
 
 import de.laser.Org
 import de.laser.helper.AppUtils
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 
 /**
  * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs
@@ -66,7 +66,7 @@ class SystemProfiler {
             if (delta && delta > 0) {
                 (new SystemProfiler(
                         uri: actionUri,
-                        context: BeanStorage.getContextService().getOrg(),
+                        context: BeanStore.getContextService().getOrg(),
                         ms: delta,
                         archive: SystemProfiler.getCurrentArchive()
                 )).save()

@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -25,7 +25,7 @@ class LicenseFilter extends BaseFilter {
         List<String> whereParts         = [ 'where lic.id in (:licenseIdList)']
         Map<String, Object> queryParams = [ licenseIdList: [] ]
 
-        LicenseService licenseService = BeanStorage.getLicenseService()
+        LicenseService licenseService = BeanStore.getLicenseService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_LICENSE)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])

@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
@@ -18,8 +18,8 @@ class PlatformQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStorage.getContextService()
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        ContextService contextService = BeanStore.getContextService()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( BaseConfig.KEY_PLATFORM )

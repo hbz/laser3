@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
 
@@ -89,7 +89,7 @@ class Task {
     }
 
     def afterDelete() {
-        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     /**

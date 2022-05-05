@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -12,7 +12,7 @@ class LicenseQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 

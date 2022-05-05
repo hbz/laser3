@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.AppUtils
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.helper.MigrationHelper
 import de.laser.storage.RDStore
@@ -95,7 +95,7 @@ class SystemAnnouncement {
      * @return the sanitized title string
      */
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(BeanStorage.getEscapeService().replaceUmlaute(title))
+        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(title))
     }
 
     /**
@@ -103,7 +103,7 @@ class SystemAnnouncement {
      * @return the sanitized content string
      */
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(BeanStorage.getEscapeService().replaceUmlaute(content))
+        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(content))
     }
 
     /**
@@ -164,7 +164,7 @@ class SystemAnnouncement {
      */
     private void sendMail(User user) throws Exception {
 
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
@@ -180,7 +180,7 @@ class SystemAnnouncement {
         }
 
         if (isRemindCCbyEmail && ccAddress) {
-            BeanStorage.getMailService().sendMail {
+            BeanStore.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigMapper.getNotificationsEmailFrom()
                 cc      ccAddress
@@ -190,7 +190,7 @@ class SystemAnnouncement {
             }
         }
         else {
-            BeanStorage.getMailService().sendMail {
+            BeanStore.getMailService().sendMail {
                 to      user.getEmail()
                 from    ConfigMapper.getNotificationsEmailFrom()
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()

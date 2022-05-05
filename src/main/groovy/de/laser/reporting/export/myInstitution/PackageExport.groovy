@@ -8,7 +8,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -83,8 +83,8 @@ class PackageExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
-        ContextService contextService = BeanStorage.getContextService()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        ContextService contextService = BeanStore.getContextService()
 
         Package pkg = obj as Package
         List content = []

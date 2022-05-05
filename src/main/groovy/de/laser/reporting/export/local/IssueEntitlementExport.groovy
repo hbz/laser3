@@ -2,7 +2,7 @@ package de.laser.reporting.export.local
 
 import de.laser.Identifier
 import de.laser.IssueEntitlement
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -66,7 +66,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        ApplicationTagLib g = BeanStorage.getApplicationTagLib()
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
 
         IssueEntitlement ie = obj as IssueEntitlement
         List content = []

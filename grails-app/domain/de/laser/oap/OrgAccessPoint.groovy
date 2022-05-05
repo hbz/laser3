@@ -5,7 +5,7 @@ import de.laser.Subscription
 import de.laser.AccessPointData
 import de.laser.RefdataValue
 import de.laser.base.AbstractBase
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
@@ -98,7 +98,7 @@ class OrgAccessPoint extends AbstractBase {
 
     def getNotLinkedPlatforms()
     {
-        List currentSubIds = BeanStorage.getOrgTypeService().getCurrentSubscriptionIds(org)
+        List currentSubIds = BeanStore.getOrgTypeService().getCurrentSubscriptionIds(org)
         // TODO check if this is enough
         if (!currentSubIds){
             return

@@ -4,7 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -49,7 +49,7 @@ class DashboardDueDatesService {
     void init() {
         from = ConfigMapper.getNotificationsEmailFrom()
         replyTo = ConfigMapper.getNotificationsEmailReplyTo()
-        messageSource = BeanStorage.getMessageSource()
+        messageSource = BeanStore.getMessageSource()
         locale = LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")
     }

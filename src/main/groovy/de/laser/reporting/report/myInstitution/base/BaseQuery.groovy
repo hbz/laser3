@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.helper.LocaleHelper
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
@@ -379,7 +379,7 @@ class BaseQuery {
 
     static String getChartLabel(String token) {
         //println 'getChartLabel(): ' + token
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         messageSource.getMessage('reporting.chart.result.' + token, null, LocaleContextHolder.getLocale())
     }
 }

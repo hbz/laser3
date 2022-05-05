@@ -1,6 +1,6 @@
 package de.laser.helper
 
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -12,7 +12,7 @@ class DatabaseUtils {
     static final String EN_US_U_VA_POSIX_X_ICU  = "en-US-u-va-posix-x-icu"
 
     static Map<String, String> getServerInfo() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         try {
@@ -27,7 +27,7 @@ class DatabaseUtils {
     }
 
     static List<Map<String, Object>> getDatabaseActivity() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         List<GroovyRowResult> rows = sql.rows( 'select * from pg_stat_activity where datname = current_database() order by pid')
@@ -35,17 +35,17 @@ class DatabaseUtils {
     }
 
     static String getDatabaseCollate() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         (new Sql(dataSource)).firstRow('show LC_COLLATE').get('lc_collate') as String
     }
 
     static String getDatabaseSize() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         (new Sql(dataSource)).firstRow('select pg_size_pretty(pg_database_size(current_database())) as dbsize').get('dbsize') as String
     }
 
     static List<Map<String, Object>> getDatabaseUserFunctions() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         List<GroovyRowResult> rows = sql.rows( "select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines where routine_type = 'FUNCTION' and specific_schema = 'public' order by function")
@@ -53,7 +53,7 @@ class DatabaseUtils {
     }
 
     static List<Map<String, Object>> getAllTablesWithCollations() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         List<GroovyRowResult> rows = sql.rows("""
@@ -68,7 +68,7 @@ class DatabaseUtils {
     }
 
     static List<Map<String, Object>> getAllTablesUsageInfo() {
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         List<GroovyRowResult> rows = sql.rows( "select relname as tablename, reltuples as rowcount from pg_class join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
@@ -77,7 +77,7 @@ class DatabaseUtils {
 
     static Map<String, List> getAllTablesCollationInfo() {
         Map<String, List> result = [:]
-        DataSource dataSource = BeanStorage.getDataSource()
+        DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
 
         sql.rows( "select tablename from pg_tables where schemaname = 'public'").each { table ->

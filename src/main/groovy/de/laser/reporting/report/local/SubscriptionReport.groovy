@@ -9,7 +9,7 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -214,9 +214,9 @@ class SubscriptionReport {
                 else if (params.query == 'timeline-cost') {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
-                    // ApplicationTagLib g = BeanStorage.getApplicationTagLib()
-                    FinanceService financeService = BeanStorage.getFinanceService()
-                    FinanceControllerService financeControllerService = BeanStorage.getFinanceControllerService()
+                    // ApplicationTagLib g = BeanStore.getApplicationTagLib()
+                    FinanceService financeService = BeanStore.getFinanceService()
+                    FinanceControllerService financeControllerService = BeanStore.getFinanceControllerService()
 
                     timeline.eachWithIndex { s, i ->
                         clone.setProperty('id', s.id)
@@ -545,13 +545,13 @@ class SubscriptionReport {
     }
 
     static String getMessage(String token) {
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         messageSource.getMessage('reporting.local.subscription.' + token, null, LocaleContextHolder.getLocale())
     }
 
     static String getQueryLabel(String qKey, List qValues) {
         //println 'getQueryLabel(): ' + qKey + ' - ' + qValues
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         if (qValues[0].startsWith('generic')) {

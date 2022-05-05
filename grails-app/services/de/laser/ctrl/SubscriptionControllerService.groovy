@@ -16,7 +16,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
@@ -2435,7 +2435,7 @@ class SubscriptionControllerService {
                 Thread.currentThread().setName("PackageTransfer_${result.subscription.id}")
                 SubscriptionPackage sp = SubscriptionPackage.get(params.subPkg)
                 //need to use native sql because of performance and queries not doable in hql
-                DataSource dataSource = BeanStorage.getDataSource()
+                DataSource dataSource = BeanStore.getDataSource()
                 Sql sql = new Sql(dataSource)
                 //revert changes applied to the package
                 //BEWARE: we have to restore the state to subscription end! If the entity has been modified several times, I need the closest change to the subscription end - and ONLY that!

@@ -23,7 +23,7 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.workflow.WfWorkflow
@@ -146,7 +146,7 @@ class MyInstitutionController  {
             cacheMap.filterCache.labels.putAll( result.filterResult.labels )
             cacheMap.filterCache.data.putAll( result.filterResult.data )
 
-            PageRenderer groovyPageRenderer = BeanStorage.getGroovyPageRenderer()
+            PageRenderer groovyPageRenderer = BeanStore.getGroovyPageRenderer()
             cacheMap.filterCache.result = groovyPageRenderer.render(
                     template: '/myInstitution/reporting/query/filterResult',
                     model: [ filter: params.filter, filterResult: result.filterResult ]

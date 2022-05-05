@@ -4,7 +4,7 @@ package de.laser
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
@@ -214,7 +214,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
   void afterDelete() {
-      BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+      BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
     /**

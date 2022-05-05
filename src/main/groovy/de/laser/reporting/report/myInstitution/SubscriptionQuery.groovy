@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
@@ -17,7 +17,7 @@ class SubscriptionQuery extends BaseQuery {
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 

@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.*
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -20,7 +20,7 @@ class PlatformFilter extends BaseFilter {
         List<String> whereParts         = [ 'where plt.id in (:platformIdList)']
         Map<String, Object> queryParams = [ platformIdList: [] ]
 
-        ContextService contextService = BeanStorage.getContextService()
+        ContextService contextService = BeanStore.getContextService()
 
         String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_PLATFORM)
         filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_PLATFORM, filterSource)])

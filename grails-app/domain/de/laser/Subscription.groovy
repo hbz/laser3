@@ -4,7 +4,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.MigrationHelper
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.oap.OrgAccessPoint
@@ -246,7 +246,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStorage.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -301,7 +301,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             }
         }
 
-        BeanStorage.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
     def beforeDelete() {
@@ -680,7 +680,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        Org contextOrg = BeanStorage.getContextService().getOrg()
+        Org contextOrg = BeanStore.getContextService().getOrg()
         if (user.getAuthorizedOrgsIds().contains(contextOrg?.id)) {
 
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
@@ -697,7 +697,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStorage.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if (BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }
@@ -721,7 +721,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             log.debug("Send pending change to ${ds.id}")
 
             Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            String description = BeanStorage.getMessageSource().getMessage('default.accept.placeholder',null, locale)
+            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             String definedType = 'text'
 
             if (this."${changeDocument.prop}" instanceof RefdataValue) {
@@ -739,7 +739,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     "${description}"
             ]
 
-            PendingChange newPendingChange = BeanStorage.getChangeNotificationService().registerPendingChange(
+            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
                     PendingChange.PROP_SUBSCRIPTION,
                     ds,
                     ds.getSubscriber(),
@@ -760,7 +760,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         slavedPendingChanges.each { spc ->
             log.debug('autoAccept! performing: ' + spc)
-            BeanStorage.getPendingChangeService().performAccept(spc)
+            BeanStore.getPendingChangeService().performAccept(spc)
         }
     }
 
@@ -779,7 +779,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return the {@link PropertyDefinitionGroup}s for this subscription, defined by the given institution
      */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
-        BeanStorage.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     /**
@@ -958,7 +958,7 @@ select distinct oap from OrgAccessPoint oap
      * @return this subscription's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */
   String dropdownNamingConvention() {
-      dropdownNamingConvention(BeanStorage.getContextService().getOrg())
+      dropdownNamingConvention(BeanStore.getContextService().getOrg())
   }
 
     /**
@@ -989,7 +989,7 @@ select distinct oap from OrgAccessPoint oap
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
            else{
-               additionalInfo = BeanStorage.getMessageSource().getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+               additionalInfo = BeanStore.getMessageSource().getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 
 

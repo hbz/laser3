@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.FactService
 import de.laser.base.AbstractCounterApiSource
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants

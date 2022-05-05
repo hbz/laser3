@@ -4,7 +4,7 @@ import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import com.k_int.kbplus.PackageService
 import de.laser.exceptions.SyncException
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.helper.SwissKnife
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -79,7 +79,7 @@ class SemanticUiNavigationTagLib {
             log.debug("throwTagError(\"Tag [paginate] is missing required attribute [total]\")")
         }
 
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = RequestContextUtils.getLocale(request)
 
         def total = attrs.int('total') ?: 0

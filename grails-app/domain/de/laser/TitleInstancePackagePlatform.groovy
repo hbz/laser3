@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDStore
@@ -318,7 +318,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        String label = BeanStorage.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }

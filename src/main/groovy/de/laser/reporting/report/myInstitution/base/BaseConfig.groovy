@@ -9,7 +9,7 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.storage.BeanStorage
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -188,9 +188,9 @@ class BaseConfig {
 
     static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
 
-        ContextService contextService = BeanStorage.getContextService()
-        MessageSource messageSource = BeanStorage.getMessageSource()
-        SubscriptionsQueryService subscriptionsQueryService = BeanStorage.getSubscriptionsQueryService()
+        ContextService contextService = BeanStore.getContextService()
+        MessageSource messageSource = BeanStore.getMessageSource()
+        SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
         // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
 
@@ -395,7 +395,7 @@ class BaseConfig {
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map pkgMap = getCurrentConfigElasticsearchData(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
@@ -417,7 +417,7 @@ class BaseConfig {
 
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
-        MessageSource messageSource = BeanStorage.getMessageSource()
+        MessageSource messageSource = BeanStore.getMessageSource()
         messageSource.getMessage(token, null, LocaleContextHolder.getLocale())
     }
 
