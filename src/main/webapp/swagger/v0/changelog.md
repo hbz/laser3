@@ -2,6 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.135
+
+- added new attribute: `License.predecessors`
+- added new attribute: `License.successors`
+- modified attribute: `Subscription.predecessor` to `Subscription.predecessors` (object stub changed to array)
+- modified attribute: `Subscription.successors` to `Subscription.successor` (object stub changed to array)
+
 #### 0.134
 
 - updating outdated schemata

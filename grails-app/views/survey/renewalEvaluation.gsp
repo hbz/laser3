@@ -298,6 +298,7 @@ ${surveyInfo.name}
                                 <g:if test="${sub._getCalculatedSuccessor()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
@@ -351,6 +352,7 @@ ${surveyInfo.name}
                                 <g:if test="${sub._getCalculatedSuccessor()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
