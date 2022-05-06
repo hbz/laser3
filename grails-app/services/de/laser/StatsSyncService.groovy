@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.FactService
 import de.laser.base.AbstractCounterApiSource
-import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
@@ -27,7 +26,6 @@ import groovyx.net.http.Method
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 
-import javax.sql.DataSource
 import java.security.MessageDigest
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -1264,7 +1262,7 @@ class StatsSyncService {
                     List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, csr.availFrom.format('yyyy-MM'))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = DateUtils.SDF_ymd.parse(getDateForLastDayOfMonth(it['end']))
+                            csr.availTo = DateUtils.getFixedSDF_yymd().parse(getDateForLastDayOfMonth(it['end']))
                             csr.save()
                         } else {
                             writeNewCsr(0, it['begin'],it['end'],options)
@@ -1323,7 +1321,7 @@ class StatsSyncService {
                         csr = writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = DateUtils.SDF_ymd.parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtils.getFixedSDF_yymd().parse(getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
                         csr.save()
                     }

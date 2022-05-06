@@ -45,7 +45,7 @@ class SurveyService {
 
     String replyTo
 
-    SimpleDateFormat formatter = DateUtils.getSDF_dmy()
+    SimpleDateFormat formatter = DateUtils.getFixedSDF_dmyy()
     String from
 
     /**
@@ -1490,7 +1490,7 @@ class SurveyService {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if (params.tabStat != 'total') {
                 Calendar filterTime = GregorianCalendar.getInstance()
-                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tabStat)
+                Date filterDate = DateUtils.getFixedSDF_yym().parse(params.tabStat)
                 filterTime.setTime(filterDate)
                 queryParams.startDate = filterDate
                 filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))

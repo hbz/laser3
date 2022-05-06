@@ -5,9 +5,9 @@ import de.laser.auth.User
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.helper.AppUtils
+import de.laser.helper.DateUtils
 import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
-import de.laser.helper.MigrationHelper
 import de.laser.storage.RDStore
 import net.sf.json.JSON
 import org.springframework.context.MessageSource
@@ -61,7 +61,7 @@ class SystemAnnouncement {
      * @return a {@link List} of system announces
      */
     static List<SystemAnnouncement> getPublished(int periodInDays) {
-        Date dcCheck = MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(periodInDays) )
+        Date dcCheck = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(periodInDays) )
 
         SystemAnnouncement.executeQuery(
                 'select sa from SystemAnnouncement sa ' +

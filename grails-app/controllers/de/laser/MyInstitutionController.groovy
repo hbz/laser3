@@ -1609,7 +1609,7 @@ join sub.orgRelations or_sub where
         result.itemsTimeWindow = 365
         result.recentAnnouncements = Doc.executeQuery(
                 'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
-                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: MigrationHelper.localDateToSqlDate( LocalDate.now().minusDays(365) )]
+                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: DateUtils.localDateToSqlDate( LocalDate.now().minusDays(365) )]
         )
         result.num_announcements = result.recentAnnouncements.size()
 

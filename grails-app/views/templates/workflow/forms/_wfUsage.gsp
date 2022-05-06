@@ -216,7 +216,7 @@
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                                 <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
-                                    <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(task.condition.getProperty(field)) + '"' : '' %>
+                                    <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getFixedSDF_yymd().format(task.condition.getProperty(field)) + '"' : '' %>
                                 />
                             </div>
                         </g:elseif>

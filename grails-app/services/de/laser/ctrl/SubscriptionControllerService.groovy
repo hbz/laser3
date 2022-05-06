@@ -653,7 +653,7 @@ class SubscriptionControllerService {
             }
             else {
                 Calendar filterTime = GregorianCalendar.getInstance()
-                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
+                Date filterDate = DateUtils.getFixedSDF_yym().parse(params.tab)
                 filterTime.setTime(filterDate)
                 queryParams.startDate = filterDate
                 filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -672,7 +672,7 @@ class SubscriptionControllerService {
             }
             else {
                 Calendar filterTime = GregorianCalendar.getInstance()
-                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
+                Date filterDate = DateUtils.getFixedSDF_yym().parse(params.tab)
                 filterTime.setTime(filterDate)
                 queryParams.startDate = filterDate
                 filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -690,7 +690,7 @@ class SubscriptionControllerService {
                 dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                 sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
-                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
+                Date filterDate = DateUtils.getFixedSDF_yym().parse(params.tab)
                 filterTime.setTime(filterDate)
                 queryParams.startDate = filterDate
                 filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -700,7 +700,7 @@ class SubscriptionControllerService {
             endTime.setTime(new Date())
         }
         if(params.tab && params.tab != 'total' && params.exportXLS && params.data != 'fetchAll') {
-            monthsInRing << DateUtils.getSDF_yearMonth().parse(params.tab)
+            monthsInRing << DateUtils.getFixedSDF_yym().parse(params.tab)
         }
         else {
             while(startTime.before(endTime)) {

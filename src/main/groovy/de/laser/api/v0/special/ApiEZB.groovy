@@ -2,7 +2,6 @@ package de.laser.api.v0.special
 
 import de.laser.*
 import de.laser.api.v0.*
-import de.laser.storage.BeanStore
 import de.laser.helper.Constants
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
@@ -12,7 +11,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 
-import javax.sql.DataSource
 import java.text.SimpleDateFormat
 
 @Slf4j
@@ -200,7 +198,7 @@ class ApiEZB {
     }
 
     static List buildRow(Sql sql, GroovyRowResult row, List<GroovyRowResult> packageIDs, String titleNS, List<GroovyRowResult> otherTitleIdentifierNamespaces, Map<Long, Map<RefdataValue, GroovyRowResult>> allPriceItems) {
-        SimpleDateFormat formatter = DateUtils.getSDF_ymd()
+        SimpleDateFormat formatter = DateUtils.getFixedSDF_yymd()
         List<GroovyRowResult> identifiers = sql.rows('select id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = :tipp', [tipp: row['tipp_id']])
         Map<RefdataValue, GroovyRowResult> priceItems = allPriceItems.get(row['ie_id'])
         List outRow = []

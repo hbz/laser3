@@ -111,7 +111,7 @@
                         <div class="field">
                             <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                             <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
-                                <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(condition.getProperty(field)) + '"' : '' %>
+                                <% print condition.getProperty(field) ? 'value="' + DateUtils.getFixedSDF_yymd().format(condition.getProperty(field)) + '"' : '' %>
                             />
                         </div>
                     </g:if>

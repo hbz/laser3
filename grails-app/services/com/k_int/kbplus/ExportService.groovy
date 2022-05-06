@@ -68,7 +68,7 @@ class ExportService {
 	ContextService contextService
 	MessageSource messageSource
 
-	SimpleDateFormat formatter = DateUtils.getSDF_ymd()
+	SimpleDateFormat formatter = DateUtils.getFixedSDF_yymd()
 
 	/**
 	 * new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV

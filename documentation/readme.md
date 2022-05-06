@@ -26,10 +26,6 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 
 The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
 
-### Localization
-
-Localization dependent logic should be managed by *de.laser.helper.LocaleHelper* to ensure consistent behavior.
-
 ### Service usage in domain classes
 
 Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.
@@ -41,22 +37,30 @@ Use BeanStore for static and non-static access to services and other beans.
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
 
+### DateUtils
+
+To avoid confusion, the difference between localized and fixed usage in *de.laser.helder.Dateutils* is now reflected in a new naming scheme.
+
+### Localization
+
+Localization dependent logic should be managed by *de.laser.helper.LocaleHelper* to ensure consistent behavior.
+
 ### Logging
 
 *Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts. 
 
-### HTTPBuilder
+### Apache Commons Lang
 
-*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
-A migration to *de.laser.http.BasicHttpClient* should take place.
+Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
 
 ### CSV
 
 *Opencsv* has been removed. New code should use *liquibase.util.csv*.
 
-### Apache Commons Lang
+### HTTPBuilder
 
-Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
+*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
+A migration to *de.laser.http.BasicHttpClient* should take place.
 
 ### .. todo?
 

@@ -326,7 +326,7 @@ class SubscriptionController {
             return
         }
         else {
-            SimpleDateFormat sdf = DateUtils.SDF_ymd
+            SimpleDateFormat sdf = DateUtils.getFixedSDF_yymd()
             String datetoday = sdf.format(new Date())
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
             if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
@@ -1458,7 +1458,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         result.subscription = subscription
-        SimpleDateFormat sdf = DateUtils.SDF_dmy
+        SimpleDateFormat sdf = DateUtils.getFixedSDF_dmyy()
         Date newStartDate
         Date newEndDate
         use(TimeCategory) {

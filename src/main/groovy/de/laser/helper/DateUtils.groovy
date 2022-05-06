@@ -6,6 +6,9 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Slf4j
 class DateUtils {
@@ -14,6 +17,8 @@ class DateUtils {
     public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'
     public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
     public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
+
+    // -- localized
 
     static SimpleDateFormat getLocalizedSDF_byToken(String token) {
         MessageSource messageSource = BeanStore.getMessageSource()
@@ -45,30 +50,32 @@ class DateUtils {
         getLocalizedSDF_byToken(DATE_FORMAT_ONLYTIME)
     }
 
-    static SimpleDateFormat getSDF_ymd(){
+    // -- fixed
+
+    static SimpleDateFormat getFixedSDF_yymd(){
         return new SimpleDateFormat('yyyy-MM-dd')
     }
 
-    static SimpleDateFormat getSDF_dmy(){
+    static SimpleDateFormat getFixedSDF_dmyy(){
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
-    static SimpleDateFormat getSDF_forFilename(){
+    static SimpleDateFormat getFixedSDF_forFilename(){
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
-    static SimpleDateFormat getSDF_yearMonth(){
+    static SimpleDateFormat getFixedSDF_yym(){
         return new SimpleDateFormat('yyyy-MM')
     }
 
-    static SimpleDateFormat getSDF_year(){
+    static SimpleDateFormat getFixedSDF_yy(){
         return new SimpleDateFormat('yyyy')
     }
 
     // --
 
     static int getYearAsInteger(Date date) {
-        date ? new SimpleDateFormat('yyyy').format(date).toInteger() : null
+        date ? getFixedSDF_yy().format(date).toInteger() : null
     }
 
     // --
@@ -105,7 +112,7 @@ class DateUtils {
         parsed_date
     }
 
-    static boolean  isDate(String value) {
+    static boolean isDate(String value) {
         //'yyyy-MM-dd'
         if (value.length() == 10 && value ==~ /\d{4}\-\d{2}\-\d{2}/) {
             return true
@@ -131,5 +138,31 @@ class DateUtils {
             return true
         }
         return false
+    }
+
+    // --
+
+    static LocalDate dateToLocalDate(Date date) {
+        if (!date) {
+            //log.debug 'DateUtils.dateToLocalDate( NULL )'
+            return null
+        }
+        LocalDate.ofInstant( date.toInstant(), ZoneId.systemDefault())
+    }
+
+    static LocalDateTime dateToLocalDateTime(Date date) {
+        if (!date) {
+            //log.debug 'DateUtils.dateToLocalDateTime( NULL )'
+            return null
+        }
+        LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault())
+    }
+
+    static Date localDateToSqlDate(LocalDate localDate) {
+        if (!localDate) {
+            //log.debug 'DateUtils.localDateToSqlDate( NULL )'
+            return null
+        }
+        java.sql.Date.valueOf(localDate) //java.sql.Date extends java.util.Date
     }
 }

@@ -5,7 +5,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
-import de.laser.helper.MigrationHelper
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.oap.OrgAccessPoint
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -603,7 +602,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //println(this.endDate.minus(currentDate))
         //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
 
-        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         return (this.isMultiYearSubscription() && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
@@ -616,23 +615,23 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //println(this.endDate.minus(currentDate))
         //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
 
-        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         return (this.isMultiYear && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
     boolean isCurrentMultiYearSubscriptionToParentSub() {
         //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
 
-        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
-        return (this.isMultiYear && endDate && this.instanceOf && (endDate.minus(MigrationHelper.dateToLocalDate(this.instanceOf.startDate)) > 366))
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        return (this.isMultiYear && endDate && this.instanceOf && (endDate.minus(DateUtils.dateToLocalDate(this.instanceOf.startDate)) > 366))
     }
 
     @Deprecated
     boolean islateCommer() {
         //return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
 
-        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
-        LocalDate startDate = MigrationHelper.dateToLocalDate(this.startDate)
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         return (endDate && (endDate.minus(startDate) > 366 && endDate.minus(startDate) < 728))
     }
 
@@ -643,8 +642,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     boolean isAllowToAutomaticRenewAnnually() {
         //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
 
-        LocalDate endDate = MigrationHelper.dateToLocalDate(this.endDate)
-        LocalDate startDate = MigrationHelper.dateToLocalDate(this.startDate)
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (endDate.minus(startDate) > 363) && (endDate.minus(startDate) < 367))
     }
 
@@ -787,7 +786,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return the concatenated label of this subscription
      */
     String getLabel() {
-        SimpleDateFormat sdf = DateUtils.getSDF_dmy()
+        SimpleDateFormat sdf = DateUtils.getFixedSDF_dmyy()
         name + ' (' + (startDate ? sdf.format(startDate) : '') + ' - ' + (endDate ? sdf.format(endDate) : '') + ')'
     }
 

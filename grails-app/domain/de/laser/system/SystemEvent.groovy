@@ -1,7 +1,7 @@
 package de.laser.system
 
+import de.laser.helper.DateUtils
 import de.laser.storage.BeanStore
-import de.laser.helper.MigrationHelper
 import grails.converters.JSON
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -193,7 +193,7 @@ class SystemEvent {
      * @return the count of deleted events
      */
     static int cleanUpOldEvents() {
-        executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: MigrationHelper.localDateToSqlDate( LocalDate.now().minusYears(3) )])
+        executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: DateUtils.localDateToSqlDate( LocalDate.now().minusYears(3) )])
     }
 
     // GETTER
