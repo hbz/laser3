@@ -575,7 +575,7 @@ class ExportService {
 			SXSSFSheet sheet = wb.createSheet(reportType)
 			sheet.flushRows(10)
 			sheet.setAutobreaks(true)
-			LinkedHashSet<String> columnHeaders
+			LinkedHashSet<String> columnHeaders = []
 			Map<TitleInstancePackagePlatform, Map> titleRows = [:]
 			int rowno = 0
 			//revision 4
@@ -605,7 +605,7 @@ class ExportService {
 				headerRow = sheet.createRow(6)
 				cell = headerRow.createCell(0)
 				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
-				columnHeaders = Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers
+				columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
@@ -780,7 +780,7 @@ class ExportService {
 			//revision 5
 			else if(data.revision == 'counter5') {
 				//the header
-				columnHeaders = Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers
+				columnHeaders.addAll(Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers)
 				Row headerRow = sheet.createRow(0)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Name")

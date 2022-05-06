@@ -4433,7 +4433,6 @@ class SurveyController {
                     }*/
                 }
             })
-            executorService.shutdown()
         }
 
         result.countNewSubs = countNewSubs

@@ -164,7 +164,23 @@
                             </select>
                         </div>
                     </div>
-                    <div class="three fields">
+                    <div class="four fields">
+                        <div class="field">
+                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
+                            <select name="reportType" id="reportType" multiple="multiple" class="ui search selection dropdown">
+                                <option value=""><g:message code="default.select.choose.label"/></option>
+                                <g:each in="${reportTypes}" var="reportType">
+                                    <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
+                                            value="${reportType}">
+                                        <g:message code="default.usage.${reportType}"/>
+                                    </option>
+                                </g:each>
+                                <g:if test="${reportTypes.size() == 0}">
+                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
+                                </g:if>
+                            </select>
+                        </div>
+
                         <div class="field">
                             <label for="metricType"><g:message code="default.usage.metricType"/></label>
                             <select name="metricType" id="metricType" class="ui search selection dropdown">
@@ -182,19 +198,21 @@
                         </div>
 
                         <div class="field">
-                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                            <select name="reportType" id="reportType" multiple="multiple" class="ui search selection dropdown">
-                                <option value=""><g:message code="default.select.choose.label"/></option>
-                                <g:each in="${reportTypes}" var="reportType">
-                                    <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
-                                            value="${reportType}">
-                                        <g:message code="default.usage.${reportType}"/>
-                                    </option>
-                                </g:each>
-                                <g:if test="${reportTypes.size() == 0}">
-                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
-                                </g:if>
-                            </select>
+                            <g:if test="${accessTypes}">
+                                <label for="accessType"><g:message code="default.usage.accessType"/></label>
+                                <select name="accessType" id="accessType" class="ui selection dropdown">
+                                    <option value=""><g:message code="default.select.choose.label"/></option>
+                                    <g:each in="${accessTypes}" var="accessType">
+                                        <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
+                                                value="${accessType}">
+                                            ${accessType}
+                                        </option>
+                                    </g:each>
+                                    <g:if test="${accessTypes.size() == 0}">
+                                        <option value="<g:message code="default.stats.noAccess" />"><g:message code="default.stats.noAccess" /></option>
+                                    </g:if>
+                                </select>
+                            </g:if>
                         </div>
 
                         <div class="field la-field-right-aligned">

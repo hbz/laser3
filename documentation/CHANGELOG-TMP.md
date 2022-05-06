@@ -9,6 +9,18 @@
 
 4073   28.04.2022   dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
 
+4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
+
+4206    28.04.2022  dev     2.3         Andreas Feature     Prozessfluss für Metadaten-Kontakt in Sync aufgenommen
+
+4203    27.04.2022  dev     2.3         Andreas Bug         Statistik-Abfrage korrigiert und weitere Ausbesserungen
+
+4201    27.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen läuft korrekt und erheblich schneller
+
+--      27.04.2022  dev     2.3         Andreas Bug         Bei ausgesetztem Statusfilter konnten keine weiteren Parameter mehr gesetzt werden
+
+4204    26.04.2022  dev     2.3         Andreas Bug         korrekte Abfrage der Kosten pro Konsortiallizenz
+
 4200    26.04.2022  dev     2.3         Moe     Feature     Neue Sicht "Auszuwählende Titel"
 
 4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
@@ -23,11 +35,13 @@
 
 4197    22.04.2022  dev     2.3         Moe     Feature     Erweiterung "medium": Encyclopedia
 
+--      21.04.2022  rc-2.2  2.2.14      Andreas Bug         Instandsetzung und Performanzverbesserung bei Laden der Nutzungsdaten
+
 --      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
 
 3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen
 
-4195    19.04.2022  dev     2.3         Moe      Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
+4195    19.04.2022  dev     2.3         Moe     Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
 
 --      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
 
