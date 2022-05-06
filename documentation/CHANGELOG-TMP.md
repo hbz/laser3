@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
+
 4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
 
 4206    28.04.2022  dev     2.3         Andreas Feature     Prozessfluss für Metadaten-Kontakt in Sync aufgenommen
