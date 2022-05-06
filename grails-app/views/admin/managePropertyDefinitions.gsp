@@ -34,7 +34,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" />
                 </div>
                 <div class="content">
                     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -214,7 +214,7 @@
                         <label class="property-label">Context:</label>
                         <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
                             <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
-                                <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
+                                <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" /></option>
                             </g:each>
                         </select>
                     </div>

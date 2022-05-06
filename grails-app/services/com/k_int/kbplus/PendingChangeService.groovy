@@ -885,7 +885,7 @@ class PendingChangeService extends AbstractLockableService {
         if(change.targetProperty in PendingChange.DATE_FIELDS) {
             Date date = DateUtils.parseDateGeneric(change[key])
             if(date)
-                ret = date.format(messageSource.getMessage('default.date.format.notime',null,locale))
+                ret = DateUtils.getLocalizedSDF_noTime().format(date)
             else ret = null
         }
         else if(change.targetProperty in PendingChange.REFDATA_FIELDS) {

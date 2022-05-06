@@ -983,8 +983,8 @@ class SubscriptionControllerService {
                     org.funderType = subscr.funderType
                     org.region = subscr.region
                     org.country = subscr.country
-                    org.startDate = subChild.startDate ? DateUtils.getLocalizedSDF_byToken('default.date.format.notime').format( subChild.startDate ) : ''
-                    org.endDate = subChild.endDate ? DateUtils.getLocalizedSDF_byToken('default.date.format.notime').format( subChild.endDate ) : ''
+                    org.startDate = subChild.startDate ? DateUtils.getLocalizedSDF_noTime().format( subChild.startDate ) : ''
+                    org.endDate = subChild.endDate ? DateUtils.getLocalizedSDF_noTime().format( subChild.endDate ) : ''
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status

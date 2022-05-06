@@ -48,7 +48,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><g:message code="profile.noDashboardReminderDates" default="There are no due dates for your personal reminder periods." /></td>
+                        <td><g:message code="profile.noDashboardReminderDates" /></td>
                     </tr>
                 </tbody>
             </g:else>

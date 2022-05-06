@@ -22,10 +22,6 @@ The following fallbacks have been set for faster migration. They can be treated 
 By default the Spring Security plugin uses the **bcrypt** algorithm to hash passwords.
 Important: The password encoder still accepts legacy passwords, but encrypts them with bcrypt if they are changed.
 
-### Configuration
-
-The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
-
 ### Service usage in domain classes
 
 Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.
@@ -37,8 +33,13 @@ Use BeanStore for static and non-static access to services and other beans.
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
 
+### Configuration
+
+The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
+
 ### DateUtils
 
+*Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates. 
 To avoid confusion, the difference between localized and fixed usage in *de.laser.helder.Dateutils* is now reflected in a new naming scheme.
 
 ### Localization

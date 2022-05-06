@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
+import de.laser.helper.DateUtils
 import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
@@ -233,7 +234,7 @@ class DashboardDueDatesService {
                     if(userLang == RDStore.LANGUAGE_DE)
                         dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)
                     else dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_en)
-                    dashDueDateRow.valueDate += " ${dashDueDate.dueDateObject.date.format(messageSource.getMessage('default.date.format.notime', null, locale))}"
+                    dashDueDateRow.valueDate += " ${DateUtils.getLocalizedSDF_noTime().format(dashDueDate.dueDateObject.date)}"
                     if(SqlDateUtils.isToday(dashDueDate.dueDateObject.date))
                         dashDueDateRow.importance = '!'
                     else if(SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date))

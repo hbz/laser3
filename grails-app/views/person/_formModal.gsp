@@ -131,7 +131,7 @@
 
                     <div class="field three wide">
                         <label for="contact1_contentType" for="contact2_contentType" for="contact3_contentType">
-                            &nbsp;<%--<g:message code="contact.contentType.label" default="ContentType" />--%>
+                            &nbsp;<%--<g:message code="contact.contentType.label" />--%>
                         </label>
 
                         <input type="text" readonly value="${RDStore.CCT_EMAIL.getI10n('value')}" />

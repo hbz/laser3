@@ -5,6 +5,7 @@ import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.DateUtils
+import de.laser.helper.LocaleHelper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.OrgProperty
@@ -729,15 +730,7 @@ class ExportClickMeService {
     Map<String, Object> getExportRenewalFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_RENEWAL_CONFIG.keySet().each {
             EXPORT_RENEWAL_CONFIG.get(it).fields.each {
@@ -784,14 +777,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
         Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -831,15 +817,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription, Org institution) {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.keySet().each {
             EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.get(it).fields.each {
@@ -877,15 +855,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription, Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -1006,15 +976,7 @@ class ExportClickMeService {
     Map<String, Object> getExportCostItemFields() {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_COST_ITEM_CONFIG.keySet().each {
             EXPORT_COST_ITEM_CONFIG.get(it).fields.each {
@@ -1036,15 +998,7 @@ class ExportClickMeService {
     Map<String, Object> getExportCostItemFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -1061,17 +1015,7 @@ class ExportClickMeService {
     Map<String, Object> getExportOrgFields(String config) {
 
         Map<String, Object> exportFields = [:]
-
-        Locale locale = LocaleContextHolder.getLocale()
-
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         switch(config) {
             case 'institution':
@@ -1118,18 +1062,8 @@ class ExportClickMeService {
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
         Map<String, Object> fields
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
-
-        Locale locale = LocaleContextHolder.getLocale()
-
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
         switch(orgType) {
             case 'institution': fields = EXPORT_ORG_CONFIG as Map
                 IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
@@ -1164,16 +1098,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSurveyEvaluationFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
-
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_SURVEY_EVALUATION.keySet().each {
             EXPORT_SURVEY_EVALUATION.get(it).fields.each {
@@ -1217,14 +1142,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
         Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -1312,15 +1230,7 @@ class ExportClickMeService {
     Map<String, Object> getExportIssueEntitlementFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -1336,15 +1246,7 @@ class ExportClickMeService {
     Map<String, Object> getExportIssueEntitlementFields() {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_ISSUE_ENTITLEMENT_CONFIG.keySet().each {
             EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
@@ -1367,15 +1269,7 @@ class ExportClickMeService {
     Map<String, Object> getExportTippFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_TIPP_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.tippIdentifiers.fields << ["tippIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -1391,15 +1285,7 @@ class ExportClickMeService {
     Map<String, Object> getExportTippFields() {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         EXPORT_TIPP_CONFIG.keySet().each {
             EXPORT_TIPP_CONFIG.get(it).fields.each {
@@ -1422,16 +1308,6 @@ class ExportClickMeService {
      */
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
-
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
-
         Map<String, Object> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportRenewalFields(renewalResult.surveyConfig)
@@ -1580,14 +1456,7 @@ class ExportClickMeService {
 
         List titles = exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
 
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         List exportData = []
         List orgList = []
@@ -1650,14 +1519,7 @@ class ExportClickMeService {
 
         List titles = exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
 
-        String localizedName
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
-                break
-            default: localizedName = "name_en"
-                break
-        }
+        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
 
         List exportData = []
         result.each { Subscription subscription ->
@@ -2817,14 +2679,7 @@ class ExportClickMeService {
     private List exportTitles(Map<String, Object> selectedExportFields, Locale locale, Map selectedCostItemFields = null, Integer maxCostItemsElements = null){
         List titles = []
 
-        String localizedValue
-        switch (locale) {
-            case Locale.GERMANY:
-            case Locale.GERMAN: localizedValue = "value_de"
-                break
-            default: localizedValue = "value_en"
-                break
-        }
+        String localizedValue = LocaleHelper.getLocalizedAttributeName('value')
 
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)

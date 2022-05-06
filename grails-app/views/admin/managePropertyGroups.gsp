@@ -55,13 +55,13 @@
                     <td>
                         <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                         <g:if test="${pdGroup.ownerType == License.class.name}">
-                            <g:message code="propertyDefinition.License Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.License Property.label" />
                         </g:if>
                         <g:elseif test="${pdGroup.ownerType == Org.class.name}">
-                            <g:message code="propertyDefinition.Organisation Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.Organisation Property.label" />
                         </g:elseif>
                         <g:elseif test="${pdGroup.ownerType == Subscription.class.name}">
-                            <g:message code="propertyDefinition.Subscription Property.label" default="${pdDescr}"/>
+                            <g:message code="propertyDefinition.Subscription Property.label" />
                         </g:elseif>
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>

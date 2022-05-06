@@ -26,16 +26,16 @@
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                             <g:if test="${pdDescr == PropertyDefinition.LIC_PROP && pdGroup?.ownerType == License.class.name}">
-                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:if>
                             <g:elseif test="${pdDescr == PropertyDefinition.ORG_PROP && pdGroup?.ownerType == Org.class.name}">
-                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:elseif>
                             <g:elseif test="${pdDescr == PropertyDefinition.SUB_PROP && pdGroup?.ownerType == Subscription.class.name}">
-                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:elseif>
                             <g:else>
-                                <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                                <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:else>
                             <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                         </g:each>
