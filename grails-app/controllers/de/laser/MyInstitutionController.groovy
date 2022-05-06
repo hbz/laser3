@@ -2018,14 +2018,14 @@ join sub.orgRelations or_sub where
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor() //TODO Moe
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                result.previousSubscription = result.subscription._getCalculatedPrevious() //TODO Moe
+                result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
                 /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
