@@ -10,7 +10,6 @@ import groovy.util.logging.Slf4j
  */
 //@GrailsCompileStatic
 //@EqualsAndHashCode(includes='authority')
-//@ToString(includes='authority', includeNames=true, includePackage=false)
 @Slf4j
 class Role extends AbstractI10n {
 
@@ -18,6 +17,8 @@ class Role extends AbstractI10n {
 	 * the name of the role
 	 */
 	String authority
+	String authority_de
+	String authority_en
 	String roleType
 
 	static mapping = {
@@ -34,8 +35,10 @@ class Role extends AbstractI10n {
 	]
 
 	static constraints = {
-		authority 	blank: false, unique: true
-		roleType	blank: false, nullable: true
+		authority 	 			     blank: false, unique: true
+		authority_de nullable: true, blank: false
+		authority_en nullable: true, blank: false
+		roleType	 nullable: true, blank: false
 	}
 
 	/**
@@ -54,21 +57,5 @@ class Role extends AbstractI10n {
 		}
 
 		result
-	}
-
-
-	// FROM: I10nTrait, TODO: remove
-	// returning virtual property for template tags; laser:select
-	@Deprecated
-	def propertyMissing(String name) {
-		String[] parts = name.split("_")
-		if (parts.size() == 2) {
-			String fallback = this."${parts[0]}"
-			String i10n = I10nTranslation.get(this, parts[0], parts[1])
-			return (i10n ? i10n : "${fallback}")
-		} else {
-			log.debug '---> propertyMissing( ' + name + ' )'
-			return name
-		}
 	}
 }

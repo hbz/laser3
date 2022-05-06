@@ -269,49 +269,41 @@ class BootStrapService {
         Perm edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
         Perm view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
 
-        // TODO: refactoring: partOf
+        // Global User Roles
 
-        // Global System Roles
+        Closure updateRole = { String authority, String roleType, Map<String, String> translations ->
 
-        Role tmp = Role.findByAuthority('ROLE_YODA')    ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_ADMIN')   ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_USER')    ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
-
-             tmp = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-             tmp = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
-
-        // Institutional Roles
-
-        Role instAdmin = Role.findByAuthority('INST_ADM')
-        if (! instAdmin) {
-            instAdmin = new Role(authority: 'INST_ADM', roleType: 'user').save(failOnError: true)
+            Role role = Role.findByAuthority(authority) ?: new Role(authority: authority)
+            role.setRoleType(roleType)
+            role.setAuthority_de(translations['de'])
+            role.setAuthority_en(translations['en'])
+            role.save(failOnError: true)
+            role
         }
+
+        Role tmp = updateRole('ROLE_YODA',              'transcendent', [en: 'ROLE_YODA', de: 'ROLE_YODA'])
+             tmp = updateRole('ROLE_ADMIN',             'global', [en: 'ROLE_ADMIN', de: 'ROLE_ADMIN'])
+             tmp = updateRole('ROLE_USER',              'global', [en: 'ROLE_USER', de: 'ROLE_USER'])
+             tmp = updateRole('ROLE_ORG_EDITOR',        'global', [en: 'ROLE_ORG_EDITOR', de: 'ROLE_ORG_EDITOR'])
+             tmp = updateRole('ROLE_STATISTICS_EDITOR', 'global', [en: 'ROLE_STATISTICS_EDITOR', de: 'ROLE_STATISTICS_EDITOR'])
+
+        // Inst User Roles
+
+        Role instAdmin  = updateRole('INST_ADM', 'user',    [en: 'INST_ADM', de: 'INST_ADM'])
+        Role instEditor = updateRole('INST_EDITOR', 'user', [en: 'INST_EDITOR', de: 'INST_EDITOR'])
+        Role instUser   = updateRole('INST_USER', 'user',   [en: 'INST_USER', de: 'INST_USER'])
+
         ensurePermGrant(instAdmin, edit_permission)
         ensurePermGrant(instAdmin, view_permission)
 
-        Role instEditor = Role.findByAuthority('INST_EDITOR')
-        if (! instEditor) {
-            instEditor = new Role(authority: 'INST_EDITOR', roleType: 'user').save(failOnError: true)
-        }
         ensurePermGrant(instEditor, edit_permission)
         ensurePermGrant(instEditor, view_permission)
 
-        Role instUser = Role.findByAuthority('INST_USER')
-        if (! instUser) {
-            instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
-        }
         ensurePermGrant(instUser, view_permission)
 
-        // Customer Type Toles
+        // Customer Types
 
-        Closure locOrgRole = { String authority, String roleType, Map<String, String> translations ->
-
-            Role role = Role.findByAuthority(authority) ?: new Role(authority: authority, roleType: roleType).save(failOnError: true)
-            I10nTranslation.createOrUpdateI10n(role, 'authority', translations)
-
-            role
-        }
-        Closure createOrgPerms = { Role role, List<String> permList ->
+        Closure updateOrgRolePerms = { Role role, List<String> permList ->
             // TODO PermGrant.executeQuery('DELETE ALL')
 
             permList.each{ String code ->
@@ -321,15 +313,15 @@ class BootStrapService {
             }
         }
 
-        Role fakeRole                = locOrgRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
-        Role orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        Role orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
-        Role orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium mit Umfragefunktion'])
+        Role fakeRole                = updateRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
+        Role orgMemberRole           = updateRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        Role orgSingleRole           = updateRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
+        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium mit Umfragefunktion'])
 
-        createOrgPerms(fakeRole,                    ['FAKE'])
-        createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
-        createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
-        createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+        updateOrgRolePerms(fakeRole,                    ['FAKE'])
+        updateOrgRolePerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
+        updateOrgRolePerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
+        updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
     }
 
     def setupSystemSettings() {

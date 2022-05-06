@@ -538,7 +538,7 @@ class AjaxHtmlController {
     def getLicensePropertiesForSubscription() {
         License loadFor = License.get(params.loadFor)
         if (loadFor) {
-            Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.getOrg())
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
         }
     }

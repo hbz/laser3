@@ -1,3 +1,4 @@
+import java.text.SimpleDateFormat
 
 version '3.0.0.alpha'
 group 'de.laser'
@@ -173,7 +174,7 @@ gitProperties {
 }
 
 buildProperties {
-    inputs.property('info.app.build.date', new Date().format('dd.MM.yyyy HH:mm'))
+    inputs.property('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
     inputs.property('info.app.build.host', InetAddress.localHost.hostName)
     inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
 

@@ -264,7 +264,7 @@ class SemanticUiNavigationTagLib {
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         if (attrs.generateElementId) {
-            attrs.elementId = generateElementId(attrs)
+            attrs.elementId = _generateElementId(attrs)
         }
 
         out << g.link(linkBody,
@@ -290,7 +290,7 @@ class SemanticUiNavigationTagLib {
         }
 
         if (attrs.generateElementId) {
-            attrs.elementId = generateElementId(attrs)
+            attrs.elementId = _generateElementId(attrs)
         }
 
         if (check) {
@@ -320,13 +320,13 @@ class SemanticUiNavigationTagLib {
         filteredAttrs.put('class', css)
 
         if (attrs.generateElementId) {
-            filteredAttrs.put('elementId', generateElementId(attrs))
+            filteredAttrs.put('elementId', _generateElementId(attrs))
         }
 
         out << g.link(filteredAttrs, body)
     }
 
-    private String generateElementId(Map<String, Object> attrs) {
+    String _generateElementId(Map<String, Object> attrs) {
 
         // IMPORTANT: cache only for current request
         if (! request.getAttribute('laser_navigation_ids')) {

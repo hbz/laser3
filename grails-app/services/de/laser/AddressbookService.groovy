@@ -20,40 +20,6 @@ class AddressbookService {
     ContextService contextService
     PropertyService propertyService
 
-    @Deprecated
-    List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
-        List orgList = []
-        orgRoles.each { or ->
-            orgList << or.org
-        }
-        getAllVisiblePersons(user, orgList)
-    }
-
-    @Deprecated
-    List<Person> getAllVisiblePersons(User user, Org org) {
-        List orgList = [org]
-        getAllVisiblePersons(user, orgList)
-    }
-
-    @Deprecated
-    List<Person> getAllVisiblePersons(User user, List<Org> orgs) {
-        List membershipOrgIds = [contextService.getOrg().id]
-
-        List visiblePersons = []
-        orgs.each { org ->
-            org.prsLinks.each { pl ->
-                if (pl.prs && ! pl.prs.isPublic) {
-                    if (pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)) {
-                        if (! visiblePersons.contains(pl.prs)) {
-                            visiblePersons << pl.prs
-                        }
-                    }
-                }
-            }
-        }
-        visiblePersons
-    }
-
     /**
      * Retrieves all private contacts for the given tenant institution
      * @param tenant the institution ({@link Org}) whose private contacts should be retrieved
