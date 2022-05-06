@@ -1168,11 +1168,18 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
-        //Important
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
-        }else{
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        if(!(params.tab in ['notes', 'documents', 'properties'])){
+            //Important
+            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                    flash.error = message(code: 'subscriptionsManagement.noPermissin.forSubsWithTypeConsortial')
+                }
+                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
+                    flash.error = message(code: 'subscriptionsManagement.noPermissin.forSubsWithTypeConsortial')
+                }
+
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+            }
         }
 
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
