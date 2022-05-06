@@ -2,28 +2,13 @@
 <laser:serviceInjection />
 <!-- _properties -->
 
-<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Subscription.class.name)}" />
-
-<%-- modal --%>
-
-<semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
-
-    <laser:render template="/templates/properties/groupBindings" model="${[
-            propDefGroup: propDefGroup,
-            ownobj: subscription,
-            editable: accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR'),
-            availPropDefGroups: availPropDefGroups
-    ]}" />
-
-</semui:modal>
-
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <h2 class="ui header">${message(code:'subscription.properties.consortium')}</h2>
                 <div id="member_props_div">
-                    <laser:render template="/templates/properties/members" model="${[
+                    <g:render template="/templates/properties/members" model="${[
                             prop_desc: PropertyDefinition.SUB_PROP,
                             ownobj: subscription,
                             custom_props_div: "member_props_div"]}"/>
@@ -37,7 +22,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextOrg)}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -47,7 +32,7 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(subscription.getConsortia() && contextService.getOrg().id != subscription.getConsortia().id)
+            if(subscription.getConsortia() && contextOrg.id != subscription.getConsortia().id)
                 numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortia()))
 
             boolean isVisible = false
@@ -65,7 +50,7 @@
 
         <g:if test="${isVisible}">
 
-            <laser:render template="/templates/properties/groupWrapper" model="${[
+            <g:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: pdg,
                     propDefGroupBinding: binding,
                     prop_desc: PropertyDefinition.SUB_PROP,
@@ -82,7 +67,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscription,contextService.getOrg())}" />
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscription,contextOrg)}" />
             <g:if test="${numberOfProperties.size() > 0}">
                 <%
                     hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
@@ -110,7 +95,7 @@
             </g:else>
         </h2>
         <div id="custom_props_div_props">
-            <laser:render template="/templates/properties/custom" model="${[
+            <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
@@ -134,7 +119,7 @@
         <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
         <div id="${propertyWrapper}">
-            <laser:render template="/templates/properties/private" model="${[
+            <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     propertyWrapper: "${propertyWrapper}",

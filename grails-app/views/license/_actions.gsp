@@ -4,7 +4,7 @@
 <g:if test="${actionName == 'show'}">
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="show" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
+            <g:link class="item" action="show" target="_blank" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </g:if>

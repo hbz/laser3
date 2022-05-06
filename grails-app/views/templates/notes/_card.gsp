@@ -1,4 +1,4 @@
-<%@ page import="de.laser.http.AjaxUtils; de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%
