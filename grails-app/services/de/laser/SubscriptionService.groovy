@@ -20,6 +20,8 @@ import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
+import groovy.sql.BatchingStatementWrapper
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovyx.gpars.GParsPool
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -204,7 +206,7 @@ class SubscriptionService {
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and roleT.roleType in (:rdvSubscr) " +
-                    " and ( ci is null or (ci.owner = :org and ci.costItemStatus != :deleted) )"
+                    " and ( ci is null or ci.costItemStatus != :deleted )"
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
@@ -278,14 +280,13 @@ class SubscriptionService {
             statusQuery = " and subT.status.id = :status "
             qarams.put('status',params.long('status'))
         } else if(!params.filterSet) {
-            statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
             result.defaultSet = true
         }
         if(params.status == RDStore.SUBSCRIPTION_CURRENT.id.toString() && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
-            statusQuery = " and (subT.status.id = :status or (subT.status.id = :expired and subT.hasPerpetualAccess = true)) "
-            qarams.put('expired', RDStore.SUBSCRIPTION_EXPIRED.id)
+            statusQuery = " and (subT.status.id = :status or subT.hasPerpetualAccess = true) "
         }
         else if (params.hasPerpetualAccess) {
             query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
@@ -352,10 +353,16 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             pu.setBenchmark('costs init')
 
-            List costs = CostItem.executeQuery(
+            List costsRaw = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             pu.setBenchmark('read off costs')
+            //post filter; HQL cannot filter that parameter out
+            Set costs = []
+            costsRaw.each { row ->
+                List rowCleared = row[0] != null && row[0].owner != contextOrg ? [null, row[1], row[2]] : row
+                costs << rowCleared
+            }
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
@@ -368,7 +375,7 @@ class SubscriptionService {
             result.finances = {
                 Map entries = [:]
                 result.entries.each { obj ->
-                    if (obj[0]) {
+                    if (obj[0] && obj[0].owner == contextOrg) {
                         CostItem ci = (CostItem) obj[0]
                         if (!entries."${ci.billingCurrency}") {
                             entries."${ci.billingCurrency}" = 0.0
@@ -972,8 +979,7 @@ class SubscriptionService {
      * @param createEntitlements should entitlements be created as well?
      */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
@@ -988,8 +994,7 @@ class SubscriptionService {
     }
 
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
             memberSubs.each { Subscription memberSub ->
                 stmt.addBatch([pkgId: pkg.id, subId: memberSub.id])
@@ -1030,8 +1035,7 @@ class SubscriptionService {
      * @param pkg the package to be linked
      */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
         packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess)
@@ -1283,6 +1287,7 @@ class SubscriptionService {
                         accessStartDate = issueEntitlementOverwrite.accessStartDate
                     else accessStartDate = tipp.accessStartDate
                 }
+                else accessStartDate = tipp.accessStartDate
                 if(issueEntitlementOverwrite.accessEndDate) {
                     if(issueEntitlementOverwrite.accessEndDate instanceof String) {
                         accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
@@ -1292,6 +1297,11 @@ class SubscriptionService {
                     }
                     else accessEndDate = tipp.accessEndDate
                 }
+                else accessEndDate = tipp.accessEndDate
+            }
+            else {
+                accessStartDate = tipp.accessStartDate
+                accessEndDate = tipp.accessEndDate
             }
             new_ie.accessStartDate = accessStartDate
             new_ie.accessEndDate = accessEndDate
@@ -1428,6 +1438,313 @@ class SubscriptionService {
                 return false
             }
         }
+    }
+
+    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, Long acceptStatus, pickAndChoosePerpetualAccess) {
+        Sql sql = GlobalService.obtainSqlConnection()
+        Object[] keys = checkMap.keySet().toArray()
+        Map<String, Object> fallbackMap = [:]
+        sql.withTransaction {
+            List<GroovyRowResult> accessStartEndDateRows = sql.rows('select tipp_gokb_id, tipp_access_start_date, tipp_access_end_date from title_instance_package_platform where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
+            accessStartEndDateRows.each { GroovyRowResult row ->
+                fallbackMap.put(row['tipp_gokb_id'], [accessStartDate: row['tipp_access_start_date'], accessEndDate: row['tipp_access_end_date']])
+            }
+            List<GroovyRowResult> coverageRows = sql.rows('select tipp_gokb_id, tc_start_date, tc_start_issue, tc_start_volume, tc_embargo, tc_coverage_note, tc_coverage_depth, tc_end_date, tc_end_issue, tc_end_volume from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
+            coverageRows.each { GroovyRowResult row ->
+                Map fallbackRec = fallbackMap.get(row['tipp_gokb_id'])
+                if(!fallbackRec)
+                    fallbackRec = [:]
+                Set<Map> coverages = fallbackRec.coverages
+                if(!coverages)
+                    coverages = []
+                Map<String, Object> covStmt = [:]
+                covStmt.startDate = row['tc_start_date']
+                covStmt.startIssue = row['tc_start_issue']
+                covStmt.startVolume = row['tc_start_volume']
+                covStmt.endDate = row['tc_end_date']
+                covStmt.endIssue = row['tc_end_issue']
+                covStmt.endVolume = row['tc_end_volume']
+                covStmt.coverageNote = row['tc_coverage_note']
+                covStmt.coverageDepth = row['tc_coverage_depth']
+                covStmt.embargo = row['tc_embargo']
+                coverages << covStmt
+                fallbackRec.coverages = coverages
+                fallbackMap.put(row['tipp_gokb_id'], fallbackRec)
+            }
+            List<GroovyRowResult> priceRows = sql.rows('select tipp_gokb_id, pi_list_price, pi_list_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_gokb_id = any(:keys)', [keys: sql.connection.createArrayOf('varchar', keys)])
+            priceRows.each { GroovyRowResult row ->
+                Map fallbackRec = fallbackMap.get(row['tipp_gokb_id'])
+                if(!fallbackRec)
+                    fallbackRec = [:]
+                Set<Map> priceItems = fallbackRec.priceItems
+                if(!priceItems)
+                    priceItems = []
+                Map<String, Object> piStmt = [:]
+                piStmt.listPrice = row['pi_list_price']
+                piStmt.listCurrency = row['pi_list_currency_rv_fk']
+                piStmt.localPrice = null
+                piStmt.localCurrency = null
+                priceItems << piStmt
+                fallbackRec.priceItems = priceItems
+                fallbackMap.put(row['tipp_gokb_id'], fallbackRec)
+            }
+            sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
+            Set<Map<String, Object>> ieDirectMapSet = [], ieOverwriteMapSet = [], coverageDirectMapSet = [], coverageOverwriteMapSet = [], priceItemDirectSet = [], priceItemOverwriteSet = []
+            checkMap.each { String wekbId, String checked ->
+                if(checked == 'checked') {
+                    println "processing ${wekbId}"
+                    List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
+                    if(existingEntitlements.size() == 0) {
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus], coverageMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id], priceMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id]
+                        if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                            configMap.perpetualAccessBySub = sub.id
+                        }
+                        Map overwrite = (Map) issueEntitlementOverwrites.get(wekbId)
+                        if(overwrite) {
+                            if(overwrite.accessStartDate) {
+                                configMap.accessStartDate = overwrite.accessStartDate
+                            }
+                            else configMap.accessStartDate = fallbackMap.get(wekbId)?.accessStartDate
+                            if(overwrite.accessEndDate) {
+                                configMap.accessEndDate = overwrite.accessEndDate
+                            }
+                            else configMap.accessEndDate = fallbackMap.get(wekbId)?.accessEndDate
+                            List coverages
+                            if(overwrite.coverages) {
+                                overwrite.coverages.each { Map covStmt ->
+                                    coverageMap.putAll(covStmt)
+                                    coverageOverwriteMapSet << coverageMap
+                                }
+                            }
+                            else if(fallbackMap.get(wekbId)?.coverages) {
+                                fallbackMap.get(wekbId).coverages.each { Map covStmt ->
+                                    coverageMap.putAll(covStmt)
+                                    coverageOverwriteMapSet << coverageMap
+                                }
+                            }
+                            if(withPriceData) {
+                                if(overwrite.listPrice || overwrite.localPrice) {
+                                    priceMap.listPrice = overwrite.listPrice
+                                    priceMap.listCurrency = overwrite.listCurrency ? RefdataValue.getByValueAndCategory(overwrite.listCurrency, RDConstants.CURRENCY)?.id : null
+                                    priceMap.localPrice = overwrite.localPrice
+                                    priceMap.localCurrency = overwrite.localCurrency ? RefdataValue.getByValueAndCategory(overwrite.localCurrency, RDConstants.CURRENCY)?.id : null
+                                    priceItemOverwriteSet << priceMap
+                                }
+                                else if(fallbackMap.get(wekbId)?.priceItems) {
+                                    fallbackMap.get(wekbId).priceItems.each { Map priceStmt ->
+                                        priceMap.putAll(priceStmt)
+                                        priceItemOverwriteSet << priceMap
+                                    }
+                                }
+                            }
+                            ieOverwriteMapSet << configMap
+                        }
+                        else {
+                            ieDirectMapSet << configMap
+                            coverageDirectMapSet << coverageMap
+                            if(withPriceData)
+                                priceItemDirectSet << priceMap
+                        }
+                    }
+                }
+            }
+            ieOverwriteMapSet.each { Map<String, Object> configMap ->
+                String accessStartDate = null, accessEndDate = null
+                if(configMap.accessStartDate)
+                    accessStartDate = "'${ configMap.accessStartDate }'"
+                if(configMap.accessEndDate)
+                    accessEndDate = "'${ configMap.accessEndDate }'"
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_reason, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, 'Manually Added by User', ${configMap.acceptStatus}, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            coverageOverwriteMapSet.each { Map<String, Object> configMap ->
+                if(configMap.startDate == '')
+                    configMap.startDate = null
+                else if(configMap.startDate)
+                    configMap.startDate = new Timestamp(DateUtils.parseDateGeneric(configMap.startDate).getTime())
+                if(configMap.endDate == '')
+                    configMap.endDate = null
+                else if(configMap.startDate)
+                    configMap.startDate = new Timestamp(DateUtils.parseDateGeneric(configMap.endDate).getTime())
+                sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
+                        "values (0, :startDate, :startIssue, :startVolume, :endDate, :endIssue, :endVolume, :coverageDepth, :coverageNote, :embargo, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted))") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch(configMap)
+                }
+            }
+            priceItemOverwriteSet.each { Map<String, Object> configMap ->
+                sql.withBatch("insert into price_item (version, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk, pi_ie_fk) " +
+                        "values (0, concat('priceitem:',gen_random_uuid()), :listPrice, :listCurrency, :localPrice, :localCurrency, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted))") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch(configMap)
+                }
+            }
+            ieDirectMapSet.each { Map<String, Object> configMap ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_reason, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, 'Manually Added by User', ${configMap.acceptStatus}, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch([wekbId: configMap.wekbId])
+                }
+            }
+            coverageDirectMapSet.each { Map<String, Object> configMap ->
+                sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
+                        "select 0, tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch(configMap)
+                }
+            }
+            priceItemDirectSet.each { Map<String, Object> configMap ->
+                sql.withBatch("insert into price_item (version, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
+                        "select 0, concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted") { BatchingStatementWrapper stmt ->
+                    stmt.addBatch(configMap)
+                }
+            }
+        }
+
+        /*
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
+        if (tipp == null) {
+            throw new EntitlementCreationException("Unable to tipp ${gokbId}")
+        }
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
+            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
+        }
+        else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
+            IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
+            expected.status = RDStore.TIPP_STATUS_CURRENT
+            if(!expected.save())
+                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
+        }
+        else {
+            IssueEntitlement new_ie = new IssueEntitlement(
+                    status: tipp.status,
+                    subscription: sub,
+                    tipp: tipp,
+                    name: tipp.name,
+                    medium: tipp.medium,
+                    ieReason: 'Manually Added by User',
+                    acceptStatus: acceptStatus)
+            new_ie.generateSortTitle()
+
+            if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                new_ie.perpetualAccessBySub = sub
+            }
+
+            Date accessStartDate, accessEndDate
+            if(issueEntitlementOverwrite) {
+                if(issueEntitlementOverwrite.accessStartDate) {
+                    if(issueEntitlementOverwrite.accessStartDate instanceof String)
+                        accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
+                    else if(issueEntitlementOverwrite.accessStartDate instanceof Date)
+                        accessStartDate = issueEntitlementOverwrite.accessStartDate
+                    else accessStartDate = tipp.accessStartDate
+                }
+                else accessStartDate = tipp.accessStartDate
+                if(issueEntitlementOverwrite.accessEndDate) {
+                    if(issueEntitlementOverwrite.accessEndDate instanceof String) {
+                        accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
+                    }
+                    else if(issueEntitlementOverwrite.accessEndDate instanceof Date) {
+                        accessEndDate = issueEntitlementOverwrite.accessEndDate
+                    }
+                    else accessEndDate = tipp.accessEndDate
+                }
+                else accessEndDate = tipp.accessEndDate
+            }
+            else {
+                accessStartDate = tipp.accessStartDate
+                accessEndDate = tipp.accessEndDate
+            }
+            new_ie.accessStartDate = accessStartDate
+            new_ie.accessEndDate = accessEndDate
+            if (new_ie.save()) {
+                Set coverageStatements
+                Set fallback = tipp.coverages
+                if(issueEntitlementOverwrite?.coverages) {
+                    coverageStatements = issueEntitlementOverwrite.coverages
+                }
+                else {
+                    coverageStatements = fallback
+                }
+                coverageStatements.eachWithIndex { covStmt, int c ->
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                            startDate: covStmt.startDate ?: fallback[c]?.startDate,
+                            startVolume: covStmt.startVolume ?: fallback[c]?.startVolume,
+                            startIssue: covStmt.startIssue ?: fallback[c]?.startIssue,
+                            endDate: covStmt.endDate ?: fallback[c]?.endDate,
+                            endVolume: covStmt.endVolume ?: fallback[c]?.endVolume,
+                            endIssue: covStmt.endIssue ?: fallback[c]?.endIssue,
+                            coverageDepth: covStmt.coverageDepth ?: fallback[c]?.coverageDepth,
+                            coverageNote: covStmt.coverageNote ?: fallback[c]?.coverageNote,
+                            embargo: covStmt.embargo ?: fallback[c]?.embargo,
+                            issueEntitlement: new_ie
+                    )
+                    if(!ieCoverage.save()) {
+                        throw new EntitlementCreationException(ieCoverage.errors)
+                    }
+                }
+                if(withPriceData) {
+                    if(issueEntitlementOverwrite) {
+                        if(issueEntitlementOverwrite instanceof IssueEntitlement) {
+                            issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
+                                PriceItem pi = new PriceItem(
+                                        startDate: priceItem.startDate ?: null,
+                                        endDate: priceItem.endDate ?: null,
+                                        listPrice: priceItem.listPrice ?: null,
+                                        listCurrency: priceItem.listCurrency ?: null,
+                                        localPrice: priceItem.localPrice ?: null,
+                                        localCurrency: priceItem.localCurrency ?: null,
+                                        issueEntitlement: new_ie
+                                )
+                                pi.setGlobalUID()
+                                if (pi.save())
+                                    return true
+                                else {
+                                    throw new EntitlementCreationException(pi.errors)
+                                }
+                            }
+
+                        }
+                        else {
+                            PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
+                                    listPrice: issueEntitlementOverwrite.listPrice,
+                                    listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
+                                    localPrice: issueEntitlementOverwrite.localPrice,
+                                    localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
+                                    issueEntitlement: new_ie
+                            )
+                            pi.setGlobalUID()
+                            if(pi.save())
+                                return true
+                            else {
+                                throw new EntitlementCreationException(pi.errors)
+                            }
+                        }
+                    }
+                    else {
+                        tipp.priceItems.each { PriceItem priceItem ->
+                            PriceItem pi = new PriceItem(
+                                    startDate: priceItem.startDate ?: null,
+                                    endDate: priceItem.endDate ?: null,
+                                    listPrice: priceItem.listPrice ?: null,
+                                    listCurrency: priceItem.listCurrency ?: null,
+                                    localPrice: priceItem.localPrice ?: null,
+                                    localCurrency: priceItem.localCurrency ?: null,
+                                    issueEntitlement: new_ie
+                            )
+                            pi.setGlobalUID()
+                            if (pi.save())
+                                return true
+                            else {
+                                throw new EntitlementCreationException(pi.errors)
+                            }
+                        }
+                    }
+                }
+                else return true
+            } else {
+                throw new EntitlementCreationException(new_ie.errors)
+            }
+        }
+        */
     }
 
     /**

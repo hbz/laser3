@@ -1168,11 +1168,18 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
-        //Important
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
-        }else{
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        if(!(params.tab in ['notes', 'documents', 'properties'])){
+            //Important
+            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+            }
         }
 
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
@@ -1973,7 +1980,11 @@ join sub.orgRelations or_sub where
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
+        result.surveyResults = []
+
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
+        }
 
         result.ownerId = result.surveyInfo.owner?.id
 
@@ -2063,65 +2074,6 @@ join sub.orgRelations or_sub where
             }
         }
 
-    }
-
-    @Deprecated
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
-    })
-    def surveyInfosIssueEntitlements() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        /*result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
-
-        result.subscription = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
-        result.iesListPriceSum = 0.0
-        result.ies.each{ IssueEntitlement ie ->
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
-        result.iesFixListPriceSum = 0.0
-        result.iesFix.each{ IssueEntitlement ie ->
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
-
-        if(result.subscription) {
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscription.orgRelations.each { OrgRole or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-        }
-        result*/
-
-        redirect(action: 'surveyInfos', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
     }
 
     /**

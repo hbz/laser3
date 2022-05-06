@@ -38,8 +38,9 @@ class AccessPointService {
         oapl.active = true
         oapl.oap = accessPoint
         if (params.platforms) {
-            oapl.platform = Platform.get(params.platforms)
-            String hql = "select oap from OrgAccessPoint oap join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${accessPoint.id} and oapl.oap=:oap and oapl.subPkg is null order by LOWER(oap.name)"
+            Platform platform = Platform.get(params.platforms)
+            oapl.platform = platform
+            String hql = "select oap from OrgAccessPoint oap join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${platform.id} and oapl.oap=:oap and oapl.subPkg is null"
             Set<OrgAccessPoint> existingActiveAP = OrgAccessPoint.executeQuery(hql, ['oap' : accessPoint])
             if (! existingActiveAP.isEmpty()){
                 result.error = "Existing active AccessPoint for platform"
@@ -57,11 +58,7 @@ class AccessPointService {
      */
     Map<String,Object> unlinkPlatform(OrgAccessPointLink aoplInstance) {
         Map<String,Object> result = [:]
-        aoplInstance.active = false
-        if (! aoplInstance.save()) {
-            log.debug(aoplInstance.errors.toString())
-            result.error = "Error updating AccessPoint for platform"
-        }
+        aoplInstance.delete()
         result
     }
 

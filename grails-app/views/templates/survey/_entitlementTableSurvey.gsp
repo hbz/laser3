@@ -37,7 +37,7 @@
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
-                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
                     <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
@@ -73,7 +73,7 @@
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title_short"
                                   model="${[ie: ie, tipp: ie.tipp,
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: (participantPerpetualAccessToTitle && params.tab != 'currentIEs')]}"/>
+                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: (participantPerpetualAccessToTitle)]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <td>
@@ -137,7 +137,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && allowedToSelect}">
+                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs' || params.tab == 'toBeSelectedIEs') && editable && ieInNewSub && allowedToSelect}">
                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
@@ -147,7 +147,7 @@
                     </g:if>
 
 
-                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs') && editable && !ieInNewSub && allowedToSelect }">
+                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect }">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"

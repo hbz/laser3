@@ -45,6 +45,7 @@ class PackageController {
     EscapeService escapeService
     MessageSource messageSource
     SubscriptionService subscriptionService
+    ExportClickMeService exportClickMeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -487,6 +488,8 @@ class PackageController {
 
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
+        result.filename = filename
+
         if (params.exportKBart) {
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
@@ -508,6 +511,23 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+        }else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
         withFormat {
             html {
@@ -641,6 +661,7 @@ class PackageController {
         //println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        result.filename = filename
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -663,6 +684,23 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+        }else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
         withFormat {
             html {

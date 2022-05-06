@@ -9,6 +9,7 @@ import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
@@ -676,7 +677,11 @@ class SurveyService {
                                     ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                                 }
 
-                                List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                                List surveyResults = []
+
+                                surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                    surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                                }
 
                                 if (isNotificationCCbyEmail && ccAddress) {
                                     mailService.sendMail {
@@ -771,7 +776,11 @@ class SurveyService {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                             }
 
-                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                            List surveyResults = []
+
+                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                            }
 
                             if (isNotificationCCbyEmail && ccAddress) {
                                 mailService.sendMail {
@@ -959,7 +968,7 @@ class SurveyService {
      * Sends an email to the given survey participants
      * @param surveyInfoIds the IDs of the survey participations
      */
-    def emailsToSurveyUsers(List surveyInfoIds){
+    void emailsToSurveyUsers(List surveyInfoIds){
 
         def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
 
@@ -996,7 +1005,7 @@ class SurveyService {
      * @param org the institution whose users should be notified
      * @param reminderMail is it a reminder about the survey completion?
      */
-    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
+    void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
         List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
@@ -1736,6 +1745,58 @@ class SurveyService {
             return false
         }
 
+    }
+
+    def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
+        Map sheetData = [:]
+        List titles = [messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('subscription.details.consortiaMembers.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('subscription', null, LocaleContextHolder.getLocale()) + ' - ' + messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('survey.label', null, LocaleContextHolder.getLocale()) + ' - ' + messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+        ]
+        List changedProperties = []
+        List propList = surveyConfig.surveyProperties.surveyProperty
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+            if (subPropDef) {
+                List row = []
+                participants.each { SurveyOrg surveyOrg ->
+                    Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                            [parentSub  : surveyConfig.subscription,
+                             participant: surveyOrg.org
+                            ])[0]
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, surveyConfig, contextOrg)
+                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextOrg)
+
+                    if (surveyResult && subscriptionProperty) {
+                        String surveyValue = surveyResult.getValue()
+                        String subValue = subscriptionProperty.getValue()
+                        if (surveyValue != subValue) {
+                            row = []
+                            row.add([field: surveyOrg.org.sortname ?: '', style: null])
+                            row.add([field: surveyOrg.org.name ?: '', style: null])
+                            row.add([field: propertyDefinition.getI10n('name') ?: '', style: null])
+                            row.add([field: subscriptionProperty.type.isRefdataValueType() ? subscriptionProperty.refValue?.getI10n("value") : '', style: null])
+                            row.add([field: surveyResult.getResult() ?: '', style: null])
+
+                            changedProperties.add(row)
+                        }
+                    }
+
+                }
+                if (row.size() > 0) {
+                    changedProperties.add([])
+                    changedProperties.add([])
+                }
+            }
+
+        }
+
+        sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: changedProperties])
+
+        return exportService.generateXLSXWorkbook(sheetData)
     }
 
     }

@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
@@ -1073,7 +1072,6 @@ class FilterService {
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         boolean filterSet = false
-        //continue here: order title fields down to tipp endpoints
         if(forBase == 'Package')
             base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
         else if(forBase == 'Platform')
@@ -1303,11 +1301,22 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.hasPerpetualAccess) {
+        if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
             if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
                 base_qry += "and ie.perpetualAccessBySub is not null "
             }else{
                 base_qry += "and ie.perpetualAccessBySub is null "
+            }
+            filterSet = true
+        }
+
+        if (params.hasPerpetualAccess && params.hasPerpetualAccessBySubs) {
+            if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
+                base_qry += "and ie.tipp.hostPlatformURL not in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
+                qry_params.subs = params.list('hasPerpetualAccessBySubs')
+            }else {
+                base_qry += "and ie.tipp.hostPlatformURL in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
+                qry_params.subs = params.list('hasPerpetualAccessBySubs')
             }
             filterSet = true
         }
@@ -1343,7 +1352,7 @@ class FilterService {
      * @param pkgs the packages whose titles should be queried
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getTippQuery(GrailsParameterMap params, List<Package> pkgs) {
+    Map<String,Object> getTippQuery(Map params, List<Package> pkgs) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
 
@@ -1410,23 +1419,23 @@ class FilterService {
             qry_params.date = new Date()
         }*/
 
-        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+        if (params.ddcs && params.ddcs != "" && listReaderWrapper(params, 'ddcs')) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            qry_params.ddcs = listReaderWrapper(params, 'ddcs').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
-        if (params.languages && params.languages != "" && params.list('languages')) {
+        if (params.languages && params.languages != "" && listReaderWrapper(params, 'languages')) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            qry_params.languages = listReaderWrapper(params, 'languages').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
-        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             base_qry += ' and ( '
-            params.list('subject_references').eachWithIndex { String subRef, int i ->
+            listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
                 base_qry += " lower(tipp.subjectReference) like '%"+subRef.trim().toLowerCase()+"%' "
-                if(i < params.list('subject_references').size()-1)
+                if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     base_qry += 'or'
             }
             base_qry += ' ) '
@@ -1434,9 +1443,9 @@ class FilterService {
             qry_params.subject_references = params.list('subject_references').collect { "%"+it.toLowerCase()+"%" }*/
             filterSet = true
         }
-        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+        if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             base_qry += " and lower(tipp.seriesName) in (:series_names)"
-            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
 
@@ -1462,7 +1471,7 @@ class FilterService {
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            qry_params.yearsFirstOnline = listReaderWrapper(params, 'yearsFirstOnline').collect { it instanceof String ? Integer.parseInt(it) : it }
         }
 
         if (params.identifier) {
@@ -1474,19 +1483,19 @@ class FilterService {
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers))
             base_qry += "and (lower(tipp.publisherName)) in (:publishers) "
-            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
+            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase() }
             filterSet = true
         }
 
         if (params.coverageDepth) {
             base_qry += "and exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth))"
-            qry_params.coverageDepth = params.list('coverageDepth').collect { it.toLowerCase() }
+            qry_params.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
             filterSet = true
         }
 
-        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
-            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
 
@@ -1505,6 +1514,14 @@ class FilterService {
 
         result
 
+    }
+
+    List listReaderWrapper(Map params, String key) {
+        if(params instanceof GrailsParameterMap)
+            return params.list(key)
+        else {
+            return params[key]
+        }
     }
 
 

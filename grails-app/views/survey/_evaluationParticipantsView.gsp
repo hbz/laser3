@@ -33,7 +33,7 @@
         <g:link  class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
-            <strong>test${message(code: 'surveyconfig.orgs.label')}:</strong>
+            <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
             <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
         </g:link>
 
@@ -47,6 +47,17 @@
     <div class="la-inline-lists">
 
         <h3 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h3>
+
+        <g:if test="${propertiesChanged}">
+            <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+                    id="${surveyConfig.surveyInfo.id}"
+                    params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
+                Export ${message(code: 'renewalEvaluation.propertiesChanged')}
+            </g:link>
+            <br>
+            <br>
+        </g:if>
+
 
         <table class="ui la-js-responsive-table la-table table">
                         <thead>
@@ -146,20 +157,7 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:if test="${surveyConfig.surveyProperties}">
-                        <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
-                            <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
-                                <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
-                            </th>
-                            <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
-                        </g:if>
-
-                    <g:each in="${propList.sort { it.getI10n('name') }}" var="surveyProperty">
+                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -169,7 +167,6 @@
                             </g:if>
                         </th>
                     </g:each>
-                    </g:if>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
@@ -198,17 +195,10 @@
 
             <g:set var="participant"
                    value="${surveyOrg.org}"/>
-            <g:if test="${surveyConfig.surveyProperties}">
-                <g:set var="surResults" value="[]"/>
-                <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
-                <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
-                    <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
-                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
-                </g:if>
-                <g:if test="${surveyProperties}">
-                    <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
-                </g:if>
-            </g:if>
+            <g:set var="surResults" value="[]"/>
+            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
+            </g:each>
             <tr>
                 <g:if test="${showCheckbox}">
                     <td>
@@ -277,20 +267,12 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                        <g:if test="${surveyConfig.surveyProperties}">
-                            <g:if test="${surResultParticipation}">
-                                <td>
-                                    <g:render template="surveyResult"
-                                              model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
-                                </td>
-                            </g:if>
-                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
+                            <g:each in="${surResults}" var="resultProperty">
                                 <td>
                                     <g:render template="surveyResult"
                                               model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
                                 </td>
                             </g:each>
-                        </g:if>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>
@@ -367,31 +349,16 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:if test="${surveyConfig.surveyProperties}">
-                        <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
-                            <th>${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('name')}
-                                <g:if test="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                          data-position="right center"
-                                          data-content="${RDStore.SURVEY_PROPERTY_PARTICIPATION.getI10n('expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
-                            </th>
-                            <g:set var="propList" value="${propList - RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
-                        </g:if>
-                        <g:each in="${propList.sort { it.getI10n('name') }}" var="surveyProperty">
-                            <th>${surveyProperty.getI10n('name')}
-                                <g:if test="${surveyProperty.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                          data-position="right center"
-                                          data-content="${surveyProperty.getI10n('expl')}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
-                            </th>
-                        </g:each>
-                    </g:if>
+                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                        <th>${surveyProperty.getI10n('name')}
+                            <g:if test="${surveyProperty.getI10n('expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${surveyProperty.getI10n('expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+                        </th>
+                    </g:each>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
@@ -422,18 +389,10 @@
             <g:set var="participant"
                    value="${surveyOrg.org}"/>
 
-            <g:if test="${surveyConfig.surveyProperties}">
-                <g:set var="surResults" value="[]"/>
-                <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty}"/>
-                <g:if test="${(RDStore.SURVEY_PROPERTY_PARTICIPATION.id in surveyConfig.surveyProperties.surveyProperty.id)}">
-                <g:set var="surResultParticipation" value="${SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION)}"/>
-                    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties.surveyProperty-RDStore.SURVEY_PROPERTY_PARTICIPATION}"/>
-                </g:if>
-                <g:if test="${surveyProperties}">
-                    <g:set var="surResults"
-                           value="${SurveyResult.findAllByParticipantAndSurveyConfigAndTypeInList(participant, surveyConfig, surveyProperties).sort { it.type.getI10n('name') }}"/>
-                </g:if>
-            </g:if>
+            <g:set var="surResults" value="[]"/>
+            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
+            </g:each>
 
             <tr>
                 <g:if test="${showCheckbox}">
@@ -503,18 +462,12 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                        <g:if test="${surveyConfig.surveyProperties}">
-                            <g:if test="${surResultParticipation}">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
-                                </td>
-                            </g:if>
-                            <g:each in="${surResults}" var="resultProperty">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
-                                </td>
-                            </g:each>
-                        </g:if>
+                        <g:each in="${surResults}" var="resultProperty">
+                            <td>
+                                <g:render template="surveyResult"
+                                          model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                            </td>
+                        </g:each>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>

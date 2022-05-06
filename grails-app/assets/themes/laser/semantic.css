@@ -1205,6 +1205,16 @@ i.icon.la-list-icon:before {
   text-overflow: ellipsis;
 }
 
+.la-dont-break-out {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  /* Non standard for WebKit */
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
 .la-hide-context-orgMenu {
   padding-top: 60px;
 }
@@ -16473,8 +16483,8 @@ a.ui.basic.label:hover {
   background-color: #fee8d2;
 }
 
-.ui.blue.circular.label:hover,
-.ui.blue.circular.label:focus {
+a .ui.circular.label:hover,
+a .ui.circular.label:focus {
   border-radius: 0;
   -webkit-transition: border-radius;
   transition: border-radius;

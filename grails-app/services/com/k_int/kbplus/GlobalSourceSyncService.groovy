@@ -1050,11 +1050,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
-                        case "Technical Support":
-                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                        case "Metadata Contact":
+                            contact.rdType = RDStore.PRS_FUNC_METADATA
                             break
                         case "Service Support":
                             contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                            break
+                        case "Technical Support":
+                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
                             break
                         default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
                             break
@@ -1345,7 +1348,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
-            tippA.imprint = tippB.imprint
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
             tippA.volume = tippB.volume
@@ -1407,7 +1409,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw new SyncException("Error on saving title history data: ${the.errors}")
                     }
                     historyEvent.to.each { to ->
-                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:to.name,eventDate:historyEvent.date)
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,to:to.name,eventDate:historyEvent.date)
                         if(!the.save())
                             throw new SyncException("Error on saving title history data: ${the.errors}")
                     }

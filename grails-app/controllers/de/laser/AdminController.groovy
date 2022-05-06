@@ -31,6 +31,7 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.plugins.mail.MailService
 import grails.util.Holders
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
@@ -71,6 +72,8 @@ class AdminController  {
     def propertyService
     def organisationService
     def apiService
+
+    MailService mailService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -135,6 +138,34 @@ class AdminController  {
         }
         result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
         result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def testMailSending() {
+        Map<String, Object> result = [:]
+
+        result.mailDisabled = grailsApplication.config.grails.mail.disabled
+
+        if (params.sendTestMail == 'Send Test Mail' && params.mailAddress) {
+            if (grailsApplication.config.grails.mail.disabled == true) {
+                flash.error = 'Failed due grailsApplication.config.grails.mail.disabled = true'
+            }else {
+                String currentServer = ServerUtils.getCurrentServer()
+                String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD) ? "LAS:eR - " : (ConfigUtils.getLaserSystemId() + " - ")
+                String mailSubject = subjectSystemPraefix + params.subject
+
+                    mailService.sendMail {
+                        to      params.mailAddress
+                        from    ConfigUtils.getNotificationsEmailFrom()
+                        subject mailSubject
+                        body    params.content
+                    }
+                flash.message = "Test email was sent successfully"
+            }
+
+        }
         result
     }
 
@@ -572,8 +603,7 @@ class AdminController  {
     def databaseCollations() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
 
         result.table_columns = sql.rows("""
             SELECT table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
@@ -607,8 +637,7 @@ class AdminController  {
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result

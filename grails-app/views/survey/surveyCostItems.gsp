@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})</title>
 </head>
 
 <body>
@@ -309,7 +309,7 @@
             <br />
             <br />
 
-            <g:form action="surveyCostItemsFinish" method="post" class="ui form"
+            <g:form action="workflowCostItemsFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
                 <div class="ui right floated compact segment">

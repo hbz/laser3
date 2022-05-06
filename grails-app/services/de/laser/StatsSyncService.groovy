@@ -45,11 +45,14 @@ class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 8
     static final SYNC_STATS_FROM = '2012-01-01'
+    static final MONTH_DUE_DATE = 28 //default is 28, do not commit other days!
+    static final YEARLY_MONTH = Calendar.DECEMBER
+    static final HALF_YEARLY_MONTHS = [Calendar.JUNE, YEARLY_MONTH]
+    static final QUARTERLY_MONTHS = HALF_YEARLY_MONTHS+[Calendar.MARCH, Calendar.SEPTEMBER]
 
     ExecutorService executorService
     def factService
     def globalService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]
@@ -202,15 +205,61 @@ class StatsSyncService {
     void internalDoFetch(boolean incremental) {
         //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
-            ApiSource apiSource = ApiSource.findByActive(true)
-            List<List> c4SushiSources = [], c5SushiSources = []
-            //process each platform with a SUSHI API
+        ApiSource apiSource = ApiSource.findByActive(true)
+        List<List> c4SushiSources = [], c5SushiSources = []
+        //process each platform with a SUSHI API
+        try {
             HTTPBuilder http = new HTTPBuilder(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
             http.request(Method.GET, ContentType.JSON) { req ->
                 response.success = { resp, json ->
                     if(resp.status == 200) {
-                        c4SushiSources.addAll(json.counter4ApiSources)
-                        c5SushiSources.addAll(json.counter5ApiSources)
+                        if(incremental) {
+                            Calendar now = GregorianCalendar.getInstance()
+                            json.counter4ApiSources.each { c4as ->
+                                boolean add = false
+                                switch(c4as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c4SushiSources.add(c4as)
+                                }
+                            }
+                            json.counter5ApiSources.each { c5as ->
+                                boolean add = false
+                                switch(c5as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c5SushiSources.add(c5as)
+                                }
+                            }
+                        }
+                        else {
+                            c4SushiSources.addAll(json.counter4ApiSources)
+                            c5SushiSources.addAll(json.counter5ApiSources)
+                        }
                     }
                     else {
                         log.error("server response: ${resp.statusLine}")
@@ -221,8 +270,11 @@ class StatsSyncService {
                 }
             }
             http.shutdown()
-            Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
-            def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        }
+        catch (Exception ignored) {
+            log.error("we:kb unavailable ... postpone next run!")
+        }
+        Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
                 /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :removed',
@@ -234,7 +286,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 //TitleInstancePackagePlatform.withNewSession {
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
@@ -343,7 +395,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false
@@ -757,10 +809,10 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_5_report do " +
-                            "update set c5r_report_count = :reportCount") { stmt ->
+                            "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->
                         int t = 0
                         report.items.each { Map reportItem ->
                             int ctr = 0
@@ -791,12 +843,8 @@ class StatsSyncService {
                                             configMap.publisher = reportItem.Publisher
                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
                                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
-                                            configMap.accessType = report.header.Report_Filters.find{
-                                                filterData -> filterData["Name"] == "Access_Type" }
-                                                    ?.Value
-                                            configMap.accessMethod = report.header.Report_Filters.find{
-                                                filterData -> filterData["Name"] == "Access_Method" }
-                                                    ?.Value
+                                            configMap.accessType = reportItem.Access_Type
+                                            configMap.accessMethod = reportItem.Access_Method
                                             configMap.metricType = instance.Metric_Type
                                             configMap.reportCount = instance.Count as int
                                             stmt.addBatch(configMap)
@@ -909,12 +957,18 @@ class StatsSyncService {
                             result.error = json["Exception"]["Message"]
                         }
                     }
+                    else if(json.containsKey("Report_Header")) {
+                        result.header = json["Report_Header"]
+                    }
                     else {
                         result.error = "server response: ${resp.statusLine}"
                     }
                 }
                 response.failure = { resp, reader ->
-                    result.error = "server response: ${resp.statusLine} - ${reader}"
+                    if(reader.containsKey("Report_Header"))
+                        result.header = reader["Report_Header"]
+                    else
+                        result.error = "server response: ${resp.statusLine} - ${reader}"
                 }
             }
             http.shutdown()
@@ -981,8 +1035,11 @@ class StatsSyncService {
             endNextRun = endTime
         }
         else {
-            startDate = DateUtils.getSDF_ymd().parse("2018-01-01")
-            endNextRun = DateUtils.getSDF_ymd().parse("2018-12-31")
+            Calendar currentYear = GregorianCalendar.getInstance()
+            //initially set to January 1st, '18; set flexibly to start of current year
+            currentYear.set(Calendar.DAY_OF_YEAR, 1)
+            startDate = currentYear.getTime()
+            endNextRun = now.getTime()
             endTime = now.getTime()
         }
         [startDate: startDate, endTime: endTime, endNextRun: endNextRun, now: now]

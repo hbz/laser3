@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.evaluation')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyInfo.evaluation')})</title>
 
 </head>
 
@@ -142,6 +142,16 @@ ${surveyInfo.name}
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
+
+                    <g:if test="${propertiesChanged}">
+                        <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+                                id="${surveyConfig.surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
+                            Export ${message(code: 'renewalEvaluation.propertiesChanged')}
+                        </g:link>
+                        <br>
+                        <br>
+                    </g:if>
                     <div>
                         <table class="ui la-js-responsive-table la-table table">
                             <thead>
@@ -357,7 +367,7 @@ ${surveyInfo.name}
     </semui:form>
 
 
-    <g:form action="renewalSent" method="post" class="ui form"
+    <g:form action="workflowRenewalSent" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
         <div class="ui right floated compact segment">

@@ -67,16 +67,16 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.isIntegerType()}">
-                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
-                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isBigDecimalType()}">
-                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isDateType()}">
-                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isURLType()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
@@ -85,17 +85,17 @@
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${prop.type.isRefdataValueType()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
 
                     </td>
                     <g:if test="${ownobj instanceof License}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" class="la-dont-break-out"/>
                         </td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
                     <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
@@ -133,7 +133,8 @@
                                       class="ui properties form"
                                       data-update="${propertyWrapper}"
                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})">
-                        <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">
+                        <!-- The actionName? and controllerName? need for PDF generation! In PDF generation actionName and controllerName not set! -->
+                        <g:if test="${!(actionName?.contains('survey') || controllerName?.contains('survey'))}">
                             <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>

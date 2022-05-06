@@ -498,6 +498,10 @@
             <div id="packages" class="la-inline-lists"></div>
         </g:if>
 
+        <g:if test="${subscription && subscription.packages}">
+            <div id="ieInfos" class="la-inline-lists"></div>
+        </g:if>
+
     </div>
 
     <aside class="six wide column la-sidekick">
@@ -864,7 +868,7 @@
 </g:if>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-    <g:set var="surveyProperties" value="${surveyConfig.surveyProperties}"/>
+    <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
     <semui:form>
 
@@ -886,21 +890,21 @@
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties}" var="surveyPropertyConfig" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
-                        ${surveyProperty.surveyProperty.getI10n('name')}
+                        ${surveyPropertyConfig.surveyProperty.getI10n('name')}
 
-                        <g:if test="${surveyProperty.surveyProperty.tenant?.id == contextService.getOrg().id}">
+                        <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
 
-                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
+                        <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
+                                  data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
@@ -908,15 +912,15 @@
                     </td>
 
                     <td>
-                        <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
-                            ${surveyProperty.surveyProperty.getI10n('expl')}
+                        <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
+                            ${surveyPropertyConfig.surveyProperty.getI10n('expl')}
                         </g:if>
                     </td>
                     <td>
-                        ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                        <g:if test="${surveyProperty.surveyProperty.isRefdataValueType()}">
+                        ${PropertyDefinition.getLocalizedValue(surveyPropertyConfig.surveyProperty.type)}
+                        <g:if test="${surveyPropertyConfig.surveyProperty.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
+                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyPropertyConfig.surveyProperty.refdataCategory)}"
                                     var="refdataValue">
                                 <g:set var="refdataValues"
                                        value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -929,26 +933,26 @@
                     <td>
                         <g:set var="surveyPropertyMandatoryEditable"
                                value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                       (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
+                                       (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                        <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id]">
 
                             <div class="ui checkbox">
                                 <input type="checkbox"
                                        onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' : ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
-                                       name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
+                                       name="mandatoryProperty" ${surveyPropertyConfig.mandatoryProperty ? 'checked' : ''}>
                             </div>
                         </g:form>
                     </td>
                     <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                            SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                            && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
+                            SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
+                            && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                         <td>
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty.id}"
+                                    id="${surveyPropertyConfig.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
@@ -1039,7 +1043,7 @@
                 </th>
             </tr>
             </thead>
-            <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
+            <g:each in="${surveyResults}" var="surveyResult" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -1113,7 +1117,7 @@
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${surveyResult.urlValue}">
-                                    <semui:linkIcon/>
+                                    <semui:linkIcon href="${surveyResult.urlValue}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">
@@ -1197,6 +1201,23 @@
 
 
         JSPC.app.loadPackages();
+    </g:if>
+
+    <g:if test="${subscription && subscription.packages}">
+        JSPC.app.loadIEInfos = function () {
+                  $.ajax({
+                      url: "<g:createLink controller="ajaxHtml" action="getIeInfos"/>",
+                      data: {
+                          subscription: "${subscription.id}"
+                      }
+                  }).done(function(response){
+                      $("#ieInfos").html(response);
+                      r2d2.initDynamicSemuiStuff("#ieInfos");
+                  })
+              }
+
+
+        JSPC.app.loadIEInfos();
     </g:if>
 
 </laser:script>

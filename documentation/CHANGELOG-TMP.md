@@ -7,9 +7,53 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4153    06.05.2022  dev     2.3         Moe     Bug         Filter "Meine Lizenzverwaltung" kann nicht auf "zentral verwaltet" eingestellt werden
+
+4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
+
+4073   28.04.2022   dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
+
+4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
+
+4206    28.04.2022  dev     2.3         Andreas Feature     Prozessfluss für Metadaten-Kontakt in Sync aufgenommen
+
+4203    27.04.2022  dev     2.3         Andreas Bug         Statistik-Abfrage korrigiert und weitere Ausbesserungen
+
+4201    27.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen läuft korrekt und erheblich schneller
+
+--      27.04.2022  dev     2.3         Andreas Bug         Bei ausgesetztem Statusfilter konnten keine weiteren Parameter mehr gesetzt werden
+
+4204    26.04.2022  dev     2.3         Andreas Bug         korrekte Abfrage der Kosten pro Konsortiallizenz
+
+4200    26.04.2022  dev     2.3         Moe     Feature     Neue Sicht "Auszuwählende Titel"
+
+4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
+
+2275    26.04.2022  dev     2.3         Moe     Feature     Anbieter und Vertrag bei einer allg. Umfrage verknüpfen
+
+1111    25.04.2022  dev     2.3         Andreas Feature     Aktualisierung und Aufrüstung der API
+
+4049    25.04.2022  dev     2.3         Moe     Feature     Excel Umfrage: Export von Merkmalsänderungen
+
+3882    22.04.2022  dev     2.3         Moe     Feature     Bestandsinformationen anzeigen in Umfragen
+
+4197    22.04.2022  dev     2.3         Moe     Feature     Erweiterung "medium": Encyclopedia
+
+--      21.04.2022  rc-2.2  2.2.14      Andreas Bug         Instandsetzung und Performanzverbesserung bei Laden der Nutzungsdaten
+
+--      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
+
+3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen
+
+4195    19.04.2022  dev     2.3         Moe     Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
+
 --      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
 
 4188    14.04.2022  rc-2.2  2.2.13      Andreas Feature     Bestand auf Ende eines Jahresringes zurücksetzen
+
+4021    08.04.2022  dev     2.3         Moe     Feature    ClickMe Excel für Titel-Ebene
+
+4185    08.04.2022  dev     2.3         Moe     Feature     Testfunktion für Mail verschicken
 
 --      01.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen-500er korrigiert
 

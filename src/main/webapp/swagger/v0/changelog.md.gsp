@@ -2,6 +2,133 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.134
+
+- updating outdated schemata
+- added new virtual object: `DeweyDecimalClassification`
+- added new virtual object: `Link_License`
+- added new virtual object: `Link_Org`
+- added new virtual object: `Link_Subscription`
+- added new virtual object: `Package_in_CostItem`
+- added new virtual object: `PriceItemCollection`
+- added new virtual object: `TitleGroup`
+- added new attribute: `Contact.language`
+- added new attribute: `CostItem.billingSumRounding`
+- added new attribute: `CostItem.subPkg`
+- added new attribute: `CostItem.titleGroups`
+- added new attribute: `CostItemCollection.billingSumRounding`
+- added new attribute: `CostItemCollection.finalCostRounding`
+- added new attribute: `IssueEntitlement_in_CostItem.priceItems`
+- added new attribute: `IssueEntitlement_in_CostItem.status`
+- added new attribute: `License.linkedLicenses`
+- added new attribute: `LicenseStub.startDate`
+- added new attribute: `LicenseStub.endDate`
+- added new attribute: `Organisation.altNames`
+- added new attribute: `Organisation.legalPatronName`
+- added new attribute: `Organisation.linkResolverBaseURL`
+- added new attribute: `Organisation.links`
+- added new attribute: `Organisation.retirementDate`
+- added new attribute: `Organisation.url`
+- added new attribute: `Organisation.urlGov`
+- added new attribute: `Package.altnames`
+- added new attribute: `Package_in_Subscription.altnames`
+- added new attribute: `Subscription.hasPublishComponent`
+- added new attribute: `Subscription.isAutomaticRenewAnnually`
+- added new attribute: `Subscription.linkedSubscriptions`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.accessType`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.altnames`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.dateFirstInPrint`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.dateFirstOnline`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.ddcs`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.editionStatement`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.firstAuthor`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.firstEditor`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.languages`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.openAccess`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.priceItems`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.publisherName`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.seriesName`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.subjectReference`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.titleType`
+- added new attribute: `TitleInstancePackagePlatform_in_Subscription.volume`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.accessStartDate`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.accessEndDate`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.accessType`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.altnames`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.dateFirstInPrint`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.dateFirstOnline`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.ddcs`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.editionStatement`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.firstAuthor`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.firstEditor`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.languages`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.openAccess`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.priceItems`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.publisherName`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.seriesName`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.subjectReference`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.titleType`
+- added new attribute: `TitleInstancePackagePlatform_in_Package.volume`
+- modified attribute: `CostItem.financialYear`: removed overhead structure
+- modified attribute: `CostItem.invoice` changed to `CostItem.invoiceNumber` (removed overhead structure)
+- modified attribute: `CostItem.order` changed to `CostItem.orderNumber` (removed overhead structure)
+- modified attribute: `TitleInstancePackagePlatform_in_Package.publishers` changed to `TitleInstancePackagePlatform_in_Package.providers`
+- modified attribute: `TitleInstancePackagePlatform_in_Subscription.publishers` changed to `TitleInstancePackagePlatform_in_Subscription.providers`
+- removed virtual object: `Invoice`
+- removed virtual object: `Order`
+- removed virtual object: `OA2020_Virtual`
+- removed stub: `TitleStub`
+- removed attribute: `Contact.lastUpdated`
+- removed attribute: `Contact.type`
+- removed attribute: `CostItem.costItemCategory`
+- removed attribute: `Invoice.dateOfInvoice`
+- removed attribute: `Invoice.dateOfPayment`
+- removed attribute: `Invoice.datePassedToFinance`
+- removed attribute: `Invoice.endDate`
+- removed attribute: `Invoice.id`
+- removed attribute: `Invoice.startDate`
+- removed attribute: `IssueEntitlement.coreStatusStart`
+- removed attribute: `IssueEntitlement.coreStatusEnd`
+- removed attribute: `IssueEntitlement.coreStatus`
+- removed attribute: `IssueEntitlement.ieReason`
+- removed attribute: `License.normReference`
+- removed attribute: `Order.id`
+- removed attribute: `Organisation.comment`
+- removed attribute: `Organisation.scope`
+- removed attribute: `Package.autoAccept`
+- removed attribute: `Package.cancellationAllowances`
+- removed attribute: `Package.consistent`
+- removed attribute: `Package.endDate`
+- removed attribute: `Package.isPublic`
+- removed attribute: `Package.sortName`
+- removed attribute: `Package.startDate`
+- removed attribute: `Package.vendorURL`
+- removed attribute: `Package_in_Subscription.vendorURL`
+- removed attribute: `Platform.normname`
+- removed attribute: `Platform.serviceProvider`
+- removed attribute: `Platform.softwareProvider`
+- removed attribute: `Subscription.cancellationAllowances`
+- removed attribute: `Subscription.isSlaved`
+- removed attribute: `Subscription.manualRenewalDate`
+- removed attribute: `Subscription.noticePeriod`
+- removed attribute: `Subscription.type`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.delayedOA`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.hybridOA`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.option`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.payment`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.statusReason`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.subscription`
+- removed attribute: `TitleInstancePackagePlatform_in_Subscription.title`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.delayedOA`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.hybridOA`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.option`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.payment`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.statusReason`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.subscription`
+- removed attribute: `TitleInstancePackagePlatform_in_Package.title`
+- internal refactoring
+- identifier value "Unknown" not rendered (= considered as empty)
+
 #### 0.133
 
 - removed duplicate column access_type from __/ezb/subscription__

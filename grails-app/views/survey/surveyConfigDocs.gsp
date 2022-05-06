@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})</title>
 </head>
 
 <body>
@@ -124,7 +124,7 @@
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"

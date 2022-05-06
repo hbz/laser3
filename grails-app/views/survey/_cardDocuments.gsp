@@ -24,7 +24,7 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>
@@ -78,6 +78,14 @@
                                         </laser:remoteLink>
                                     </g:else>
                                 </g:if>
+                            </g:if>
+                            <g:if test="${(ownobj instanceof SurveyConfig)}">
+                                <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                <button type="button" class="ui icon blue button la-modern-button editable-cancel"
+                                        data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i class="pencil icon"></i></button>
                             </g:if>
                         </div>
                     </div>
