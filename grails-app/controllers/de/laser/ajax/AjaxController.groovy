@@ -524,7 +524,7 @@ class AjaxController {
 
               Subscription baseSub = Subscription.get(params.baseSubID)
               Subscription newSub = Subscription.get(params.newSubID)
-              Set<Subscription> previousSubscription = newSub._getCalculatedPrevious()
+              Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
 
               List<Long> sourceTipps
 

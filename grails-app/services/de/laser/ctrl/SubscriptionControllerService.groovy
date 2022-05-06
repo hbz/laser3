@@ -1316,7 +1316,7 @@ class SubscriptionControllerService {
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
-            Subscription previousSubscription = newSub._getCalculatedPrevious()
+            Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
 
             result.subscriber = newSub.getSubscriber()
