@@ -2,6 +2,11 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.136
+
+- added new endpoint: __/ezb/license/illIndicators__
+- added new object: `PropertySet`
+
 #### 0.135
 
 - added new attribute: `License.predecessors`

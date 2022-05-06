@@ -692,6 +692,11 @@
           description: the property value
           example: "Zeidel'sches Recht"
 
+    PropertySet:
+      type: array
+      description: Set of properties.
+      items:
+        $ref: "#/components/schemas/Property"
 
     Subscription:
       allOf:

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4227    06.05.2022  dev     2.3         Andreas Feature     Neuer EZB-Endpunkt für Fernleihidentifikatoren
+
 4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
 
 4153    06.05.2022  dev     2.3         Moe     Bug         Filter "Meine Lizenzverwaltung" kann nicht auf "zentral verwaltet" eingestellt werden
