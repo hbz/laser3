@@ -6,7 +6,12 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (<g:if test="${params.tab == 'participantsViewAllFinish'}">
+        ${message(code:"openParticipantsAgain.label")}
+    </g:if>
+    <g:else>
+        ${message(code:"openParticipantsAgain.reminder")}
+    </g:else>)</title>
 </head>
 
 <body>

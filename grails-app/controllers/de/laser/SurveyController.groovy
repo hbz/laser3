@@ -2065,7 +2065,7 @@ class SurveyController {
 
     }
 
-    /*@DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2074,16 +2074,15 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-
         result.participant = Org.get(params.participant)
 
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyResults = []
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
+        }
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.ownerId = result.surveyResults[0].owner.id
+        result.ownerId = result.surveyInfo.owner.id
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
@@ -2110,6 +2109,34 @@ class SurveyController {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+                if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+
+                    result.previousSubscription = result.subscription._getCalculatedPrevious()
+
+                    /*result.previousIesListPriceSum = 0
+                   if(result.previousSubscription){
+                       result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+                   }*/
+
+                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
+                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+
+                    /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+
+                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                    result.subscriber = result.participant
+
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -2121,6 +2148,8 @@ class SurveyController {
         }
 
         result.institution = result.participant
+
+        result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
 
         String pageSize = 'A4'
         String orientation = 'Portrait'
@@ -2152,8 +2181,8 @@ class SurveyController {
         response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
         response.setContentType('application/pdf')
         response.outputStream.withStream { it << pdf }
-
-    }*/
+        return
+    }
 
     /**
      * Call to list all possible survey properties (i.e. the questions which may be asked in a survey)
@@ -2597,7 +2626,11 @@ class SurveyController {
 
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            executorService.execute({
+                Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
+                surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            })
+            executorService.shutdown()
 
         }
 

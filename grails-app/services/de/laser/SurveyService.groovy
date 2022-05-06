@@ -677,7 +677,11 @@ class SurveyService {
                                     ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                                 }
 
-                                List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                                List surveyResults = []
+
+                                surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                    surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                                }
 
                                 if (isNotificationCCbyEmail && ccAddress) {
                                     mailService.sendMail {
@@ -772,7 +776,11 @@ class SurveyService {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                             }
 
-                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                            List surveyResults = []
+
+                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                            }
 
                             if (isNotificationCCbyEmail && ccAddress) {
                                 mailService.sendMail {
@@ -960,7 +968,7 @@ class SurveyService {
      * Sends an email to the given survey participants
      * @param surveyInfoIds the IDs of the survey participations
      */
-    def emailsToSurveyUsers(List surveyInfoIds){
+    void emailsToSurveyUsers(List surveyInfoIds){
 
         def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
 
@@ -997,7 +1005,7 @@ class SurveyService {
      * @param org the institution whose users should be notified
      * @param reminderMail is it a reminder about the survey completion?
      */
-    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
+    void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
         List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
