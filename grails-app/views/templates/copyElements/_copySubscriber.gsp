@@ -13,7 +13,7 @@
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <g:if test="${sourceObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
+        <g:if test="${targetObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(targetObject, true)}">
             <semui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>

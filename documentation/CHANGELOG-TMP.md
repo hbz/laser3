@@ -9,6 +9,12 @@
 
 4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
 
+4153    06.05.2022  dev     2.3         Moe     Bug         Filter "Meine Lizenzverwaltung" kann nicht auf "zentral verwaltet" eingestellt werden
+
+4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
+
+4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
+
 4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
 
 4206    28.04.2022  dev     2.3         Andreas Feature     Prozessfluss für Metadaten-Kontakt in Sync aufgenommen
