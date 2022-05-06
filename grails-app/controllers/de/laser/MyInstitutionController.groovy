@@ -1172,10 +1172,10 @@ join sub.orgRelations or_sub where
             //Important
             if(!accessService.checkPerm('ORG_CONSORTIUM')) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
-                    flash.error = message(code: 'subscriptionsManagement.noPermissin.forSubsWithTypeConsortial')
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
                 }
                 else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
-                    flash.error = message(code: 'subscriptionsManagement.noPermissin.forSubsWithTypeConsortial')
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
                 }
 
                 params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
