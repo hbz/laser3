@@ -140,7 +140,7 @@ class FinanceController  {
         if(result.dataToDisplay.any { d -> ["subscr","consAtSubscr"].contains(d) }) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
             SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
@@ -197,7 +197,7 @@ class FinanceController  {
             titles.addAll([message(code: 'financials.costItemElement'), message(code: 'default.description.label'),
                            message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
-            SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
+            SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
             //LinkedHashMap<Subscription,List<Org>> subscribers = [:]
             //LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]

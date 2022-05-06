@@ -550,7 +550,7 @@ class TaskService {
         }
 
         String NO_STATUS = RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
-        SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notimeShort')
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_byToken('default.date.format.notimeShort')
 
         validSubscriptionsWithInstanceOf.each {
 
@@ -605,7 +605,7 @@ class TaskService {
         List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
 
-        SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notimeShort')
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_byToken('default.date.format.notimeShort')
 
         if (contextOrg) {
             String licensesQueryMitInstanceOf =

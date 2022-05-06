@@ -12,7 +12,7 @@
     <semui:filter showFilterButton="true">
         <%
             Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             if (fixedSubscription) {
                 formUrl = [mapping: 'subfinance', params: [sub: "${fixedSubscription?.id}"]]
             }

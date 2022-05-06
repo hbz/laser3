@@ -3,7 +3,6 @@ package de.laser
 import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
@@ -1144,7 +1143,7 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
 
@@ -1355,7 +1354,7 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getTippQuery(Map params, List<Package> pkgs) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
         String base_qry

@@ -2,7 +2,6 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.Address
 import de.laser.ContextService
-import de.laser.I10nTranslation
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
@@ -257,7 +256,7 @@ class OrgExport extends BaseDetailsExport {
                         )
 
                         entries.addAll( dueDateMap.collect { sem ->
-                            DateUtils.getSDF_NoTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
+                            DateUtils.getLocalizedSDF_noTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
                                 rn.value.value ? (rn.key + ' ' + rn.value.value) : null
                             }.findAll().join(', ')
                         } )

@@ -1980,7 +1980,7 @@ class ExportClickMeService {
      */
     private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -2075,7 +2075,7 @@ class ExportClickMeService {
      */
     private void setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         Subscription subscription = result instanceof Subscription ? result : result.sub
 
@@ -2150,7 +2150,7 @@ class ExportClickMeService {
      */
     private void setCostItemRow(CostItem costItem, Map<String, Object> selectedFields, List exportData){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         Org org = costItem.sub ? costItem.sub.getSubscriber() : null
 
@@ -2195,7 +2195,7 @@ class ExportClickMeService {
      */
     private void setOrgRow(Org result, Map<String, Object> selectedFields, List exportData){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -2251,7 +2251,7 @@ class ExportClickMeService {
      */
     private void setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData, Map selectedCostItemFields){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -2305,7 +2305,7 @@ class ExportClickMeService {
      */
     private void setIeRow(def result, Map<String, Object> selectedFields, List exportData){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         result = exportService.getIssueEntitlement(result)
 
@@ -2413,7 +2413,7 @@ class ExportClickMeService {
      */
     private void setTippRow(def result, Map<String, Object> selectedFields, List exportData){
         List row = []
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         result = exportService.getTipp(result)
 

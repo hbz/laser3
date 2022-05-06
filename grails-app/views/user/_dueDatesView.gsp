@@ -7,7 +7,7 @@
     <g:if test="${dashboard_last_update != null}" >
         <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
         <%
-            def sdf = DateUtils.getSDF_NoTime()
+            def sdf = DateUtils.getLocalizedSDF_noTime()
             def dateString = sdf.format(dashboard_last_update)
         %>
 

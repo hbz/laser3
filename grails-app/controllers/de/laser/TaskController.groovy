@@ -29,7 +29,7 @@ class TaskController  {
     def create() {
 		Task.withTransaction {
 			def contextOrg  = contextService.getOrg()
-			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
 				params.endDate = sdf.parse(params.endDate)
@@ -102,7 +102,7 @@ class TaskController  {
 			Org contextOrg = contextService.getOrg()
 			def result = taskService.getPreconditionsWithoutTargets(contextOrg)
 
-			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
 				params.endDate = sdf.parse(params.endDate)

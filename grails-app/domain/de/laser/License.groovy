@@ -613,7 +613,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = startDate ? sdf.format(startDate) : ''
         period = endDate ? period + ' - ' + sdf.format(endDate) : ''
         period = period ? '(' + period + ')' : ''

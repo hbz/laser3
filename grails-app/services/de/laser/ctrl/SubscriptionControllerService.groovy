@@ -40,7 +40,6 @@ import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
@@ -793,7 +792,7 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
             Calendar cal = GregorianCalendar.getInstance()
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
             cal.set(Calendar.DAY_OF_MONTH, 1)
@@ -842,7 +841,7 @@ class SubscriptionControllerService {
         //result may be null, change is TODO
         if (result?.editable) {
 
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
@@ -984,8 +983,8 @@ class SubscriptionControllerService {
                     org.funderType = subscr.funderType
                     org.region = subscr.region
                     org.country = subscr.country
-                    org.startDate = subChild.startDate ? subChild.startDate.format(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale())) : ''
-                    org.endDate = subChild.endDate ? subChild.endDate.format(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale())) : ''
+                    org.startDate = subChild.startDate ? DateUtils.getLocalizedSDF_byToken('default.date.format.notime').format( subChild.startDate ) : ''
+                    org.endDate = subChild.endDate ? DateUtils.getLocalizedSDF_byToken('default.date.format.notime').format( subChild.endDate ) : ''
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.status = subChild.status
@@ -1087,7 +1086,7 @@ class SubscriptionControllerService {
                     List<Subscription> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                         Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                         Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                         Subscription memberSub = new Subscription(
@@ -2554,7 +2553,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
+            SimpleDateFormat formatter = DateUtils.getLocalizedSDF_noTime()
             boolean error = false
             params.each { Map.Entry<Object,Object> p ->
                 if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {

@@ -9,7 +9,6 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.LocaleHelper
-import de.laser.helper.MigrationHelper
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
@@ -26,7 +25,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -540,7 +538,7 @@ class LicenseController {
      */
     private Map<String,Object> setSubscriptionFilterData() {
         Map<String, Object> result = [:]
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date dateRestriction = null
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""

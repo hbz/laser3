@@ -593,7 +593,7 @@ class AjaxController {
               else
                   ieCoverage = ieCandidate.coverages[covStmtKey]
               if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                  SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                   ieCoverage[prop] = sdf.parse(params.propValue)
               }
               else {
@@ -1932,7 +1932,7 @@ class AjaxController {
             if (target_object) {
                 switch(params.type) {
                     case 'date':
-                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                         def backup = target_object."${params.name}"
 
                         try {

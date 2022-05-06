@@ -189,7 +189,7 @@ class ControlledListService {
                 }
                 propValInput.each { String val ->
                     if(dateFlag) {
-                        filterPropVal << DateUtils.SDF_NoTime.parse(val)
+                        filterPropVal << DateUtils.getLocalizedSDF_noTime().parse(val)
                     }
                     else if(refFlag) {
                         if(val.contains("de.laser."))
@@ -358,7 +358,7 @@ class ControlledListService {
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             log.debug("licenses found")
             result.each { res ->
                 licenses.results += ([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:genericOIDService.getOID(res)])
@@ -535,7 +535,7 @@ class ControlledListService {
     Map getElements(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleContextHolder.getLocale()
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])

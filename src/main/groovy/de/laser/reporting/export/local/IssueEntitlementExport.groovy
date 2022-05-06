@@ -97,7 +97,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
             else if (type == BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL) {
 
                 if (key == '@-entitlement-priceItem') {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
                     List<String> piList = ie.priceItems.collect{ pi ->
                         String list  = pi.listPrice ? (pi.listPrice + (pi.listCurrency ? ' ' + pi.listCurrency: ' ?')) : null

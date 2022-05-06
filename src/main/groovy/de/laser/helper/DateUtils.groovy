@@ -15,10 +15,7 @@ class DateUtils {
     public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
     public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
 
-    /** This is a Utility-Class. There are only static methods. It is not necessary to create an instance */
-    private DateUtils(){}
-
-    static SimpleDateFormat getSimpleDateFormatByToken(String token) {
+    static SimpleDateFormat getLocalizedSDF_byToken(String token) {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
         String format = messageSource.getMessage(token, null, locale)
@@ -27,26 +24,25 @@ class DateUtils {
             return new SimpleDateFormat(format)
         }
         else {
-            log.debug("WARNING: no date format found for ( ${token}, ${locale} )")
-
+            log.warn("No date format found for ( ${token}, ${locale} )")
         }
         return null
     }
 
-    static SimpleDateFormat getSDF_NoTimeNoPoint(){
-        getSimpleDateFormatByToken(DATE_FORMAT_NOTIME_NOPOINT)
+    static SimpleDateFormat getLocalizedSDF_noTimeNoPoint(){
+        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME_NOPOINT)
     }
 
-    static SimpleDateFormat getSDF_NoTime(){
-        getSimpleDateFormatByToken(DATE_FORMAT_NOTIME)
+    static SimpleDateFormat getLocalizedSDF_noTime(){
+        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME)
     }
 
-    static SimpleDateFormat getSDF_NoZ(){
-        getSimpleDateFormatByToken(DATE_FORMAT_NOZ)
+    static SimpleDateFormat getLocalizedSDF_noZ(){
+        getLocalizedSDF_byToken(DATE_FORMAT_NOZ)
     }
 
-    static SimpleDateFormat getSDF_OnlyTime(){
-        getSimpleDateFormatByToken(DATE_FORMAT_ONLYTIME)
+    static SimpleDateFormat getLocalizedSDF_onlyTime(){
+        getLocalizedSDF_byToken(DATE_FORMAT_ONLYTIME)
     }
 
     static SimpleDateFormat getSDF_ymd(){
@@ -67,10 +63,6 @@ class DateUtils {
 
     static SimpleDateFormat getSDF_year(){
         return new SimpleDateFormat('yyyy')
-    }
-
-    static Date toDate_NoTime(String value) {
-        (Date) getSDF_NoTime()?.parseObject(value)
     }
 
     // --

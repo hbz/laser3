@@ -21,7 +21,7 @@ class ReaderNumberController  {
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
-			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 			Map<String, Object> rnData = params.clone()
 			if (params.dueDate)
 				rnData.dueDate = sdf.parse(params.dueDate)
@@ -51,7 +51,7 @@ class ReaderNumberController  {
 			if (! numbersInstance) {
 				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			}
-			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
 			if(params.dueDate)
 				rnData.dueDate = sdf.parse(params.dueDate)

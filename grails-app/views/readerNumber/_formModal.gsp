@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <%
-    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
     Date startOfYear = DateUtils.getSDF_ymd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
     Set<RefdataValue> preloadGroups
     switch(formId) {

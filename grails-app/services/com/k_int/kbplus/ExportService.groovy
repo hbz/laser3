@@ -29,7 +29,6 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import groovy.sql.Sql
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -503,7 +502,7 @@ class ExportService {
 		if(!contextOrg)
 			contextOrg = contextService.getOrg()
 		List cells = []
-		SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notime')
+		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_byToken('default.date.format.notime')
 		propertyDefinitions.each { PropertyDefinition pd ->
 			Set<String> value = []
 			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -1051,7 +1050,7 @@ class ExportService {
 	 */
 	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
 		Locale locale = LocaleContextHolder.getLocale()
-		SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
+		SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()

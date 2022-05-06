@@ -76,7 +76,7 @@ class MyInstitutionControllerService {
 
         // tasks
 
-        SimpleDateFormat sdFormat    = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdFormat    = DateUtils.getLocalizedSDF_noTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         pu.setBenchmark('tasks')

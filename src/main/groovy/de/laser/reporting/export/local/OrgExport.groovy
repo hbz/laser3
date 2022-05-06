@@ -237,7 +237,7 @@ class OrgExport extends BaseDetailsExport {
                         )
 
                         entries.addAll( dueDateMap.collect { sem ->
-                            DateUtils.getSDF_NoTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
+                            DateUtils.getLocalizedSDF_noTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
                                 rn.value.value ? (rn.key + ' ' + rn.value.value) : null
                             }.findAll().join(', ')
                         } )

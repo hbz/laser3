@@ -51,7 +51,7 @@ class DataManagerController  {
 
         log.debug("changeLog ${params}")
         Map<String, Object> result = [:]
-        SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
+        SimpleDateFormat formatter = DateUtils.getLocalizedSDF_noTime()
         boolean exporting = params.format == 'csv'
 
     if ( exporting ) {

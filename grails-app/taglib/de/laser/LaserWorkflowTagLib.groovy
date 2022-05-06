@@ -29,7 +29,7 @@ class LaserWorkflowTagLib {
                     }
                     else if (f.startsWith('date')) {
                         fstr = ( cnd.getProperty( f )  ?
-                                '<i class="icon calendar alternate outline"></i> ' + fstr + ': <strong>' + DateUtils.getSDF_NoTime().format(cnd.getProperty(f)) + '</strong>' :
+                                '<i class="icon calendar alternate outline"></i> ' + fstr + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cnd.getProperty(f)) + '</strong>' :
                                 '<i class="icon calendar alternate outline la-light-grey"></i> ' + fstr  )
                     }
                     else if (f.startsWith('file')) {
@@ -90,7 +90,7 @@ class LaserWorkflowTagLib {
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {
                     out << '<i class="icon calendar alternate outline"></i> ' + pTitle
-                    out << ': ' + DateUtils.getSDF_NoTime().format(condition.getProperty(field))
+                    out << ': ' + DateUtils.getLocalizedSDF_noTime().format(condition.getProperty(field))
                 }
                 else {
                     out << '<i class="icon calendar alternate outline la-light-grey"></i> ' + pTitle

@@ -162,8 +162,8 @@
                 <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
                     ${wf.subscription}
                     <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
-                        (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
-                        ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
+                        (${wf.subscription.startDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.startDate) : ''} -
+                        ${wf.subscription.endDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.endDate) : ''})
                     </g:if>
                 </g:link>
             </div>
@@ -190,7 +190,7 @@
             </g:link>
 
             <br />
-            Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
+            Bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
         </div>
 
         <br />

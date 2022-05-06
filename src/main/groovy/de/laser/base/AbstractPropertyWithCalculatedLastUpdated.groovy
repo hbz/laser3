@@ -190,7 +190,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
                 result = null
                 break
             case [ Date.toString(), Date.class.name ]:
-                result = DateUtils.toDate_NoTime(value)
+                result = (Date) DateUtils.getLocalizedSDF_noTime().parseObject(value)
                 break
             case [ RefdataValue.toString(), RefdataValue.class.name ]:
                 result = RefdataValue.get(value)

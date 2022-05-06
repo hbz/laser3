@@ -216,7 +216,7 @@ class PendingChange {
                 pc.msgToken = configMap.msgToken
                 pc.targetProperty = configMap.prop
                 if (pc.targetProperty in PendingChange.DATE_FIELDS) {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                     pc.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
                     pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
                 }
@@ -263,7 +263,7 @@ class PendingChange {
         if (configMap.prop) {
 
             if (configMap.prop in PendingChange.DATE_FIELDS) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
             }

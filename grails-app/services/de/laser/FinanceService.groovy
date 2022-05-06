@@ -739,7 +739,7 @@ class FinanceService {
             result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
         }
         else {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             //subscription filter settings
             //subscription members A (from /subFinance)
             if(params.filterSubMembers) {

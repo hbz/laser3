@@ -6,7 +6,6 @@ import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.interfaces.CalculatedType
 import de.laser.properties.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -154,7 +153,7 @@ class PropertyService {
             prop.decValue = new BigDecimal(filterPropValue)
         }
         else if (prop.type.isDateType()) {
-            SimpleDateFormat sdf = DateUtils.SDF_NoTime
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             prop.dateValue = sdf.parse(filterPropValue)
         }
         else if (prop.type.isURLType()) {

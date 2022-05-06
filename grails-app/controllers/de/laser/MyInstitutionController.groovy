@@ -324,7 +324,7 @@ class MyInstitutionController  {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         def date_restriction = null
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -516,7 +516,7 @@ class MyInstitutionController  {
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
 
-        SimpleDateFormat sdfNoPoint = DateUtils.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdfNoPoint = DateUtils.getLocalizedSDF_noTimeNoPoint()
         String filename = "${sdfNoPoint.format(new Date())}_${g.message(code: 'export.my.currentLicenses')}"
         List titles = [
                 g.message(code:'license.details.reference'),
@@ -645,7 +645,7 @@ class MyInstitutionController  {
         }
 
         def cal = new java.util.GregorianCalendar()
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -826,7 +826,7 @@ join sub.orgRelations or_sub where
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
         def message = g.message(code: 'export.my.currentProviders')
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
 
@@ -907,7 +907,7 @@ join sub.orgRelations or_sub where
         result.compare = params.compare ?: ''
 
         // Write the output to a file
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -971,7 +971,7 @@ join sub.orgRelations or_sub where
      * @see Org
      */
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -1274,7 +1274,7 @@ join sub.orgRelations or_sub where
         // Set Date Restriction
         Date checkedDate = null
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         boolean defaultSet = false
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date())
@@ -1381,7 +1381,7 @@ join sub.orgRelations or_sub where
         result.titles = allTitles
 
         result.filterSet = params.filterSet || defaultSet
-        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
 
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
@@ -1665,7 +1665,7 @@ join sub.orgRelations or_sub where
                 result
             }
             csv {
-                SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
+                SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -1855,7 +1855,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -1879,7 +1879,7 @@ join sub.orgRelations or_sub where
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
 
-        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
 
         def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
@@ -1891,7 +1891,7 @@ join sub.orgRelations or_sub where
             SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1899,7 +1899,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
             }else {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2015,7 +2015,7 @@ join sub.orgRelations or_sub where
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2420,7 +2420,7 @@ join sub.orgRelations or_sub where
             params.sort = "t.endDate"
             params.order = "asc"
         }
-        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
@@ -2796,7 +2796,7 @@ join sub.orgRelations or_sub where
 
         header = message(code: 'menu.my.insts')
         exportHeader = message(code: 'export.my.consortia')
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader
 
@@ -2905,7 +2905,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         pu.setBenchmark("before xls")
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3077,7 +3077,7 @@ join sub.orgRelations or_sub where
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
+            String filename = "${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -3217,7 +3217,7 @@ join sub.orgRelations or_sub where
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date())}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
+                    String filename = "${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
@@ -3245,7 +3245,7 @@ join sub.orgRelations or_sub where
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        DateFormat sdFormat = DateUtils.getSDF_NoTime()
+        DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
         result.participant = Org.get(Long.parseLong(params.id))
 
@@ -3271,7 +3271,7 @@ join sub.orgRelations or_sub where
         if ( params.exportXLSX ) {
 
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -3396,7 +3396,7 @@ join sub.orgRelations or_sub where
         }
 
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyGroupUsageXLS(result.propDefGroups))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.propertyGroups')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3691,7 +3691,7 @@ join sub.orgRelations or_sub where
         //result.editable = true // true, because action is protected (it is not, cf. ERMS-2132! INST_USERs do have reading access to this page!)
         result.propertyType = 'private'
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.privateProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3775,7 +3775,7 @@ join sub.orgRelations or_sub where
 
         result.propertyType = 'custom'
         if(params.cmd == 'exportXLS') {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.customProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

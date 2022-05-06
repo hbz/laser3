@@ -272,7 +272,7 @@ class PackageController {
                         def comparisonMap =
                                 institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
                         log.debug("Create CSV Response")
-                        SimpleDateFormat dateFormatter = DateUtils.getSDF_NoTime()
+                        SimpleDateFormat dateFormatter = DateUtils.getLocalizedSDF_noTime()
                         response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                         response.contentType = "text/csv"
                         def out = response.outputStream
@@ -302,7 +302,7 @@ class PackageController {
             }
 
         } else {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             Date currentDate = sdf?.format(new Date())
             params.dateA = currentDate
             params.dateB = currentDate
@@ -335,7 +335,7 @@ class PackageController {
      */
     private def createCompareList(pkg, dateStr, params, result) {
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date date = dateStr ? sdf.parse(dateStr) : new Date()
         def packageId = pkg.substring(pkg.indexOf(":") + 1)
 
@@ -413,7 +413,7 @@ class PackageController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date today = new Date()
         if (!params.asAt) {
             if (packageInstance.startDate > today) {
@@ -488,7 +488,7 @@ class PackageController {
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
 
@@ -623,13 +623,13 @@ class PackageController {
         String filename
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
             params.status = RDStore.TIPP_STATUS_RETIRED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
             params.status = RDStore.TIPP_STATUS_DELETED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])

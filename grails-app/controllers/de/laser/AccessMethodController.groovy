@@ -27,7 +27,7 @@ class AccessMethodController  {
     def create() {
         params.max = params.max ?: contextService.getUser().getDefaultPageSize()
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -112,7 +112,7 @@ class AccessMethodController  {
         Platform platf = accessMethod.platf
 
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {

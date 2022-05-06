@@ -68,7 +68,7 @@ class CostItemExport extends BaseDetailsExport {
     @Override
     List<Object> getDetailedObject(Object obj, Map<String, Object> fields) {
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         CostItem ci = obj as CostItem
         List content = []

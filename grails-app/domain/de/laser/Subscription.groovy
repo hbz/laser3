@@ -967,7 +967,7 @@ select distinct oap from OrgAccessPoint oap
      * @return this subscription's name according to the dropdown naming convention
      */
   String dropdownNamingConvention(contextOrg){
-       SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+       SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''

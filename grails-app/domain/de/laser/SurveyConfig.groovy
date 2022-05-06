@@ -211,7 +211,7 @@ class SurveyConfig {
      * @return the {@link Subscription}'s name, status and running time if it is a subscription survey, the survey name (in {@link SurveyInfo}) otherwise
      */
     String getConfigName() {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if (type == 'Subscription') {
             return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +
@@ -462,7 +462,7 @@ class SurveyConfig {
      * @return a concatenated string according to the dropdown naming convention linked above
      */
     String dropdownNamingConvention() {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = surveyInfo.startDate ? sdf.format(surveyInfo.startDate)  : ''
 
         period = surveyInfo.endDate ? period + ' - ' + sdf.format(surveyInfo.endDate)  : ''

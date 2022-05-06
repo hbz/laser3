@@ -114,7 +114,7 @@ class DetailsExportManager {
         objList.each{ obj ->
             List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
                 if (it instanceof Date) {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                     return sdf.format(it)
                 }
                 else if (it instanceof Double) {
@@ -226,7 +226,7 @@ class DetailsExportManager {
         objList.each{ obj ->
             List<String> row = export.getDetailedObject( obj, fields ).collect{ it ->
                 if (it instanceof Date) {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                     return sdf.format(it)
                 }
                 else if (it instanceof Double) {

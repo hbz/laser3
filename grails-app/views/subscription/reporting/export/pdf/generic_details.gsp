@@ -13,7 +13,7 @@
 <body>
     <p><span class="warningTMP">DEMO : Funktionalität in Entwicklung</span></p>
 
-    <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
+    <h1>LAS:eR Report <span>- ${DateUtils.getLocalizedSDF_noTime().format( new Date() )}</span></h1>
 
     <div class="filterResult">
         <%= filterResult %>

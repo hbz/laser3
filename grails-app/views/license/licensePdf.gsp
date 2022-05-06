@@ -55,7 +55,7 @@
     </head>
     <body>
         <header>
-            <h1>LAS:eR-Vertrag ${license.reference} <span>- Stand vom ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
+            <h1>LAS:eR-Vertrag ${license.reference} <span>- Stand vom ${DateUtils.getLocalizedSDF_noTime().format( new Date() )}</span></h1>
         </header>
         <article>
             <h2><g:message code="default.identifiers.label"/></h2>

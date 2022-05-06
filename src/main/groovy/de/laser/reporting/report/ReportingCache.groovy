@@ -36,7 +36,7 @@ class ReportingCache {
         String filterResult = sub.name
 
         if (sub.startDate || sub.endDate) {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             filterResult += ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + ' - ' + (sub.endDate ? sdf.format(sub.endDate) : '')  + ')'
         }
 

@@ -18,7 +18,6 @@ import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.storage.BeanStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import de.laser.SubscriptionService
@@ -42,7 +41,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
-import javax.sql.DataSource
 import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -664,7 +662,7 @@ class PendingChangeService extends AbstractLockableService {
      * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
      */
     String subscriptionName(GroovyRowResult entry, Map<Long, String> status, Locale locale) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         //log.debug(subRows.toListString())
         String startDate = "", endDate = "", additionalInfo = ""
         if(entry.get('sub_start_date'))
@@ -845,7 +843,7 @@ class PendingChangeService extends AbstractLockableService {
         Locale locale = LocaleContextHolder.getLocale()
         String eventIcon, instanceIcon, eventString
         List<Object> eventData
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
             eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
             instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'

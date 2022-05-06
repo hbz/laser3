@@ -5,7 +5,6 @@ import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -33,7 +32,7 @@ class SubscriptionsQueryService {
     List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
 
         def date_restriction
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         boolean filterSet = false
         if (params.validOn == null || params.validOn.trim() == '') {
             date_restriction = null

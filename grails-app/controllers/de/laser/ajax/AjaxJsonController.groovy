@@ -120,7 +120,7 @@ class AjaxJsonController {
                 }
             }
             subscriptionRows.each {Long subId, Map entry ->
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 String startDate = "", endDate = "", additionalInfo = ""
                 if(entry.startDate)
                     startDate = sdf.format(entry.startDate)

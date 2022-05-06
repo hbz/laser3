@@ -15,11 +15,9 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
@@ -30,7 +28,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
-import javax.sql.DataSource
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
@@ -94,7 +91,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         def date_restriction = null
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -272,7 +269,7 @@ class SubscriptionService {
                 query += ") "
             }
 
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
         }
 
@@ -695,7 +692,7 @@ class SubscriptionService {
             String base_qry = null
             Map<String,Object> qry_params = [subscription: subscription]
 
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
                 date_filter = sdf.parse(params.asAt)
@@ -2250,7 +2247,7 @@ class SubscriptionService {
         Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.getOrg()
         SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         candidates.eachWithIndex{ entry, int s ->
             if(params["take${s}"]) {
                 //create object itself
@@ -2799,7 +2796,7 @@ class SubscriptionService {
                         println(prop.error)
                     }
                 } else if(field == "dateValue") {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
                     def backup = prop."${field}"
                     try {

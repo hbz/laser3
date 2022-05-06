@@ -82,8 +82,8 @@ class DataConsistencyService {
     List<Object> ajaxQuery(String key1, String key2, String value) {
 
         List<Object> result = []
-        SimpleDateFormat sdfA = DateUtils.getSDF_NoTime()
-        SimpleDateFormat sdfB = DateUtils.getSDF_NoZ()
+        SimpleDateFormat sdfA = DateUtils.getLocalizedSDF_noTime()
+        SimpleDateFormat sdfB = DateUtils.getLocalizedSDF_noZ()
 
         if (key1 == 'Org') {
             result = Org.findAllWhere( "${key2}": value ).collect{ it ->

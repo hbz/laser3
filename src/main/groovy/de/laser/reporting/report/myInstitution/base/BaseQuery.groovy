@@ -246,7 +246,7 @@ class BaseQuery {
         result.data.each { d ->
             Timestamp ts = d[0]
             Long d0Id = ts.toInstant().getEpochSecond()
-            d[1] = DateUtils.getSDF_NoTime().format(d[1])
+            d[1] = DateUtils.getLocalizedSDF_noTime().format(d[1])
 
             result.dataDetails.add( [
                     query:  query,

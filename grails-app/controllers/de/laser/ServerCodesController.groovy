@@ -40,7 +40,7 @@ class ServerCodesController {
                     "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - " + ConfigMapper.getLaserSystemId() +
                     "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
                     "URI: "     + request.forwardURI + nl +
-                    "Zeitpunkt: " + DateUtils.getSDF_NoZ().format( new Date() ) + nl +
+                    "Zeitpunkt: " + DateUtils.getLocalizedSDF_noZ().format( new Date() ) + nl +
                     "System: "  + ConfigMapper.getLaserSystemId() + nl +
                     "Branch: "  + AppUtils.getMeta('git.branch') + nl +
                     "Commit: "  + AppUtils.getMeta('git.commit.id') + nl +

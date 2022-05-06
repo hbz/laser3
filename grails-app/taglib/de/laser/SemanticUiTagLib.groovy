@@ -553,7 +553,7 @@ class SemanticUiTagLib {
         String id = attrs.id ? "${message(code: attrs.id)}" : ''
         String placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value

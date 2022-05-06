@@ -649,7 +649,7 @@ class ManagementService {
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {
                 Set change = [], noChange = []
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)

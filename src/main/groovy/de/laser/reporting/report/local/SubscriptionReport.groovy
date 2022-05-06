@@ -50,7 +50,7 @@ class SubscriptionReport {
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
         List<String> meta = []
 
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Subscription sub = Subscription.get(params.id)
 
         // TODO
@@ -76,7 +76,7 @@ class SubscriptionReport {
     }
 
     static Map<String, Object> query(GrailsParameterMap params) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         Map<String, Object> result = BaseQuery.getEmptyResult( params.query, params.chart )
 

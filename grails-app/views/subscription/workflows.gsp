@@ -99,9 +99,9 @@
                     </div>
                 </td>
                 <td>
-                    ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
+                    ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
                     <br />
-                    ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
+                    ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
                     <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
@@ -158,8 +158,8 @@
                                     </div>
                                 </g:if>
                                 <div class="ui right aligned">
-                                    Zuletzt bearbeitet am: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}<br />
-                                    Erstellt am: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
+                                    Zuletzt bearbeitet am: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}<br />
+                                    Erstellt am: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                 </div>
                             </div>
                         </td>

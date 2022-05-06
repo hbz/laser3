@@ -167,7 +167,7 @@ class SurveyService {
      * @return an Excel worksheet containing the survey data
      */
     def exportSurveys(List<SurveyConfig> surveyConfigs, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleContextHolder.getLocale()
         Map sheetData = [:]
 
@@ -470,7 +470,7 @@ class SurveyService {
      * @return an Excel worksheet containing the cost item data
      */
     def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map sheetData = [:]
@@ -804,7 +804,7 @@ class SurveyService {
      * @return an Excel worksheet containing the export
      */
     def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Locale locale = LocaleContextHolder.getLocale()
 
         Map sheetData = [:]
@@ -1132,7 +1132,7 @@ class SurveyService {
      * @return the map enriched with information
      */
     private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
-        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map<String,Object> fsq = [:]
 
         def cloneParameterMap = parameterMap.clone()
@@ -1390,7 +1390,7 @@ class SurveyService {
      * @return the map enriched with information
      */
     private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
-        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map fsq = [:]
 
         def cloneParameterMap = parameterMap.clone()
