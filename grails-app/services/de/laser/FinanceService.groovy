@@ -242,7 +242,7 @@ class FinanceService {
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100
-                CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = ci.costInBillingCurrency * :percentage, ci.costInLocalCurrency = ci.costInLocalCurrency * :percentage where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
+                CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = floor(abs(ci.costInBillingCurrency * :percentage) * 100)/100.0, ci.costInLocalCurrency =floor(abs(ci.costInLocalCurrency * :percentage) * 100)/100.0 where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)

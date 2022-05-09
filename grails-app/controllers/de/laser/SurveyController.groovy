@@ -798,7 +798,7 @@ class SurveyController {
             }*/
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}, true, true) : null
             }
@@ -2023,7 +2023,7 @@ class SurveyController {
 
                 if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                    result.previousSubscription = result.subscription._getCalculatedPrevious()
+                    result.previousSubscription = result.subscription._getCalculatedSuccessorForSurvey()
 
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
@@ -2052,7 +2052,7 @@ class SurveyController {
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
@@ -2065,7 +2065,7 @@ class SurveyController {
 
     }
 
-    /*@DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2074,16 +2074,15 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-
         result.participant = Org.get(params.participant)
 
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyResults = []
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
+        }
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.ownerId = result.surveyResults[0].owner.id
+        result.ownerId = result.surveyInfo.owner.id
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
@@ -2110,10 +2109,38 @@ class SurveyController {
                     result.costItemSums.subscrCosts = costItems.subscr.costItems
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+                if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+
+                    result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
+
+                    /*result.previousIesListPriceSum = 0
+                   if(result.previousSubscription){
+                       result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+                   }*/
+
+                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
+                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+
+                    /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+
+                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                    result.subscriber = result.participant
+
+                }
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
@@ -2121,6 +2148,8 @@ class SurveyController {
         }
 
         result.institution = result.participant
+
+        result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
 
         String pageSize = 'A4'
         String orientation = 'Portrait'
@@ -2152,8 +2181,8 @@ class SurveyController {
         response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
         response.setContentType('application/pdf')
         response.outputStream.withStream { it << pdf }
-
-    }*/
+        return
+    }
 
     /**
      * Call to list all possible survey properties (i.e. the questions which may be asked in a survey)
@@ -2597,7 +2626,11 @@ class SurveyController {
 
             flash.message = g.message(code: "openSurveyNow.successfully")
 
-            surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            executorService.execute({
+                Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
+                surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+            })
+            executorService.shutdown()
 
         }
 
@@ -3720,7 +3753,7 @@ class SurveyController {
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
         if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
@@ -3782,7 +3815,7 @@ class SurveyController {
 
         result.parentSubscription = result.surveyConfig.subscription
         if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
@@ -3801,7 +3834,7 @@ class SurveyController {
             newMap.sortname = org.sortname
             newMap.name = org.name
             newMap.newSub = sub
-            newMap.oldSub = sub._getCalculatedPrevious()
+            newMap.oldSub = sub._getCalculatedSuccessorForSurvey()
 
             newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
             newMap.surveyCostItem =newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqual(newMap.surveyOrg,RDStore.COST_ITEM_DELETED) : null
@@ -3831,7 +3864,7 @@ class SurveyController {
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
@@ -3998,7 +4031,7 @@ class SurveyController {
 
         result.parentSubscription = result.surveyConfig.subscription
         if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
@@ -4039,7 +4072,7 @@ class SurveyController {
                 newMap.sortname = org.sortname
                 newMap.name = org.name
                 newMap.newSub = sub
-                newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPrevious() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
+                newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedSuccessorForSurvey() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
 
                 //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
@@ -4101,7 +4134,7 @@ class SurveyController {
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
-            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
@@ -4147,7 +4180,7 @@ class SurveyController {
                     if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
                         Subscription sub = Subscription.get(Long.parseLong(subID))
                         Org org = sub.getSubscriber()
-                        Subscription oldSub = sub._getCalculatedPrevious()
+                        Subscription oldSub = sub._getCalculatedSuccessorForSurvey()
 
                         AbstractPropertyWithCalculatedLastUpdated copyProperty
                         if (params.tab == 'surveyProperties') {
@@ -4240,7 +4273,7 @@ class SurveyController {
 
         result.parentSubscription = result.surveyConfig.subscription
         result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
+        result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION

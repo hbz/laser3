@@ -149,10 +149,10 @@ class ApiMapReader {
         result.openAccess       = row['tipp_open_access']
         List<Map<String, Object>> ddcs = [], languages = []
         row['ddcs'].each { GroovyRowResult ddcRow ->
-            ddcs << [value: ddcRow['value'], value_de: ddcRow['value_de'], value_en: ddcRow['value_en']]
+            ddcs << [value: ddcRow['rdv_value'], value_de: ddcRow['rdv_value_de'], value_en: ddcRow['rdv_value_en']]
         }
         row['languages'].each { GroovyRowResult langRow ->
-            languages << [value: langRow['value'], value_de: langRow['value_de'], value_en: langRow['value_en']]
+            languages << [value: langRow['rdv_value'], value_de: langRow['rdv_value_de'], value_en: langRow['rdv_value_en']]
         }
         result.ddcs             = ddcs
         result.languages        = languages

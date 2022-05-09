@@ -1168,11 +1168,18 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
-        //Important
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
-        }else{
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        if(!(params.tab in ['notes', 'documents', 'properties'])){
+            //Important
+            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+            }
         }
 
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
@@ -2020,14 +2027,14 @@ join sub.orgRelations or_sub where
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                result.previousSubscription = result.subscription._getCalculatedPrevious()
+                result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
                 /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
@@ -2914,8 +2921,12 @@ join sub.orgRelations or_sub where
         if(params.format || params.exportXLS) {
             List<Subscription> subscriptions = result.entries.collect { entry -> (Subscription) entry[1] } as List<Subscription>
             Links.executeQuery("select l from Links l where (l.sourceSubscription in (:targetSubscription) or l.destinationSubscription in (:targetSubscription)) and l.linkType = :linkType",[targetSubscription:subscriptions,linkType:RDStore.LINKTYPE_FOLLOWS]).each { Links link ->
-                if(link.sourceSubscription && link.destinationSubscription)
-                subLinks.put(link.sourceSubscription,link.destinationSubscription)
+                if(link.sourceSubscription && link.destinationSubscription) {
+                    Set<Subscription> destinations = subLinks.get(link.sourceSubscription)
+                    if(destinations)
+                        destinations << link.destinationSubscription
+                    subLinks.put(link.sourceSubscription, destinations)
+                }
             }
             /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.evaluation')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyInfo.evaluation')})</title>
 
 </head>
 
@@ -295,11 +295,12 @@ ${surveyInfo.name}
                                     <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedPreviousForSurvey()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
@@ -348,11 +349,12 @@ ${surveyInfo.name}
                                     <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedPreviousForSurvey()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>

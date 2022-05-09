@@ -55,7 +55,7 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
             </th>
         </tr>
         </thead>
-        <g:each in="${surveyResults.sort { it.type.getI10n('name') }}" var="surveyResult" status="i">
+        <g:each in="${surveyResults}" var="surveyResult" status="i">
             <tr>
                 <td>
                     ${i + 1}

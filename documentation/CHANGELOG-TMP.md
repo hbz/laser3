@@ -7,7 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4227    06.05.2022  dev     2.3         Andreas Feature     Neuer EZB-Endpunkt für Fernleihindikatoren
+
+4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
+
+4221    06.05.2022  dev     2.3         Andreas Feature     Neuen Funktionstyp "OA-Kontakt" aufgenommen
+
+4210    06.05.2022  dev     2.3         Andreas Feature     Teilnehmerverträge verwalten umstrukturiert
+
+4153    06.05.2022  dev     2.3         Moe     Bug         Filter "Meine Lizenzverwaltung" kann nicht auf "zentral verwaltet" eingestellt werden
+
+4062    06.05.2022  dev     2.3         Andreas Feature     Umstrukturierung der Budgetvewaltungssicht
+
+4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
+
 4216    04.05.2022  dev     2.3         Andreas Feature     Feld "URL" bei Paketen in "Beschreibungs-URL" geändert
+
+4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
 
 4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
 

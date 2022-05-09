@@ -44,17 +44,17 @@
             <div class="content">
                 ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
 
-                <g:if test="${participantPerpetualAccessToTitle}">
-                    ${RDStore.YN_YES.getI10n('value')}
-                </g:if>
-                <g:else>
-                    %{--newSub come only from Workflow Survey with IEs--}%
-                    <g:if test="${newSub}">
-                        ${ie.perpetualAccessBySub && ie.subscription == newSub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                %{--newSub come only from Workflow Survey with IEs--}%
+                <g:if test="${newSub}">
+                    <g:if test="${participantPerpetualAccessToTitle}">
+                        ${RDStore.YN_YES.getI10n('value')}
                     </g:if>
                     <g:else>
-                        ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                        ${RDStore.YN_NO.getI10n('value')}
                     </g:else>
+                </g:if>
+                <g:else>
+                    ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
                 </g:else>
             </div>
         </div>
