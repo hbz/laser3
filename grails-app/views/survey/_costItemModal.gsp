@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.*; org.springframework.context.i18n.LocaleContextHolder" %>
 <laser:serviceInjection/>
 
 <g:if test="${setting == 'bulkForAll'}">

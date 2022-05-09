@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.GlobalSourceSyncService" %>
+<%@page import="de.laser.GlobalSourceSyncService" %>
 <!doctype html>
 <html>
   <head>

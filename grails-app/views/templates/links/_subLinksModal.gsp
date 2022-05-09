@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 
