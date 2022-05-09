@@ -7,7 +7,6 @@ import javax.persistence.Transient
 /**
  * The affiliation link between a {@link User} and an {@link Org}, rights marked by a {@link Role}
  */
-//@GrailsCompileStatic
 class UserOrg implements Comparable {
 
     Date dateCreated

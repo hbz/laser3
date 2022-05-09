@@ -4,6 +4,7 @@ import de.laser.auth.User
  
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugInfo
+import de.laser.survey.SurveyConfig
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 

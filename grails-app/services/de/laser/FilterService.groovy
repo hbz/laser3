@@ -5,6 +5,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.survey.SurveyConfig
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource

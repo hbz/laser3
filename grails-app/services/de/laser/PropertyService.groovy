@@ -7,6 +7,7 @@ import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.*
+import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

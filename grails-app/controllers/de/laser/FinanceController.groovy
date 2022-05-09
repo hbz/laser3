@@ -10,6 +10,7 @@ import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

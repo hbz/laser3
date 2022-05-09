@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.finance.CostItem; de.laser.helper.ConfigMapper; de.laser.SurveyConfig; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.helper.ConfigMapper; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">

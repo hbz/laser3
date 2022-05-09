@@ -17,8 +17,7 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
-import de.laser.helper.DateUtils
+import de.laser.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.Address
@@ -26,14 +25,10 @@ import de.laser.Contact
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.IssueEntitlementCoverage
 import de.laser.storage.RDStore
-import grails.converters.JSON
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-
-import java.text.SimpleDateFormat
 
 /**
  * This class delivers given lists as maps of stubs or full objects

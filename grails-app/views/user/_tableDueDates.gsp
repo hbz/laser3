@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>

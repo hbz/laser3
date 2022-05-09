@@ -5,7 +5,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.finance.PriceItem
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -22,6 +21,11 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer

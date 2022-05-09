@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:set var="surveyService" bean="surveyService"/>

@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
@@ -177,7 +178,7 @@ class TaskService {
      * @param params a pagination parameter map
      * @return a paginated list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
+    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj, Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
     }
 

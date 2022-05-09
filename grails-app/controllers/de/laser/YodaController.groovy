@@ -15,6 +15,8 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting

@@ -1,6 +1,6 @@
-import de.laser.SurveyConfig
-import de.laser.SurveyConfigProperties
-import de.laser.SurveyInfo
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
 import de.laser.storage.RDStore
 
 databaseChangeLog = {

@@ -14,6 +14,11 @@ import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService

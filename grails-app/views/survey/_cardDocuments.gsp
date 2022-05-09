@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <%

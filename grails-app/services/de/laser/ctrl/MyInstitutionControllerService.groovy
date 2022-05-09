@@ -6,6 +6,7 @@ import de.laser.helper.DateUtils
 import de.laser.helper.ProfilerUtils
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
+import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
 import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional

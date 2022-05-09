@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
 import de.laser.helper.DateUtils
 import de.laser.helper.LocaleHelper
 import de.laser.storage.RDConstants
@@ -11,6 +10,10 @@ import de.laser.storage.RDStore
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 import org.hibernate.Session

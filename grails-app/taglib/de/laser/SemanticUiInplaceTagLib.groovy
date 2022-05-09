@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyResult
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.NumberFormat

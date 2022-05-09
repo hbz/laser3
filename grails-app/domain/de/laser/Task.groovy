@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.survey.SurveyConfig
 
 /**
  * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfTask}, not part of a more complex workflow

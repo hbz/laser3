@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.OrgRole" %>
+<%@ page import="de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 

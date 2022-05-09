@@ -5,7 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.SurveyResult
+import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
 import de.laser.helper.LocaleHelper

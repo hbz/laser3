@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <table class="ui celled sortable table la-js-responsive-table la-table">

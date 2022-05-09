@@ -1,5 +1,8 @@
-package de.laser
+package de.laser.survey
 
+import de.laser.Org
+import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 

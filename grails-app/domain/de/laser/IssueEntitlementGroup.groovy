@@ -17,8 +17,6 @@ class IssueEntitlementGroup {
     String name
     String description
 
-    //Org owner
-
     static belongsTo = [sub: Subscription]
 
     static hasMany = [items: IssueEntitlementGroupItem]

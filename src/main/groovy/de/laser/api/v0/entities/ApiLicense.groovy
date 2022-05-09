@@ -168,9 +168,9 @@ class ApiLicense {
         otherLinks.each { Links li ->
             if(li.linkType == RDStore.LINKTYPE_FOLLOWS) {
                 if(lic == li.sourceLicense)
-                    result.predecessors.add(ApiStubReader.requestLicenseStub(li.destinationLicense, context)) // com.k_int.kbplus.License
+                    result.predecessors.add(ApiStubReader.requestLicenseStub(li.destinationLicense, context)) // de.laser.License
                 else if(lic == li.destinationLicense)
-                    result.successors.add(ApiStubReader.requestLicenseStub(li.sourceLicense, context)) // com.k_int.kbplus.License
+                    result.successors.add(ApiStubReader.requestLicenseStub(li.sourceLicense, context)) // de.laser.License
             }
             else result.linkedLicenses.add([linktype: li.linkType.value, license: ApiStubReader.requestLicenseStub((License) li.getOther(lic), context)])
         }

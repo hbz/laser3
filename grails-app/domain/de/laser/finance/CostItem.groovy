@@ -2,7 +2,7 @@ package de.laser.finance
 
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
-import de.laser.SurveyOrg
+import de.laser.survey.SurveyOrg
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription

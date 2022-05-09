@@ -7,8 +7,6 @@ import javax.persistence.Transient
 /**
  * The linking between {@link User}s and {@link Role}s, ensuring permissions for users
  */
-//@GrailsCompileStatic
-//@ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable, Comparable {
 
 	private static final long serialVersionUID = 1

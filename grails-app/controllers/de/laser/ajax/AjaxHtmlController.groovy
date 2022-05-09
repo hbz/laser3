@@ -25,11 +25,11 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
-import de.laser.SurveyConfig
-import de.laser.SurveyConfigProperties
-import de.laser.SurveyInfo
-import de.laser.SurveyOrg
-import de.laser.SurveyResult
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform

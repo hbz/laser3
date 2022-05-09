@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
+import de.laser.survey.SurveyInfo
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 

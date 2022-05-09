@@ -1,7 +1,5 @@
-import de.laser.SurveyOrg
-import de.laser.SurveyResult
-import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
 
 databaseChangeLog = {

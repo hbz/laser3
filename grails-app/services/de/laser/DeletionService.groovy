@@ -7,6 +7,11 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEventParticipant
 import groovy.util.logging.Slf4j

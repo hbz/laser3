@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.base.AbstractBase
-import de.laser.finance.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants

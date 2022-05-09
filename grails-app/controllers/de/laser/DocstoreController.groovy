@@ -7,6 +7,7 @@ import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
+import de.laser.survey.SurveyConfig
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.springframework.context.MessageSource

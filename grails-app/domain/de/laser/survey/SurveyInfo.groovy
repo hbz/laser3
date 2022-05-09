@@ -1,5 +1,8 @@
-package de.laser
+package de.laser.survey
 
+import de.laser.License
+import de.laser.Org
+import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

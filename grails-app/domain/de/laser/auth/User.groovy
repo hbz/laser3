@@ -10,9 +10,7 @@ import javax.persistence.Transient
 /**
  * A user in the system
  */
-//@GrailsCompileStatic
 //@EqualsAndHashCode(includes='username')
-//@ToString(includes='username', includeNames=true, includePackage=false)
 class User {
 
     String username

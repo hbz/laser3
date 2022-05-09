@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig;" %>
+<%@ page import="de.laser.survey.SurveyConfig;" %>
 <!doctype html>
 <html>
 <head>

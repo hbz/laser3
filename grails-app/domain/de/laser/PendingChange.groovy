@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.exceptions.CreationException
-import de.laser.finance.PriceItem
 import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants

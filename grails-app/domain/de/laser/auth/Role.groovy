@@ -1,6 +1,5 @@
 package de.laser.auth
 
-import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.base.AbstractI10n
 import groovy.util.logging.Slf4j
@@ -8,7 +7,6 @@ import groovy.util.logging.Slf4j
 /**
  * A role a {@link User} or an {@link Org} may have, attributing certain {@link Perm}s, depending to the {@link PermGrant}s granted to the role
  */
-//@GrailsCompileStatic
 //@EqualsAndHashCode(includes='authority')
 @Slf4j
 class Role extends AbstractI10n {

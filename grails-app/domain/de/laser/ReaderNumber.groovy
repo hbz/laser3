@@ -25,7 +25,6 @@ class ReaderNumber {
     Org org
 
     static constraints = {
-        //type            (blank:false)
         dateGroupNote(nullable: true, blank: false)
         value(nullable: true)
         semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig;" %>
+<%@ page import="de.laser.survey.SurveyConfig;" %>
 <br />
 %{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
     <h3 class="ui icon header"><semui:headerIcon/>

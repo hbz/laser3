@@ -7,6 +7,4 @@ interface Permissions {
     boolean isVisibleBy(user)
 
     boolean hasPerm(perm, user)
-
-    //def checkPermissions(perm, user)
 }

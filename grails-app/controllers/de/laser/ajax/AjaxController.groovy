@@ -15,6 +15,8 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyResult
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured

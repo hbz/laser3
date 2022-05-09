@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.Org;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

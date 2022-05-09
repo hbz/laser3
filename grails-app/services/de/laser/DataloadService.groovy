@@ -3,6 +3,8 @@ package de.laser
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyOrg
 import de.laser.system.SystemEvent
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
