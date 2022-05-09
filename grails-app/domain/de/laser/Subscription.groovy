@@ -582,21 +582,59 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets the subscription marked as preceding to this subscription; usually the one of the last year ring
-     * @return the subscription linked to this subscription with type 'Follows'
+     * Gets the subscriptions marked as preceding to this subscription; usually the one of the last year ring
+     * @return the subscriptions linked to this subscription with type 'Follows'
      */
-    Subscription _getCalculatedPrevious() {
-        Links match = Links.findBySourceSubscriptionAndLinkType(this, RDStore.LINKTYPE_FOLLOWS)
-        return match ? match.destinationSubscription : null
+    Set<Subscription> _getCalculatedPrevious() {
+        Set<Subscription> matches = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceSubscription = :source and li.linkType = :linkType', [source: this, linkType: RDStore.LINKTYPE_FOLLOWS])
+        return matches ?: []
     }
 
     /**
-     * Gets the subscription marked as following to this subscription; usually the one of the next year ring
+     * Get the subscription marked as preceding to this subscription; usually the one of the last year ring
+     * @return the subscription linked to this subscription with type 'Follows'
+     */
+    Subscription _getCalculatedPreviousForSurvey() {
+        Set<Subscription> subscriptions = this._getCalculatedPrevious()
+        subscriptions = subscriptions.findAll {it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}
+
+        Subscription subscription = null
+        if(subscriptions.size() == 1){
+            subscription = subscriptions[0]
+        }
+        else if(subscriptions.size() > 1){
+            subscription = null
+        }
+
+        return subscription
+    }
+
+    /**
+     * Gets the subscriptions marked as following to this subscription; usually the one of the next year ring
+     * @return the subscriptions linking to this subscription with type 'Follows'
+     */
+    Set<Subscription> _getCalculatedSuccessor() {
+        Set<Subscription> matches = Links.executeQuery('select li.sourceSubscription from Links li where li.destinationSubscription = :destination and li.linkType = :linkType', [destination: this, linkType: RDStore.LINKTYPE_FOLLOWS])
+        return matches ?: []
+    }
+
+    /**
+     * Get the subscription marked as following to this subscription; usually the one of the next year ring
      * @return the subscription linking to this subscription with type 'Follows'
      */
-    Subscription _getCalculatedSuccessor() {
-        Links match = Links.findByDestinationSubscriptionAndLinkType(this,RDStore.LINKTYPE_FOLLOWS)
-        return match ? match.sourceSubscription : null
+    Subscription _getCalculatedSuccessorForSurvey() {
+        Set<Subscription> subscriptions = this._getCalculatedSuccessor()
+        subscriptions = subscriptions.findAll {it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}
+
+        Subscription subscription = null
+        if(subscriptions.size() == 1){
+            subscription = subscriptions[0]
+        }
+        else if(subscriptions.size() > 1){
+            subscription = null
+        }
+
+        return subscription
     }
 
     /**
