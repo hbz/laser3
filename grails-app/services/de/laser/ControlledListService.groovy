@@ -247,7 +247,6 @@ class ControlledListService {
                     break
             }
         }
-		//log.debug ("getSubscriptions(): ${result.results.size()} Matches")
         result
     }
 

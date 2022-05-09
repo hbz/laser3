@@ -9,6 +9,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEventParticipant
+import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -18,6 +19,7 @@ import org.elasticsearch.client.RestHighLevelClient
  */
 //@CompileStatic
 //@Transactional
+@Slf4j
 class DeletionService {
 
     ESWrapperService ESWrapperService
@@ -204,8 +206,7 @@ class DeletionService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    println 'error while deleting license ' + lic.id + ' .. rollback'
-                    println 'error while deleting license ' + e.message
+                    log.error 'error while deleting license ' + lic.id + ' .. rollback: ' + e.message
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
@@ -467,8 +468,8 @@ class DeletionService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    println 'error while deleting subscription ' + sub.id + ' .. rollback'
-                    println 'error while deleting subscription ' + e.message
+                    log.error 'error while deleting subscription ' + sub.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -680,8 +681,8 @@ class DeletionService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    println 'error while deleting org ' + org.id + ' .. rollback'
-                    println 'error while deleting org ' + e.message
+                    log.error 'error while deleting org ' + org.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -780,8 +781,8 @@ class DeletionService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    println 'error while deleting user ' + user.id + ' .. rollback'
-                    println 'error while deleting user ' + e.message
+                    log.error 'error while deleting user ' + user.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
                 }
@@ -798,13 +799,13 @@ class DeletionService {
      * @return true if the deletion was successful, false otherwise
      */
     boolean deletePackage(Package pkg) {
-        println "processing package #${pkg.id}"
+        log.debug "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
                 //to be absolutely sure ...
                 List<Subscription> subsConcerned = Subscription.executeQuery("select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and tipp.pkg.name != '' and ie.status != :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
                 if(subsConcerned) {
-                    println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
+                    log.info "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
                     status.setRollbackOnly()
                     return false
                 }
@@ -839,8 +840,8 @@ class DeletionService {
                 }
             }
             catch(Exception e) {
-                println 'error while deleting package ' + pkg.id + ' .. rollback'
-                println 'error while deleting package ' + e.printStackTrace()
+                log.error 'error while deleting package ' + pkg.id + ' .. rollback: ' + e.getMessage()
+                e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }
@@ -854,7 +855,7 @@ class DeletionService {
      * @return true if the deletion was successful, false otherwise
      */
     boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
-        println "processing tipp #${tipp.id}"
+        log.debug "processing tipp #${tipp.id}"
         //rebasing subscriptions
         if(subscriptionService.rebaseSubscriptions(tipp,replacement)) {
             TitleInstancePackagePlatform.withTransaction { status ->
@@ -865,15 +866,15 @@ class DeletionService {
                     return true
                 }
                 catch(Exception e) {
-                    println 'error while deleting tipp ' + tipp.id + ' .. rollback'
-                    println 'error while deleting tipp ' + e.printStackTrace()
+                    log.error 'error while deleting tipp ' + tipp.id + ' .. rollback: ' + e.getMessage()
+                    e.printStackTrace()
                     status.setRollbackOnly()
                     return false
                 }
             }
         }
         else {
-            println 'error while rebasing subscriptions for tipp '+tipp.id+' ... rollback'
+            log.info 'error while rebasing subscriptions for tipp '+tipp.id+' ... rollback'
             return false
         }
     }
@@ -885,7 +886,7 @@ class DeletionService {
      * @return the success flag
      */
     boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
-        println "processing tipps ${tippsToDelete}"
+        log.debug "processing tipps ${tippsToDelete}"
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
@@ -908,8 +909,8 @@ class DeletionService {
                 return true
             }
             catch (Exception e) {
-                println 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback'
-                println 'error while deleting tipp collection ' + e.message
+                log.error 'error while deleting tipp collection ' + tippsToDelete + ' .. rollback: ' + e.message
+                e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }
@@ -922,7 +923,7 @@ class DeletionService {
      * @return true if the deletion was successful, false otherwise
      */
     boolean deleteIssueEntitlement(IssueEntitlement ie) {
-        println "processing issue entitlement ${ie}"
+        log.debug "processing issue entitlement ${ie}"
         IssueEntitlement.withTransaction { status ->
             try {
                 Map<String,IssueEntitlement> toDelete = [ie:ie]
@@ -931,8 +932,8 @@ class DeletionService {
                 return true
             }
             catch (Exception e) {
-                println 'error while deleting issue entitlement ' + ie + ' .. rollback'
-                println 'error while deleting issue entitlement ' + e.message
+                log.error 'error while deleting issue entitlement ' + ie + ' .. rollback: ' + e.message
+                e.printStackTrace()
                 status.setRollbackOnly()
                 return false
             }

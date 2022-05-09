@@ -8,6 +8,7 @@ import de.laser.helper.ConfigMapper
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -15,6 +16,7 @@ import org.springframework.context.i18n.LocaleContextHolder
  * This service manages calls specific to institutional administrator (INST_ADM) matters
  */
 @Transactional
+@Slf4j
 class InstAdmService {
 
     AccessService accessService
@@ -180,7 +182,7 @@ class InstAdmService {
     void sendMail(User user, String subj, String view, Map model) {
 
         if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
-            println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
+            log.info "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }
 
@@ -197,7 +199,7 @@ class InstAdmService {
             }
         }
         catch (Exception e) {
-            println "Unable to perform email due to exception ${e.message}"
+            log.error "Unable to perform email due to exception ${e.message}"
         }
     }
 }

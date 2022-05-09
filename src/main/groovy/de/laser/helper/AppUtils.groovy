@@ -96,7 +96,7 @@ class AppUtils {
 
     static GrailsClass getDomainClassGeneric(String name) {
         GrailsClass dc
-        List<String> namespaces = [ 'de.laser', 'com.k_int.kbplus' ]
+        List<String> namespaces = [ 'de.laser' ]
 
         for (String ns : namespaces) {
             dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)

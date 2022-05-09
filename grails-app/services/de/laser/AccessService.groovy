@@ -232,8 +232,6 @@ class AccessService {
             def oss = OrgSetting.get(ctx, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
-            //println(org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params)
-            //println(oss.getValue())
             boolean isOrgBasicMemberView = false
             try {
                 isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
