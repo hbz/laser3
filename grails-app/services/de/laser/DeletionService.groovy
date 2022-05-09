@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.finance.*
+import de.laser.stats.Fact
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint

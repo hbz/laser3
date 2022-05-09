@@ -4,6 +4,8 @@ package de.laser
 import de.laser.base.AbstractCounterApiSource
 import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
+import de.laser.stats.Fact
+import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4ApiSource
