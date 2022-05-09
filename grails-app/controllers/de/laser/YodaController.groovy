@@ -31,6 +31,7 @@ import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 
+import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -1325,4 +1326,132 @@ class YodaController {
 
         render view: 'databaseMigration', model: result
     }
+
+    @Deprecated
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveys() {
+        Map<String, Object> result = [:]
+
+        def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
+        def count = 0
+        def resultMap = []
+        subSurveys.each { surConfig ->
+
+
+            def parentSubscription = surConfig?.subscription
+            def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
+            def parentSuccessorSubscription = surConfig?.subscription?._getCalculatedSuccessorForSurvey()
+            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
+            parentSubChilds.each { sub ->
+                if (sub._getCalculatedSuccessorForSurvey()) {
+                    sub.getAllSubscribers().each { org1 ->
+
+                        def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
+                        if(surveyResult?.size() > 0) {
+                            count++
+                            def newMap = [:]
+                            //println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
+                            newMap.surveyResult = surveyResult?.id ?: ""
+                            newMap.subName = sub.name
+                            newMap.subId = sub.id
+                            newMap.orgName = org1.name
+                            newMap.sortName = org1?.sortname
+                            newMap.propertiesSize = surveyResult?.size()
+                            newMap.info = 'Nachfolger Lizenz vorhanden'
+                            //println("")
+                            resultMap << newMap
+                        }else{
+                            count++
+                            def newMap = [:]
+                            //println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
+                            newMap.surveyResult = 'Kein Umfrage'
+                            newMap.subName = sub.name
+                            newMap.subId = sub.id
+                            newMap.orgName = org1.name
+                            newMap.sortName = org1?.sortname
+                            newMap.propertiesSize = 0
+                            newMap.info = 'Nachfolger Lizenz vorhanden'
+                            //println("")
+                            resultMap << newMap
+                        }
+
+                    }
+
+                } else {
+                   /* if (property?.isRefdataValueType()) {
+                        if (sub?.propertySet?.find {
+                            it?.type?.id == property?.id
+                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
+
+                            sub?.getAllSubscribers().each { org ->
+                                def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
+                                if(surveyResult?.size() > 0) {
+                                    count++
+                                    def newMap = [:]
+                                    println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
+                                    newMap.surveyResult = surveyResult?.id ?: ""
+                                    newMap.subName = sub.name
+                                    newMap.subId = sub.id
+                                    newMap.orgName = org.name
+                                    newMap.sortName = org?.sortname
+                                    newMap.propertiesSize = surveyResult?.size()
+                                    newMap.info = 'Merkmal vorhanden'
+                                    println("")
+                                    resultMap << newMap
+                                }else{
+                                    count++
+                                    def newMap = [:]
+                                    println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
+                                    newMap.surveyResult = 'Kein Umfrage'
+                                    newMap.subName = sub.name
+                                    newMap.subId = sub.id
+                                    newMap.orgName = org.name
+                                    newMap.sortName = org?.sortname
+                                    newMap.propertiesSize = 0
+                                    newMap.info = 'Merkmal vorhanden'
+                                    println("")
+                                    resultMap << newMap
+                                }
+
+                            }
+                        }
+                    }*/
+                }
+            }
+
+        }
+        def output = JsonOutput.toJson(resultMap)
+
+        //println(output)
+
+        response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        List titles = [
+
+        ]
+        List rows = []
+        resultMap.each { newMap ->
+            List row = []
+
+            row.add(newMap.subName)
+            row.add(newMap.subId)
+            row.add(newMap.sortName)
+            row.add(newMap.orgName)
+            row.add(newMap.propertiesSize)
+            row.add(newMap.info)
+            row.add(newMap.surveyResult)
+
+            rows.add(row)
+        }
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles,rows,','))
+        }
+        out.close()
+
+        result
+
+        redirect action: 'dashboard'
+    }
+
 }

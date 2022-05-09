@@ -95,7 +95,7 @@ class SurveyControllerService {
 
             result.parentSubscription = result.surveyConfig.subscription
             result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-            result.parentSuccessorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
             result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
 

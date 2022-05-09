@@ -31,7 +31,13 @@
             <tr>
                 <th>${message(code: 'financials.budgetCode')}</th>
                 <th>${message(code: 'default.description.label')}</th>
-                <th>${message(code: 'financials.budgetCode.usage')}</th>
+                <th>
+                    ${message(code: 'financials.budgetCode.usage')}
+                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </th>
                 <g:if test="${editable}">
                     <th class="la-action-info one wide">${message(code:'default.actions.label')}</th>
                 </g:if>
@@ -52,7 +58,7 @@
 
                                 <div class="item">
                                     <g:if test="${cig.costItem.sub}">
-                                        <g:link mapping="subfinance" params="[sub:cig.costItem.sub.id]">${cig.costItem.sub.name}</g:link>
+                                        ${cig.costItem.sub.name}
                                     </g:if>
 
                                     <g:if test="${cig.costItem.costTitle}">
@@ -65,19 +71,26 @@
                                     <g:if test="${cig.costItem.costDescription}">
                                         (${cig.costItem.costDescription})
                                     </g:if>
+
+                                    <g:if test="${cig.costItem.sub}">
+                                        <g:link mapping="subfinance" class="ui button icon blue la-modern-button"
+                                                params="[sub:cig.costItem.sub.id]">
+                                            <i class="share icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link mapping="subfinance" class="ui button icon blue la-modern-button"
+                                                params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
+                                            <i class="share icon"></i>
+                                        </g:link>
+                                    </g:else>
                                 </div>
                             </g:each>
                         </div>
                     </td>
                     <g:if test="${editable}">
                         <td class="x">
-                            <g:if test="${costItemGroups.get(bcode)}">
-                                <g:link controller="myInstitution" action="finance"  class="ui button icon blue la-modern-button"
-                                        params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                                    <i class="share icon"></i>
-                                </g:link>
-                            </g:if>
-                            <g:else>
+                            <g:if test="${!costItemGroups.get(bcode)}">
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"
                                         params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
@@ -88,7 +101,7 @@
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
                                 </g:link>
-                            </g:else>
+                            </g:if>
                         </td>
                     </g:if>
                 </tr>

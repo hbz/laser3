@@ -6,6 +6,8 @@ import de.laser.helper.Constants
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.properties.LicenseProperty
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -53,6 +55,35 @@ class ApiEZB {
                             sub  : sub,
                             orgs : orgs,
                             roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        ]
+                )
+                hasAccess = ! valid.isEmpty()
+            }
+        }
+
+        hasAccess
+    }
+
+    /**
+     * checks implicit EZB_SERVER_ACCESS
+     */
+    static boolean calculateAccess(License lic) {
+
+        boolean hasAccess = false
+
+        if (! lic.isPublicForApi) {
+            hasAccess = false
+        }
+        else {
+            List<Org> orgs = getAccessibleOrgs()
+
+            if (orgs) {
+                List<OrgRole> valid = OrgRole.executeQuery(
+                        "select oo from OrgRole oo join oo.lic lic join oo.org org " +
+                        "where lic = :lic and org in (:orgs) and oo.roleType in (:roles) ", [
+                            lic  : lic,
+                            orgs : orgs,
+                            roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -196,6 +227,32 @@ class ApiEZB {
 
         return (hasAccess ? export : Constants.HTTP_FORBIDDEN)
     }
+
+    static requestIllIndicators(License lic) {
+        List<Map<String, Object>> result = []
+        if(!lic) {
+            return null
+        }
+        boolean hasAccess = calculateAccess(lic)
+        if(hasAccess) {
+            Set<PropertyDefinition> illIndicators = PropertyDefinition.findAllByNameInListAndDescr(['Ill ZETA code', 'Ill ZETA electronic forbidden', 'Ill ZETA inland only'], PropertyDefinition.LIC_PROP)
+            lic.propertySet.findAll { LicenseProperty lp -> lp.type.id in illIndicators.id }?.each { LicenseProperty lp ->
+                Map<String, Object> out = [:]
+                out.token           = lp.type.name
+                out.scope           = lp.type.descr
+                out.note            = lp.note
+                out.isPublic        = lp.isPublic ? RDStore.YN_YES.value : RDStore.YN_NO.value
+                out.value           = lp.refValue.value
+                out.type            = PropertyDefinition.validTypes[lp.type.type]['en']
+                out.refdataCategory = lp.type.refdataCategory
+                out.paragraph       = lp.paragraph
+                result << ApiToolkit.cleanUp(out, true, true)
+            }
+        }
+        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
+
+    //-------------------------------------- helper methods -------------------------------------------
 
     static List buildRow(Sql sql, GroovyRowResult row, List<GroovyRowResult> packageIDs, String titleNS, List<GroovyRowResult> otherTitleIdentifierNamespaces, Map<Long, Map<RefdataValue, GroovyRowResult>> allPriceItems) {
         SimpleDateFormat formatter = DateUtils.getFixedSDF_yymd()

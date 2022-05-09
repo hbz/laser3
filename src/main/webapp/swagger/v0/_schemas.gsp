@@ -346,6 +346,11 @@
           description: Organisations related to this license.
           items:
             $ref: "#/components/schemas/OrganisationRole_Virtual" # resolved OrgRole
+        predecessors:
+          type: array
+          description: The license instances following to this license.
+          items:
+            $ref: "#/components/schemas/LicenseStub"
         properties: # mapping customProperties and privateProperties
           type: array
           description: Public and private properties of the calling institution for this license.
@@ -356,6 +361,11 @@
           description: Set of subscriptions covered by the given license.
           items:
             $ref: "#/components/schemas/SubscriptionStub"
+        successors:
+          type: array
+          description: The license instances following to this license.
+          items:
+            $ref: "#/components/schemas/LicenseStub"
 
 
     OrgAccessPoint:
@@ -682,6 +692,11 @@
           description: the property value
           example: "Zeidel'sches Recht"
 
+    PropertySet:
+      type: array
+      description: Set of properties.
+      items:
+        $ref: "#/components/schemas/Property"
 
     Subscription:
       allOf:
@@ -771,9 +786,11 @@
           description: A set of linked packages to this subscription.
           items:
             $ref: "#/components/schemas/Package_in_Subscription"
-        predecessor:
-          description: The subscription instance preceding this subscription.
-          $ref: "#/components/schemas/SubscriptionStub"
+        predecessors:
+          type: array
+          description: The subscription instances preceding this subscription.
+          items:
+            $ref: "#/components/schemas/SubscriptionStub"
         properties: # mapping customProperties and privateProperties
           type: array
           description: Set of public and private properties of this subscription.
@@ -789,9 +806,11 @@
           description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS, 12) %>
           example: ${RDStore.SUBSCRIPTION_CURRENT.value}
-        successor:
-          description: The subscription instance following to this subscription.
-          $ref: "#/components/schemas/SubscriptionStub"
+        successors:
+          type: array
+          description: The subscription instances following to this subscription.
+          items:
+            $ref: "#/components/schemas/SubscriptionStub"
 
 
     TitleGroup:

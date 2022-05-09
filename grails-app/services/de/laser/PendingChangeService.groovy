@@ -589,8 +589,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
-                    if(prevSub) {
-                        GroovyRowResult previous = prevSub[0]
+                    prevSub.each { GroovyRowResult previous ->
                         eventRow.eventString = messageSource.getMessage("${pc.get("pc_msg_token")}.eventString", null, locale)
                         eventRow.changeId = pc.get("id")
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
@@ -803,7 +802,7 @@ class PendingChangeService extends AbstractLockableService {
                 else {
                     eventRow.eventString = messageSource.getMessage("${pc.msgToken}.eventString", null, locale)
                     eventRow.changeId = pc.id
-                    eventRow.subscription = [source: genericOIDService.getOID(pc.subscription._getCalculatedPrevious()), target: genericOIDService.getOID(pc.subscription)]
+                    eventRow.subscription = [sources: pc.subscription._getCalculatedPrevious(), target: genericOIDService.getOID(pc.subscription)]
                 }
                 if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                     pending << eventRow

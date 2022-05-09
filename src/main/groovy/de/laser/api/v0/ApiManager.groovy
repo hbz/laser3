@@ -32,7 +32,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '0.134'
+    static final VERSION = '0.136'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -141,6 +141,19 @@ class ApiManager {
                 }
             }
         } */
+        else if (checkValidRequest('ezb/license/illIndicators')) {
+
+            if (! (isEZB || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            ApiBox tmp = ApiLicense.findLicenseBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiEZB.requestIllIndicators((License) tmp.obj)
+            }
+        }
         else if (checkValidRequest('ezb/subscription')) {
 
             if (! (isEZB || isDatamanager)) {

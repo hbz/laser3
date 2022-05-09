@@ -161,10 +161,18 @@ class ApiLicense {
         //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // de.laser.OnixplLicense
 
         result.linkedLicenses = []
+        result.predecessors = []
+        result.successors   = []
 
-        List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceLicense = :license or li.destinationLicense = :license) and li.linkType not in (:excludes)", [license: lic, excludes: [RDStore.LINKTYPE_FOLLOWS, RDStore.LINKTYPE_LICENSE]])
+        List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceLicense = :license or li.destinationLicense = :license) and li.linkType not in (:excludes)", [license: lic, excludes: [RDStore.LINKTYPE_LICENSE]])
         otherLinks.each { Links li ->
-            result.linkedLicenses.add([linktype: li.linkType.value, license: ApiStubReader.requestLicenseStub((License) li.getOther(lic), context)])
+            if(li.linkType == RDStore.LINKTYPE_FOLLOWS) {
+                if(lic == li.sourceLicense)
+                    result.predecessors.add(ApiStubReader.requestLicenseStub(li.destinationLicense, context)) // com.k_int.kbplus.License
+                else if(lic == li.destinationLicense)
+                    result.successors.add(ApiStubReader.requestLicenseStub(li.sourceLicense, context)) // com.k_int.kbplus.License
+            }
+            else result.linkedLicenses.add([linktype: li.linkType.value, license: ApiStubReader.requestLicenseStub((License) li.getOther(lic), context)])
         }
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {

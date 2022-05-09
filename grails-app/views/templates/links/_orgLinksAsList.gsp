@@ -1,7 +1,7 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <table class="ui table">
-    <g:each in="${roleLinks}" var="role">
+    <g:each in="${roleLinks.sort{it.roleType.id}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
             <tr>

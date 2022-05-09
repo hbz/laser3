@@ -138,14 +138,8 @@ class PlatformControllerService {
      */
     Map<String,Object> removeAccessPoint(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        // update active aopl, set active=false
         OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
-        aoplInstance.active = false
-        if (! aoplInstance.save()) {
-            result.error = "Error updateing AccessPoint for platform"
-            log.debug(aoplInstance.errors.toString())
-            [result:result,status:STATUS_ERROR]
-        }
+        aoplInstance.delete()
         [result:result,status:STATUS_OK]
     }
 

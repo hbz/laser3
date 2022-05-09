@@ -1137,19 +1137,29 @@ class FilterService {
     }
 
     /**
-     * Processes the given filter parameters and generates a query to retrieve issue entitlements
+     * Substitution call for {@link #getIssueEntitlementQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Subscription)} for a single subscription
      * @param params the filter parameter map
-     * @param subscription the subscription whose dates should be considered
+     * @param subscription the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+    Map<String, Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+        getIssueEntitlementQuery(params, [subscription])
+    }
+
+    /**
+     * Processes the given filter parameters and generates a query to retrieve issue entitlements
+     * @param params the filter parameter map
+     * @param subscriptions the subscriptions whose dates should be considered
+     * @return the map containing the query and the prepared query parameters
+     */
+    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
 
 
         String base_qry
-        Map<String,Object> qry_params = [subscription: subscription]
+        Map<String,Object> qry_params = [subscriptions: subscriptions]
         boolean filterSet = false
         Date date_filter
         if (params.asAt && params.asAt.length() > 0) {
@@ -1158,7 +1168,7 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription in (:subscriptions) "
             if (date_filter) {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
@@ -1174,7 +1184,7 @@ class FilterService {
             filterSet = true
         }
         else {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription in (:subscriptions) "
             /*if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 

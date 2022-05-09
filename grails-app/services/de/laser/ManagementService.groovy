@@ -238,40 +238,30 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.list("selectedSubs")
-            License newLicense = License.get(params.selectedLicense)
-            if (result.subscription && params.processOption == 'unlinkAll') {
-                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                List<GString> changeAccepted = []
-                validSubChilds.each { Subscription subChild ->
-                    subChild.getLicenses().each { License currentLicense ->
-                        if (subscriptionService.setOrgLicRole(subChild, currentLicense, params.processOption == 'unlinkAll'))
-                            changeAccepted << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subChild.getSubscriber().sortname})"
-                    }
-                }
-                if (changeAccepted) {
-                    flash.message = changeAccepted.join('<br>')
-                }
-            }
-            else if(selectedSubs && newLicense) {
-                if (params.processOption == 'linkLicense' || params.processOption == 'unlinkLicense') {
-                    Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
-                    List<GString> changeAccepted = []
-                    subscriptions.each { Subscription subscription ->
-                        if (subscription.isEditableBy(result.user)) {
-                            if (newLicense && subscriptionService.setOrgLicRole(subscription, newLicense, params.processOption == 'unlinkLicense'))
-                                changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriber().sortname})"
+            List selectedSubs = params.list("selectedSubs"), selectedLicenseIDs = params.list("selectedLicense")
+            if(selectedSubs && selectedLicenseIDs[0]) {
+                List<License> selectedLicenses = License.findAllByIdInList(selectedLicenseIDs.collect { String key -> Long.parseLong(key) })
+                selectedLicenses.each { License newLicense ->
+                    if (params.processOption == 'linkLicense' || params.processOption == 'unlinkLicense') {
+                        Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                        List<GString> changeAccepted = []
+                        subscriptions.each { Subscription subscription ->
+                            if (subscription.isEditableBy(result.user)) {
+                                if (newLicense && subscriptionService.setOrgLicRole(subscription, newLicense, params.processOption == 'unlinkLicense'))
+                                    changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriber().sortname})"
+                            }
+                        }
+                        if (changeAccepted) {
+                            flash.message = changeAccepted.join('<br>')
                         }
                     }
-                    if (changeAccepted) {
-                        flash.message = changeAccepted.join('<br>')
-                    }
                 }
-            }else{
+            }
+            else{
                 if (selectedSubs.size() < 1) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
-                if (!newLicense) {
+                if (!selectedLicenseIDs[0]) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedLicense', null, locale)
                 }
             }
