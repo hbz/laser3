@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding

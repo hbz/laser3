@@ -1,17 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.ContextService
-import de.laser.Doc
-import de.laser.DocContext
-import de.laser.Identifier
-import de.laser.License
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.RefdataValue
+
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.AccessService
-import de.laser.AuditConfig
 import de.laser.storage.RDStore
 import de.laser.helper.ConfigMapper
 

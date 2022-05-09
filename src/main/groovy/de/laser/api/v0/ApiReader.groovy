@@ -1,5 +1,4 @@
 package de.laser.api.v0
-//import com.k_int.kbplus.OnixplLicense
 
 import de.laser.helper.Constants
 
@@ -69,46 +68,4 @@ class ApiReader {
 
     final static IGNORE_CUSTOM_PROPERTIES        = "IGNORE_CUSTOM_PROPERTIES"
     final static IGNORE_PRIVATE_PROPERTIES       = "IGNORE_PRIVATE_PROPERTIES"
-
-
-    /**
-     * Access rights due wrapping license
-     *
-     * @param com.k_int.kbplus.OnixplLicense opl
-     * @param com.k_int.kbplus.License lic
-     * @param com.k_int.kbplus.Org context
-     * @return Map | Constants.HTTP_FORBIDDEN
-     */
-    /*
-    static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
-        Map<String, Object> result = [:]
-        boolean hasAccess = false
-
-        if (!opl) {
-            return null
-        }
-
-        if (opl.getLicenses().contains(lic)) {
-            lic.orgRelations.each { orgRole ->
-                // TODO check orgRole.roleType
-                if (orgRole.getOrg().id == context?.id) {
-                    hasAccess = true
-                }
-            }
-        }
-
-        if (hasAccess) {
-            //result.id       = opl.id
-            result.lastmod  = ApiToolkit.formatInternalDate(opl.lastmod)
-            result.title    = opl.title
-
-            // References
-            result.document = ApiDoc.getDocumentMap(opl.doc) // de.laser.Doc
-            //result.licenses = ApiStubReader.resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
-            //result.xml = opl.xml // XMLDoc // TODO
-            result = ApiToolkit.cleanUp(result, true, true)
-        }
-
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
-    }*/
 }

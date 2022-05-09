@@ -1,16 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.ContextService
-import de.laser.Fact
-import de.laser.Org
-import de.laser.Platform
-import de.laser.RefdataValue
-import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.OrgSetting
-import de.laser.StatsTripleCursor
 import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification

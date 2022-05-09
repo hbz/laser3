@@ -1,4 +1,4 @@
-package com.k_int.kbplus
+package de.laser
 
 import de.laser.helper.DateUtils
 import grails.gorm.transactions.Transactional

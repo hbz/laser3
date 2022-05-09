@@ -1,23 +1,18 @@
 package de.laser
 
 
-import com.k_int.kbplus.DocstoreService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.PackageService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.ConfigMapper
 import de.laser.helper.FactoryResult
-import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.mvc.FlashScope
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -27,7 +22,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
-import javax.sql.DataSource
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ExecutorService

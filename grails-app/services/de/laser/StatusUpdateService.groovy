@@ -1,8 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ChangeNotificationService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.GlobalSourceSyncService
+
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.system.SystemEvent

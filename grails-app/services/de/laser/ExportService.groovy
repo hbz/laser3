@@ -1,15 +1,5 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.ContextService
-import de.laser.Identifier
-import de.laser.IdentifierNamespace
-import de.laser.IssueEntitlement
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.RefdataCategory
-import de.laser.RefdataValue
-import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
 import de.laser.finance.BudgetCode
@@ -19,8 +9,6 @@ import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
-import de.laser.IssueEntitlementCoverage
-import de.laser.TIPPCoverage
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4ApiSource

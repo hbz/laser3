@@ -155,10 +155,10 @@ class ApiLicense {
         // References
 
         result.identifiers      = ApiCollectionReader.getIdentifierCollection(lic.ids) // de.laser.Identifier
-        result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
-        result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // de.laser.License
+        result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // de.laser.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // de.laser.DocContext
-        //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // de.laser.OnixplLicense
 
         result.linkedLicenses = []
 
@@ -207,7 +207,7 @@ class ApiLicense {
 
         // Ignored
 
-        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
+        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // de.laser.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // de.laser.PersonRole

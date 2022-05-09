@@ -103,7 +103,7 @@ class ApiIssueEntitlement {
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
                     result.subscription = ApiStubReader.requestSubscriptionStub(ie.subscription, context)
-                    // com.k_int.kbplus.Subscription
+                    // de.laser.Subscription
                 }
             }
         }

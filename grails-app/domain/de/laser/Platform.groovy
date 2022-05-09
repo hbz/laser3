@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.storage.BeanStore
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup

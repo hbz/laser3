@@ -1,6 +1,6 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.GenericOIDService
+import de.laser.GenericOIDService
 import de.laser.ContextService
 import de.laser.InstAdmService
 import de.laser.auth.User

@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ESSearchService
+
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance

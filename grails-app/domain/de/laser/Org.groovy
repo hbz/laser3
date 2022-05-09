@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.auth.Perm
 import de.laser.auth.PermGrant
 import de.laser.auth.Role

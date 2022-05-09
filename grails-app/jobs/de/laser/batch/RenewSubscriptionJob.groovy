@@ -10,7 +10,6 @@ class RenewSubscriptionJob extends AbstractJob {
 
     static triggers = {
        cron name:'RenewSubscriptionTrigger', cronExpression: "0 0 2 * * ?" //Fire at 02:00 every day
-
     }
 
     static List<String> configFlags = []

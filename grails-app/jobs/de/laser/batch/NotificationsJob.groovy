@@ -1,6 +1,6 @@
-package com.k_int.kbplus.batch
+package de.laser.batch
 
-import com.k_int.kbplus.ChangeNotificationService
+import de.laser.ChangeNotificationService
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
 

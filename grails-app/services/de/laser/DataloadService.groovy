@@ -1,26 +1,9 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.Doc
-import de.laser.DocContext
-import de.laser.FTControl
-import de.laser.GlobalService
-import de.laser.Identifier
-import de.laser.IssueEntitlement
-import de.laser.License
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.Package
-import de.laser.Platform
-import de.laser.RefdataValue
-import de.laser.Subscription
-import de.laser.SurveyConfig
-import de.laser.SurveyOrg
-import de.laser.TitleInstancePackagePlatform
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
-import de.laser.Task
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
@@ -60,16 +43,6 @@ class DataloadService {
 
     def stats = [:]
 
-    def update_stages = [
-        'Organisations Data',
-        'Subscriptions Offered Data',
-        'Subscriptions Taken Data',
-        'License Data'
-    ]
-
-    def dataload_running=false
-    def dataload_stage=-1
-    def dataload_message=''
     boolean update_running = false
     def lastIndexUpdate = null
     Future activeFuture

@@ -1,7 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService

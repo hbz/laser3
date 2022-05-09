@@ -1,7 +1,7 @@
 package de.laser.ajax
 
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.PendingChangeService
+import de.laser.GenericOIDService
+import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ApiSource

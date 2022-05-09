@@ -1,6 +1,6 @@
-package com.k_int.kbplus.batch
+package de.laser.batch
 
-import com.k_int.kbplus.PendingChangeService
+import de.laser.PendingChangeService
 import de.laser.PendingChange
 import de.laser.system.SystemEvent
 import de.laser.storage.RDStore

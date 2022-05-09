@@ -49,9 +49,6 @@ class StatsSyncJob extends AbstractJob {
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 
                 statsSyncService.doFetch(true)
-                //if (! statsSyncService.doSync()) {
-                //    log.warn( 'Failed. Maybe ignored due blocked statsSyncService')
-                //}
 
                 SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
             }

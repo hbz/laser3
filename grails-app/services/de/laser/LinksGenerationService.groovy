@@ -1,10 +1,8 @@
 package de.laser
 
 
-import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.exceptions.CreationException
-import de.laser.helper.EhcacheWrapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional

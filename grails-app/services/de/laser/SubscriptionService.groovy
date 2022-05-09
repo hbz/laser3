@@ -1,8 +1,6 @@
 package de.laser
 
 
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.PackageService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

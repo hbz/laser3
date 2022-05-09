@@ -1,4 +1,4 @@
-package com.k_int.kbplus.batch
+package de.laser.batch
 
 import de.laser.SystemService
 import de.laser.system.SystemActivityProfiler

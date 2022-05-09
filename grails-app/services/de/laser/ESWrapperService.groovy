@@ -1,7 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.FTControl
-import de.laser.helper.AppUtils
+
 import de.laser.helper.ConfigMapper
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional

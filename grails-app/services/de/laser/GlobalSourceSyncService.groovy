@@ -1,32 +1,9 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.AlternativeName
-import de.laser.ApiSource
-import de.laser.Contact
-import de.laser.DeweyDecimalClassification
-import de.laser.EscapeService
-import de.laser.GlobalRecordSource
-import de.laser.Identifier
-import de.laser.IssueEntitlement
-import de.laser.Language
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.Package
-import de.laser.PendingChange
-import de.laser.Person
-import de.laser.PersonRole
-import de.laser.Platform
-import de.laser.RefdataCategory
-import de.laser.RefdataValue
-import de.laser.Subscription
-import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
+
 import de.laser.finance.PriceItem
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
-import de.laser.IssueEntitlementCoverage
-import de.laser.PendingChangeConfiguration
-import de.laser.TIPPCoverage
 import de.laser.exceptions.SyncException
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants

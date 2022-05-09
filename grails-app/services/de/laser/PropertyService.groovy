@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils

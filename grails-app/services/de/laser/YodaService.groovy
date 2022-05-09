@@ -1,19 +1,14 @@
 package de.laser
 
-import com.k_int.kbplus.ChangeNotificationService
-import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.PackageService
+
 import de.laser.exceptions.SyncException
-import de.laser.storage.BeanStore
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
-import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.web.mapping.LinkGenerator
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
@@ -21,8 +16,6 @@ import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
-
-import javax.sql.DataSource
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information

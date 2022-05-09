@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 version '3.0.0.alpha'
 group 'de.laser'
 
-// ---[ build script
+// ---[ build script ]---
 
 buildscript {
     repositories {
@@ -32,18 +32,17 @@ buildscript {
     }
 }
 
-// ---[ applying plugins
+// ---[ applying plugins ]---
 
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
-apply plugin: 'org.grails.grails-doc'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'com.bertramlabs.asset-pipeline'
 
-// ---[ plugin: database migration ! before dependencies configuration
+// ---[ plugin: database migration ! before dependencies configuration ]---
 
 sourceSets {
     main {
@@ -51,7 +50,7 @@ sourceSets {
     }
 }
 
-// ---[ config
+// ---[ config ]---
 
 repositories {
     mavenLocal()
@@ -131,8 +130,6 @@ dependencies {
 //    compile 'org.hibernate:hibernate-jcache:5.4.33.Final'             // instead of hibernate-ehcache:5.1.16.Final
 //    compile 'org.ehcache:ehcache:3.9.9'                               // instead of net.sf.ehcache:ehcache:2.10.9.2
 
-    // -- more
-
     compile 'commons-io:commons-io:2.11.0'                      // from 2.6
     compile 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
     compile 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
@@ -165,7 +162,7 @@ bootRun {
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 
-// ---[ plugin: gradle-git-properties
+// ---[ plugin: gradle-git-properties ]---
 
 gitProperties {
     dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
@@ -193,7 +190,7 @@ buildProperties {
     }
 }
 
-// ---[ war
+// ---[ war ]---
 
 war {
     enabled = true
@@ -204,7 +201,7 @@ grails {
     pathingJar = true // windows - command line limitation
 }
 
-// ---[ plugin: asset pipeline
+// ---[ plugin: asset pipeline ]---
 
 assets {
     minifyJs = true
@@ -236,7 +233,7 @@ assets {
     ]
 }
 
-// ---[ gradle tasks
+// ---[ gradle tasks ]---
 
 apply from: 'laserTasks.gradle'
 

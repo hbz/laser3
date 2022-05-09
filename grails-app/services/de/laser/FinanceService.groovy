@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException

@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ChangeNotificationService
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty

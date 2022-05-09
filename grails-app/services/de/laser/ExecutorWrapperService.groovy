@@ -1,4 +1,4 @@
-package com.k_int.kbplus
+package de.laser
 
 import grails.gorm.transactions.Transactional
 

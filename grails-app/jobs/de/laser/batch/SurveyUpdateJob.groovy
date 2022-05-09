@@ -8,7 +8,7 @@ import de.laser.base.AbstractJob
 class SurveyUpdateJob extends AbstractJob {
 
     SurveyUpdateService surveyUpdateService
-/* ----> ENABLED */
+
     static triggers = {
         cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }

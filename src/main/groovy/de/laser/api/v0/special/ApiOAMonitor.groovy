@@ -150,7 +150,7 @@ class ApiOAMonitor {
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
             //) // de.laser.PersonRole
 
-            result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+            result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)
@@ -201,15 +201,15 @@ class ApiOAMonitor {
 
             result.instanceOf           = ApiUnsecuredMapReader.getSubscriptionStubMap(sub.instanceOf)
             //result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // de.laser.DocContext
-            //result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+            //result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // de.laser.Subscription
             //result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
-            //result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-            //result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
-            //removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // com.k_int.kbplus.License
+            //result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // de.laser.Subscription
+            //result.license              = ApiStubReader.requestLicenseStub(sub.owner, context) // de.laser.License
+            //removed: result.license          = ApiCollectionReader.resolveLicense(sub.owner, ApiCollectionReader.IGNORE_ALL, context) // de.laser.License
 
-            //result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-            //result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
-            result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+            //result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // de.laser.Subscription
+            //result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // de.laser.Subscription
+            result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
             List<OrgRole> allOrgRoles = []
 

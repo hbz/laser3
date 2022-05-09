@@ -1,6 +1,6 @@
 package de.laser.ajax
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -25,7 +25,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 import de.laser.exceptions.ChangeAcceptException
-import com.k_int.kbplus.PendingChangeService
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat

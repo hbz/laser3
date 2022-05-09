@@ -1,6 +1,6 @@
-package com.k_int.kbplus.batch
+package de.laser.batch
 
-import com.k_int.kbplus.DataloadService
+import de.laser.DataloadService
 import de.laser.base.AbstractJob
 
 class IndexUpdateJob extends AbstractJob {

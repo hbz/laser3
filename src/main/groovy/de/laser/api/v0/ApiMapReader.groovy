@@ -35,7 +35,7 @@ class ApiMapReader {
             // References
             result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.Contact
             result.addresses    = ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.Address
-            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // com.k_int.kbplus.PersonPrivateProperty
+            result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // de.laser.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -77,7 +77,7 @@ class ApiMapReader {
 
         // References
         result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
-        result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
+        result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.Platform
         result.ddcs                 = ApiCollectionReader.getDeweyDecimalCollection(tipp.ddcs)  //de.laser.DeweyDecimalClassification
         result.languages            = ApiCollectionReader.getLanguageCollection(tipp.languages) //de.laser.Language
         //unsure construction; remains open u.f.n.
@@ -85,7 +85,7 @@ class ApiMapReader {
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
-                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // com.k_int.kbplus.Package
+                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.Package
             }
             result.providers        = ApiCollectionReader.getOrgLinkCollection(tipp.orgs, ApiReader.IGNORE_TIPP, context) //de.laser.OrgRole
         }
@@ -162,7 +162,7 @@ class ApiMapReader {
             identifiers << [namespace: idRow['idns_ns'], value: idRow['id_value']]
         }
         result.identifiers          = identifiers       // de.laser.Identifier
-        result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // com.k_int.kbplus.Platform
+        result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.Platform
         List<Map<String, Object>> publishers = []
         row['publishers'].each { pubRow ->
             Map<String, Object> pubMap = [roleType: pubRow['rdv_value'],
@@ -177,7 +177,7 @@ class ApiMapReader {
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
-                result.package = ApiUnsecuredMapReader.getPackageStubMapWithSQL(row['pkg']) // com.k_int.kbplus.Package
+                result.package = ApiUnsecuredMapReader.getPackageStubMapWithSQL(row['pkg']) // de.laser.Package
             }
         }
 

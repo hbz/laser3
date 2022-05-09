@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.ctrl.AccessPointControllerService
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugInfo

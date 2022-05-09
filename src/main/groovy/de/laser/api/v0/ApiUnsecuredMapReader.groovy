@@ -242,7 +242,7 @@ class ApiUnsecuredMapReader {
         result.lastUpdated         = ApiToolkit.formatInternalDate(invoice.lastUpdated)
 
         // References
-        result.owner               = getOrganisationStubMap(invoice.owner) // com.k_int.kbplus.Org
+        result.owner               = getOrganisationStubMap(invoice.owner) // de.laser.Org
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -300,7 +300,7 @@ class ApiUnsecuredMapReader {
         result.lastUpdated  = ApiToolkit.formatInternalDate(order.lastUpdated)
 
         // References
-        result.owner        = getOrganisationStubMap(order.owner) // com.k_int.kbplus.Org
+        result.owner        = getOrganisationStubMap(order.owner) // de.laser.Org
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -333,7 +333,7 @@ class ApiUnsecuredMapReader {
         result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        result.provider = getOrganisationStubMap(pform.org) // com.k_int.kbplus.Org
+        result.provider = getOrganisationStubMap(pform.org) // de.laser.Org
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)

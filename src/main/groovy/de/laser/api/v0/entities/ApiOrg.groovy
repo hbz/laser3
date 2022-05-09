@@ -134,7 +134,7 @@ class ApiOrg {
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 
-        result.properties   = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_NONE) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 

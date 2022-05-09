@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.LocaleHelper
 import de.laser.storage.RDStore

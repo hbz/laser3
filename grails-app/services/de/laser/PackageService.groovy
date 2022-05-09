@@ -1,15 +1,8 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.EscapeService
-import de.laser.IssueEntitlement
-import de.laser.Subscription
-import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
-import de.laser.finance.PriceItem
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
-import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder

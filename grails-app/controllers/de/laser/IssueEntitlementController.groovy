@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.FactService
+
 import de.laser.auth.User
 import de.laser.helper.ConfigMapper
 import de.laser.helper.SwissKnife

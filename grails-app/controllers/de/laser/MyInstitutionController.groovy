@@ -1,15 +1,11 @@
 package de.laser
 
-import com.k_int.kbplus.DocstoreService
-import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.InstitutionsService
+
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
-import com.k_int.kbplus.PendingChangeService
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -1229,7 +1225,7 @@ join sub.orgRelations or_sub where
     /**
      * Call to delete a given document
      * @return the document table view ({@link #documents()})
-     * @see com.k_int.kbplus.DocstoreService#unifiedDeleteDocuments()
+     * @see DocstoreService#unifiedDeleteDocuments()
      */
     @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })

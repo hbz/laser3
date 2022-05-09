@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ExportService
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role

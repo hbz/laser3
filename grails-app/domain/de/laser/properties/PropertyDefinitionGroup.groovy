@@ -1,6 +1,6 @@
 package de.laser.properties
 
-import com.k_int.kbplus.GenericOIDService
+import de.laser.GenericOIDService
 import de.laser.Org
 import de.laser.CacheService
 import de.laser.helper.LocaleHelper

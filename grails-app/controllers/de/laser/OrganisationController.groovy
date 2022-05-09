@@ -1,7 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.DocstoreService
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
@@ -1068,7 +1067,7 @@ class OrganisationController  {
     /**
      * Call to delete a given document
      * @return the document table view ({@link #documents()})
-     * @see com.k_int.kbplus.DocstoreService#unifiedDeleteDocuments()
+     * @see DocstoreService#unifiedDeleteDocuments()
      */
     @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })

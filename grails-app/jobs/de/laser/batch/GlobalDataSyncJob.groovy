@@ -1,6 +1,6 @@
-package com.k_int.kbplus.batch
+package de.laser.batch
 
-import com.k_int.kbplus.GlobalSourceSyncService
+import de.laser.GlobalSourceSyncService
 import de.laser.system.SystemEvent
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob

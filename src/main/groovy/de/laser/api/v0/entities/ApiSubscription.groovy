@@ -162,15 +162,15 @@ class ApiSubscription {
 		// References
 
 		result.documents            = ApiCollectionReader.getDocumentCollection(sub.documents) // de.laser.DocContext
-		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+		//result.derivedSubscriptions = ApiStubReader.getStubCollection(sub.derivedSubscriptions, ApiReader.SUBSCRIPTION_STUB, context) // de.laser.Subscription
 		result.identifiers          = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
-		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+		result.instanceOf           = ApiStubReader.requestSubscriptionStub(sub.instanceOf, context) // de.laser.Subscription
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())
 
-		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
-		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // de.laser.Subscription
+		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // de.laser.Subscription
+		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // de.laser.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		result.linkedSubscriptions = []
 
@@ -206,7 +206,7 @@ class ApiSubscription {
 		) // de.laser.PersonRole
 		*/
 
-		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // de.laser.License
 		result.licenses = []
 		sub.getLicenses().each { lic ->
 			result.licenses.add( ApiStubReader.requestLicenseStub(lic, context) )

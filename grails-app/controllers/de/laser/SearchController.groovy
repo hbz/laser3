@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.ESSearchService
+
 import de.laser.auth.User
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityService

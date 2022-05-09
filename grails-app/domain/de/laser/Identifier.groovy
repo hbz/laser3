@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.PendingChangeService
+
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult

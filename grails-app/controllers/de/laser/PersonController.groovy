@@ -1,6 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+
 import de.laser.titles.TitleInstance
  
 import de.laser.annotations.DebugInfo

@@ -1,18 +1,6 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.GlobalService
 import de.laser.auth.User
-import de.laser.AuditConfig
-import de.laser.ChangeNotificationQueueItem
-import de.laser.ContentItem
-import de.laser.ContextService
-import de.laser.Doc
-import de.laser.IssueEntitlement
-import de.laser.Org
-import de.laser.PendingChange
-import de.laser.PendingChangeConfiguration
-import de.laser.RefdataValue
-import de.laser.SubscriptionPackage
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService

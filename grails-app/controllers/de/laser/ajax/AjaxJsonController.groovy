@@ -1,6 +1,6 @@
 package de.laser.ajax
 
-import com.k_int.kbplus.GenericOIDService
+import de.laser.GenericOIDService
 import de.laser.AccessService
 import de.laser.CompareService
 import de.laser.ContextService

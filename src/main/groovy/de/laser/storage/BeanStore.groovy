@@ -1,9 +1,9 @@
 package de.laser.storage
 
-import com.k_int.kbplus.ChangeNotificationService
-import com.k_int.kbplus.ESWrapperService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.PendingChangeService
+import de.laser.ChangeNotificationService
+import de.laser.ESWrapperService
+import de.laser.GenericOIDService
+import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AuditService
 import de.laser.CacheService

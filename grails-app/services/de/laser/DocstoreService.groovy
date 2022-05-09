@@ -1,12 +1,5 @@
-package com.k_int.kbplus
+package de.laser
 
-import de.laser.Doc
-import de.laser.DocContext
-import de.laser.License
-import de.laser.Links
-import de.laser.Org
-import de.laser.Subscription
-import de.laser.SurveyConfig
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional

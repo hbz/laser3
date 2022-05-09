@@ -1,6 +1,6 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.FactService
+
 import de.laser.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

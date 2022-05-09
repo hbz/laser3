@@ -166,8 +166,8 @@ class ApiCollectionReader {
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // de.laser.finance.Invoice
             // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
-            // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
-            // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+            // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // de.laser.Org
+            // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription // RECURSION ???
             // tmp.package             = ApiStubReader.requestSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
@@ -235,7 +235,7 @@ class ApiCollectionReader {
             list = tmp.unique()
         }
 
-        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+        list.each { it ->       // de.laser.<x>CustomProperty
             Map<String, Object> tmp = [:]
 
             tmp.token       = it.type?.name     // de.laser.properties.PropertyDefinition.String
@@ -481,16 +481,16 @@ class ApiCollectionReader {
 
             // References
             if (it.org && (ApiReader.IGNORE_ORGANISATION != ignoreRelationType)) {
-                tmp.organisation = ApiUnsecuredMapReader.getOrganisationStubMap(it.org) // com.k_int.kbplus.Org
+                tmp.organisation = ApiUnsecuredMapReader.getOrganisationStubMap(it.org) // de.laser.Org
             }
             if (it.lic && (ApiReader.IGNORE_LICENSE != ignoreRelationType)) {
-                tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // de.laser.License
             }
             if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // com.k_int.kbplus.Package
+                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.Package
             }
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
-                tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
             }
             if (it.tipp && (ApiReader.IGNORE_TIPP != ignoreRelationType)) {
                 tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.titles.TitleInstancePackagePlatform
@@ -508,7 +508,7 @@ class ApiCollectionReader {
      */
     static Collection<Object> getOrgAccessPointCollection(Collection<OrgAccessPoint> list) {
         Collection<Object> result = []
-        list.each { it -> // com.k_int.kbplus.OrgAccessPoint
+        list.each { it -> // de.laser.OrgAccessPoint
             result << ApiUnsecuredMapReader.getOrgAccessPointStubMap(it)
         }
         result
@@ -524,7 +524,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
             result << pkg
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -556,13 +556,13 @@ class ApiCollectionReader {
     static Collection<Object> getPrivatePropertyCollection(Collection list, Org context) {
         Collection<Object> result = []
 
-        list.findAll{ (it.owner.id == context.id || it.type.tenant?.id == context.id) && it.tenant?.id == context.id && it.isPublic == false }?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+        list.findAll{ (it.owner.id == context.id || it.type.tenant?.id == context.id) && it.tenant?.id == context.id && it.isPublic == false }?.each { it ->       // de.laser.<x>PrivateProperty
             Map<String, Object> tmp = [:]
 
             tmp.token   = it.type.name     // de.laser.properties.PropertyDefinition.String
             tmp.scope   = it.type.descr    // de.laser.properties.PropertyDefinition.String
             tmp.note    = it.note
-            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
+            //tmp.tenant          = ApiStubReader.resolveOrganisationStub(it.tenant, context) // de.laser.Org
 
             if (it.dateValue) {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
@@ -669,17 +669,17 @@ class ApiCollectionReader {
                 /*if (role.responsibilityType) {
                     // References
                     //if (it.org) {
-                    //    role.organisation = ApiStubReader.resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
+                    //    role.organisation = ApiStubReader.resolveOrganisationStub(it.org, context) // de.laser.Org
                     //}
 
                     if (it.lic) {
-                        role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                        role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // de.laser.License
                     }
                     if (it.pkg) {
-                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
+                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.Package
                     }
                     if (it.sub) {
-                        role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                        role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // de.laser.Subscription
                     }
                     if (it.title) {
                         role.title = ApiStubReader.resolveTitleStub(it.title) // de.laser.titles.TitleInstance
