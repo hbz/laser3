@@ -99,7 +99,7 @@
                                             </tr>
                                         </g:if>
                                         <tr>
-                                            <th class="control-label"><g:message code="subscription.packages.changeType.label"/></>
+                                            <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
                                             <th class="control-label">
                                                 <g:message code="subscription.packages.setting.label"/>
                                             </th>
