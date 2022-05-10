@@ -222,6 +222,7 @@ class RDStore {
     public static final PRS_FUNC_SERVICE_SUPPORT     = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_METADATA     = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
+    public static final PRS_FUNC_OA_CONTACT     = getRefdataValue('OA contact', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_CUSTOMER_SERVICE     = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_SALES_MARKETING     = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_TRAINING     = getRefdataValue('Training', RDConstants.PERSON_FUNCTION)

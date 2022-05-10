@@ -486,6 +486,39 @@
                 bb8.ajax4remoteForm($(this));
             });
 
+            $('#person_form').submit(function(e) {
+                e.preventDefault();
+                if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
+                    let addressElements = null, contactElements = null;
+                    if(JSPC.app.addressElementCount == 1) {
+                        contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
+                    }
+                    if(JSPC.app.contactElementCount == 1) {
+                        addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
+                    }
+                    if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
+                        JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements)) {
+                        if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
+                            $('#person_form').unbind('submit').submit();
+                        }
+                    }
+                    else $('#person_form').unbind('submit').submit();
+                }
+            });
+
+        JSPC.app.areElementsFilledOut = function (elems) {
+            let filledOut = false;
+            if(elems !== null) {
+                for(let i = 0; i < elems.length; i++) {
+                    filledOut = elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0
+                    if(filledOut)
+                        break;
+                }
+            }
+            else filledOut = true;
+            return filledOut;
+        };
+
     </laser:script>
 
 </semui:modal>
