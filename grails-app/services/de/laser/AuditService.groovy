@@ -207,6 +207,7 @@ class AuditService {
                                             OID  : "${obj.class.name}:${obj.id}",
                                             event: "${obj.class.simpleName}.updated",
                                             prop : cp,
+                                            type : obj."${cp}".class.name,
                                             old  : oldMap[cp],
                                             new  : newMap[cp]
                                     ]

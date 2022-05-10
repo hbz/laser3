@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4228    10.05.2022  dev     2.3         Andreas Bug         Anmerkungen an Merkmalen wurden nicht durchgereicht
+
 4205    10.05.2022  dev     2.3         Andreas Feature     Schaltschrank beim Übertrag von Elementen zwischen zwei Lizenzen angepasst
 
 4147    09.05.2022  dev     2.3         Andreas Feature     Spaltenheader und Icons (+ Funktion) beim Übertrag von Dokumenten von Anmerkungen angepasst
