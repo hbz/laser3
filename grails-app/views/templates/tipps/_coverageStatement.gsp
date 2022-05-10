@@ -43,7 +43,7 @@
     <div class="la-card-column-with-row">
         <div class="la-card-row">
             <div class="la-card-flexRow">
-                <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>
+                <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
                 <semui:xEditable owner="${covStmt}" field="coverageNote" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">

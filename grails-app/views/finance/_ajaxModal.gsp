@@ -240,7 +240,7 @@
                                 <input type="hidden" name="newSubscription">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
-                                <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
+                                <div class="default text">${message(code:'default.subscription.label')}</div>
                             </div>
                         </g:else>
                     </g:else>

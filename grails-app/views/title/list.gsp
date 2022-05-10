@@ -26,7 +26,7 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'default.all')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'default.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'default.all')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -58,7 +58,7 @@
                     <thead>
                       <tr>
                           <th>${message(code:'sidewide.number')}</th>
-                      <g:sortableColumn property="sortname.keyword" title="${message(code: 'title.title.label')}" params="${params}" />
+                      <g:sortableColumn property="sortname.keyword" title="${message(code: 'default.title.label')}" params="${params}" />
                       <g:sortableColumn property="type.value" title="${message(code: 'title.type.label')}" params="${params}" />
                       <g:sortableColumn property="publishers.name" style="white-space:nowrap" title="${message(code: 'tipp.publisher')}" params="${params}" />
                       <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
@@ -74,7 +74,7 @@
                             <strong><g:link controller="tipp" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().type ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().type.value, RDConstants.TITLE_MEDIUM)?.getI10n('value') : message(code: 'spotlight.title')}
+                            ${hit.getSourceAsMap().type ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().type.value, RDConstants.TITLE_MEDIUM)?.getI10n('value') : message(code: 'default.title.label')}
                           </td>
                           <td>
                             <g:if test="${hit.getSourceAsMap().publisher}">

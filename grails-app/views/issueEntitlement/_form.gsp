@@ -81,7 +81,7 @@
 
 <div class="field ${hasErrors(bean: issueEntitlementInstance, field: 'coverageNote', 'error')} ">
 	<label for="coverageNote">
-		<g:message code="tipp.coverageNote" />
+		<g:message code="default.note.label" />
 	</label>
 	<g:textField name="coverageNote" value="${issueEntitlementInstance?.coverageNote}"/>
 </div>

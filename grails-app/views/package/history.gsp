@@ -24,10 +24,10 @@
         <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
-              <th>${message(code:'event.component')}</th>
+              <th>${message(code:'default.name.label')}</th>
               <th>${message(code:'event.actor')}</th>
               <th>${message(code:'event.name')}</th>
-              <th>${message(code:'event.property')}</th>
+              <th>${message(code:'default.property.label')}</th>
               <th>${message(code:'event.old')}</th>
               <th>${message(code:'event.new')}</th>
               <th>${message(code:'default.date.label')}</th>

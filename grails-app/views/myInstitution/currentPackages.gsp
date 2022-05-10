@@ -77,7 +77,7 @@
         <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
         <th>${message(code:'package.compare.overview.tipps')}</th>
         <th>${message(code:'default.provider.label')}</th>
-        <th>${message(code:'package.nominalPlatform')}</th>
+        <th>${message(code:'platform.label')}</th>
         <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
     </tr>
     </thead>

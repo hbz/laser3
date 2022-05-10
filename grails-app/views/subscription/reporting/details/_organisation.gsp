@@ -11,7 +11,7 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'org.sortname.label')}</th>
-                <th scope="col">${message(code:'org.name.label')}</th>
+                <th scope="col">${message(code:'default.name.label')}</th>
                 <th scope="col">${message(code:'org.customerType.label')}</th>
                 <th scope="col">${message(code:'org.orgType.label')}</th>
                 <th scope="col">${message(code:'org.libraryNetwork.label')}</th>

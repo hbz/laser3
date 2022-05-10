@@ -24,7 +24,7 @@
                 &lt;thead&gt;
                 &lt;tr&gt;
                 &lt;th class="<strong>la-js-dont-hide-this-card</strong>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
-            &lt;th&gt;${message(code:'property.table.value')}&lt;/th&gt;
+            &lt;th&gt;${message(code:'default.value.label')}&lt;/th&gt;
             &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
             &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;
             &lt;th&gt;${message(code:'default.actions.label')}&lt;/th&gt;

@@ -114,7 +114,7 @@
 				<table class="ui celled la-js-responsive-table la-table table">
 					<thead>
 						<tr>
-							<th>${message(code:'default.compare.overview.value')}</th>
+							<th>${message(code:'default.value.label')}</th>
 							<th>${subInsts.get(0).name}</th>
 							<th>${subInsts.get(1).name}</th>
 						</tr>

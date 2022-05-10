@@ -183,7 +183,7 @@
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt>${message(code: 'package.nominalPlatform')}</dt>
+                            <dt>${message(code: 'platform.label')}</dt>
                             <dd>
                                 <g:if test="${packageInstance.nominalPlatform}">
                                     <g:link controller="platform" action="show"
@@ -240,7 +240,7 @@
                         </dl>
                         <g:if test="${packageInstanceRecord.descriptionURL}">
                             <dl>
-                                <dt>${message(code: 'package.show.descriptionURL')}</dt>
+                                <dt>${message(code: 'default.url.label')}</dt>
                                 <dd>
                                     ${packageInstanceRecord.descriptionURL}
                                     <semui:linkIcon

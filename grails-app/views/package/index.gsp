@@ -66,7 +66,7 @@
                                       params="${params}"/>
                     <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
                                       params="${params}"/>
-                    <g:sortableColumn property="nominalPlatformName" title="${message(code: 'package.nominalPlatform')}"
+                    <g:sortableColumn property="nominalPlatformName" title="${message(code: 'platform.label')}"
                                       params="${params}"/>
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.label')}</th>

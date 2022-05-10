@@ -43,7 +43,7 @@
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'url', 'error')}">
 	<label for="url">
-		<g:message code="org.url.label" />
+		<g:message code="default.url.label" />
 	</label>
     <g:textField name="url" maxlength="512" value="${orgInstance?.url}"/>
 </div>

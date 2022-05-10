@@ -5,7 +5,7 @@
     <g:if test="${propList}">
         <thead><tr>
             <th>${message(code:'property.table.property')}</th>
-            <th>${message(code:'property.table.value')}</th>
+            <th>${message(code:'default.value.label')}</th>
             <th>${message(code:'property.table.paragraph')}</th>
             <th>${message(code:'property.table.notes')}</th>
         </tr></thead>

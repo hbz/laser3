@@ -10,7 +10,7 @@
 
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
-                <g:message code="task.title.label" /> <g:message code="messageRequiredField" />
+                <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
             </label>
             <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>

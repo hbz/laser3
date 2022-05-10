@@ -139,7 +139,7 @@ class SemanticUiIconTagLib {
     def listIcon = { attrs, body ->
         boolean hideTooltip = attrs.hideTooltip ? false : true
 
-        String dc = message(code: 'spotlight.title')
+        String dc = message(code: 'default.title.label')
         String icon = 'question'
 
         switch (attrs.type) {

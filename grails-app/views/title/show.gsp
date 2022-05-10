@@ -10,7 +10,7 @@
 
       <semui:breadcrumbs>
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
-          <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
+          <semui:crumb class="active" text="${message(code:'default.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
   <h1 class="ui icon header la-clear-before la-noMargin-top">
@@ -242,7 +242,7 @@
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br />
                           <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endVolume')}"></i>${covStmt.endVolume}<br />
                           <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endIssue')}"></i>${covStmt.endIssue}<br />
-                          <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br />
+                          <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>${covStmt.coverageNote}<br />
                           <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br />
                           <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br />
                       </p>

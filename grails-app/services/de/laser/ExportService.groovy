@@ -2064,7 +2064,7 @@ class ExportService {
 				messageSource.getMessage('tipp.endIssue',null,locale),
 				messageSource.getMessage('tipp.embargo',null,locale),
 				messageSource.getMessage('tipp.coverageDepth',null,locale),
-				messageSource.getMessage('tipp.coverageNote',null,locale),
+				messageSource.getMessage('default.note.label',null,locale),
 				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
 				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
 				messageSource.getMessage('tipp.volume',null,locale),

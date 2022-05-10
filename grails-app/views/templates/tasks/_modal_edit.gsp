@@ -7,7 +7,7 @@
         <g:hiddenField name="version" value="${taskInstance?.version}" />
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
-                <g:message code="task.title.label"/>
+                <g:message code="default.title.label"/>
             </label>
             <g:textField name="title" required="" value="${taskInstance?.title}"/>
         </div>

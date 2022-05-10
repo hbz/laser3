@@ -7,7 +7,7 @@
     <g:form id="documentFilter" class="ui form" controller="${controllerName}" action="documents">
         <div class="two fields">
             <div class="field">
-                <label for="docTitle">${message(code:'license.docs.table.title')}</label>
+                <label for="docTitle">${message(code:'default.title.label')}</label>
                 <input type="text" id="docTitle" name="docTitle" value="${params.docTitle}">
             </div>
             <div class="field">

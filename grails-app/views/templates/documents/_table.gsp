@@ -23,7 +23,7 @@
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
-                <th>${message(code:'license.docs.table.title')}</th>
+                <th>${message(code:'default.title.label')}</th>
                 <th>${message(code:'license.docs.table.fileName')}</th>
                 <th>${message(code:'license.docs.table.type')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>

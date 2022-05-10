@@ -103,7 +103,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="org.url.label"/></dt>
+                        <dt><g:message code="default.url.label"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
                             <g:if test="${orgInstance.url}">

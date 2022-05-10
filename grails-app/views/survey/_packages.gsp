@@ -175,7 +175,7 @@
                                     <div class="ui card">
                                         <div class="content">
                                             <dl>
-                                                <dt>${message(code: 'package.nominalPlatform')}</dt>
+                                                <dt>${message(code: 'platform.label')}</dt>
                                                 <dd>
                                                     <g:if test="${pkgInfo.packageInstance.nominalPlatform}">
                                                         <g:link controller="platform" action="show"

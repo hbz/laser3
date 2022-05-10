@@ -21,12 +21,12 @@
         <h4 class="ui header">${message(code: 'subscriptionsManagement.note.info.newNote')}</h4>
 
         <div class="field">
-            <label for="licenseNoteTitle">${message(code:'template.addNote.title')}:</label>
+            <label for="licenseNoteTitle">${message(code:'default.title.label')}:</label>
 
             <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
         </div>
         <div class="field">
-            <label for="licenseNote">${message(code:'template.addNote.note')}:</label>
+            <label for="licenseNote">${message(code:'default.note.label')}:</label>
 
             <textarea id="licenseNote" name="licenseNote"></textarea>
         </div>

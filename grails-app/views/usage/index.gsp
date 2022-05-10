@@ -22,7 +22,7 @@
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
             <div class="field">
-                <label for="supplier">${message(code: 'default.usage.adminPage.platformLabel')}</label>
+                <label for="supplier">${message(code: 'platform.label')}</label>
                 <g:select class="ui dropdown" id="supplier" name="supplier"
                               from="${providerList}"
                               optionKey="id"

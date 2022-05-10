@@ -577,7 +577,7 @@ class ControlledListService {
                 else dateString += ""
                 dateString += ")"
                 */
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
+                result.results.add([name:"(${messageSource.getMessage('default.subscription.label',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }
         if(params.package == "true") {

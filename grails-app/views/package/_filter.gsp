@@ -9,7 +9,7 @@
                 <input id="filter" name="filter" value="${params.filter}"/>
             </div>
             <div class="field">
-                <label for="coverageNoteFilter">${message(code:'tipp.coverageNote')}</label>
+                <label for="coverageNoteFilter">${message(code:'default.note.label')}</label>
                 <input id="coverageNoteFilter" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
             </div>
         </div>

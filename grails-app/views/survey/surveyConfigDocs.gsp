@@ -95,7 +95,7 @@
                 <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
-                    <th>${message(code: 'surveyConfigDocs.docs.table.title')}</th>
+                    <th>${message(code: 'default.title.label')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
                     <th>${message(code: 'property.share.tooltip.sharedFrom')}</th>

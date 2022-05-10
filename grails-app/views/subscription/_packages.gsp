@@ -24,7 +24,7 @@
                         <div class="ui top aligned divided relaxed list">
                             <div class="item">
                                 <div class="content">
-                                    <strong>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</strong>
+                                    <strong>${message(code: 'platform.label')}</strong>
                                 </div>
                             </div>
                             <div class="item">

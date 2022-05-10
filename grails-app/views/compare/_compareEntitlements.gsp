@@ -4,7 +4,7 @@
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
             <tr>
-                <th rowspan="2">${message(code: 'default.compare.title')}</th>
+                <th rowspan="2">${message(code: 'default.title.label')}</th>
                 <g:each in="${objects}" var="object">
                     <th colspan="4">
                         <g:if test="${object}"><g:link

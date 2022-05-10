@@ -209,7 +209,7 @@
                         <%--${tipp.embargo}--%>
                         <input data-coverage="true" class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br />
                         <%--${tipp.coverageNote}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br />
+                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'default.note.label')}" value="${covStmt.coverageNote}"><br />
                     </g:each>
                 </g:else>
             </td>

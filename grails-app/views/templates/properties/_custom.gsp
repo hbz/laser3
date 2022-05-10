@@ -23,7 +23,7 @@
         <thead>
             <tr>
                 <th class="la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
-                <th>${message(code:'property.table.value')}</th>
+                <th>${message(code:'default.value.label')}</th>
                 <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>

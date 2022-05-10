@@ -10,7 +10,7 @@
 
     <semui:breadcrumbs>
         <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
-        <semui:crumb class="active" text="${message(code:'title.title.label')}: ${titleInstance.title}" />
+        <semui:crumb class="active" text="${message(code:'default.title.label')}: ${titleInstance.title}" />
     </semui:breadcrumbs>
 
     <g:if test="${editable}">
@@ -29,10 +29,10 @@
         <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
-              <th>${message(code:'event.component')}</th>
+              <th>${message(code:'default.name.label')}</th>
               <th>${message(code:'event.actor')}</th>
               <th>${message(code:'event.name')}</th>
-              <th>${message(code:'event.property')}</th>
+              <th>${message(code:'default.property.label')}</th>
               <th>${message(code:'event.old')}</th>
               <th>${message(code:'event.new')}</th>
               <th>${message(code:'default.date.label')}</th>

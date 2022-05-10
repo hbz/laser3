@@ -41,7 +41,7 @@
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="roleT.org.sortname" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.member')}" rowspan="2" />
-            <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.subscription')}" class="la-smaller-table-head" />
+            <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>

@@ -41,7 +41,7 @@
         <thead>
         <tr>
             <th>${message(code: 'sidewide.number')}</th>
-            <th>${message(code: 'issueEntitlementGroup.name.label')}</th>
+            <th>${message(code: 'default.name.label')}</th>
             <th>${message(code: 'default.description.label')}</th>
             <th>${message(code: 'issueEntitlementGroup.items.label')}</th>
             <th></th>
@@ -97,7 +97,7 @@
     <g:form action="processCreateEntitlementGroup" controller="subscription" params="[id: params.id]"
             method="post" class="ui form">
         <div class="field required ">
-            <label>${message(code: 'issueEntitlementGroup.name.label')} <g:message code="messageRequiredField" /></label>
+            <label>${message(code: 'default.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
         </div>
 

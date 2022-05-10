@@ -10,7 +10,7 @@
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label')}"/>
+                <g:sortableColumn property="lower(t.title)" title="${message(code: 'default.title.label')}"/>
                 <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label')}"/>
                 <g:sortableColumn property="t.status" title="${message(code: 'task.status.label')}"/>
                 <g:if test="${controllerName == 'myInstitution'}">

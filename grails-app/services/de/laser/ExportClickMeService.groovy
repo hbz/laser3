@@ -610,7 +610,7 @@ class ExportClickMeService {
                             'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
                             'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
                             'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'tipp.coverageNote'],
+                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
                             'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
                             'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
                     ]
@@ -701,7 +701,7 @@ class ExportClickMeService {
                             'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
                             'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
                             'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'tipp.coverageNote'],
+                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
                             'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
                             'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
                     ]

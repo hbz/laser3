@@ -1,7 +1,7 @@
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
     <div class="field required">
         <label for="title">
-            <g:message code="task.title.label"/> <g:message code="messageRequiredField" />
+            <g:message code="default.title.label"/> <g:message code="messageRequiredField" />
         </label>
         <g:textField id="title" name="title" required="required" value=""/>
     </div>

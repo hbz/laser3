@@ -20,7 +20,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td style="border:1px solid #dddddd;" colspan="2">${message(code:'tipp.coverageNote')}: ${obj.coverageNote}</td>
+			<td style="border:1px solid #dddddd;" colspan="2">${message(code:'default.note.label')}: ${obj.coverageNote}</td>
 		</tr>
 		<tr>
 			<td style="border:1px solid #dddddd;" colspan="2">${message(code:'platform.label')}: ${obj.platform.name}</td>

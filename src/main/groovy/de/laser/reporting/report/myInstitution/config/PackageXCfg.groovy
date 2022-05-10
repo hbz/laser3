@@ -199,7 +199,7 @@ class PackageXCfg extends BaseConfig {
             'package-x-language'        : [ dtc: false, es: true,               export: true, label: 'package.language.label',        mapping: 'languages',   rdc: RDConstants.LANGUAGE ],
             'package-description'       : [ dtc: false, es: true,               export: true, label: 'default.description.label' ],
 
-            'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'package.descriptionURL.label' ],
+            'package-descriptionURL'    : [ dtc: false, es: true,               export: true, label: 'default.url.label' ],
             'package-x-curatoryGroup'   : [ dtc: false, es: true,               export: true, label: 'package.curatoryGroup.label',   mapping: 'curatoryGroups' ],
             'package-x-archivingAgency' : [ dtc: false, es: true,               export: true, label: 'package.archivingAgency.label', mapping: 'packageArchivingAgencies' ],
             '_+_lastUpdated'            : [ dtc: true  ],    // virtual

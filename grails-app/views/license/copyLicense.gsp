@@ -39,7 +39,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                 <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
                 <br />
-                <i class="cloud icon"></i>${message(code: 'license.licenseUrl.label')}
+                <i class="cloud icon"></i>${message(code: 'default.url.label')}
                 <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
                 <br />
                 <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}

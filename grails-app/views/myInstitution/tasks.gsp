@@ -27,7 +27,7 @@
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">
-                        <label>${message(code: 'task.title.label')}</label>
+                        <label>${message(code: 'default.title.label')}</label>
                         <div class="ui input">
                             <input type="text" name="taskName"
                                    placeholder="${message(code: 'default.search.ph')}"

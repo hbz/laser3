@@ -29,7 +29,7 @@
             <thead>
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'mailTemplate.name.label')}</th>
+                <th>${message(code: 'default.name.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
@@ -77,7 +77,7 @@
     <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
         <input type="hidden" name="target" value="" />
         <div class="field required">
-            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')} <g:message code="messageRequiredField" /></label>
+            <label for="mailTemplateName">${message(code:'default.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateNameEdit" name="name" />
         </div>
 
@@ -132,7 +132,7 @@
     <g:form id="create_mail_template" class="ui form" url="[controller:'dataManager', action:'createMailTemplate']" method="post">
 
         <div class="field required">
-            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')} <g:message code="messageRequiredField" /></label>
+            <label for="mailTemplateName">${message(code:'default.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateName" name="name" />
         </div>
 

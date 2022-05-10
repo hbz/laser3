@@ -54,7 +54,7 @@
                 <table  class="ui celled la-js-responsive-table la-table table">
                     <thead>
                         <tr>
-                            <th class="four wide">${message(code: 'accessPoint.name')}</th>
+                            <th class="four wide">${message(code: 'default.name.label')}</th>
                             <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
                                 <th class="five wide">IPv4</th>
                                 <th class="five wide">IPv6</th>

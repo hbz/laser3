@@ -24,7 +24,7 @@
 					<th>${message(code:'sidewide.number')}</th>
 					<g:sortableColumn property="sortname" title="${message(code: 'default.name.label')}" />
 					<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
-					<th>${message(code:'org.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
+					<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
 				</tr>
 				</thead>
 				<tbody>
