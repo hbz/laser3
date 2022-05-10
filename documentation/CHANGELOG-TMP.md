@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4234    10.05.2022  dev     2.3         Andreas Bug         Kostenposten ohne Lizenz- und Umfragebezug gingen in der Abfage unter
+
 4228    10.05.2022  dev     2.3         Andreas Bug         Anmerkungen an Merkmalen wurden nicht durchgereicht
 
 4205    10.05.2022  dev     2.3         Andreas Feature     Schaltschrank beim Übertrag von Elementen zwischen zwei Lizenzen angepasst
