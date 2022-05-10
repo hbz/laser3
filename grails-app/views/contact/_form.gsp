@@ -18,7 +18,7 @@
 
 <div class="field ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
 	<label for="content">
-		<g:message code="contact.content.label" />
+		<g:message code="default.content.label" />
 		
 	</label>
 	<g:textField id="content" name="content" value="${contactInstance?.content}"/>

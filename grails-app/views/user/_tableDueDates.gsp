@@ -11,7 +11,6 @@
     </tr>
     </thead>
     <tbody>
-    ${dashDueDate}
     <g:each in="${dueDates}" var="dashDueDate">
         <g:set var="obj" value="${dashDueDate? genericOIDService.resolveOID(dashDueDate.dueDateObject.oid) : null}"/>
         <g:if test="${obj}">
@@ -20,7 +19,6 @@
                     <g:if test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
-                %{--${dashDueDate.id} &nbsp--}%
                     <g:if test="${Locale.GERMAN.getLanguage() == LocaleContextHolder.getLocale().getLanguage()}">
                         ${dashDueDate.dueDateObject.attribute_value_de}
                     </g:if>
@@ -95,7 +93,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td class="x" >
+                <td class="x">
                     <g:if test="${false}">
                         <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -146,7 +144,7 @@
                         </laser:remoteLink>
                     </g:else>
                 </td>
-                <td class="x" >
+                <td class="x">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <laser:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"

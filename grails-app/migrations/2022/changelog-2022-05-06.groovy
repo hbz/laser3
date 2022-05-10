@@ -31,4 +31,21 @@ databaseChangeLog = {
         dropColumn(columnName: "core_status_start", tableName: "issue_entitlement")
         dropColumn(columnName: "core_status_end", tableName: "issue_entitlement")
     }
+
+    changeSet(author: "klober (generated)", id: "1651834782075-5") {
+        dropColumn(columnName: "doc_status_rv_fk", tableName: "doc")
+    }
+
+    changeSet(author: "klober (generated)", id: "1651834782075-6") {
+        dropColumn(columnName: "org_membership", tableName: "org")
+    }
+
+    changeSet(author: "klober (generated)", id: "1651834782075-7") {
+        dropColumn(columnName: "plat_type_rv_fk", tableName: "platform")
+    }
+
+    changeSet(author: "klober (generated)", id: "1651834782075-8") {
+        dropColumn(columnName: "tipp_option_rv_fk", tableName: "title_instance_package_platform")
+        dropColumn(columnName: "tipp_payment_rv_fk", tableName: "title_instance_package_platform")
+    }
 }

@@ -18,7 +18,7 @@
                 <th>${message(code: 'title.label')}</th>
             </g:else>
             <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}" class="two wide"/>
-            <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}" class="two wide"/>
+            <g:sortableColumn title="${message(code:"default.count.label")}" property="r.reportCount" params="${params}" class="two wide"/>
             <th class="two wide"><g:message code="default.actions.label"/></th>
         </tr>
         </thead>

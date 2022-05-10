@@ -30,12 +30,11 @@ class Address {
      * @see RDConstants#REGIONS_AT
      * @see RDConstants#REGIONS_CH
      */
-    @RefdataInfo(cat = '?')
+    @RefdataInfo(cat = '?', i18n = 'org.region.label')
     RefdataValue region
 
     @RefdataInfo(cat = RDConstants.COUNTRY)
     RefdataValue country
-
 
     String name
     String additionFirst

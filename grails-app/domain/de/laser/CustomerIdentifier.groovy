@@ -2,14 +2,16 @@ package de.laser
 
 
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 
 /**
  * Represents a key/value pair for a customer {@link Org} which enables to load statistic data from a SUSHI server
  */
 class CustomerIdentifier {
 
-    @RefdataInfo(cat = 'CustomerIdentifierType')
+    @RefdataInfo(cat = RDConstants.CUSTOMER_IDENTIFIER_TYPE)
     RefdataValue type
+
     String value
     String requestorKey
     String note

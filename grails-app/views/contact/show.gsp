@@ -29,7 +29,7 @@
                         <dt><g:message code="contact.contentType.label" /></dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="contentType" config="${RDConstants.CONTACT_CONTENT_TYPE}" /></dd>
 
-                        <dt><g:message code="contact.content.label" /></dt>
+                        <dt><g:message code="default.content.label" /></dt>
                         <dd>
 							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>

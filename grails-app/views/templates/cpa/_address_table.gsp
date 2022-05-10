@@ -10,7 +10,7 @@
     <tr>
         <th></th>
         <th>
-            ${message(code: 'address.type.label')}
+            ${message(code: 'default.type.label')}
         </th>
         <th>
             ${message(code: 'address.label')}

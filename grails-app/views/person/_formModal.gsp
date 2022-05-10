@@ -172,7 +172,7 @@
 
                     <div class="field ten wide">
                         <label for="contact1_content" for="contact2_content" for="contact3_content">
-                            <g:message code="contact.content.label" />
+                            <g:message code="default.content.label" />
                         </label>
 
                         <g:textField name="contact1_content" value=""/>

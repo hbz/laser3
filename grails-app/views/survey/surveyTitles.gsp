@@ -117,7 +117,7 @@
                         <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
                                           title="${message(code: 'title.label')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="four wide">${message(code: 'subscription.details.date_header')}</th>
+                        <th class="four wide">${message(code: 'default.date.label')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices"/></th>
                         <th class="one wide"></th>

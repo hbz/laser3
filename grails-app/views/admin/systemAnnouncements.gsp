@@ -29,7 +29,7 @@
                 <input type="text" id="saTitle" name="saTitle" value="${currentAnnouncement?.title}" />
             </div>
             <div class="field">
-                <label for="saContent">${message(code:'announcement.content.label')}</label>
+                <label for="saContent">${message(code:'default.content.label')}</label>
                 <textarea id="saContent" name="saContent">${currentAnnouncement?.content}</textarea>
             </div>
             <div class="ui field">

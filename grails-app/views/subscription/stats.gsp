@@ -233,8 +233,8 @@
                     <table class="ui celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
-                                <th><g:message code="default.usage.date"/></th>
-                                <th><g:message code="default.usage.reportCount"/></th>
+                                <th><g:message code="default.date.label"/></th>
+                                <th><g:message code="default.count.label"/></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -255,7 +255,7 @@
                                 <g:if test="${usages && usages[0].title}">
                                     <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name" params="${params}"/>
                                 </g:if>
-                                <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}"/>
+                                <g:sortableColumn title="${message(code:"default.count.label")}" property="r.reportCount" params="${params}"/>
                             </tr>
                         </thead>
                         <tbody>

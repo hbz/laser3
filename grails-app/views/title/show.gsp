@@ -40,7 +40,6 @@
                 </semui:form>
             </div>
 
-
             <div class="sixteen wide column">
                 <semui:form>
                   <g:each in="${duplicates}" var="entry">
@@ -65,8 +64,8 @@
                 <tr>
                   <th><g:message code="template.orgLinks.name"/></th>
                   <th><g:message code="default.role.label"/></th>
-                  <th><g:message code="title.edit.orglink.from"/></th>
-                  <th><g:message code="title.edit.orglink.to"/></th>
+                  <th><g:message code="default.from"/></th>
+                  <th><g:message code="default.to"/></th>
                 </tr>
               </thead>
               <tbody>
@@ -91,8 +90,8 @@
               <thead>
                 <tr>
                   <th>${message(code: 'default.date.label')}</th>
-                  <th>${message(code: 'title.show.history.from')}</th>
-                  <th>${message(code: 'title.show.history.to')}</th>
+                  <th>${message(code: 'default.from')}</th>
+                  <th>${message(code: 'default.to')}</th>
                 </tr>
               </thead>
               <tbody>

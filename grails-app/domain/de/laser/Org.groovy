@@ -81,9 +81,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
-    @RefdataInfo(cat = '?')
-    RefdataValue membership
-
     @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
     RefdataValue country
 
@@ -177,7 +174,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
     retirementDate          column:'org_retirement_date'
-        membership          column:'org_membership'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
@@ -229,7 +225,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-          membership(nullable:true)
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)

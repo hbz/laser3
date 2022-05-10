@@ -26,9 +26,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   String provenance
   String titleNamespace
 
-  @RefdataInfo(cat = '?')
-  RefdataValue type
-
   @RefdataInfo(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
 
@@ -67,7 +64,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
         provenance column:'plat_data_provenance'
     titleNamespace column:'plat_title_namespace', type: 'text'
         primaryUrl column:'plat_primary_url'
-              type column:'plat_type_rv_fk'
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
@@ -83,7 +79,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     titleNamespace(nullable:true, blank:false)
-    type            (nullable:true)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)

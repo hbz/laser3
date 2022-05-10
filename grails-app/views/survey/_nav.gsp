@@ -150,7 +150,7 @@
 
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTitles"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="surveyTitles.label"/>
+                          message="title.plural"/>
 
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"

@@ -49,7 +49,7 @@
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>
                                     <li><g:message code="default.status.label"/>: ${genericOIDService.resolveOID(sub.status)?.getI10n('value')}</li>
-                                    <li><g:message code="myinst.subscriptionImport.type"/>: ${genericOIDService.resolveOID(sub.kind)?.getI10n('value')}</li>
+                                    <li><g:message code="default.type.label"/>: ${genericOIDService.resolveOID(sub.kind)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.form"/>: ${genericOIDService.resolveOID(sub.form)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.resource"/>: ${genericOIDService.resolveOID(sub.resource)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.provider"/>: ${genericOIDService.resolveOID(sub.provider)}</li>

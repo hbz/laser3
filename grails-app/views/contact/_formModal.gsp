@@ -35,7 +35,7 @@
 
         <div class="field required">
             <label for="content">
-                <g:message code="contact.content.label" /> <g:message code="messageRequiredField" />
+                <g:message code="default.content.label" /> <g:message code="messageRequiredField" />
             </label>
             <g:textField id="content" name="content" value="${contactInstance?.content}"/>
         </div>

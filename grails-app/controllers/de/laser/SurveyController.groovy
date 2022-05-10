@@ -2718,7 +2718,7 @@ class SurveyController {
      * Call to delete the given documents from the survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -3201,7 +3201,7 @@ class SurveyController {
      * Call to add the subscription members as participants to the survey
      * @return the survey participants list
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -4798,7 +4798,7 @@ class SurveyController {
      * Lists the tasks attached to the given survey
      * @return the list of tasks of the given survey
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
@@ -4822,7 +4822,7 @@ class SurveyController {
      * Lists the notes attached to the given survey
      * @return the list of notes of the given survey
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def notes() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)

@@ -59,7 +59,7 @@
             <thead>
             <tr>
                 <th><g:message code="subscription.delete.header.referencingObject"/></th>
-                <th><g:message code="subscription.delete.header.count"/></th>
+                <th><g:message code="default.count.label"/></th>
                 <th><g:message code="subscription.delete.header.objectIDs"/></th>
             </tr>
             </thead>

@@ -239,7 +239,7 @@ class LicenseController {
     /**
      * Gets the tasks connected to this license
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)

@@ -46,7 +46,7 @@ class FinanceController  {
      * the cost items listed in them depends on the perspective taken and specified in the parameter map.
      * To see the decision tree, view {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         log.debug("FinanceController::index() ${params}")
@@ -72,7 +72,7 @@ class FinanceController  {
      * and specified in the parameter map, see {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)} for
      * the decision tree
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
@@ -118,7 +118,7 @@ class FinanceController  {
      * can only display the currently visible (= active) tab!
      * @return the financial data tab(s), as Excel worksheet or CSV export file
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
@@ -431,7 +431,7 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal and sets the edit parameters
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -451,7 +451,7 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal, sets the edit parameters and prefills the form values with the existing cost item data
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -470,7 +470,7 @@ class FinanceController  {
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
      * submitted in the modal
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 0)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")',ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -490,7 +490,7 @@ class FinanceController  {
     /**
      * Call to delete a given cost item
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
         Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
@@ -502,7 +502,7 @@ class FinanceController  {
     /**
      * Call to process the submitted form values in order to create or update a cost item
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def createOrUpdateCostItem() {
         Map<String,Object> ctrlResult = financeService.createOrUpdateCostItem(params)
@@ -518,7 +518,7 @@ class FinanceController  {
     /**
      * Call to import cost items submitted from the import post processing view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
@@ -537,7 +537,7 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
@@ -549,7 +549,7 @@ class FinanceController  {
     /**
      * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })

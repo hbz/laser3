@@ -17,9 +17,6 @@ class Doc {
     static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
     static final CONTENT_TYPE_FILE                = 3
 
-    @RefdataInfo(cat = 'Document Status')
-    RefdataValue status
-
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
 
@@ -37,7 +34,6 @@ class Doc {
   static mapping = {
                 id column:'doc_id'
            version column:'doc_version'
-            status column:'doc_status_rv_fk'
               type column:'doc_type_rv_fk', index:'doc_type_idx'
        contentType column:'doc_content_type'
               uuid column:'doc_docstore_uuid', index:'doc_uuid_idx'
@@ -49,7 +45,6 @@ class Doc {
   }
 
   static constraints = {
-    status    (nullable:true)
     type      (nullable:true)
     content   (nullable:true, blank:false)
     uuid      (nullable:true, blank:false)

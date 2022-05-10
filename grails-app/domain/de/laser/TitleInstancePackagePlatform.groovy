@@ -75,20 +75,14 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
-    @RefdataInfo(cat = '?')
-    RefdataValue option
-
-    @RefdataInfo(cat = '?')
+    @RefdataInfo(cat = RDConstants.TIPP_DELAYED_OA)
     RefdataValue delayedOA
 
-    @RefdataInfo(cat = '?')
+    @RefdataInfo(cat = RDConstants.TIPP_HYBRID_OA)
     RefdataValue hybridOA
 
-    @RefdataInfo(cat = '?')
+    @RefdataInfo(cat = RDConstants.TIPP_STATUS_REASON)
     RefdataValue statusReason
-
-    @RefdataInfo(cat = '?')
-    RefdataValue payment
 
     @RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
     RefdataValue accessType
@@ -154,8 +148,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
       statusReason column:'tipp_status_reason_rv_fk'
-           payment column:'tipp_payment_rv_fk'
-            option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
@@ -196,8 +188,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         delayedOA   (nullable:true)
         hybridOA    (nullable:true)
         statusReason(nullable:true)
-        payment     (nullable:true)
-        option      (nullable:true)
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         accessStartDate (nullable:true)
         accessEndDate (nullable:true)

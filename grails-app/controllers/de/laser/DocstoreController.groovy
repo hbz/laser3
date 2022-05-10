@@ -188,7 +188,7 @@ class DocstoreController  {
     /**
      * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
+    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")',ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)
