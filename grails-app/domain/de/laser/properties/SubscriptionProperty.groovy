@@ -180,8 +180,8 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                 def msgParams = [
                         definedType,
                         "${scp.type.class.name}:${scp.type.id}",
-                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
-                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        (changeDocument.prop == 'note' ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop == 'note' ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
                         "${description}"
                 ]
 

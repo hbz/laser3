@@ -162,6 +162,8 @@ class CopyElementsService {
 
         result.sourceObject = sourceObject
         result.targetObject = targetObject
+        result.sourceDocuments = sourceObject.documents.sort { it.owner?.title?.toLowerCase()}
+        result.targetDocuments = targetObject?.documents?.sort { it.owner?.title?.toLowerCase()} //null check needed because targetObject may not necessarily exist at that point and GORM does not always initialises sets
         result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
         result.targetTasks = taskService.getTasksByObject(result.targetObject)
         result
@@ -642,9 +644,10 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.takeDocIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toCopyDocs = []
+                def toCopyDocs = [], toShare = []
                 params.list('copyObject.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
-                copyDocs(sourceObject, toCopyDocs, targetObject, flash)
+                params.list('copyObject.toggleShare').each { doc -> toShare << Long.valueOf(doc) }
+                copyDocs(sourceObject, toCopyDocs, targetObject, flash, toShare)
                 isTargetSubChanged = true
             }
 
@@ -656,9 +659,10 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.takeAnnouncementIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toCopyAnnouncements = []
+                def toCopyAnnouncements = [], toShare = []
                 params.list('copyObject.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-                copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash)
+                params.list('copyObject.toggleShare').each { doc -> toShare << Long.valueOf(doc) }
+                copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash, toShare)
                 isTargetSubChanged = true
             }
 
@@ -850,6 +854,7 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
+            log.debug(params.toMapString())
             if(!bulkOperationRunning) {
                 executorService.execute({
                     try {
@@ -866,10 +871,30 @@ class CopyElementsService {
                         }
 
                         if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect { genericOIDService.resolveOID(it) }
-                            packageSettingsToTake.each { SubscriptionPackage sp ->
-                                //explicit loading of service needed because lazy initialisation gives null
-                                copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
+                            List takePackageNotifications = params.list('subscription.takePackageNotifications'),
+                            takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
+                            takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
+                            params.list('subscription.takePackageSettings').each { String val ->
+                                String[] setting = val.split('§')
+                                boolean withNotification = takePackageNotifications.findIndexOf { String notification -> notification.split('§')[1] == setting[1]} > -1,
+                                settingAudit = takePackageSettingAudit.findIndexOf { String settingAudit -> settingAudit.split('§')[1] == setting[1]} > -1,
+                                notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
+                                SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
+                                SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
+                                if(setting[2] != 'null') {
+                                    Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
+                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                    if (newPcc) {
+                                        if (settingAudit && !AuditConfig.getConfig(targetObject, setting[1]))
+                                            AuditConfig.addConfig(targetObject, setting[1])
+                                        else if (!settingAudit && AuditConfig.getConfig(targetObject, setting[1]))
+                                            AuditConfig.removeConfig(targetObject, setting[1])
+                                        if (notificationAudit && !AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
+                                            AuditConfig.addConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                                        else if (!notificationAudit && AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
+                                            AuditConfig.removeConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                                    }
+                                }
                             }
                             isTargetSubChanged = true
                         }
@@ -976,7 +1001,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return true if the transfer was successful, false otherwise
      */
-    boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash) {
+    boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
@@ -985,6 +1010,9 @@ class CopyElementsService {
                     save(newDoc, flash)
                     DocContext newDocContext = new DocContext()
                     InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    if(dctx.id in toShare)
+                        newDocContext.isShared = true
+                    else newDocContext.isShared = false
                     newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                     newDocContext.owner = newDoc
                     save(newDocContext, flash)
@@ -1111,7 +1139,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return true if the transfer was successful, false otherwise
      */
-    boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash) {
+    boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
@@ -1123,6 +1151,9 @@ class CopyElementsService {
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
+                        if(dctx.id in toShare)
+                            newDocContext.isShared = true
+                        else newDocContext.isShared = false
                         newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
@@ -1508,10 +1539,7 @@ class CopyElementsService {
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
-            if (SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) { //targetObject.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }
-                Object[] args = [subscriptionPackage.pkg.name]
-                flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
-            } else {
+            if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
                 List<OrgAccessPointLink> pkgOapls = []
                 if(subscriptionPackage.oapls)
                     pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)

@@ -381,7 +381,8 @@ class PendingChangeService extends AbstractLockableService {
                 //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
                 String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
-                def srcObject = genericOIDService.resolveOID(srcOID.replace('Custom','').replace('Private',''))
+                srcOID = srcOID.replace('Custom','').replace('Private','')
+                def srcObject = genericOIDService.resolveOID(srcOID)
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
