@@ -163,7 +163,6 @@
                             <div class="la-flexbox">
                                 <i class="icon gift la-list-icon"></i>
                                 <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
-                                %{--<g:link controller="public" action="gascoDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>--}%
                             </div>
                         </g:each>
                     </td>

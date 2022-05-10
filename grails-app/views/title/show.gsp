@@ -63,7 +63,6 @@
             <table class="ui celled la-js-responsive-table la-table table ">
               <thead>
                 <tr>
-                  %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
                   <th><g:message code="template.orgLinks.name"/></th>
                   <th><g:message code="default.role.label"/></th>
                   <th><g:message code="title.edit.orglink.from"/></th>
@@ -73,7 +72,6 @@
               <tbody>
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
-                    %{--<td>${org.org.id}</td>--}%
                     <td><g:link controller="organisation" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>

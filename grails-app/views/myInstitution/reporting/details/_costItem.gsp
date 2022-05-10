@@ -18,10 +18,6 @@
                 ${message(code:'financials.costItemElement')}
             </th>
             <th></th>
-            %{--
-            <th>3</th>
-            <th>4</th>
-            --}%
             <th>
                 ${message(code:'financials.taxRate')}
             </th>
@@ -53,10 +49,6 @@
                     </td>
                     <td>${costItem.costItemElement?.getI10n('value')}</td>
                     <td>${costItem.costTitle}</td>
-                    %{--
-                    <td>${costItem.costItemCategory}</td>
-                    <td>${costItem.type?.getI10n('value')}</td>
-                    --}%
                     <td>
                         ${costItem.taxKey?.taxRate}%
                     </td>

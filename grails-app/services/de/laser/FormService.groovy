@@ -7,7 +7,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 /**
  * This service holds generic methods releated to form handling
  */
-//@CompileStatic
 @Transactional
 class FormService {
 

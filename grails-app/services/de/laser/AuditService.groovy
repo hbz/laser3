@@ -13,7 +13,6 @@ import javax.persistence.Transient
  * This service manages inheritance triggering, i.e. if a property has been changed which is inherited to member objects,
  * the change is being processed to the member objects
  */
-//@CompileStatic
 @Transactional
 class AuditService {
 

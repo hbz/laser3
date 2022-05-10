@@ -160,27 +160,6 @@ class SubscriptionPackage implements Comparable {
     return this.pkg.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
   }
 
-  @Deprecated
-  def getNotActiveAccessPoints(Org org){
-    String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-    notActiveAPLinkQuery += "and not exists ("
-    notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-    notActiveAPLinkQuery += "and oapl.subPkg.id = ${id}) order by lower(oap.name)"
-    OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
-  }
-
-  @Deprecated
-  def getAccessPointListForOrgAndPlatform(Org org, Platform platform){
-    // do not mix derived and not derived
-    if (platform.usesPlatformAccessPoints(org, this)){
-      String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oap.org=:org and oapl.platform=:platform and oapl.active=true"
-      return OrgAccessPointLink.executeQuery(hql, [org:org, platform:platform])
-    } else {
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as oap where oapl.subPkg=:subPkg and oap.org=:org and oapl.active=true"
-        return OrgAccessPointLink.executeQuery(hql, [subPkg:this, org:org])
-    }
-  }
-
   /**
    * Used by /subscription/show.gsp
    * Gets the pending change configuration for this package subscription and the given config key

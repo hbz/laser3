@@ -18,4 +18,17 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "klober (modified)", id: "1651834782075-3") {
+        grailsChange {
+            change {
+                sql.execute("update due_date_object set ddo_oid = replace(ddo_oid, 'de.laser.Survey', 'de.laser.survey.Survey')")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1651834782075-4") {
+        dropColumn(columnName: "core_status_start", tableName: "issue_entitlement")
+        dropColumn(columnName: "core_status_end", tableName: "issue_entitlement")
+    }
 }

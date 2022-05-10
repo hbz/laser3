@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException
@@ -27,7 +26,6 @@ import java.util.regex.Pattern
 /**
  * This service replaced very complicatedly written methods in the FinanceController class and delivers financial data
  * for finance and survey cost views
- * @author agalffy
  */
 @Transactional
 class FinanceService {

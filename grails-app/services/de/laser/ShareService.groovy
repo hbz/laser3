@@ -11,7 +11,6 @@ import grails.gorm.transactions.Transactional
  * @see DocContext
  * @see ShareSupport
  */
-//@CompileStatic
 @Transactional
 class ShareService {
 

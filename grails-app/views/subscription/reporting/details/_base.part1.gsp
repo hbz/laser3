@@ -20,3 +20,7 @@
         </div>
     </g:each>
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $(function(){ responsiveTables.go(); }
+</laser:script>

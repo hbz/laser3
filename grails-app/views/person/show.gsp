@@ -71,11 +71,6 @@
                         <dl><dt><g:message code="person.gender.label" /></dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
                         </dl>
-
-                        <%--
-                        <dl><dt>${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}</dt>
-                            <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
-                                                        config="${RDConstants.PERSON_POSITION}"/></dd></dl>--%>
                     </g:if>
                 </div>
             </div><!-- .card -->
@@ -187,17 +182,6 @@
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate outline icon"></i>
                                                                 </g:link>
-                                                                %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
-                                                                %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
-                                                                %{--<div class="ui icon negative button js-open-confirm-modal"--}%
-                                                                %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
-                                                                %{--data-confirm-term-how="delete"--}%
-                                                                %{--data-confirm-id="${personInstance?.id}" --}%
-                                                                %{--role="button"--}%
-                                                                %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate outline icon"></i>--}%
-                                                                %{--</div>--}%
-                                                                %{--</g:form>--}%
                                                             </div>
                                                         </g:else>
                                                     </g:if>
@@ -258,17 +242,6 @@
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate outline icon"></i>
                                                                 </g:link>
-                                                                %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
-                                                                    %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
-                                                                    %{--<div class="ui icon negative button js-open-confirm-modal"--}%
-                                                                         %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
-                                                                         %{--data-confirm-term-how="delete"--}%
-                                                                         %{--data-confirm-id="${personInstance?.id}" --}%
-                                                                        %{--role="button"--}%
-                                                                        %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate outline icon"></i>--}%
-                                                                    %{--</div>--}%
-                                                                %{--</g:form>--}%
                                                             </div>
                                                         </g:else>
                                                     </g:if>
@@ -351,11 +324,6 @@
                                         </g:if>
                                     </g:each>
                                 </div>
-
-
-                                <%--<g:if test="${editable}">
-                                    <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                                </g:if>--%>
 
                             </dd></dl>
 

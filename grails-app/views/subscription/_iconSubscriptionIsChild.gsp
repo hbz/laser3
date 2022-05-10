@@ -5,7 +5,7 @@
 
     <semui:childSubscriptionIcon/>
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
       $(document).ready(function() {
         $('.la-subscriptionIsChild').visibility({
           type   : 'fixed',

@@ -46,9 +46,6 @@ import java.util.List
  * JSON methods build a Map object which can then be converted into Json.
  *
  * To be modified: the now specialised methods should be generalised into one method generating all exports.
- *
- * @author wpetit
- * @author agalffy
  */
 @Transactional
 class ExportService {
@@ -256,7 +253,6 @@ class ExportService {
 				Row row
 				Cell cell
 				int rownum = 1
-
 
 				orgs.each { org ->
 					int cellnum = 0

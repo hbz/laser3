@@ -20,7 +20,6 @@ import groovyx.net.http.Method
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
  */
-//@CompileStatic
 //@Transactional
 class YodaService {
 

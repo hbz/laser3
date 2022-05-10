@@ -36,11 +36,6 @@ import java.text.Normalizer
 @Slf4j
 class IssueEntitlement extends AbstractBase implements Comparable {
 
-    @Deprecated
-    Date coreStatusStart
-    @Deprecated
-    Date coreStatusEnd
-
     Date accessStartDate
     Date accessEndDate
 
@@ -126,8 +121,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
         coreStatus     (nullable:true)
-        coreStatusStart(nullable:true)
-        coreStatusEnd  (nullable:true)
         acceptStatus   (nullable:true)
 
         // Nullable is true, because values are already in the database
@@ -248,10 +241,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       else if(tipp.accessEndDate)
           tipp.accessEndDate
   }
-  @Deprecated
-  RefdataValue getAvailabilityStatus() {
-    getAvailabilityStatus(new Date())
-  }
 
   @Transient
   int compare(IssueEntitlement ieB){
@@ -262,27 +251,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     if(noChange) return 0;
     return 1;
-  }
-  @Deprecated
-  RefdataValue getAvailabilityStatus(Date as_at) {
-      RefdataValue result
-      // If StartDate <= as_at <= EndDate - Current
-      // if Date < StartDate - Expected
-      // if Date > EndDate - Expired
-      Date ie_access_start_date = getDerivedAccessStartDate()
-      Date ie_access_end_date = getDerivedAccessEndDate()
-
-      result = RDStore.IE_ACCESS_CURRENT
-
-      if (ie_access_start_date && as_at < ie_access_start_date ) {
-        result = RefdataValue.getByValueAndCategory('Expected', RDConstants.IE_ACCESS_STATUS)
-      }
-      else if (ie_access_end_date && as_at > ie_access_end_date ) {
-          if(!subscription.hasPerpetualAccess)
-              result = RefdataValue.getByValueAndCategory('Expired', RDConstants.IE_ACCESS_STATUS)
-      }
-
-      result
   }
 
     /**

@@ -47,8 +47,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     Date accessStartDate
     Date accessEndDate
-  //Date coreStatusStart
-  //Date coreStatusEnd
     String name
     String sortname
     String normName
@@ -338,71 +336,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   Date getDerivedAccessEndDate() {
     accessEndDate ? accessEndDate : null
   }
-  @Deprecated
-  RefdataValue getAvailabilityStatus() {
-    return getAvailabilityStatus(new Date());
-  }
-
-  @Deprecated
-  String getAvailabilityStatusAsString() {
-	  String result
-	  Date as_at = new Date()
-      Date tipp_access_start_date = getDerivedAccessStartDate()
-      Date tipp_access_end_date = getDerivedAccessEndDate()
-	  
-	  if ( tipp_access_end_date == null ) {
-		result = RefdataValue.getByValueAndCategory("Current(*)", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
-	  }
-	  else if ( as_at < tipp_access_start_date ) {
-		// expected
-		result = RefdataValue.getByValueAndCategory("Expected", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
-	  }
-	  else if ( as_at > tipp_access_end_date ) {
-		// expired
-		result = RefdataValue.getByValueAndCategory("Expired", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
-	  }
-	  else {
-		result = RefdataValue.getByValueAndCategory("Current", RDConstants.TIPP_ACCESS_STATUS).getI10n("value")
-	  }
-	  result
-  }
-  
-  @Deprecated
-  RefdataValue getAvailabilityStatus(Date as_at) {
-      RefdataValue result
-    // If StartDate <= as_at <= EndDate - Current
-    // if Date < StartDate - Expected
-    // if Date > EndDate - Expired
-      Date tipp_access_start_date = getDerivedAccessStartDate()
-      Date tipp_access_end_date = getDerivedAccessEndDate()
-
-    // if ( ( accessEndDate == null ) && ( as_at > tipp_access_end_date ) ) {
-    if ( tipp_access_end_date == null ) {
-      result = RefdataValue.getByValueAndCategory('Current(*)', RDConstants.TIPP_ACCESS_STATUS)
-    }
-    else if ( as_at < tipp_access_start_date ) {
-      // expected
-      result = RefdataValue.getByValueAndCategory('Expected', RDConstants.TIPP_ACCESS_STATUS)
-    }
-    else if ( as_at > tipp_access_end_date ) {
-      // expired
-      result = RefdataValue.getByValueAndCategory('Expired', RDConstants.TIPP_ACCESS_STATUS)
-    }
-    else {
-      result = RefdataValue.getByValueAndCategory('Current', RDConstants.TIPP_ACCESS_STATUS)
-    }
-    result
-  }
-    @Deprecated
-    String getAvailabilityStatusExplanation() {
-        return getAvailabilityStatusExplanation(new Date());
-    }
-    @Deprecated
-    String getAvailabilityStatusExplanation(Date as_at) {
-        StringWriter sw = new StringWriter()
-        sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
-        return sw.toString();
-    }
 
     /**
      * Compares the controlled properties of two title records.
@@ -652,13 +585,10 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     List<Org> getPublishers() {
         List<Org> result = []
 
-
         orgs.each { or ->
             if ( or.roleType.id in [RDStore.OR_PUBLISHER.id] )
                 result << or.org
-
         }
-
         result
     }
 

@@ -45,11 +45,6 @@
                         <g:if test="${address.pobZipcode || address.pobCity}">, </g:if>
                         ${address.pobZipcode} ${address.pobCity}
                     </g:if>
-    %{--
-                    <g:if test="${editable}">
-                        <laser:render template="/templates/cpa/addressFormModal" model="['addressId': address.id, modalId: 'addressFormModal' + address.id]"/>
-                    </g:if>
-    --}%
                 </div>
             </div>
         </div>

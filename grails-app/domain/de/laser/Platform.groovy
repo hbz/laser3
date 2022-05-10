@@ -221,15 +221,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     return result
   }
 
-  @Deprecated
-  def getNotActiveAccessPoints(org){
-    String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-    notActiveAPLinkQuery += "and not exists ("
-    notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-    notActiveAPLinkQuery += "and oapl.platform.id = ${id}) order by lower(oap.name)"
-    OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
-  }
-
   /**
    * Gets a list of platform records for a dropdown display. The records may be filtered by the given parameter map
    * @param params the parameter map which contains the filter parameters

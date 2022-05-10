@@ -756,6 +756,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+                %{-- // TODO Moe - date.minusDays() --}%
                 <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && DateUtils.dateToLocalDate(orgSub.endDate).minus(DateUtils.dateToLocalDate(orgSub.startDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">

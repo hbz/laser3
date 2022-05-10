@@ -62,8 +62,6 @@ class AdminController  {
     StatsSyncService statsSyncService
     WorkflowService workflowService
 
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
-
     /**
      * Empty call, loads empty admin dashboard
      */

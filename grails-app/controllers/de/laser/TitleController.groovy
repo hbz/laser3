@@ -43,7 +43,6 @@ class TitleController  {
             params.max = params.max ?: result.user.getDefaultPageSize()
 
             if (params.search.equals("yes")) {
-                //when searching make sure results start from first page
                 params.offset = params.offset ? params.int('offset') : 0
                 params.remove("search")
             }

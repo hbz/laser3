@@ -631,6 +631,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the running time is beyond 366 days spanning thus more than one year, false otherwise
      */
     boolean isMultiYearSubscription() {
+        // TODO Moe - date.minusDays()
         return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
     }
 
@@ -641,6 +642,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        // TODO Moe - date.minusDays()
         return (this.isMultiYearSubscription() && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
@@ -654,6 +656,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && (endDate.minus(LocalDate.now()) > 366))
     }
 
@@ -661,6 +664,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && this.instanceOf && (endDate.minus(DateUtils.dateToLocalDate(this.instanceOf.startDate)) > 366))
     }
 
@@ -670,6 +674,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
+        // TODO Moe - date.minusDays()
         return (endDate && (endDate.minus(startDate) > 366 && endDate.minus(startDate) < 728))
     }
 
@@ -682,6 +687,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
+        // TODO Moe - date.minusDays()
         return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (endDate.minus(startDate) > 363) && (endDate.minus(startDate) < 367))
     }
 

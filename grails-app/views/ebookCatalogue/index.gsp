@@ -93,7 +93,7 @@
     </div>
 </section><!-- .custom-section-form -->
 
-    <laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
 
             function toggleFilterPart() {
                 console.log('! 1')

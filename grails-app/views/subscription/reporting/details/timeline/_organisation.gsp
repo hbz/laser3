@@ -72,5 +72,4 @@
     </div>
 </g:if>
 
-<laser:render template="/subscription/reporting/details/loadJavascript"  />
 <laser:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

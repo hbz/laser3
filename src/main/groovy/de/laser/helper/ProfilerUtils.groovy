@@ -4,7 +4,6 @@ import de.laser.ContextService
 import de.laser.storage.BeanStore
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
-//@CompileStatic
 class ProfilerUtils {
 
     ContextService contextService = BeanStore.getContextService()

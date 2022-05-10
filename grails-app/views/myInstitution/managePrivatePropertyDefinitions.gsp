@@ -48,7 +48,6 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    %{--<th>${message(code:'propertyDefinition.key.label')}</th>--}%
                                     <th>${message(code:'default.name.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
@@ -79,14 +78,6 @@
                                                 </span>
                                             </g:if>
                                         </td>
-                                        %{--<td>--}%
-                                            %{--<g:if test="${pd.isUsedForLogic}">--}%
-                                                %{--<span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>--}%
-                                            %{--</g:if>--}%
-                                            %{--<g:else>--}%
-                                                %{--${fieldValue(bean: pd, field: "name")}--}%
-                                            %{--</g:else>--}%
-                                        %{--</td>--}%
                                         <td>
                                             <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </td>
@@ -223,7 +214,6 @@
 
                 <div class="field six wide required">
                     <label class="property-label" for="pd_descr">${message(code:'default.description.label')} <g:message code="messageRequiredField" /></label>
-                    <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR

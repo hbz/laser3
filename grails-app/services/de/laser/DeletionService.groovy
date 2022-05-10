@@ -23,7 +23,6 @@ import org.elasticsearch.client.RestHighLevelClient
 /**
  * This service handles safe complex object deletion
  */
-//@CompileStatic
 //@Transactional
 @Slf4j
 class DeletionService {

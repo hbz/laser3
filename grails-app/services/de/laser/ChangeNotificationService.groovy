@@ -38,10 +38,7 @@ class ChangeNotificationService extends AbstractLockableService {
       ChangeNotificationQueueItem new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID,
                                                          changeDocument:jsonChangeDocument.toString(),
                                                          ts:new Date())
-    if ( new_queue_item.save() ) {
-      // log.debug("Pending change saved ok");
-    }
-    else {
+    if ( ! new_queue_item.save() ) {
       log.error(new_queue_item.errors.toString());
     }
   }
@@ -54,7 +51,6 @@ class ChangeNotificationService extends AbstractLockableService {
           executorService.execute({
               internalAggregateAndNotifyChanges();
           })
-
           return true
       }
       else {
@@ -65,7 +61,6 @@ class ChangeNotificationService extends AbstractLockableService {
 
     @Deprecated
     def internalAggregateAndNotifyChanges() {
-
         boolean running = true
 
         while (running) {
@@ -73,7 +68,6 @@ class ChangeNotificationService extends AbstractLockableService {
                 List<ChangeNotificationQueueItem> queueItems = ChangeNotificationQueueItem.executeQuery(
                     "select distinct c.oid from ChangeNotificationQueueItem as c order by c.oid", [max: 1]
                 )
-
                 innerInternalAggregateAndNotifyChanges(queueItems)
             }
             catch (Exception e) {
@@ -116,7 +110,6 @@ class ChangeNotificationService extends AbstractLockableService {
                 sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
               }
             }
-
             List pc_delete_list = []
 
             log.debug("TODO: Processing ${pendingChanges.size()} notifications for object ${poidc}")
@@ -128,20 +121,13 @@ class ChangeNotificationService extends AbstractLockableService {
 
             ContentItem change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
           if ( change_template != null ) {
-            // log.debug("Found change template... ${change_template.content}");
-            // groovy.util.Eval.x(r, 'x.' + rh.property)
             def event_props = [o:contextObject, evt:parsed_event_info]
             if ( parsed_event_info.OID != null && parsed_event_info.OID.length() > 0 ) {
               event_props.OID = genericOIDService.resolveOID(parsed_event_info.OID);
             }
             if( event_props.OID ) {
-
-              // Use doStuff to cleverly render change_template with variable substitution 
-              // log.debug("Make engine");
               def engine = new groovy.text.GStringTemplateEngine()
-              // log.debug("createTemplate..");
               def tmpl = engine.createTemplate(change_template.content).make(event_props)
-              // log.debug("Write to string writer");
               sw.write("<li>");
               sw.write(tmpl.toString());
               sw.write("</li>");
@@ -252,18 +238,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
         String desc = legacyDesc?.toString() // freeze string before altering referenced values
 
-        // WTF !?
-
-        // JSON converts in UTC,
-        // we now add timezone delta to dates
-        // so that changedoc entries can be interpreted as local timezone entries
-
-        TimeZone currentTz = Calendar.getInstance().getTimeZone()
-        TimeZone utcTz = TimeZone.getTimeZone('UTC')
-
-        // WTF !?
         def deltaTz = 0
-        // (currentTz.getRawOffset() + currentTz.getDSTSavings()) - (utcTz.getRawOffset() + utcTz.getDSTSavings())
 
         changeMap.changeDoc.each { k, v ->
             if (k in ['old', 'new']) {
