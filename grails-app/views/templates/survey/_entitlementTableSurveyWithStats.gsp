@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform; de.laser.base.AbstractReport" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
 
@@ -24,7 +24,7 @@
         </thead>
         <tbody>
 
-        <g:each in="${stats}" var="stat">
+        <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
             <g:set var="tipp" value="${TitleInstancePackagePlatform.get(stat.title.id)}"/>
             <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
             <g:set var="ieInNewSub"
