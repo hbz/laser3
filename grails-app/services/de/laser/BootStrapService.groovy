@@ -52,7 +52,7 @@ class BootStrapService {
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
         log.info("Server:    ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
         log.info("Database:  ${ConfigMapper.getConfig('dataSource.url', String)}")
-        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate', Boolean)}")
+        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate', String)}")
         log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}")
         log.info("Documents: ${ConfigMapper.getDocumentStorageLocation()}")
 

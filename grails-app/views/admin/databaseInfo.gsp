@@ -25,7 +25,7 @@
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
-            <tr><td>Config dataSource.dbCreate</td><td> ${ConfigMapper.getConfig('dataSource.dbCreate', Boolean)}</td></tr>
+            <tr><td>Config dataSource.dbCreate</td><td> ${ConfigMapper.getConfig('dataSource.dbCreate', String)}</td></tr>
             <tr><td>Collations</td><td>
                 <%
                     Set collations = [defaultCollate]

@@ -57,15 +57,15 @@ repositories {
     maven { url 'https://repo.grails.org/grails/core' }
 }
 
-//configurations {
-//    developmentOnly
-//    runtimeClasspath {
-//        extendsFrom developmentOnly
-//    }
-//}
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
 
 dependencies {
-    //developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -120,7 +120,7 @@ dependencies {
     // https://github.com/grails-plugins/grails-quartz
     implementation 'org.grails.plugins:quartz:2.0.13'
     // https://github.com/zyro23/grails-spring-websocket
-    compile 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'
+    implementation 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'
     // https://github.com/rlovtangen/wkhtmltopdf
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
@@ -133,6 +133,7 @@ dependencies {
 
     // https://github.com/qos-ch/logback
     implementation('ch.qos.logback:logback-classic:1.2.8')             // downgrade from 1.2.10
+
     implementation 'commons-io:commons-io:2.11.0'                      // from 2.6
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
     implementation 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
