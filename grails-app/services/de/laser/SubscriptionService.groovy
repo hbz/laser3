@@ -1946,11 +1946,10 @@ class SubscriptionService {
                             propMap[propDef.class.name+':'+propDef.id].notesColno = c
                         }
                         else {
-                            String refCategory = ""
+                            Map<String,Integer> defPair = [colno:c]
                             if(propDef.isRefdataValueType()) {
-                                refCategory = propDef.refdataCategory
+                                defPair.refCategory = propDef.refdataCategory
                             }
-                            Map<String,Integer> defPair = [colno:c,refCategory:refCategory]
                             propMap[propDef.class.name+':'+propDef.id] = [definition:defPair]
                         }
                     }
@@ -2010,17 +2009,21 @@ class SubscriptionService {
             if(colMap.licenses != null && cols[colMap.licenses]?.trim()) {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
                     candidate.licenses = []
-                    mappingErrorBag.multipleLicError = []
-                    mappingErrorBag.noValidLicense = []
                     licenseKeys.each { String licenseKey ->
                         List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey, roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
                         if (licCandidates.size() == 1) {
                             License license = licCandidates[0]
                             candidate.licenses << genericOIDService.getOID(license)
-                        } else if (licCandidates.size() > 1)
+                        } else if (licCandidates.size() > 1) {
+                            if(!mappingErrorBag.containsKey('multipleLicError'))
+                                mappingErrorBag.multipleLicError = []
                             mappingErrorBag.multipleLicError << licenseKey
-                        else
+                        }
+                        else {
+                            if(!mappingErrorBag.containsKey('noValidLicense'))
+                                mappingErrorBag.noValidLicense = []
                             mappingErrorBag.noValidLicense << licenseKey
+                        }
                     }
             }
             //type(nullable:true, blank:false) -> to type
