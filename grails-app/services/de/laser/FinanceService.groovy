@@ -657,6 +657,14 @@ class FinanceService {
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
                     pu.setBenchmark("execute own query")
                     Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
+                    if(!filterQuery.subFilter) {
+                        ownFilter.remove('filterSubStatus')
+                        String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie " +
+                                "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
+                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
+                        pu.setBenchmark("execute second own query")
+                        ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
+                    }
                     result.own = [count:ownSubscriptionCostItems.size()]
                     pu.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
