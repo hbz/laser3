@@ -49,9 +49,9 @@
             <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url').split('/').last()}</td></tr>
+            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} <br/> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}</td></tr>
+            <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
             <tr><td>Collations</td><td>
                 <%
                     Set collations = []
@@ -89,7 +89,7 @@
         </tbody>
     </table>
 
-    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch')}">
+    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
         <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
@@ -97,14 +97,14 @@
             <tbody>
             <tr>
                 <td>ElasticSearch url</td>
-                <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url')}</a></td>
+                <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a></td>
             </tr>
             <tr>
                 <td>ElasticSearch indicies</td>
                 <td>
-                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies')}">
-                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies')}" var="k, v">
-                            <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url') + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
+                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}">
+                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}" var="k, v">
+                            <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
                         </g:each>
                     </g:if>
                 </td>

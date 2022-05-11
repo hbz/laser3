@@ -93,7 +93,7 @@ class AdminController  {
     def systemAnnouncements() {
         Map<String, Object> result = [:]
 
-        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled')
+        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
 
         if (params.id) {
             SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
@@ -142,11 +142,11 @@ class AdminController  {
     def testMailSending() {
         Map<String, Object> result = [:]
 
-        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled')
+        result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
 
         if (params.sendTestMail == 'Send Test Mail' && params.mailAddress) {
-            if (grailsApplication.config.grails.mail.disabled == true) {
-                flash.error = 'Failed due grailsApplication.config.grails.mail.disabled = true'
+            if (result.mailDisabled == true) {
+                flash.error = 'Failed due grails.mail.disabled = true'
             }else {
                 String currentServer = AppUtils.getCurrentServer()
                 String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")

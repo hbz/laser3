@@ -25,7 +25,7 @@
             <tr><td>App version</td><td> ${AppUtils.getMeta('info.app.version')}</td></tr>
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
-            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url').split('/').last()}</td></tr>
+            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} <br/> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
         </tbody>
     </table>

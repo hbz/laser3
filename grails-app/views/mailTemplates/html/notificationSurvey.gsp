@@ -4,7 +4,7 @@
 <g:set var="surveyUrl"
        value="${"/myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
 <g:set var="renewalSurvey" value="${survey.type == RDStore.SURVEY_TYPE_RENEWAL}"/>
-<g:set var="linkToSurvey" value="${ConfigMapper.getConfig('grails.serverURL') + raw(surveyUrl)}"/>
+<g:set var="linkToSurvey" value="${ConfigMapper.getConfig('grails.serverURL', String) + raw(surveyUrl)}"/>
 
 <!doctype html>
 <html>

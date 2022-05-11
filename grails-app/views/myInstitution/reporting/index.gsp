@@ -83,8 +83,8 @@
                             <div class="item">
                                 <div class="content middle aligned">
                                     <div class="header">Elasticsearch Index</div>
-                                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch')}">
-                                        <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url') + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url')}</a>
+                                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
+                                        <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a>
                                     </g:if>
                                     <g:else>--</g:else>
                                 </div>

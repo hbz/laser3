@@ -94,7 +94,7 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 ${message(code: 'email.survey.finish.url', locale: language)}
 <br />
-${ConfigMapper.getConfig('grails.serverURL') + surveyUrl}
+${ConfigMapper.getConfig('grails.serverURL', String) + surveyUrl}
 <br />
 <br />
 ${message(code: 'email.profile.settings', locale: language)}

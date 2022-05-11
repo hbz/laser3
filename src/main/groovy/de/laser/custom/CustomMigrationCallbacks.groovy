@@ -60,7 +60,7 @@ class CustomMigrationCallbacks {
 			println '-        ' + diff.size() + ' relevant changesets found ..'
 			println '-        dumping current database ..'
 
-			def dataSource = ConfigMapper.getConfig('dataSource')
+			def dataSource = ConfigMapper.getConfig('dataSource', Map)
 			URI uri = new URI(dataSource.url.substring(5))
 
 			String backupFile = ConfigMapper.getDeployBackupLocation() + "/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"

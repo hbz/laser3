@@ -20,7 +20,7 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${ConfigMapper.getConfig('financialImportTSVLoaderMappings.cols')}" var="mpg">
+              <g:each in="${ConfigMapper.getConfig('financialImportTSVLoaderMappings.cols', List)}" var="mpg">
                 <tr>
                   <td>${mpg.colname}</td>
                   <td>${mpg.desc}

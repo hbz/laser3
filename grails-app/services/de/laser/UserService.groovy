@@ -224,7 +224,7 @@ class UserService {
      */
     @Deprecated
     void setupAdminAccounts(Map<String,Org> orgs) {
-        List adminUsers = ConfigMapper.getConfig('adminUsers') as List
+        List adminUsers = ConfigMapper.getConfig('adminUsers', List) as List
         List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'

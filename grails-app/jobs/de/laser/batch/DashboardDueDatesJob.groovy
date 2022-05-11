@@ -47,7 +47,7 @@ class DashboardDueDatesJob extends AbstractJob {
                 SystemEvent.createEvent('DBDD_JOB_COMPLETE')
 
             } else {
-                log.info("DashboardDueDates batch job: isUpdateDashboardTableInDatabase and isSendEmailsForDueDatesOfAllUsers are switched off in grailsApplication.config file");
+                log.info("DashboardDueDates batch job: isUpdateDashboardTableInDatabase and isSendEmailsForDueDatesOfAllUsers are switched off in configuration")
 
                 SystemEvent.createEvent('DBDD_JOB_IGNORE')
             }

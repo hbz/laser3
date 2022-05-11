@@ -92,7 +92,7 @@ class ElasticSearchHelper {
             List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
 
             try {
-                Map rConfig = ConfigMapper.getConfig('reporting') as Map
+                Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
@@ -143,7 +143,7 @@ class ElasticSearchHelper {
             List<List> pkgList = Platform.executeQuery('select plt.gokbId, plt.id from Platform plt where plt.id in (:idList)', [idList: idList])
 
             try {
-                Map rConfig = ConfigMapper.getConfig('reporting') as Map
+                Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
                 BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
@@ -191,7 +191,7 @@ class ElasticSearchHelper {
         boolean reachable = false
 
         try {
-            Map rConfig = ConfigMapper.getConfig('reporting') as Map
+            Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
             URI uri = new URI( rConfig.elasticSearch.url )
             InetAddress es = InetAddress.getByName( uri.getHost() )
             reachable = es.isReachable( 7000 )

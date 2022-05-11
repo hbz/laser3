@@ -643,7 +643,7 @@ class SurveyService {
      */
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
@@ -719,7 +719,7 @@ class SurveyService {
      */
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
-        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             println 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
@@ -1017,7 +1017,7 @@ class SurveyService {
      */
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
-        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             println 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 

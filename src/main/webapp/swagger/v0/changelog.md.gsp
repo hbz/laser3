@@ -1,6 +1,6 @@
 ## LAS:eR - API
 
-Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
+Source: ${de.laser.helper.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
 #### 0.136
 

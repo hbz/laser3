@@ -111,7 +111,7 @@ class SystemAnnouncement {
      * @return true if the publishing was successful, false otherwise
      */
     boolean publish() {
-        if (ConfigMapper.getConfig('grails.mail.disabled') == true) {
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             println 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
             return false
         }

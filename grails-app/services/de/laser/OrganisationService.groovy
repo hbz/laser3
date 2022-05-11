@@ -229,7 +229,7 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                ConfigMapper.getConfig('systemUsers')?.each { su ->
+                ConfigMapper.getConfig('systemUsers', List)?.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
                     admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)

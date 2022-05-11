@@ -51,9 +51,9 @@ class BootStrapService {
         log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
         log.info("Server:    ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
-        log.info("Database:  ${ConfigMapper.getConfig('dataSource.url')}")
-        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate')}")
-        log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart')}")
+        log.info("Database:  ${ConfigMapper.getConfig('dataSource.url', String)}")
+        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate', Boolean)}")
+        log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}")
         log.info("Documents: ${ConfigMapper.getDocumentStorageLocation()}")
 
         String dsp = cacheService.getDiskStorePath()
@@ -131,7 +131,7 @@ class BootStrapService {
         }
 
         log.debug(".__                                .________ ")
-        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails4 alpha")
+        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_5 alpha")
         log.debug("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
         log.debug("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
         log.debug("|_____ (____  /____  >\\___  >__|    /______  / ")
@@ -173,10 +173,10 @@ class BootStrapService {
             }
         }
 
-        if (ConfigMapper.getConfig('systemUsers')) {
+        if (ConfigMapper.getConfig('systemUsers', List)) {
             log.debug("found systemUsers in local config file ..")
 
-            ConfigMapper.getConfig('systemUsers').each { su ->
+            ConfigMapper.getConfig('systemUsers', List).each { su ->
                 log.debug("checking: [${su.name}, ${su.display}, ${su.roles}, ${su.affils}]")
 
                 User user = User.findByUsername(su.name)

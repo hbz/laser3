@@ -46,7 +46,7 @@ class SystemService {
             if (! ConfigMapper.getReporting()) {
                 checks.Reporting = "ElasticSearch Config for Reporting not found"
             }
-            if (ConfigMapper.getConfig('grails.mail.disabled')) {
+            if (ConfigMapper.getConfig('grails.mail.disabled', Boolean)) {
                 checks.MailService = "NOT active"
             }
         }
