@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      11.05.2022  dev     2.3         Andreas Feature     Markierung der dauerhaft erworbenen Titel jetzt auch im Gesamttitelexport
+
 4234    10.05.2022  dev     2.3         Andreas Bug         Kostenposten ohne Lizenz- und Umfragebezug gingen in der Abfage unter
 
 4228    10.05.2022  dev     2.3         Andreas Bug         Anmerkungen an Merkmalen wurden nicht durchgereicht
