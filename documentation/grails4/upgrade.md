@@ -1,14 +1,13 @@
 
-## Upgrade from Grails 4.0.13 to 5.1.3
+## Upgrade from Grails 3.3.11 to 4.0.13
 
 #### Updated core and dependencies
 
-- Spring Framework 5.3.x
-- Spring Boot 2.6
-- Micronaut 3.2.0
-- Gradle 6.8.3
-- Hibernate 5.6.8.Final / GORM 7.2.1
-- Groovy 3.0.7
+- Spring Framework 5.1.20
+- Spring Boot 2.1.8
+- Gradle 5.6.4
+- Hibernate 5.6.8.Final / GORM 7.0.8.RELEASE
+- Groovy 2.5.14
 - Java 11
 
 See [build.gradle](../build.gradle) for details on all plugins.
@@ -16,8 +15,8 @@ See [readme.md](./readme.md) for general information.
 
 ### Setup
 
-    sdk i grails 5.1.3 
-    sdk i groovy 3.0.7
+    sdk i grails 4.0.13 
+    sdk i groovy 2.5.14
     sdk i java 11.0.12
 
 #### Configuration files
