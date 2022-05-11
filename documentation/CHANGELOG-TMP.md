@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      11.05.2022  rc-2.3  2.3         Andreas Bug         Plattformreports sorgten bei Titelauswahl für 500er
+
+--      11.05.2022  dev     2.3         Andreas Feature     Markierung der dauerhaft erworbenen Titel jetzt auch im Gesamttitelexport
+
+4234    10.05.2022  dev     2.3         Andreas Bug         Kostenposten ohne Lizenz- und Umfragebezug gingen in der Abfage unter
+
+4228    10.05.2022  dev     2.3         Andreas Bug         Anmerkungen an Merkmalen wurden nicht durchgereicht
+
+4205    10.05.2022  dev     2.3         Andreas Feature     Schaltschrank beim Übertrag von Elementen zwischen zwei Lizenzen angepasst
+
+4147    09.05.2022  dev     2.3         Andreas Feature     Spaltenheader und Icons (+ Funktion) beim Übertrag von Dokumenten von Anmerkungen angepasst
+
+4110    09.05.2022  dev     2.3         Andreas Feature     Rückfrage eingebaut, wenn Kontakt ohne Kontakt- oder Adressdaten eingegeben werden soll
+
+--      09.05.2022  dev     2.3         Andreas Bug         Erläuterungstext ISIL nach Rücksprache angepasst
+
 4227    06.05.2022  dev     2.3         Andreas Feature     Neuer EZB-Endpunkt für Fernleihindikatoren
 
 4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
