@@ -447,6 +447,40 @@
         406:
           $ref: "#/components/responses/notAcceptable"
 
+  /ezb/license/illIndicators:
+
+    get:
+      tags:
+        - "Special: EZB"
+      summary: Retrieving the interlibrary loan (ILL) indicators for a given license
+      description: >
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertySet"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but license not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
   /ezb/subscription:
 
     get:

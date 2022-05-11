@@ -170,8 +170,14 @@ class ApiSubscription {
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())
 
-		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+		result.predecessors = []
+		result.successors   = []
+		sub._getCalculatedPrevious().each { Subscription prev ->
+			result.predecessors.add(ApiStubReader.requestSubscriptionStub(prev, context)) // com.k_int.kbplus.Subscription
+		}
+		sub._getCalculatedSuccessor().each { Subscription succ ->
+			result.successors.add(ApiStubReader.requestSubscriptionStub(succ, context)) // com.k_int.kbplus.Subscription
+		}
 		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
 		result.linkedSubscriptions = []
