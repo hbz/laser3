@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
+
+4237    11.05.2022  rc-2.3  2.3         Andreas Bug         Liste verfügbarer Namensräume bei Einrichtungen gefiltert
+
+4179    11.05.2022  rc-2.3  2.3         Andreas Feature     Überprüfung und Aktualisierung der Importtemplates
+
 --      11.05.2022  rc-2.3  2.3         Andreas Bug         Plattformreports sorgten bei Titelauswahl für 500er
 
 --      11.05.2022  dev     2.3         Andreas Feature     Markierung der dauerhaft erworbenen Titel jetzt auch im Gesamttitelexport
