@@ -1,6 +1,8 @@
 package de.laser.custom
 
+import de.laser.helper.AppUtils
 import grails.core.GrailsApplication
+import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
 import grails.plugin.springsecurity.userdetails.NoStackUsernameNotFoundException
@@ -22,9 +24,9 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
     @Transactional(readOnly=true, noRollbackFor=[IllegalArgumentException, UsernameNotFoundException])
     UserDetails loadUserByUsername(String username, boolean loadRoles) throws UsernameNotFoundException {
 
-        def conf = SpringSecurityUtils.securityConfig
+        ConfigObject conf = SpringSecurityUtils.securityConfig
         String userClassName = conf.userLookup.userDomainClassName
-        def dc = grailsApplication.getDomainClass(userClassName)
+        GrailsClass dc = AppUtils.getDomainClass(userClassName)
         if (!dc) {
             throw new IllegalArgumentException("The specified user domain class '$userClassName' is not a domain class")
         }

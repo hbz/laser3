@@ -6,6 +6,11 @@ task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
     args '-c', grailsExe + ' prod dbm-gorm-diff ' + date.split('-').first() + '/changelog-' + date + '.groovy --add'
 }
 
+task( 'gradle.helpWarningMode', group: 'laser', type: Exec ) {
+    executable 'sh'
+    args '-c', './gradlew help --warning-mode=all'
+}
+
 task( 'devtools.triggerRestart', group: 'laser' ) {
     doLast {
         System.gc()
