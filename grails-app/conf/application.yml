@@ -35,10 +35,13 @@ info:
             javaVersion: '@info.app.build.javaVersion@'
 
 spring:
+    h2:
+        console:
+            enabled: false # spring-boot-devtools @ developmentOnly
     jmx:
         unique-names: true
     main:
-        lazy-initialization: true # todo - local only
+        lazy-initialization: true # for local development // TODO
         banner-mode: "off"
     groovy:
         template:

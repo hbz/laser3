@@ -139,19 +139,19 @@ class ESWrapperService {
             boolean response = esclient.ping(RequestOptions.DEFAULT)
 
             if(!response){
-                log.error("Problem with ElasticSearch: Ping Fail")
+                log.warn("Problem with ElasticSearch: Ping Fail")
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Ping Fail": "Ping Fail"])
             }
             esclient.close()
             return response
         } catch (ConnectTimeoutException e) {
-            log.error("Problem with ElasticSearch: Connect Timeout")
+            log.warn("Problem with ElasticSearch: Connect Timeout")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connect Timeout": "Connect Timeout"])
             esclient.close()
             return false
         }
         catch (ConnectException e) {
-            log.error("Problem with ElasticSearch: Connection Fail")
+            log.warn("Problem with ElasticSearch: Connection Fail")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connection Fail": "Connection Fail"])
             esclient.close()
             return false

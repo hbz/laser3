@@ -227,13 +227,13 @@ class ConfigMapper {
             }
             else if (output == PRINTLN) {
                 if (result == null) {
-                    println(": key NOT found              ${cfg}")
+                    println(": NOT found              ${cfg}")
                 }
                 else if (result instanceof org.grails.config.NavigableMap.NullSafeNavigator) {
-                    println(": key found, value EMPTY     ${cfg}")
+                    println(": found, value EMPTY     ${cfg}")
                 }
                 else {
-                    println(": OK                         ${cfg}  ->  " + result + '  (' + result.getClass() + ')')
+                    println(": OK                     ${cfg}  ->  " + result + '  (' + result.getClass() + ')')
                 }
             }
         }
