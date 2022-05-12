@@ -1,4 +1,4 @@
-Lizenz	Paket	Einzeltitel	Auftragsnummer	Rechnungsnummer	Status	Währung	Element	Kostenvorzeichen	Rechnungssumme	Umrechnungsfaktor	Wert	Steuerbar	Steuersatz	Rechnungsdatum	Haushaltsjahr	Bezeichnung	Anmerkung	Referenz/Codes	Gezahlt am	Datum von	Datum bis
-7761					feststehend	EUR	Preis: Listenpreis	positiv	6000		6000	steuerbar	19	15.08.2018	2018	Testkosten 1		i2018/7
-subscription:6eab4a43-1489-438d-9192-9c3445e0bcd6			89756		feststehend	CHF	Preis: Endpreis	positiv	6500.76	0.97		nicht steuerbar	0	31.03.2019	2019	Testkosten 2		i2018/1
-8560					zugesagt	EUR	Preis: Konsortialpreis	positiv		1.0	8988.88	steuerbar steuerbefreit	0	15.03.2019	2019	Testkosten 2a		cc2019
+Lizenz	Paket	Einzeltitel	Budgetcode	Referenz/Codes	Auftragsnummer	Rechnungsnummer	Status	Element	Kostenvorzeichen	Währung	Rechnungssumme	Umrechnungsfaktor	Wert	Steuerbar	Steuersatz	Rechnungsdatum	Haushaltsjahr	Bezeichnung	Anmerkung	Gezahlt am	Datum von	Datum bis
+7761				i2018/7			feststehend	Preis: Listenpreis	positiv	EUR	6000		6000	steuerbar	19	15.08.2018	2018	Testkosten 1
+subscription:6eab4a43-1489-438d-9192-9c3445e0bcd6				i2018/1	89756		feststehend	Preis: Endpreis	positiv	CHF	6500.76	0.97		nicht steuerbar	0	31.03.2019	2019	Testkosten 2
+8560				cc2019			zugesagt	Preis: Konsortialpreis	positiv	EUR		1.0	8988.88	steuerbar steuerbefreit	0	15.03.2019	2019	Testkosten 2a
