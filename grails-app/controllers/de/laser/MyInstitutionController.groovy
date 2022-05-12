@@ -1701,10 +1701,8 @@ join sub.orgRelations or_sub where
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
-                              "currency","exchangeRate","taxType","taxRate","value","subscription","package",
-                              "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
-                              "description","invoiceNumber","orderNumber"/*,"institution"*/]
+        result.mappingCols = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
+                              "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"/*,"institution"*/]
         result
     }
 

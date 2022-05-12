@@ -52,7 +52,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String PKG_ID        = 'Anbieter_Produkt_ID'
 
     //subscription identifier namespaces
-    public static final String EZB_ANCHOR = 'EZB anchor'
+    public static final String EZB_ANCHOR = 'ezb_anchor'
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
     public static final String ISIL_PAKETSIGEL = 'ISIL_Paketsigel'
     public static final String ISCI = 'ISCI'

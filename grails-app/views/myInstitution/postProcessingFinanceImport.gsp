@@ -58,9 +58,11 @@
                                     <li><g:message code="myinst.financeImport.costItemStatus"/>: ${ci.costItemStatus?.getI10n('value')}</li>
                                     <li><g:message code="myinst.financeImport.referenceCodes"/>: ${ci.reference}</li>
                                     <li><g:message code="myinst.financeImport.budgetCode"/>:
-                                        <ul>
-                                            <li>${budgetCodes.get(r)}</li>
-                                        </ul>
+                                        <g:if test="${budgetCodes.containsKey(r)}">
+                                            <ul>
+                                                <li>${budgetCodes.get(r)}</li>
+                                            </ul>
+                                        </g:if>
                                     </li>
                                     <li><g:message code="myinst.financeImport.datePaid"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.datePaid}"/></li>
                                     <li><g:message code="myinst.financeImport.dateFrom"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.startDate}"/></li>
