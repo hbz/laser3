@@ -19,7 +19,7 @@ buildscript {
         classpath 'org.grails.plugins:hibernate5:7.2.1'                                             // from 7.0.5
 
         // https://github.com/grails/grails-database-migration
-        classpath 'org.grails.plugins:database-migration:3.1.0'                                     // from 3.0.3
+        classpath 'org.grails.plugins:database-migration:4.1.0'                                     // from 3.0.3
         // https://github.com/bertramdev/asset-pipeline
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.6'                             // from 3.2.4
         // https://github.com/n0mer/gradle-git-properties
@@ -112,7 +112,7 @@ dependencies {
     // https://github.com/symentis/grails-audit-logging-plugin/
     implementation 'org.grails.plugins:audit-logging:4.0.3'                    // from 3.0.3
     // https://github.com/grails/grails-database-migration
-    implementation 'org.grails.plugins:database-migration:3.1.0'               // from 3.0.3
+    implementation 'org.grails.plugins:database-migration:4.1.0'               // from 3.0.3
     // https://github.com/uberall/grails-executor
     implementation 'org.grails.plugins:grails-executor:0.4'                    // DEPRECATED
     // https://github.com/grails3-plugins/mail
@@ -136,10 +136,11 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.11.0'                      // from 2.6
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
+    implementation 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
     implementation 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
     implementation 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'
-    implementation 'org.liquibase:liquibase-core:3.10.3'               // from 3.5.5 : + org.grails.plugins:database-migration
+    implementation 'org.liquibase:liquibase-core:4.8.0'                // from 3.5.5 : + org.grails.plugins:database-migration
 
     runtimeOnly 'org.postgresql:postgresql:42.3.3'                     // from 42.3.0
 

@@ -1,6 +1,6 @@
 package de.laser
 
-import liquibase.util.csv.opencsv.CSVReader
+import com.opencsv.CSVReader
 import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper

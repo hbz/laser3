@@ -4,13 +4,8 @@ task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
     executable 'sh'
     args '-c', grailsExe + ' prod dbm-gorm-diff ' + date.split('-').first() + '/changelog-' + date + '.groovy --add'
+    // args '-c', './grailsw prod dbm-gorm-diff ' + date.split('-').first() + '/changelog-' + date + '.groovy --add'
 }
-
-task( 'gradle.helpWarningMode', group: 'laser', type: Exec ) {
-    executable 'sh'
-    args '-c', './gradlew help --warning-mode=all'
-}
-
 task( 'devtools.triggerRestart', group: 'laser' ) {
     doLast {
         System.gc()
@@ -18,6 +13,10 @@ task( 'devtools.triggerRestart', group: 'laser' ) {
         fw.write(System.currentTimeMillis().toString())
         fw.close()
     }
+}
+task( 'gradle.helpWarningMode', group: 'laser', type: Exec ) {
+    executable 'sh'
+    args '-c', './gradlew help --warning-mode=all'
 }
 
 task ( 'system.environment', group: 'laser' ) {

@@ -1,7 +1,7 @@
 
 ## Database Migration
 
-- http://grails-plugins.github.io/grails-database-migration/4.0.x
+- http://grails-plugins.github.io/grails-database-migration/4.1.x
 
 ### Configuration
 
@@ -9,7 +9,7 @@
 
     buildscript {
         dependencies {
-            classpath "org.grails.plugins:database-migration:3.1.0"
+            classpath "org.grails.plugins:database-migration:4.1.0"
         }
     }
 
@@ -22,8 +22,8 @@
     }
 
     dependencies {
-        compile 'org.grails.plugins:database-migration:3.1.0'
-        compile 'org.liquibase:liquibase-core:3.10.3'
+        compile 'org.grails.plugins:database-migration:4.1.0'
+        compile 'org.liquibase:liquibase-core:4.8.0'
     }
 
 **grails-app/conf/application.yml**

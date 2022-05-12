@@ -1,37 +1,83 @@
 
-## Upgrade from Grails 4.0.13 to 5.1.3
+## Upgrade from Grails 3.3.11 to Grails 5.1.3
 
-#### Updated core and dependencies
+### SpringBootDeveloperTools
 
-- Spring Framework 5.3.16
-- Spring Boot 2.6.4
-- Micronaut 3.2.7
-- Gradle 6.8.3
-- Hibernate 5.6.8.Final / GORM 7.2.1
-- Groovy 3.0.7
-- Java 11
+Previous versions of Grails used a reloading agent called SpringLoaded.
+Since this library is no longer maintained and does not support Java 11 it has been removed.
+As a replacement, SpringBootDeveloperTools is used.
 
-See [build.gradle](../build.gradle) for details on all plugins.
-See [readme.md](./readme.md) for general information.
+Deploying code changes is configured to watch a [trigger file](../grails-app/conf/spring/restart.trigger).
+Use the Gradle task **devtools.triggerRestart** to update this file and force a restart with the latest code changes.
 
-### Setup
+### Fallbacks
 
-    sdk i grails 5.1.3 
-    sdk i groovy 3.0.7
-    sdk i java 11.0.12
+The following fallbacks have been set for faster migration. They can be treated later.
 
-#### Configuration files
+    grails.views.gsp.codecs.scriptlet: none
+    hibernate.allow_update_outside_transaction: true
 
-- [build.gradle](../build.gradle)
-- [gradle.properties](../gradle.properties)
-- [application.yml](../grails-app/conf/application.yml)
-- [application.groovy](../grails-app/conf/application.groovy)
+### Passwords
 
-#### Local configuration file
+By default the Spring Security plugin uses the **bcrypt** algorithm to hash passwords.
+Important: The password encoder still accepts legacy passwords, but encrypts them with bcrypt if they are changed.
 
-- [laser3-config.groovy.example](../files/server/laser3-config.groovy.example)
+### Service usage in domain classes
 
-### Plugins 
+Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.
+Use BeanStore for static and non-static access to services and other beans.
 
-- Database migration: [database-migration.md](./database-migration.md)
-- PDF generation: [pdf-generation.md](./pdf-generation.md)
+    de.laser.storage.BeanStore
+
+    static ContextService getContextService() {
+        Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
+    }
+
+### Configuration
+
+Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
+
+### DateUtils
+
+*Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
+To avoid confusion, the difference between localized and fixed usage in *de.laser.helder.Dateutils* is now reflected in a new naming scheme.
+
+### Localization
+
+Localization dependent logic should be managed by *de.laser.helper.LocaleHelper* to ensure consistent behavior.
+
+### Logging
+
+*Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts.
+
+### Apache Commons Lang
+
+Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
+
+### CSV
+
+*Opencsv* has been removed. New code should use *liquibase.util.csv*.
+
+### HTTPBuilder
+
+*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
+A migration to *de.laser.http.BasicHttpClient* should take place.
+
+### .. todo?
+
+#### ExecutorGrailsPlugin
+
+*org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
+
+#### Apache Commons IO
+
+*org.apache.commons.io* is only used in one file.
+
+#### Juniversalchardet
+
+*com.github.albfernandez:juniversalchardet* is only used in one file.
+
+#### GPars
+
+*org.codehaus.gpars:gpars* is only used in one file.
+
