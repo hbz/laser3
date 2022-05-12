@@ -12,11 +12,6 @@
             classpath "org.grails.plugins:database-migration:3.1.0"
         }
     }
-    
-    dependencies {
-        compile 'org.grails.plugins:database-migration:3.1.0'
-        compile 'org.liquibase:liquibase-core:3.10.1'
-    }
 
     sourceSets {
         main {
@@ -24,6 +19,11 @@
                 srcDir 'grails-app/migrations'
             }
         }
+    }
+
+    dependencies {
+        compile 'org.grails.plugins:database-migration:3.1.0'
+        compile 'org.liquibase:liquibase-core:3.10.3'
     }
 
 **grails-app/conf/application.yml**

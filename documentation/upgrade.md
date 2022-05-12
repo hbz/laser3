@@ -3,9 +3,9 @@
 
 #### Updated core and dependencies
 
-- Spring Framework 5.3.x
-- Spring Boot 2.6
-- Micronaut 3.2.0
+- Spring Framework 5.3.16
+- Spring Boot 2.6.4
+- Micronaut 3.2.7
 - Gradle 6.8.3
 - Hibernate 5.6.8.Final / GORM 7.2.1
 - Groovy 3.0.7
