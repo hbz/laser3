@@ -657,6 +657,14 @@ class FinanceService {
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
                     pu.setBenchmark("execute own query")
                     Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
+                    if(!filterQuery.subFilter) {
+                        ownFilter.remove('filterSubStatus')
+                        String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie " +
+                                "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
+                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
+                        pu.setBenchmark("execute second own query")
+                        ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
+                    }
                     result.own = [count:ownSubscriptionCostItems.size()]
                     pu.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
@@ -1502,7 +1510,8 @@ class FinanceService {
                 costItem.reference = cols[colMap.reference]
             //budgetCode -> to budget code
             if(colMap.budgetCode != null) {
-                budgetCodes[r] = cols[colMap.budgetCode]?.trim()
+                if(cols[colMap.budgetCode]?.trim())
+                    budgetCodes[r] = cols[colMap.budgetCode]?.trim()
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
@@ -1536,7 +1545,7 @@ class FinanceService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         def candidates = JSON.parse(params.candidates)
         def bcJSON = JSON.parse(params.budgetCodes)
-        List budgetCodes = []
+        Map<Integer, String> budgetCodes = [:]
         bcJSON.each { k,v ->
             if(v)
                 budgetCodes[Integer.parseInt(k)] = v
@@ -1574,25 +1583,27 @@ class FinanceService {
                     if(budgetCodes) {
                         String[] budgetCodeKeys
                         Pattern p = Pattern.compile('.*[,;].*')
-                        String code = budgetCodes.get(c)
-                        Matcher m = p.matcher(code)
-                        if(m.find())
-                            budgetCodeKeys = code.split('[,;]')
-                        else
-                            budgetCodeKeys = [code]
-                        budgetCodeKeys.each { String k ->
-                            String bck = k.trim()
-                            BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
-                            if(!bc) {
-                                bc = new BudgetCode(owner: contextOrg, value: bck)
-                            }
-                            if(!bc.save()) {
-                                result.error << bc.errors
-                            }
-                            else {
-                                CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
-                                if(!cig.save()) {
-                                    result.error << cig.errors
+                        if(budgetCodes.containsKey(c)) {
+                            String code = budgetCodes.get(c)
+                            Matcher m = p.matcher(code)
+                            if(m.find())
+                                budgetCodeKeys = code.split('[,;]')
+                            else
+                                budgetCodeKeys = [code]
+                            budgetCodeKeys.each { String k ->
+                                String bck = k.trim()
+                                BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                                if(!bc) {
+                                    bc = new BudgetCode(owner: contextOrg, value: bck)
+                                }
+                                if(!bc.save()) {
+                                    result.error << bc.errors
+                                }
+                                else {
+                                    CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                                    if(!cig.save()) {
+                                        result.error << cig.errors
+                                    }
                                 }
                             }
                         }

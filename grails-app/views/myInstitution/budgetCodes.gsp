@@ -74,12 +74,12 @@
 
                                     <g:if test="${cig.costItem.sub}">
                                         <g:link mapping="subfinance" class="ui button icon blue la-modern-button"
-                                                params="[sub:cig.costItem.sub.id]">
+                                                params="[sub:cig.costItem.sub.id, filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
                                             <i class="share icon"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link mapping="subfinance" class="ui button icon blue la-modern-button"
+                                        <g:link controller="finance" action="index" class="ui button icon blue la-modern-button"
                                                 params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
                                             <i class="share icon"></i>
                                         </g:link>

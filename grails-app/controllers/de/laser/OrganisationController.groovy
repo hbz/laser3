@@ -14,6 +14,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -407,6 +408,7 @@ class OrganisationController  {
             return
         }
         //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == de.laser.Org.class.name || nsType == null)}
+        /*
         List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns')
                 .sort { a, b ->
@@ -415,6 +417,9 @@ class OrganisationController  {
             aVal.compareToIgnoreCase bVal
         }
         .collect{ it }
+         */
+        Set<String> primaryExcludes = [IdentifierNamespace.EZB_ANCHOR]
+        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :org or idns.nsType = null) and idns.isFromLaser = true and idns.ns not in (:primaryExcludes) order by idns.name_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+', idns.ns', [org: Org.class.name, primaryExcludes: primaryExcludes])
         if((RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()) || (RDStore.OT_AGENCY.id in org.getAllOrgTypeIds())) {
             nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS)
         }
