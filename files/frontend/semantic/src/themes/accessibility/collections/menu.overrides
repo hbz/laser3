@@ -88,7 +88,25 @@
   flex-wrap: wrap;
 }
 
-
+/* Custom Input */
+.ui.menu .item.la-pagination-custom-input {
+  padding-top:0;
+  padding-bottom: 0;
+  .ui.form input[type=text] {
+    align-self: center;
+    width: 3.4rem;
+    vertical-align: middle;
+    padding-top:0.3em;
+    padding-bottom: 0.3em;
+  }
+  .field {
+    display: flex;
+    .icon {
+      align-self: center;
+      margin-left: 4px;
+    }
+  }
+}
 /* Title */
 .ui.secondary.menu .title {
   font-size: @titleFontSize;

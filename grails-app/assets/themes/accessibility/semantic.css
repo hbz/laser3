@@ -27068,6 +27068,34 @@ Floated Menu / Item
   flex-wrap: wrap;
 }
 
+/* Custom Input */
+
+.ui.menu .item.la-pagination-custom-input {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ui.menu .item.la-pagination-custom-input .ui.form input[type=text] {
+  -ms-flex-item-align: center;
+  align-self: center;
+  width: 3.4rem;
+  vertical-align: middle;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+}
+
+.ui.menu .item.la-pagination-custom-input .field {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.ui.menu .item.la-pagination-custom-input .field .icon {
+  -ms-flex-item-align: center;
+  align-self: center;
+  margin-left: 4px;
+}
+
 /* Title */
 
 .ui.secondary.menu .title {

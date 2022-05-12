@@ -253,6 +253,15 @@ class SemanticUiNavigationTagLib {
         else {
             out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
+        // Custom Input
+        out << '<div class="item la-pagination-custom-input">'
+        out << '    <div class="ui mini form">'
+        out << '            <div class="field">'
+        out << '                <input maxlength="8" placeholder="Seite:" type="text">'
+        out << '                <i class="large chevron circle right link icon la-popup-tooltip" data-content="Gehe zur Seite"></i>'
+        out << '            </div>'
+        out << '    </div>'
+        out << '</div>'
         out << '</nav>'
         out << '</div><!--.pagination-->'
     }
