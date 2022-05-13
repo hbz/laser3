@@ -672,6 +672,7 @@ class SubscriptionController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
+                configMap.sub = ctrlResult.result.subscription
                 configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
                 Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //subscription given, all packages
                 Map sheetData = [:]
@@ -1248,7 +1249,8 @@ class SubscriptionController {
             List<Long> exportIEIDs
             String filename
             if(params.tab == 'allIEs') {
-                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
+                if(!params.exportXLS && !params.exportForImport)
+                    exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {

@@ -52,6 +52,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.*
 import java.math.RoundingMode
+import java.sql.Connection
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -1753,6 +1755,13 @@ class ExportService {
 		joined
 	}
 
+	String joinIdentifiersSQL(List<String> ids, String separator) {
+		String joined = ' '
+		if(ids)
+			joined = ids.join(separator)
+		joined
+	}
+
 	/**
 	 * became a duplicate of generateTitleExportKBART - separate usage intended???
 	 */
@@ -2060,34 +2069,61 @@ class ExportService {
 		Sql sql = GlobalService.obtainSqlConnection()
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		Locale locale = LocaleContextHolder.getLocale()
-		log.debug(queryData.query+queryData.where)
-		log.debug("{${configMap.pkgIds.join(',')}")
-		log.debug("${RDStore.TIPP_STATUS_CURRENT.id}")
-		/*
-		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.where, queryData.params),
+		List<GroovyRowResult> titles = sql.rows(queryData.query+' where '+queryData.where+queryData.order, queryData.params),
 		identifiers, coverages, priceItems, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces
+		Map<Long, List<GroovyRowResult>> coverageMap = [:], priceItemMap = [:]
+		Map<Long, Map<Date, GroovyRowResult>> reportMap = [:]
+		Map<Long, Map<String, List<String>>> identifierMap = [:]
+		List<String> coreTitleNSrestricted = IdentifierNamespace.CORE_TITLE_NS.collect { String coreTitleNS ->
+			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
+		}
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id${queryData.where}", queryData.params)
-			coverages = sql.rows("select tc_tipp_fk, tc_start_date, tc_start_volume, tc_start_issue, tc_end_date, tc_end_volume, tc_end_issue, tc_coverage_note, tc_coverage_depth, tc_embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id${queryData.where}", queryData.params)
-			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}')${queryData.where}", queryData.params)
-			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}')${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifierMap.putAll(preprocessIdentifierRows(identifiers))
+			coverageMap.putAll(preprocessRows(coverages, 'tc_tipp_fk'))
+			priceItemMap.putAll(preprocessRows(priceItems, 'pi_tipp_fk'))
 		}
 		else if(entitlementInstance == IssueEntitlement.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk${queryData.where}", queryData.params)
-			coverages = sql.rows("select ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_note, ic_coverage_depth, ic_embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_ie_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join issue_entitlement on pi_ie_fk = ie_id${queryData.where}", queryData.params)
-			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}')${queryData.where}", queryData.params)
-			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}')${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_ie_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifierMap.putAll(preprocessIdentifierRows(identifiers))
+			coverageMap.putAll(preprocessRows(coverages, 'ic_ie_fk'))
+			priceItemMap.putAll(preprocessRows(priceItems, 'pi_ie_fk'))
+			if(showStatsInMonthRings && subscriber) {
+				Connection connection = sql.dataSource.getConnection()
+				Calendar filterTime = GregorianCalendar.getInstance()
+				filterTime.setTime(showStatsInMonthRings.first())
+				filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+				Timestamp startDate = new Timestamp(filterTime.getTime().getTime())
+				filterTime.setTime(showStatsInMonthRings.last())
+				filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+				Timestamp endDate = new Timestamp(filterTime.getTime().getTime())
+				List<Map<Date, GroovyRowResult>> counterReportRows
+				counterReportRows = sql.rows('select c5r_title_fk as title, c5r_report_from as report_from, c5r_report_to as report_to, c5r_report_count as report_count from counter5report join title_instance_package_platform on c5r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c5r_title_fk where c5r_report_institution_fk = :customer and lower(c5r_report_type) = :defaultReport and c5r_metric_type = :defaultMetric and c5r_report_from >= :startDate and c5r_report_to <= :endDate and '+queryData.where, queryData.params+[customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
+				if(!counterReportRows) {
+					List<Object> defaultReports = [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1]
+					counterReportRows = Counter4Report.executeQuery('select c4r_title_fk as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report join title_instance_package_platform on c4r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c4r_title_fk where c4r_report_institution_fk = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
+				}
+				counterReportRows.each { GroovyRowResult reportRow ->
+					Map<Date, GroovyRowResult> usageMap = reportMap.get(reportRow['title'])
+					if(!usageMap)
+						usageMap = [:]
+					usageMap.put((Date) reportRow['report_from'], reportRow)
+					reportMap.put((Long) reportRow['title'], usageMap)
+				}
+			}
 		}
 		else {
-			identifiers = []
-			coverages = []
-			priceItems = []
 			coreTitleIdentifierNamespaces = []
 			otherTitleIdentifierNamespaces = []
 		}
-		 */
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -2128,242 +2164,31 @@ class ExportService {
 				messageSource.getMessage('tipp.localprice_usd',null,locale)]
 		titleHeaders.addAll(coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
-
 		if(showStatsInMonthRings){
 			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
 		}
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
-		/*
-		int max = 500
-		TitleInstancePackagePlatform.withSession { Session sess ->
-			for(int offset = 0; offset < entitlementIDs.size(); offset+=max) {
-				List allRows = []
-				Set<TitleInstancePackagePlatform> titleInstances = []
-				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
-					titleInstances.each { TitleInstancePackagePlatform tipp ->
-						if(!tipp.coverages && !tipp.priceItems) {
-							allRows << tipp
-						}
-						else if(tipp.coverages.size() > 1){
-							tipp.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << tipp
-						}
-					}
+		titles.eachWithIndex { GroovyRowResult title, int outer ->
+			if(entitlementInstance == IssueEntitlement.class.name && coverageMap.get(title['ie_id'])) {
+				coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow(covStmt, identifierMap, priceItemMap, reportMap, perpetuallyPurchasedTitleURLs, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces, showStatsInMonthRings, subscriber))
 				}
-				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
-					issueEntitlements.each { IssueEntitlement entitlement ->
-						titleInstances << entitlement.tipp
-						if(!entitlement.coverages && !entitlement.priceItems) {
-							allRows << entitlement
-						}
-						else if(entitlement.coverages.size() > 1){
-							entitlement.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << entitlement
-						}
-					}
+			}
+			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && coverageMap.get(title['tipp_id'])) {
+				coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow(covStmt, identifierMap, priceItemMap, reportMap, perpetuallyPurchasedTitleURLs, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces, showStatsInMonthRings, subscriber))
 				}
-				Map<TitleInstancePackagePlatform, Map<Integer, AbstractReport>> reportMap = [:]
-				if(showStatsInMonthRings && subscriber) {
-
-					String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-
-					Calendar filterTime = GregorianCalendar.getInstance()
-					filterTime.setTime(showStatsInMonthRings.first())
-					filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-					Date startDate = filterTime.getTime()
-					filterTime.setTime(showStatsInMonthRings.last())
-					filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-					Date endDate = filterTime.getTime()
-
-					Map<String, Object> queryParams = [customer: subscriber, platforms: titleInstances.platform.unique(), startDate: startDate, endDate: endDate, titles: titleInstances]
-
-					List counterReportRows
-					counterReportRows = Counter5Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and lower(r.reportType) = :defaultReport and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
-					if(!counterReportRows)
-						counterReportRows = Counter4Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and r.reportType in (:defaultReports) and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReports: [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1], defaultMetric: 'ft_total'])
-					counterReportRows.each { reportRow ->
-						Map<Integer, AbstractReport> usageMap = reportMap.get(reportRow[0].title)
-						if(!usageMap)
-							usageMap = [:]
-						usageMap.put(reportRow[1], reportRow[0])
-						reportMap.put(reportRow[0].title,usageMap)
-					}
-				}
-				allRows.each { rowData ->
-					IssueEntitlement entitlement = getIssueEntitlement(rowData)
-					TitleInstancePackagePlatform tipp = getTipp(rowData)
-					String style = null
-					if(tipp.hostPlatformURL in perpetuallyPurchasedTitleURLs)
-						style = 'negative'
-					AbstractCoverage covStmt = getCoverageStatement(rowData)
-					List row = []
-					row.add([field: tipp.name ?: '', style:style]) //ie_name
-					//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-					if(tipp.getIdentifierValue('pISBN'))
-						row.add([field: tipp.getIdentifierValue('pISBN'), style:style]) //identifiers.get('pISBN')
-					else if(tipp.getIdentifierValue('ISSN'))
-						row.add([field: tipp.getIdentifierValue('ISSN'), style:style]) //identifiers.get('ISSN')
-					else row.add([field: '', style:style])
-					//online_identifier
-					if(tipp.getIdentifierValue('ISBN'))
-						row.add([field: tipp.getIdentifierValue('ISBN'), style:style]) //identifiers.get('ISBN')
-					else if(tipp.getIdentifierValue('eISSN'))
-						row.add([field: tipp.getIdentifierValue('eISSN'), style:style]) //identifiers.get('eISSN')
-					else row.add([field: '', style:style])
-
-					row.add([field: tipp.pkg.name ?: '', style:style]) //pkg_name
-					row.add([field: tipp.platform.name ?: '', style:style]) //plat_name
-					switch(tipp.titleType) { //ti_title_type
-						case "Journal": row.add([field:'serial', style:style])
-							break
-						case "Book": row.add([field:'monograph', style:style])
-							break
-						case "Database": row.add([field:'database', style:style])
-							break
-						default: row.add([field:'other', style:style])
-							break
-					}
-					row.add([field: tipp.publisherName ? tipp.publisherName : '', style:style]) //tipp_publisher_name
-					row.add([field: tipp.medium ? tipp.medium.getI10n('value') : '', style:style]) //tipp_medium -> select direct refdata value, prepare localisation
-					row.add([field: tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : '', style:style]) //tipp_access_start_date
-					row.add([field: tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : '', style:style]) //tipp_access_end_date
-					row.add([field: tipp.hostPlatformURL ?: '', style:style]) //tipp_host_platform_url
-					row.add([field: tipp.firstAuthor ?: '', style:style]) //tipp_first_author
-					row.add([field: tipp.firstEditor ?: '', style:style]) //tipp_first_editor
-					if(covStmt) {
-						//date_first_issue_online
-						row.add([field: covStmt.startDate ? formatter.format(covStmt.startDate) : ' ', style:style]) //tc/ic_start_date
-						//num_first_volume_online
-						row.add([field: covStmt.startVolume ?: ' ', style:style]) //tc/ic_start_volume
-						//num_first_issue_online
-						row.add([field: covStmt.startIssue ?: ' ', style:style]) //tc/ic_start_issue
-						//date_last_issue_online
-						row.add([field: covStmt.endDate ? formatter.format(covStmt.endDate) : ' ', style:style]) //tc/ic_end_date
-						//num_last_volume_online
-						row.add([field: covStmt.endVolume ?: ' ', style:style]) //tc/ic_end_volume
-						//num_last_issue_online
-						row.add([field: covStmt.endIssue ?: ' ', style:style]) //tc/ic_end_issue
-						//embargo_information
-						row.add([field: covStmt.embargo ?: ' ', style:style]) //tc/ic_embargo
-						//coverage_depth
-						row.add([field: covStmt.coverageDepth ?: ' ', style:style]) //tc/ic_coverage_depth
-						//notes
-						row.add([field: covStmt.coverageNote ?: ' ', style:style]) //tc/ic_coverage_note
-					}
-					else {
-						//empty values for coverage fields
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-					}
-
-					if(tipp.titleType == 'Book') {
-						row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ', style:style]) //tipp_date_first_in_print
-						row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ', style:style]) //tipp_date_first_online
-						row.add([field: tipp.volume ?: ' ', style:style]) //tipp_volume
-						row.add([field: tipp.editionNumber ?: ' ', style:style]) //tipp_edition_number
-					}
-					else {
-						//empty values from date_monograph_published_print to first_editor
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-					}
-					row.add([field: tipp.seriesName ?: ' ', style:style]) //tipp_series_name
-					row.add([field: tipp.subjectReference ?: ' ', style:style]) //tipp_subject_reference
-					row.add([field: tipp.status ? tipp.status.getI10n('value') : ' ', style:style]) //tipp_status_rv_fk -> select direct refdata_value, prepare localisation
-					row.add([field: tipp.accessType ? tipp.accessType.getI10n('value') : ' ', style:style]) //tipp_access_type_rv_fk -> select direct refdata_value, prepare localisation
-					row.add([field: tipp.openAccess ? tipp.openAccess.getI10n('value') : ' ', style:style]) //tipp_open_access_rv_fk -> select direct refdata_value, prepare localisation
-
-					if(entitlement?.priceItems) {
-						//listprice_eur
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_EUR.id)
-						//listprice_gbp
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_GBP.id)
-						//listprice_usd
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_USD.id)
-						//localprice_eur
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_EUR.id)
-						//localprice_gbp
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_GBP.id)
-						//localprice_usd
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_USD.id)
-					} else if (tipp.priceItems) {
-						//listprice_eur
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_EUR.id)
-						//listprice_gbp
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_GBP.id)
-						//listprice_usd
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_USD.id)
-						//localprice_eur
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_EUR.id)
-						//localprice_gbp
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_GBP.id)
-						//localprice_usd
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ', style:style]) //priceItems.get(RDStore.CURRENCY_USD.id)
-					}
-					else {
-						//empty values for price item columns
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-					}
-
-					coreTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style) //identifiers
-					}
-					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style)
-					}
-
-					if(entitlement && showStatsInMonthRings && subscriber) {
-						Calendar filterTime = GregorianCalendar.getInstance()
-						Map<Integer, AbstractReport> usageMap = reportMap.get(entitlement.tipp)
-						showStatsInMonthRings.each { Date month ->
-							filterTime.setTime(month)
-							AbstractReport counterReport
-							if(usageMap) {
-								counterReport = usageMap.get(filterTime.get(Calendar.MONTH)+1) //+1 because Calendar.MONTH ranges from 0 to 11
-							}
-							if(counterReport){
-								//println(counterReport)
-								//println(counterReport.reportCount ?: '')
-								row.add([field: counterReport.reportCount ?: '', style:style]) //c4r/c5r_report_count; preprocess map
-							}
-							else
-								row.add([field: ' ', style:style])
-						}
-					}
-
-					rows.add(row)
-				}
-				println("flushing after ${offset} ...")
-				sess.flush()
+			}
+			else {
+				println "now processing record ${outer}"
+				rows.add(buildRow(title, identifierMap, priceItemMap, reportMap, perpetuallyPurchasedTitleURLs, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces, showStatsInMonthRings, subscriber))
 			}
 		}
-		 */
 		export.rows = rows
 		log.debug("End generateTitleExportCustom")
 		export
@@ -2486,6 +2311,137 @@ class ExportService {
 		 'perpetual_access']
 	}
 
+	List buildRow(GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reportMap, Collection perpetuallyPurchasedTitleURLs, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, List showStatsInMonthRings, Org subscriber) {
+		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
+		if(titleRecord.containsKey('ie_id')) {
+			titleRecord.priceItems = priceItemMap.get(titleRecord['ie_id'])
+		}
+		else {
+			titleRecord.priceItems = priceItemMap.get(titleRecord['tipp_id'])
+		}
+		if(reportMap.containsKey(titleRecord['tipp_id']))
+			titleRecord.usages = reportMap.get(titleRecord['tipp_id'])
+		String style = null
+		if(titleRecord['tipp_host_platform_url'] in perpetuallyPurchasedTitleURLs)
+			style = 'negative'
+		List row = []
+		row.add([field: titleRecord['name'] ?: '', style:style])
+		if(titleRecord.identifiers) {
+			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
+			if(titleRecord.identifiers.get('pisbn'))
+				row.add([field: joinIdentifiersSQL(titleRecord.identifiers.get('pisbn'), ','), style:style])
+			else if(titleRecord.identifiers.get('issn'))
+				row.add([field: joinIdentifiersSQL(titleRecord.identifiers.get('issn'), ','), style:style])
+			else row.add([field: '', style:style])
+			//online_identifier
+			if(titleRecord.identifiers.get('isbn'))
+				row.add([field: joinIdentifiersSQL(titleRecord.identifiers.get('isbn'), ','), style:style])
+			else if(titleRecord.identifiers.get('eissn'))
+				row.add([field: joinIdentifiersSQL(titleRecord.identifiers.get('eissn'), ','), style:style])
+			else row.add([field: '', style:style])
+		}
+		else {
+			row.add([field: '', style:style])
+			row.add([field: '', style:style])
+		}
+		row.add([field: titleRecord['tipp_pkg_name'] ?: '', style:style])
+		row.add([field: titleRecord['tipp_plat_name'] ?: '', style:style])
+		row.add([field: titleRecord['title_type'], style:style])
+		row.add([field: titleRecord['tipp_publisher_name'] ? titleRecord['tipp_publisher_name'] : '', style:style])
+		row.add([field: titleRecord['tipp_medium'] ? titleRecord['tipp_medium'] : '', style:style])
+		row.add([field: titleRecord['accessStartDate'] ? formatter.format(titleRecord['accessStartDate']) : '', style:style])
+		row.add([field: titleRecord['accessEndDate'] ? formatter.format(titleRecord['accessEndDate']) : '', style:style])
+		row.add([field: titleRecord['tipp_host_platform_url'] ?: '', style:style])
+		row.add([field: titleRecord['tipp_first_author'] ?: '', style:style])
+		row.add([field: titleRecord['tipp_first_editor'] ?: '', style:style])
+		//date_first_issue_online
+		row.add([field: titleRecord.containsKey('startDate') && titleRecord.startDate ? formatter.format(titleRecord.startDate) : ' ', style:style])
+		//num_first_volume_online
+		row.add([field: titleRecord.containsKey('startVolume') && titleRecord.startVolume ?: ' ', style:style])
+		//num_first_issue_online
+		row.add([field: titleRecord.containsKey('startIssue') && titleRecord.startIssue ?: ' ', style:style])
+		//date_last_issue_online
+		row.add([field: titleRecord.containsKey('endDate') && titleRecord.endDate ? formatter.format(titleRecord.endDate) : ' ', style:style])
+		//num_last_volume_online
+		row.add([field: titleRecord.containsKey('endVolume') && titleRecord.endVolume ?: ' ', style:style])
+		//num_last_issue_online
+		row.add([field: titleRecord.containsKey('endIssue') && titleRecord.endIssue ?: ' ', style:style])
+		//embargo_information
+		row.add([field: titleRecord.containsKey('embargo') && titleRecord.embargo ?: ' ', style:style])
+		//coverage_depth
+		row.add([field: titleRecord.containsKey('coverageDepth') && titleRecord.coverageDepth ?: ' ', style:style])
+		//notes
+		row.add([field: titleRecord.containsKey('coverageNote') && titleRecord.coverageNote ?: ' ', style:style])
+		if(titleRecord['title_type'] == 'monograph') {
+			row.add([field: titleRecord['tipp_date_first_in_print'] ? formatter.format(titleRecord['tipp_date_first_in_print']) : ' ', style:style])
+			row.add([field: titleRecord['tipp_date_first_online'] ? formatter.format(titleRecord['tipp_date_first_online']) : ' ', style:style])
+			row.add([field: titleRecord['tipp_volume'] ?: ' ', style:style])
+			row.add([field: titleRecord['tipp_edition_number'] ?: ' ', style:style])
+		}
+		else {
+			//empty values from date_monograph_published_print to first_editor
+			row.add([field: '', style:style])
+			row.add([field: '', style:style])
+			row.add([field: '', style:style])
+			row.add([field: '', style:style])
+		}
+		row.add([field: titleRecord['tipp_series_name'] ?: ' ', style:style])
+		row.add([field: titleRecord['tipp_subject_reference'] ?: ' ', style:style])
+		row.add([field: titleRecord['status'] ?: ' ', style:style])
+		row.add([field: titleRecord['accessType'] ?: ' ', style:style])
+		row.add([field: titleRecord['openAccess'] ?: ' ', style:style])
+		if(titleRecord.priceItems) {
+			//listprice_eur
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_EUR.id)?.get('pi_list_price') ?: ' ', style:style])
+			//listprice_gbp
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_GBP.id)?.get('pi_list_price') ?: ' ', style:style])
+			//listprice_usd
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_USD.id)?.get('pi_list_price') ?: ' ', style:style])
+			//localprice_eur
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_EUR.id)?.get('pi_local_price') ?: ' ', style:style])
+			//localprice_gbp
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_GBP.id)?.get('pi_local_price') ?: ' ', style:style])
+			//localprice_usd
+			row.add([field: priceItemMap.get(RDStore.CURRENCY_USD.id)?.get('pi_local_price') ?: ' ', style:style])
+		}
+		else {
+			//empty values for price item columns
+			row.add([field: ' ', style:style])
+			row.add([field: ' ', style:style])
+			row.add([field: ' ', style:style])
+			row.add([field: ' ', style:style])
+			row.add([field: ' ', style:style])
+			row.add([field: ' ', style:style])
+		}
+
+		coreTitleIdentifierNamespaces.each { GroovyRowResult ns ->
+			row.add(field: joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']), ','), style: style)
+		}
+		otherTitleIdentifierNamespaces.each { GroovyRowResult ns ->
+			row.add(field: joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']),','), style: style)
+		}
+
+		if(showStatsInMonthRings && subscriber) {
+			Map<Date, GroovyRowResult> usageMap = reportMap.get(titleRecord['tipp_id'])
+			if(usageMap) {
+				Calendar filterTime = GregorianCalendar.getInstance()
+				showStatsInMonthRings.each { Date month ->
+					filterTime.setTime(month)
+					GroovyRowResult counterReport
+					counterReport = usageMap.get(filterTime.getTime())
+					if(counterReport){
+						//println(counterReport)
+						//println(counterReport.reportCount ?: '')
+						row.add([field: counterReport['report_count'] ?: '', style:style])
+					}
+					else
+						row.add([field: ' ', style:style])
+				}
+			}
+		}
+		row
+	}
+
 	/**
 	 * Determines the issue entitlement instance of the given object
 	 * @param rowData the object containing the issue entitlement
@@ -2587,4 +2543,47 @@ class ExportService {
 		}
 		result
 	}
+
+	static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
+		Map<Long, List<GroovyRowResult>> result = [:]
+		rows.each { GroovyRowResult row ->
+			List<GroovyRowResult> resList = result.get(row[tippKey])
+			if(!resList)
+				resList = []
+			resList << row
+			result.put(row[tippKey], resList)
+		}
+		result
+	}
+
+	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows) {
+		Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
+		priceItemRows.each { GroovyRowResult piRow ->
+			Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
+			if(!priceItemMap)
+				priceItemMap = [:]
+			if(piRow['pi_list_currency']) {
+				priceItemMap.put(piRow['pi_list_currency'], piRow)
+				priceItems.put(piRow['pi_ie_fk'], priceItemMap)
+			}
+		}
+		priceItems
+	}
+
+	static Map<Long, Map<String, List<String>>> preprocessIdentifierRows(List<GroovyRowResult> rows) {
+		Map<Long, Map<String, List<String>>> identifiers = [:]
+		rows.each { GroovyRowResult row ->
+			Map<String, List<String>> idMap = identifiers.get(row['id_tipp_fk'])
+			if(!idMap)
+				idMap = [:]
+			List<String> idValues = idMap.get(row['idns_ns'])
+			if(!idValues)
+				idValues = []
+			idValues << row['id_value']
+			idMap.put(row['idns_ns'], idValues)
+			identifiers.put(row['id_tipp_fk'], idMap)
+		}
+		identifiers
+	}
+
 }
