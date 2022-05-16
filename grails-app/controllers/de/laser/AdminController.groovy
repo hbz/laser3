@@ -528,6 +528,7 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     def databaseCollations() {
+        log.info 'YEAH 12345'
         Map<String, Object> result = [:]
 
         Sql sql = GlobalService.obtainSqlConnection()

@@ -4,6 +4,7 @@ import com.opencsv.CSVReader
 import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper
+import de.laser.helper.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
@@ -159,7 +160,7 @@ class BootStrapService {
 
             anonymousUser = new User(
                     username: 'anonymous',
-                    password: "laser@514@2019",
+                    password: PasswordUtils.getRandomUserPassword(),
                     display: 'Anonymous User',
                     email: 'laser@hbz-nrw.de',
                     enabled: false
