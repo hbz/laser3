@@ -893,7 +893,7 @@ class SubscriptionController {
         }
         if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
             log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
+        redirect action: 'index', id: result.subscription.id
     }
 
     /**
