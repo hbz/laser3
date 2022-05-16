@@ -9,6 +9,12 @@
 
 4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
 
+--      13.05.2022  rc-2.3  2.3         Andreas Bug         Statistik-Sync matcht jetzt auch gegen Print-Identifier
+
+4245    13.05.2022  rc-2.3  2.3         Andreas Bug         fehlende Bestätigung beim Nationalen Statistikserver nachgereicht
+
+4242    13.05.2022  rc-2.3  2.3         Andreas Bug         fehldende Sicherheitsabfrage bei Löschen von Anmerkungen eingefügt
+
 4214    13.05.2022  rc-2.3  2.3         Andreas Feature     Ausbau des Behelfs beim Titelexport, Umstellung auf natives SQL
 
 4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
