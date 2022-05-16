@@ -25,6 +25,7 @@ See [upgrade.md](./upgrade.md) for detailed information.
 - [gradle.properties](../gradle.properties)
 - [application.yml](../grails-app/conf/application.yml)
 - [application.groovy](../grails-app/conf/application.groovy)
+- [logback.groovy](../grails-app/conf/logback.groovy)
 
 #### Local configuration file
 

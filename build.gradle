@@ -134,12 +134,19 @@ dependencies {
     // https://github.com/qos-ch/logback
     implementation('ch.qos.logback:logback-classic:1.2.8')             // downgrade from 1.2.10
 
+    // https://commons.apache.org/proper/commons-io/
     implementation 'commons-io:commons-io:2.11.0'                      // from 2.6
+    // https://github.com/albfernandez/juniversalchardet
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
+    // http://opencsv.sourceforge.net/
     implementation 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
+    // https://commons.apache.org/proper/commons-lang/
     implementation 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
+    // https://poi.apache.org/
     implementation 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
+    // http://gpars.org/webapp/guide/
     implementation 'org.codehaus.gpars:gpars:1.2.1'
+    // https://github.com/liquibase/liquibase
     implementation 'org.liquibase:liquibase-core:4.8.0'                // from 3.5.5 : + org.grails.plugins:database-migration
 
     runtimeOnly 'org.postgresql:postgresql:42.3.3'                     // from 42.3.0

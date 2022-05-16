@@ -54,16 +54,16 @@ Localization dependent logic should be managed by *de.laser.helper.LocaleHelper*
 
 Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
 
-### CSV
-
-*Opencsv* has been removed. New code should use *liquibase.util.csv*.
-
 ### HTTPBuilder
 
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
 A migration to *de.laser.http.BasicHttpClient* should take place.
 
 ### .. todo?
+
+#### ~~CSV~~
+
+~~*Opencsv* has been removed. New code should use *liquibase.util.csv*.~~
 
 #### ExecutorGrailsPlugin
 

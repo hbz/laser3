@@ -46,6 +46,10 @@ class ShrinkFilter extends Filter<ILoggingEvent> {
             // INFO: Bean '[..]' of type [..] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
             return FilterReply.DENY
         }
+        else if (event.getMessage().contains("As of Liquibase 4.0, cannot set resource accessor on")) {
+            // INFO: As of Liquibase 4.0, cannot set resource accessor on [..]. Must add it to the Scope
+            return FilterReply.DENY
+        }
         else if (event.getMessage().contains("Cached entry expired :")) {
             // INFO: Cached entry expired : [..]
             return FilterReply.DENY

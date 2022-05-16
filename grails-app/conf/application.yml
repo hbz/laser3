@@ -138,6 +138,8 @@ grails:
             defaultActor: 'SYS'
         databasemigration:
             updateOnStart:  true
+            dbDocController:
+                enabled: false
         wkhtmltopdf:
             binary: '/usr/bin/wkhtmltopdf'
         springsecurity:
