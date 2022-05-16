@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
+
+--      13.05.2022  rc-2.3  2.3         Andreas Bug         Statistik-Sync matcht jetzt auch gegen Print-Identifier
+
+4245    13.05.2022  rc-2.3  2.3         Andreas Bug         fehlende Bestätigung beim Nationalen Statistikserver nachgereicht
+
+4242    13.05.2022  rc-2.3  2.3         Andreas Bug         fehldende Sicherheitsabfrage bei Löschen von Anmerkungen eingefügt
+
+4214    13.05.2022  rc-2.3  2.3         Andreas Feature     Ausbau des Behelfs beim Titelexport, Umstellung auf natives SQL
+
+4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
+
+4237    11.05.2022  rc-2.3  2.3         Andreas Bug         Liste verfügbarer Namensräume bei Einrichtungen gefiltert
+
+4179    11.05.2022  rc-2.3  2.3         Andreas Feature     Überprüfung und Aktualisierung der Importtemplates
+
 --      11.05.2022  rc-2.3  2.3         Andreas Bug         Plattformreports sorgten bei Titelauswahl für 500er
 
 --      11.05.2022  dev     2.3         Andreas Feature     Markierung der dauerhaft erworbenen Titel jetzt auch im Gesamttitelexport
@@ -37,7 +53,9 @@
 
 4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
 
-4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommastellen
+4216    04.05.2022  dev     2.3         Andreas Feature     Feld "URL" bei Paketen in "Beschreibungs-URL" geändert
+
+4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
 
 4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
 
