@@ -262,7 +262,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1621490825895-20") {
         grailsChange {
             change {
-                if(AppUtils.getCurrentServer() != AppUtils.SERVER_QA) {
+                if(AppUtils.getCurrentServer() != AppUtils.QA) {
                     sql.execute("delete from org as o where not exists (select org_id from org_type where org_id = o.org_id) and not exists (select us_id from user_setting where o.org_id = us_org_fk);")
                 }
             }

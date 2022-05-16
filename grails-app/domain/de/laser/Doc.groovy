@@ -13,8 +13,6 @@ import de.laser.annotations.RefdataInfo
 class Doc {
 
     static final CONTENT_TYPE_STRING              = 0
-    @Deprecated
-    static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
     static final CONTENT_TYPE_FILE                = 3
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)

@@ -15,7 +15,7 @@ See [upgrade.md](./upgrade.md) for detailed information.
 
 ### Setup
 
-    sdk i grails 5.1.3 
+    sdk i grails 5.1.7 
     sdk i groovy 3.0.7
     sdk i java 11.0.12
 

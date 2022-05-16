@@ -53,6 +53,7 @@ class BeanStore {
     static MessageSource getMessageSource() {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
 
+        // in progress
         if (false) {
             messageSource.metaClass.getMessage = { String code ->
                 getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())

@@ -298,32 +298,6 @@ class FactService {
     list
   }
 
-  @Deprecated
-  private def getUsageFacts(org_id, supplier_id, title_id=null, license=null) {
-    Fact.createCriteria().list {
-      createAlias('factType', 'ft')
-      resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
-      projections {
-        sum('factValue', 'factValue') // aliases needed for resultTransformer
-        groupProperty('reportingYear', 'reportingYear')
-        groupProperty('reportingMonth', 'reportingMonth')
-        groupProperty('factType', 'factType')
-      }
-      if (license) {
-        ge('factFrom', license.startDate)
-        le('factTo', license.endDate)
-      }
-      if (title_id) {
-        eq('relatedTitle.id', title_id)
-      }
-      eq('supplier.id', supplier_id)
-      eq('inst.id', org_id)
-      order('reportingYear', 'desc')
-      order('reportingMonth', 'desc')
-      order('ft.value', 'desc')
-    }
-  }
-
   /**
    * Fills the reporting gaps with zero values
    * @param licenseYears the years in which the subscription is running
