@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
+
 --      13.05.2022  rc-2.3  2.3         Andreas Bug         Statistik-Sync matcht jetzt auch gegen Print-Identifier
 
 4245    13.05.2022  rc-2.3  2.3         Andreas Bug         fehlende Bestätigung beim Nationalen Statistikserver nachgereicht
