@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4244    16.05.2022  rc-2.3  2.3         Moe     Feature         we:kb und ygor sollten sich in neuem Tab öffnen
+4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
+
+4244    16.05.2022  rc-2.3  2.3         Moe     Feature     we:kb und ygor sollten sich in neuem Tab öffnen
 
 4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
 
