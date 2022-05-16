@@ -2813,13 +2813,13 @@ join sub.orgRelations or_sub where
             }
         }
         else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
+        /*if(!params.subPerpetual) {
             if(!params.filterSet) {
                 params.subPerpetual = "on"
                 result.filterSet = true
             }
         }
-        else result.filterSet    = params.filterSet ? true : false
+        else result.filterSet    = params.filterSet ? true : false*/
 
         params.comboType = result.comboType.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)

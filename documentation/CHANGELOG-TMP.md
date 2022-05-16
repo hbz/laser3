@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
+
 4214    13.05.2022  rc-2.3  2.3         Andreas Feature     Ausbau des Behelfs beim Titelexport, Umstellung auf natives SQL
 
 4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
