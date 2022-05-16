@@ -54,6 +54,20 @@
                                 <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
                                 <laser:script file="${this.getGroovyPageFileName()}">
 
+                                    $('body #natstat_server_access').editable('destroy').editable({
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        r2d2.initDynamicSemuiStuff('body');
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown')
+                                                .dropdown({
+                                            clearable: true
+                                        })
+                                        ;
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
+
                                     $('body #oamonitor_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
@@ -87,12 +101,16 @@
                                     <tr>
                                         <td>
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
-
-                                            <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
+                                            <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
                                                     <i class="question circle icon"></i>
                                                 </span>
                                             </g:if>
+                                            <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
+                                                    <i class="question circle icon"></i>
+                                                </span>
+                                            </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
                                                     <i class="question circle icon"></i>
@@ -102,8 +120,17 @@
                                         <td>
 
                                             <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
-
-                                                <g:if test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
+                                                <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
+                                                    <semui:xEditableRefData owner="${os}"
+                                                                            field="rdValue"
+                                                                            id="natstat_server_access"
+                                                                            data_confirm_tokenMsg="${message(code: 'org.setting.NATSTAT_SERVER_ACCESS.confirm')}"
+                                                                            data_confirm_term_how="ok"
+                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
+                                                                            config="${os.key.rdc}" />
+                                                </g:if>
+                                                <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="oamonitor_server_access"
@@ -112,7 +139,7 @@
                                                                             cssClass="js-open-confirm-modal-xeditable"
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
-                                                </g:if>
+                                                </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                     <semui:xEditableRefData owner="${os}"
                                                                             field="rdValue"

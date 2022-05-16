@@ -48,17 +48,19 @@
                 </select>
             </div>
 
-            <div class="field">
-                <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
-                </label>
+            <g:if test="${curatoryGroups}">
+                <div class="field">
+                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
+                    </label>
 
-                <g:select class="ui fluid search select dropdown" name="curatoryGroup"
-                          from="${curatoryGroups.sort{it.name.toLowerCase()}}"
-                          optionKey="name"
-                          optionValue="name"
-                          value="${params.curatoryGroup}"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
+                    <g:select class="ui fluid search select dropdown" name="curatoryGroup"
+                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
+                              optionKey="name"
+                              optionValue="name"
+                              value="${params.curatoryGroup}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
         </div>
 
         <div class="two fields">

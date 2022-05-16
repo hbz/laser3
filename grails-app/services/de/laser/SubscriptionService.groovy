@@ -108,7 +108,7 @@ class SubscriptionService {
             if (params.isSiteReloaded != "yes") {
                 String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
                 params.status = defaultStatus
-                params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+                //params.hasPerpetualAccess = RDStore.YN_YES.id.toString() as you wish, myladies ... as of May 16th, '22, the setting should be reverted
                 result.defaultSet = true
             }
             else {
@@ -280,12 +280,13 @@ class SubscriptionService {
             statusQuery = " and subT.status.id = :status "
             qarams.put('status',params.long('status'))
         } else if(!params.filterSet) {
+            statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
-            params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
+            //params.hasPerpetualAccess = RDStore.YN_YES.id.toString()
             result.defaultSet = true
         }
-        if(params.status == RDStore.SUBSCRIPTION_CURRENT.id && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+        if(params.long("status") == RDStore.SUBSCRIPTION_CURRENT.id && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
             statusQuery = " and (subT.status.id = :status or subT.hasPerpetualAccess = true) "
         }
         else if (params.hasPerpetualAccess) {
@@ -339,7 +340,7 @@ class SubscriptionService {
             }
         }
 
-        String orderQuery = " order by roleT.org.sortname, subT.name"
+        String orderQuery = " order by roleT.org.sortname, subT.name, subT.startDate, subT.endDate"
         if (params.sort?.size() > 0) {
             orderQuery = " order by " + params.sort + " " + params.order
         }
@@ -360,7 +361,7 @@ class SubscriptionService {
             //post filter; HQL cannot filter that parameter out
             Set costs = []
             costsRaw.each { row ->
-                List rowCleared = row[0] != null && row[0].owner != contextOrg ? [null, row[1], row[2]] : row
+                List rowCleared = row[0] != null && row[0].owner.id != contextOrg.id ? [null, row[1], row[2]] : row
                 costs << rowCleared
             }
             result.totalCount = costs.size()
@@ -375,7 +376,7 @@ class SubscriptionService {
             result.finances = {
                 Map entries = [:]
                 result.entries.each { obj ->
-                    if (obj[0] && obj[0].owner == contextOrg) {
+                    if (obj[0] && obj[0].owner.id == contextOrg.id) {
                         CostItem ci = (CostItem) obj[0]
                         if (!entries."${ci.billingCurrency}") {
                             entries."${ci.billingCurrency}" = 0.0
