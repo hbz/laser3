@@ -250,30 +250,4 @@ class ApiToolkit {
 
         [identifier, timestamp]
     }
-
-    static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
-        Map<Long, List<GroovyRowResult>> result = [:]
-        rows.each { GroovyRowResult row ->
-            List<GroovyRowResult> resList = result.get(row[tippKey])
-            if(!resList)
-                resList = []
-            resList << row
-            result.put(row[tippKey], resList)
-        }
-        result
-    }
-
-    static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows) {
-        Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
-        priceItemRows.each { GroovyRowResult piRow ->
-            Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
-            if(!priceItemMap)
-                priceItemMap = [:]
-            if(piRow['pi_list_currency']) {
-                priceItemMap.put(piRow['pi_list_currency'], piRow)
-                priceItems.put(piRow['pi_ie_fk'], priceItemMap)
-            }
-        }
-        priceItems
-    }
 }

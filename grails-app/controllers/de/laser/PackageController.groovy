@@ -501,7 +501,10 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = titlesList ? exportService.generateTitleExportCustom(titlesList,TitleInstancePackagePlatform.class.name) : []
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> export = titlesList ? exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) : [] //no subscription needed
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -647,7 +650,10 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = exportService.generateTitleExportCustom(titlesList,TitleInstancePackagePlatform.class.name)
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> export = exportService.generateTitleExportCustom(params, TitleInstancePackagePlatform.class.name) //no subscription needed
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)

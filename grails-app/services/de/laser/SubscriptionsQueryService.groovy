@@ -336,7 +336,7 @@ class SubscriptionsQueryService {
             else
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
-            base_qry += " order by lower(trim(s.name)) asc, s.instanceOf desc"
+            base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"
             if(joinQuery)
                 base_qry += ", so.org.sortname asc"
         }

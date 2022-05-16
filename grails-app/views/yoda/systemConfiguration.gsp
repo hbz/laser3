@@ -71,7 +71,14 @@
                         <span style="color:orange"> == C O N C E A L E D === </span>
                     </g:if>
                     <g:else>
-                        ${currentConfig.get(key)}
+                        <g:if test="${key == 'java.class.path'}">
+                            <div style="overflow:scroll; max-height:150px">
+                                ${currentConfig.get(key)}
+                            </div>
+                        </g:if>
+                        <g:else>
+                            ${currentConfig.get(key)}
+                        </g:else>
                     </g:else>
                 </td>
                 <td>

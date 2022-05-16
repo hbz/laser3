@@ -68,15 +68,15 @@ class Counter4Report extends AbstractReport {
     static mapping = {
         id                  column: 'c4r_id', index: 'c4r_id_idx'
         version             column: 'c4r_version'
-        title               column: 'c4r_title_fk', index: 'c4r_title_idx'
+        title               column: 'c4r_title_fk', index: 'c4r_title_idx, c4r_report_when_idx'
         publisher           column: 'c4r_publisher', type: 'text'
         platform            column: 'c4r_platform_fk', index: 'c4r_plat_idx'
-        reportInstitution   column: 'c4r_report_institution_fk', index: 'c4r_ri_idx'
-        reportType          column: 'c4r_report_type', index: 'c4r_rt_idx'
+        reportInstitution   column: 'c4r_report_institution_fk', index: 'c4r_ri_idx, c4r_report_when_idx'
+        reportType          column: 'c4r_report_type', index: 'c4r_rt_idx, c4r_report_when_idx'
         category            column: 'c4r_category'
-        metricType          column: 'c4r_metric_type', index: 'c4r_metric_type_idx'
-        reportFrom          column: 'c4r_report_from', index: 'c4r_report_from_idx' //for JR5, this will be the start of YOP
-        reportTo            column: 'c4r_report_to', index: 'c4r_report_to_idx' //for JR5, this will be the end of YOP
+        metricType          column: 'c4r_metric_type', index: 'c4r_metric_type_idx, c4r_report_when_idx'
+        reportFrom          column: 'c4r_report_from', index: 'c4r_report_from_idx, c4r_report_when_idx' //for JR5, this will be the start of YOP
+        reportTo            column: 'c4r_report_to', index: 'c4r_report_to_idx, c4r_report_when_idx' //for JR5, this will be the end of YOP
         reportCount         column: 'c4r_report_count'
     }
 

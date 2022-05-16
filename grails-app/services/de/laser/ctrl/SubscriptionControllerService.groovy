@@ -1756,7 +1756,7 @@ class SubscriptionControllerService {
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
-                if (it.name == 'PackageSync_'+result.subscription.id) {
+                if (it.name == 'PackageTransfer_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
                 else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {

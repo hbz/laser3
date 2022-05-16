@@ -104,16 +104,16 @@ class Counter5Report extends AbstractReport {
     static mapping = {
         id                  column: 'c5r_id', index: 'c5r_id_idx'
         version             column: 'c5r_version'
-        title               column: 'c5r_title_fk', index: 'c5r_title_idx'
+        title               column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
         publisher           column: 'c5r_publisher', type: 'text'
         platform            column: 'c5r_platform_fk', index: 'c5r_plat_idx'
-        reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx'
-        reportType          column: 'c5r_report_type', index: 'c5r_rt_idx'
+        reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
+        reportType          column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx'
         accessType          column: 'c5r_access_type', index: 'c5r_access_type_idx'
         accessMethod        column: 'c5r_access_method', index: 'c5r_access_method_idx'
-        metricType          column: 'c5r_metric_type', index: 'c5r_metric_type_idx'
-        reportFrom          column: 'c5r_report_from', index: 'c5r_report_from_idx'
-        reportTo            column: 'c5r_report_to', index: 'c5r_report_to_idx'
+        metricType          column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx'
+        reportFrom          column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx'
+        reportTo            column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx'
         reportCount         column: 'c5r_report_count'
     }
 
