@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4214    13.05.2022  rc-2.3  2.3         Andreas Feature     Ausbau des Behelfs beim Titelexport, Umstellung auf natives SQL
+
 4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
 
 4237    11.05.2022  rc-2.3  2.3         Andreas Bug         Liste verfügbarer Namensräume bei Einrichtungen gefiltert
@@ -43,7 +45,9 @@
 
 4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
 
-4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommastellen
+4216    04.05.2022  dev     2.3         Andreas Feature     Feld "URL" bei Paketen in "Beschreibungs-URL" geändert
+
+4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
 
 4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
 
