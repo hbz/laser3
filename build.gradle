@@ -228,7 +228,6 @@ assets {
             'bulma/**',
             'cryptoJS-v3.1.2/**',
             'echarts/**',
-            'datatables/**',
             'select2/**/*.js',
             'select2/**/*.css',
             'spring-websocket/**',

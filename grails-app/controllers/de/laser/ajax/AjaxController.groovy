@@ -282,68 +282,6 @@ class AjaxController {
         render resp as JSON
     }
 
-  @Deprecated
-  @Secured(['ROLE_USER'])
-  def refdataAllOrgs() {
-      // TODO: refactoring - only used by /templates/_orgLinksModal.gsp
-
-    Map<String, Object> result = [:]
-    //we call toString in case we got a GString
-    Map config = refdata_config.get('allOrgs')
-
-    if ( config ) {
-      // result.config = config
-        Map<String, Object> query_params = [:]
-        config.qryParams.each { qp ->
-            log.debug("Processing query param ${qp} value will be ${params[qp.param]}");
-            if ( qp.onameClosure ) {
-                query_params.putAt('oname', qp.onameClosure(params[qp.param]?:''));
-            }
-        }
-
-      def cq = Org.executeQuery(config.countQry,query_params);
-
-      def rq = Org.executeQuery(config.rowQry,
-                                query_params,
-                                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
-
-      if ( config.format=='map' ) {
-        result.aaData = []
-        result.sEcho = params.sEcho
-        result.iTotalRecords = cq[0]
-        result.iTotalDisplayRecords = cq[0]
-
-        rq.each { it ->
-          def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-          int ctr = 0
-          Map row = [:]
-          config.cols.each { cd ->
-            // log.debug("Processing result col ${cd} pos ${ctr}");
-            row["${ctr++}"] = rowobj[cd]
-          }
-          row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
-          result.aaData.add(row)
-        }
-      }
-      else {
-        rq.each { it ->
-          def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-          result["${rowobj.class.name}:${rowobj.id}"] = rowobj[config.cols[0]];
-        }
-      }
-    }
-
-    // log.debug("refdataSearch returning ${result as JSON}");
-    withFormat {
-      html {
-        result
-      }
-      json {
-        render result as JSON
-      }
-    }
-  }
-
     /**
      * Retrieves lists for a reference data value dropdown. The config parameter is used to build the underlying query
      * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON

@@ -4,7 +4,6 @@
   <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'package.label')}</title>
-    <asset:stylesheet src="datatables.css"/><laser:javascript src="datatables.js"/>%{-- dont move --}%
   </head>
   <body>
 
@@ -107,13 +106,6 @@
                       next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
                       maxsteps="${max}" total="${num_tipp_rows}"/>
   </g:if>
-
-
-  <%-- <laser:render template="/templates/orgLinksModal"
-              model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
-    // TODO -- no usage found
-  --%>
-
 
   <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 

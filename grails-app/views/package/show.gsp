@@ -5,7 +5,6 @@
 <head>
     <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'package.details')}</title>
-    <asset:stylesheet src="datatables.css"/><laser:javascript src="datatables.js"/>%{-- dont move --}%
 </head>
 
 <body>
@@ -210,20 +209,6 @@
                                             editmode     : editable,
                                             showPersons  : true
                                   ]}"/>
-
-                        %{-- <laser:render template="/templates/links/orgLinksModal"
-                                   model="${[linkType      : packageInstance?.class?.name,
-                                             parent        : packageInstance.class.name + ':' + packageInstance.id,
-                                             property      : 'orgs',
-                                             recip_prop    : 'pkg',
-                                             tmplRole      : RDStore.OR_CONTENT_PROVIDER,
-                                             tmplText      : 'Anbieter hinzufügen',
-                                             tmplID        : 'ContentProvider',
-                                             tmplButtonText: 'Anbieter hinzufügen',
-                                             tmplModalID   : 'osel_add_modal_anbieter',
-                                             editmode      : editable
-                                   ]}"/>--}%
-
                     </div>
                 </div>
 
