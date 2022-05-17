@@ -4,7 +4,7 @@ import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils

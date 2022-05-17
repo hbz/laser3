@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.helper.EhcacheWrapper
+import de.laser.cache.EhcacheWrapper
 import grails.gorm.transactions.Transactional
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager

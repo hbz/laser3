@@ -2,6 +2,8 @@ package de.laser
 
 
 import de.laser.annotations.DebugInfo
+import de.laser.cache.EhcacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService

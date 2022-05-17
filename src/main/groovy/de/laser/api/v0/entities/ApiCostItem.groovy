@@ -4,7 +4,7 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.Org
 import de.laser.api.v0.*
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

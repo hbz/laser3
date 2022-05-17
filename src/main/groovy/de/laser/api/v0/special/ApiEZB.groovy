@@ -2,7 +2,7 @@ package de.laser.api.v0.special
 
 import de.laser.*
 import de.laser.api.v0.*
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import de.laser.helper.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

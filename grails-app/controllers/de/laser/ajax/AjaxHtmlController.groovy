@@ -40,8 +40,8 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.DateUtils
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.EhcacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport

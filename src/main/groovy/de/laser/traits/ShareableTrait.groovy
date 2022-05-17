@@ -3,6 +3,7 @@ package de.laser.traits
 import de.laser.DocContext
 import de.laser.OrgRole
 import de.laser.interfaces.ShareSupport
+import de.laser.storage.BeanStore
 
 import javax.persistence.Transient
 
@@ -22,10 +23,10 @@ trait ShareableTrait {
         log?.debug ("addShareForTarget " + this + " for " + target)
 
         if (this instanceof DocContext) {
-            shareService.addDocShareForTarget(this, target)
+            BeanStore.getShareService().addDocShareForTarget(this, target)
         }
         if (this instanceof OrgRole) {
-            shareService.addOrgRoleShareForTarget(this, target)
+            BeanStore.getShareService().addOrgRoleShareForTarget(this, target)
         }
     }
 
@@ -34,10 +35,10 @@ trait ShareableTrait {
         log?.debug ("deleteShareForTarget " + this + " for " + target)
 
         if (this instanceof DocContext) {
-            shareService.deleteDocShareForTarget(this, target)
+            BeanStore.getShareService().deleteDocShareForTarget(this, target)
         }
         if (this instanceof OrgRole) {
-            shareService.deleteOrgRoleShareForTarget(this, target)
+            BeanStore.getShareService().deleteOrgRoleShareForTarget(this, target)
         }
     }
 

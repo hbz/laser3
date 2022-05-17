@@ -2,7 +2,7 @@ package de.laser.interceptors
 
 import de.laser.ContextService
 import de.laser.helper.ProfilerUtils
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import de.laser.system.SystemActivityProfiler
 
 class SystemProfilerInterceptor implements grails.artefact.Interceptor {

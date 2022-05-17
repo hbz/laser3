@@ -5,7 +5,6 @@ import de.laser.properties.PropertyDefinition
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-//@CompileStati
 @Slf4j
 class RDStore {
 

@@ -1,6 +1,7 @@
 package de.laser.helper
 
 import de.laser.ContextService
+import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
 import org.grails.web.servlet.mvc.GrailsWebRequest
 

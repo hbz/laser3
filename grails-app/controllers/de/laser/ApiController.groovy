@@ -4,7 +4,7 @@ package de.laser
 import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiToolkit
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import de.laser.helper.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

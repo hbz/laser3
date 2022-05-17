@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 

@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
+import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.*
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

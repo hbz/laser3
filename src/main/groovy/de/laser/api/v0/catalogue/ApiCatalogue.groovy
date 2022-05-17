@@ -6,7 +6,7 @@ import de.laser.storage.BeanStore
 import de.laser.properties.PropertyDefinition
 import de.laser.CacheService
 import de.laser.api.v0.*
-import de.laser.helper.EhcacheWrapper
+import de.laser.cache.EhcacheWrapper
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 

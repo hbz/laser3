@@ -3,7 +3,7 @@ package de.laser.interceptors
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.api.v0.ApiManager
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import grails.converters.JSON
 import org.apache.commons.io.IOUtils
 

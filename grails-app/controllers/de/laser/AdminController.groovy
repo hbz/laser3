@@ -4,7 +4,7 @@ package de.laser
 import de.laser.helper.AppUtils
 import de.laser.helper.DatabaseUtils
 import de.laser.helper.LocaleHelper
-import de.laser.helper.EhcacheWrapper
+import de.laser.cache.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance

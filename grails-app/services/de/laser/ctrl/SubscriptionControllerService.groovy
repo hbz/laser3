@@ -3,6 +3,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem

@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 
 /**

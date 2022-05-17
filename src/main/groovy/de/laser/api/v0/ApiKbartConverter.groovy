@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import de.laser.Doc
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import grails.converters.JSON
 import groovy.json.JsonSlurper
 

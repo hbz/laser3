@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.ContextService
+import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.*
 import de.laser.system.SystemMessage
 import de.laser.system.SystemProfiler

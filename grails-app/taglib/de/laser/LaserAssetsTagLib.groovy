@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.http.AjaxUtils
+import de.laser.http.AjaxHelper
 import de.laser.helper.AppUtils
 import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
@@ -16,7 +16,7 @@ class LaserAssetsTagLib {
 
     def script = { attrs, body ->
 
-        if (AjaxUtils.isXHR(request)) {
+        if (AjaxHelper.isXHR(request)) {
             out << "\n<script data-type=\"xhr\">"
             out << "\n\$(function() {"
             out << "\n " + body()

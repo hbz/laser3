@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.FinancialDataException

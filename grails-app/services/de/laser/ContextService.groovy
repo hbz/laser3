@@ -1,8 +1,8 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.EhcacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

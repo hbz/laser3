@@ -4,7 +4,7 @@ import de.laser.Identifier
 import de.laser.Org
 import de.laser.Platform
 import de.laser.api.v0.*
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
 

@@ -8,7 +8,7 @@ import de.laser.OrgRole
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.api.v0.*
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

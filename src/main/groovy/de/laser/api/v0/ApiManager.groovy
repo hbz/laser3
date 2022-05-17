@@ -14,7 +14,7 @@ import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.apache.tools.ant.util.DateUtils

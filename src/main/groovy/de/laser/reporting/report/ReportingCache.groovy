@@ -2,7 +2,7 @@ package de.laser.reporting.report
 
 import de.laser.Subscription
 import de.laser.helper.DateUtils
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat

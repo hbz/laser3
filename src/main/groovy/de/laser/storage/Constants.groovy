@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.storage
 
 import groovy.transform.CompileStatic
 

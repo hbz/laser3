@@ -4,7 +4,7 @@ import de.laser.ContextService
 import de.laser.UserService
 import de.laser.auth.User
 import de.laser.helper.ProfilerUtils
-import de.laser.helper.SessionCacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional

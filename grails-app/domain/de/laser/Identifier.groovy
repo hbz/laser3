@@ -473,6 +473,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('Identifier.deleted')) {
+            GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 
             List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
                     [objectID: "${this.class.name}:${this.id}"] )

@@ -1,7 +1,7 @@
 package de.laser.api.v0
 
 import de.laser.RefdataValue
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 
 class ApiBox {
 

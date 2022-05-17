@@ -8,6 +8,8 @@ import de.laser.auth.UserRole
 import de.laser.*
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.cache.EhcacheWrapper
+import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.*
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition

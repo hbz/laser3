@@ -1542,7 +1542,7 @@ class FilterService {
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
         //sql.withTransaction {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
                 List<String> columns = ['tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
                                         "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
@@ -1584,7 +1584,7 @@ class FilterService {
                 }
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
-                    Date dateFilter = DateUtils.getSDF_NoTime().parse(params.asAt)
+                    Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(params.asAt)
                     params.asAt = dateFilter.format('yyyy-MM-dd')
                     where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
                 }

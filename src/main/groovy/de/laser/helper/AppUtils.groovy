@@ -1,6 +1,7 @@
 package de.laser.helper
 
 import de.laser.ContextService
+import de.laser.cache.SessionCacheWrapper
 import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders

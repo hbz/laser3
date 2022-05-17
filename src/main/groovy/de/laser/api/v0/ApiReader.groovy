@@ -1,6 +1,6 @@
 package de.laser.api.v0
 
-import de.laser.helper.Constants
+import de.laser.storage.Constants
 
 /**
  * This class is an enum which formats are supported per endpoints. It contains no methods

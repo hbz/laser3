@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.cache
 
 import de.laser.CacheService
 import de.laser.storage.BeanStore

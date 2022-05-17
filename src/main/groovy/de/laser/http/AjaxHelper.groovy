@@ -2,7 +2,7 @@ package de.laser.http
 
 import javax.servlet.http.HttpServletRequest
 
-class AjaxUtils {
+class AjaxHelper {
 
     static boolean isXHR(HttpServletRequest request) {
         request.xhr
