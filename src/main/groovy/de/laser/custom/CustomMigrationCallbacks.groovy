@@ -31,10 +31,10 @@ class CustomMigrationCallbacks {
 				println '-           updating pre2.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre2.0/', 'legacy/') where filename like 'done/pre2.0/%'")
 
 				println '-        changelog-2021-% -> ' + count2
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = concat('2021/', filename) where filename like 'changelog-2021-%'")
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'legacy/changelog-') where filename like 'changelog-2021-%'")
 
 				println '-        changelog-2022-% -> ' + count3
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = concat('2022/', filename) where filename like 'changelog-2022-%'")
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'changelogs/') where filename like 'changelog-2022-%'")
 
 				sql.commit()
 				println '--------------------------------------------------------------------------------'
@@ -47,8 +47,7 @@ class CustomMigrationCallbacks {
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		// TODO : deactivate after migration
-		_localChangelogMigration()
+		_localChangelogMigration() // TODO : remove after migration
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }

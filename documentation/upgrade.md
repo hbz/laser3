@@ -37,6 +37,10 @@ Use BeanStore for static and non-static access to services and other beans.
 
 Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
 
+### Database Migrations
+
+A new naming scheme should be used. See [database-migration.md](./database-migration.md) for more information.
+
 ### DateUtils
 
 *Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
@@ -59,7 +63,8 @@ Two different versions are currently used simultaneously. New code should always
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
 A migration to *de.laser.http.BasicHttpClient* should take place.
 
-### .. todo?
+
+### Remarks &rarr;
 
 #### ~~CSV~~
 

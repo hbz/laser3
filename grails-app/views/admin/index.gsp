@@ -14,7 +14,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top">
         <i class="circular icon trophy" style="background-color:#f3a43b; border-color:#f3a43b; color:white;"></i>
-        ~ ${message(code:'menu.admin')}
+        ${message(code:'menu.admin')}
     </h1>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
@@ -26,7 +26,7 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} <br/> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
         </tbody>
     </table>
 

@@ -15,7 +15,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top">
         <i class="circular icon dna" style="background-color:#d12e34; border-color:#d12e34; color:white;"></i>
-        ~ ${message(code:'menu.yoda')}
+        ${message(code:'menu.yoda')}
     </h1>
 
     <h2 class="ui header">&nbsp;</h2>
