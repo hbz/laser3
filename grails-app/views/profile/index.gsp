@@ -481,13 +481,6 @@
 
                 <div class="ui card la-full-width">
                     <div class="content">
-                        %{-- <h2 class="ui dividing header">
-                            ${message(code: 'profile.membership.request')}
-                        </h2>
-
-                        -- outdated due instant accept: <p style="word-break:normal">
-                            <g:message code="profile.membership.request.text" />
-                        </p>--}%
                         <g:form controller="profile" action="addAffiliation" class="ui form addAffiliationForm" method="get">
                             <div class="two fields">
                                 <div class="field">
