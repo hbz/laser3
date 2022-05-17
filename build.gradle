@@ -18,11 +18,8 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
         classpath 'org.grails.plugins:hibernate5:7.2.1'                                             // from 7.0.5
 
-        // https://github.com/grails/grails-database-migration
         classpath 'org.grails.plugins:database-migration:4.1.0'                                     // from 3.0.3
-        // https://github.com/bertramdev/asset-pipeline
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.6'                             // from 3.2.4
-        // https://github.com/n0mer/gradle-git-properties
         classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'   // 2.4.0 available
 
         // -- dependency resolving issue
@@ -66,7 +63,6 @@ configurations {
 configurations {
     all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-            // https://github.com/qos-ch/logback
             if (details.requested.name in ['logback-classic', 'logback-core']) {
                 // override dependency from org.springframework.boot:spring-boot-starter-logging
                 details.useVersion '1.2.8' // downgrade from 1.2.10
@@ -118,52 +114,33 @@ dependencies {
 
     // --------------------------------------------------
 
-    // https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client
     implementation 'org.elasticsearch:elasticsearch:7.4.2'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.2'
 
-    // https://grails-plugins.github.io/grails-spring-security-core/
-    implementation 'org.grails.plugins:spring-security-core:4.0.4'             // from 3.2.3
-    // https://github.com/bobbywarner/grails-http-builder-helper
-    implementation 'org.grails.plugins:http-builder-helper:1.1.0'              // TODO - remove
-    // https://github.com/symentis/grails-audit-logging-plugin/
-    implementation 'org.grails.plugins:audit-logging:4.0.3'                    // from 3.0.3
-    // https://github.com/grails/grails-database-migration
-    implementation 'org.grails.plugins:database-migration:4.1.0'               // from 3.0.3
-    // https://github.com/uberall/grails-executor
-    implementation 'org.grails.plugins:grails-executor:0.4'                    // DEPRECATED
-    // https://github.com/grails3-plugins/mail
-    implementation 'org.grails.plugins:mail:3.0.0'                             // from 2.0.0
-    // https://github.com/grails-plugins/grails-quartz
+    implementation 'org.grails.plugins:spring-security-core:5.0.0'          // from 3.2.3
+    implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // TODO - remove
+    implementation 'org.grails.plugins:audit-logging:4.0.3'                 // from 3.0.3
+    implementation 'org.grails.plugins:database-migration:4.1.0'            // from 3.0.3
+    implementation 'org.grails.plugins:grails-executor:0.4'                 // DEPRECATED
+    implementation 'org.grails.plugins:mail:3.0.0'                          // from 2.0.0
     implementation 'org.grails.plugins:quartz:2.0.13'
-    // https://github.com/zyro23/grails-spring-websocket
     implementation 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'
-    // https://github.com/rlovtangen/wkhtmltopdf
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
-    // https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache
-    implementation 'org.hibernate:hibernate-ehcache:5.6.9.Final'               // from 5.1.16.Final
-    // https://mvnrepository.com/artifact/net.sf.ehcache/ehcache
-    implementation 'net.sf.ehcache:ehcache:2.10.9.2'                           // from 2.10.6
-//    implementation 'org.hibernate:hibernate-jcache:5.4.33.Final'             // instead of hibernate-ehcache:5.1.16.Final
-//    implementation 'org.ehcache:ehcache:3.9.9'                               // instead of net.sf.ehcache:ehcache:2.10.9.2
+    implementation 'org.hibernate:hibernate-ehcache:5.6.9.Final'            // from 5.1.16.Final
+    implementation 'net.sf.ehcache:ehcache:2.10.9.2'                        // from 2.10.6
+//    implementation 'org.hibernate:hibernate-jcache:5.4.33.Final'          // instead of hibernate-ehcache:5.1.16.Final
+//    implementation 'org.ehcache:ehcache:3.9.9'                            // instead of net.sf.ehcache:ehcache:2.10.9.2
 
-    // https://commons.apache.org/proper/commons-io/
-    implementation 'commons-io:commons-io:2.11.0'                      // from 2.6
-    // https://github.com/albfernandez/juniversalchardet
-    implementation 'com.github.albfernandez:juniversalchardet:2.4.0'   // from 2.3.0
-    // http://opencsv.sourceforge.net/
-    implementation 'com.opencsv:opencsv:4.6'                           // from 3.7 : 5.x available
-    // https://commons.apache.org/proper/commons-lang/
-    implementation 'org.apache.commons:commons-lang3:3.12.0'           // from 3.9
-    // https://poi.apache.org/
-    implementation 'org.apache.poi:poi-ooxml:3.17'                     // from 3.9 : 5.x available
-    // http://gpars.org/webapp/guide/
+    implementation 'commons-io:commons-io:2.11.0'                           // from 2.6
+    implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // from 2.3.0
+    implementation 'com.opencsv:opencsv:4.6'                                // from 3.7 : 5.x available
+    implementation 'org.apache.commons:commons-lang3:3.12.0'                // from 3.9
+    implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'
-    // https://github.com/liquibase/liquibase
-    implementation 'org.liquibase:liquibase-core:4.8.0'                // from 3.5.5 : + org.grails.plugins:database-migration
+    implementation 'org.liquibase:liquibase-core:4.8.0'                     // from 3.5.5 : + org.grails.plugins:database-migration
 
-    runtimeOnly 'org.postgresql:postgresql:42.3.3'                     // from 42.3.0
+    runtimeOnly 'org.postgresql:postgresql:42.3.3'                          // from 42.3.0
 
     // -- dependency resolving issue
 
