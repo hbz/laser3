@@ -285,7 +285,12 @@
                             <g:set var="subParticipant"
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <div class="ui circular label">
+                            <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                            </g:if>
+                            <g:else>
                                 ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                            </g:else>
                             </div>
 
                         </td>

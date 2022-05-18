@@ -7,6 +7,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -20,12 +21,14 @@ import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.sql.Connection
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -46,6 +49,8 @@ class SurveyService {
     GenericOIDService genericOIDService
     SubscriptionService subscriptionService
     FilterService filterService
+
+    LinksGenerationService linksGenerationService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -1738,7 +1743,7 @@ class SurveyService {
         Map<String, Object> result = [:]
 
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-        if(subscribedPlatforms) {
+        if (subscribedPlatforms) {
             List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(org, subscribedPlatforms)
             customerIdentifiers.size() > 0
         }else {
@@ -1799,4 +1804,107 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    void transferPerpetualAccessTitlesOfOldSubs(List<IssueEntitlement> entitlementsToTake, Subscription participantSub) {
+        
+        entitlementsToTake.each { IssueEntitlement ieToTake ->
+            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
+                def list = subscriptionService.getIssueEntitlements(participantSub).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
+                if (list.size() > 0) {
+                    // mich gibts schon! Fehlermeldung ausgeben!
+                } else {
+                    def properties = ieToTake.properties
+                    properties.globalUID = null
+                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                    InvokerHelper.setProperties(newIssueEntitlement, properties)
+                    newIssueEntitlement.coverages = null
+                    newIssueEntitlement.priceItems = null
+                    newIssueEntitlement.ieGroups = null
+                    newIssueEntitlement.subscription = participantSub
+
+                    if (newIssueEntitlement.save()) {
+                        ieToTake.properties.coverages.each {IssueEntitlementCoverage coverage ->
+                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage(issueEntitlement: newIssueEntitlement)
+                            newIssueEntitlementCoverage.startDate = coverage.startDate
+                            newIssueEntitlementCoverage.startVolume = coverage.startVolume
+                            newIssueEntitlementCoverage.startIssue = coverage.startIssue
+                            newIssueEntitlementCoverage.endDate = coverage.endDate
+                            newIssueEntitlementCoverage.endVolume = coverage.endVolume
+                            newIssueEntitlementCoverage.endIssue = coverage.endIssue
+                            newIssueEntitlementCoverage.coverageDepth = coverage.coverageDepth
+                            newIssueEntitlementCoverage.coverageNote = coverage.coverageNote
+                            newIssueEntitlementCoverage.embargo = coverage.embargo
+                            newIssueEntitlementCoverage.save()
+                        }
+
+                        ieToTake.properties.priceItems.each { PriceItem priceItem ->
+                            PriceItem newPriceItem = new PriceItem(issueEntitlement: newIssueEntitlement)
+                            newPriceItem.startDate = priceItem.startDate
+                            newPriceItem.endDate = priceItem.endDate
+                            newPriceItem.listPrice = priceItem.listPrice
+                            newPriceItem.listCurrency = priceItem.listCurrency
+                            newPriceItem.localPrice = priceItem.localPrice
+                            newPriceItem.localCurrency = priceItem.localCurrency
+                            newPriceItem.setGlobalUID()
+                            newPriceItem.save()
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    List<IssueEntitlement> getPerpetualAccessIesBySub(Subscription subscription) {
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+        List<IssueEntitlement> issueEntitlements = []
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    "where ie2.ie_subscription_fk = any(:subs) " +
+                    "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
+                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
+        }
+        return issueEntitlements
+    }
+
+    Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
+        Integer count = 0
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+
+            def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            count = titles.size()
+        }
+        return count
+    }
+
+}

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4259    18.05.2022  rc-2.3  2.3         Moe     Feature     Übernahme von Dauerhaften Titel von Vorgänger Lizenzen in Titelumfrage
+
 4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
 
 4244    16.05.2022  rc-2.3  2.3         Moe     Feature     we:kb und ygor sollten sich in neuem Tab öffnen

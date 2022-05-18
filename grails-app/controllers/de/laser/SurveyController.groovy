@@ -19,6 +19,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -1941,6 +1942,16 @@ class SurveyController {
             }
 
             flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()])
+        }
+
+        if(params.transferPerpetualAccessTitlesOfOldSubs){
+               List<IssueEntitlement> issueEntitlements = surveyService.getPerpetualAccessIesBySub(participantSub)
+
+                Sql sql = GlobalService.obtainSqlConnection()
+
+                if(issueEntitlements.size() > 0){
+                    surveyService.transferPerpetualAccessTitlesOfOldSubs(issueEntitlements, participantSub)
+                }
         }
 
         if(params.process == "reject" && params.list('selectedIEs')) {
