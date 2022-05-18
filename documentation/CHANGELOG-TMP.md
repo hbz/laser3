@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4250    18.05.2022  rc-2.3  2.3         Moe     Bug         Automatische Lizenzverlängerung: Status der Vorgängerlizenz bleibt auf aktiv
+
 4259    18.05.2022  rc-2.3  2.3         Moe     Feature     Übernahme von Dauerhaften Titel von Vorgänger Lizenzen in Titelumfrage
 
 4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
