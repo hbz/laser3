@@ -1331,7 +1331,7 @@ class SubscriptionControllerService {
                     params.hasPerpetualAccessBySubs = subscriptions
             }
 
-            List<IssueEntitlement> sourceIEs = []
+            List<Long> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1343,11 +1343,11 @@ class SubscriptionControllerService {
             if(params.tab == 'currentIEs') {
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
-                List<IssueEntitlement> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + previousIes
 
                 query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
-                List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                List<Long> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
 
             }
