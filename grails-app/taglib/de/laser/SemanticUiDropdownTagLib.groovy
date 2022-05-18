@@ -95,7 +95,7 @@ class SemanticUiDropdownTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         def tooltip = attrs.tooltip ?: "Die Funktion \'"+message+"\' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item "><div class="disabled la-popup-tooltip la-delay" data-content="'+tooltip+'">'+message+'</div></a>'
+        out << '<a href="#" class="item disabled"><div class= la-popup-tooltip la-delay" data-content="'+tooltip+'">'+message+'</div></a>'
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->

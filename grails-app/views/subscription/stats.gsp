@@ -76,7 +76,7 @@
                                     <g:set var="checkParams" value="${[max: 1, plat: subscribedPlatforms, refSubs: [row.memberSubId, subscription.id]]}"/>
                                     <g:if test="${Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams) ||
                                             Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams)}">
-                                        <span data-tooltip="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
                                     </g:if>
                                 </g:link>
                             </td>
