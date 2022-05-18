@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 
 class LaserTagLib {
 
@@ -37,7 +37,7 @@ class LaserTagLib {
     // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />
 
     def select = { attrs, body ->
-        attrs.optionValue = attrs.optionValue + "_" + LocaleHelper.getCurrentLang()
+        attrs.optionValue = attrs.optionValue + "_" + LocaleUtils.getCurrentLang()
         out << g.select(attrs)
     }
 

@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_propertyGroupModal -->
-<%@ page import="de.laser.helper.LocaleHelper; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService; org.springframework.context.i18n.LocaleContextHolder"%>
+<%@ page import="de.laser.helper.LocaleUtils; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService; org.springframework.context.i18n.LocaleContextHolder"%>
 <laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
@@ -62,7 +62,7 @@
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
-                                <g:each in="${PropertyDefinition.findAllByTenantIsNullAndDescr(pdDescr, [sort: 'name_' + LocaleHelper.getCurrentLang()])}" var="pd">
+                                <g:each in="${PropertyDefinition.findAllByTenantIsNullAndDescr(pdDescr, [sort: 'name_' + LocaleUtils.getCurrentLang()])}" var="pd">
 
                                 %{-- <%
                                     List<PropertyDefinition> matches = PropertyDefinition.executeQuery(

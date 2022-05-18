@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.DateUtils; de.laser.survey.SurveyConfig; de.laser.helper.LocaleHelper; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.LocaleUtils; de.laser.helper.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 
 <%
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     SimpleDateFormat sdfNoTime = DateUtils.getLocalizedSDF_noTime()
-    String languageSuffix = LocaleHelper.getCurrentLang()
+    String languageSuffix = LocaleUtils.getCurrentLang()
     String period
 %>
 

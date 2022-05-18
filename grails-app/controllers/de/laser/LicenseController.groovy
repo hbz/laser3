@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
@@ -116,7 +116,7 @@ class LicenseController {
             def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
             result << preCon
 
-            String i10value = LocaleHelper.getLocalizedAttributeName('value')
+            String i10value = LocaleUtils.getLocalizedAttributeName('value')
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = OrgRole.executeQuery(
                     "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
@@ -150,7 +150,7 @@ class LicenseController {
                 pu.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
-                    String localizedName = LocaleHelper.getLocalizedAttributeName('name')
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
                     String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"
                     Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics,context:result.institution] )
                     result.memberProperties = memberProperties

@@ -15,7 +15,7 @@ import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -788,7 +788,7 @@ class AjaxJsonController {
         else if(params.cat)
             rdc = RefdataCategory.getByDesc(params.cat)
         if (rdc) {
-            String locale = LocaleHelper.getCurrentLang()
+            String locale = LocaleUtils.getCurrentLang()
             String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
 
             List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])

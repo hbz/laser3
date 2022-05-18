@@ -8,7 +8,7 @@ import de.laser.Subscription
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedType
 import groovy.util.logging.Slf4j
@@ -390,7 +390,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         List<PropertyDefinition> matches = []
 
-        switch (LocaleHelper.getCurrentLang()) {
+        switch (LocaleUtils.getCurrentLang()) {
             case 'en':
                 String query = "select pd from PropertyDefinition pd where pd.descr = :descr and lower(pd.name_en) like :name"
                 matches = PropertyDefinition.executeQuery( query, [descr: params.desc, name: "%${params.q.toLowerCase()}%"])
@@ -525,7 +525,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static String getLocalizedValue(String key){
-        String locale = LocaleHelper.getCurrentLang()
+        String locale = LocaleUtils.getCurrentLang()
 
         if (PropertyDefinition.validTypes.containsKey(key)) {
             return (PropertyDefinition.validTypes.get(key)."${locale}") ?: PropertyDefinition.validTypes.get(key)

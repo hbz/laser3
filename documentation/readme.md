@@ -13,7 +13,7 @@
 
 See [upgrade.md](./upgrade.md) for detailed information.
 
-### Setup
+### Setup with SDKMAN
 
     sdk i grails 5.1.7 
     sdk i groovy 3.0.7

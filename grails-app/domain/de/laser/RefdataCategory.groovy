@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractI10n
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import groovy.util.logging.Slf4j
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -90,7 +90,7 @@ class RefdataCategory extends AbstractI10n {
         else {
             String q = "%${params.q.trim().toLowerCase()}%"
 
-            switch (LocaleHelper.getCurrentLang()) {
+            switch (LocaleUtils.getCurrentLang()) {
                 case 'en':
                     matches = RefdataCategory.executeQuery("select rc from RefdataCategory rc where lower(rc.desc_en) like :q", [q: q])
                     break
@@ -124,7 +124,7 @@ class RefdataCategory extends AbstractI10n {
         if (! category_name) {
             return []
         }
-        String i10nAttr = LocaleHelper.getLocalizedAttributeName('value')
+        String i10nAttr = LocaleUtils.getLocalizedAttributeName('value')
         String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.${i10nAttr}"
 
         RefdataValue.executeQuery( query, [category: category_name.toLowerCase()] )
@@ -139,7 +139,7 @@ class RefdataCategory extends AbstractI10n {
         if (! category_names) {
             return []
         }
-        String i10nAttr = LocaleHelper.getLocalizedAttributeName('value')
+        String i10nAttr = LocaleUtils.getLocalizedAttributeName('value')
         String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) in (:categories) order by rdv.${i10nAttr}"
 
         RefdataValue.executeQuery( query, [categories: category_names.collect{it.toLowerCase()}] )

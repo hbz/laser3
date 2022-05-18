@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.LocaleHelper; de.laser.RefdataCategory; de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.helper.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection />
 <semui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
@@ -144,7 +144,7 @@
         </div>
     </g:form>
 
-    <g:set var="languageSuffix" value="${LocaleHelper.getCurrentLang()}"/>
+    <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.app.updateDropdown = function() {

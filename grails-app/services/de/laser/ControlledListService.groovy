@@ -6,7 +6,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
 import de.laser.helper.DateUtils
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
@@ -714,7 +714,7 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_" + LocaleHelper.getCurrentLang(), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
@@ -729,7 +729,7 @@ class ControlledListService {
         Set<RefdataValue> ddcs = []
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_" + LocaleHelper.getCurrentLang(), [pkg: subscription.packages.pkg]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg]))
         }
         ddcs
     }
@@ -745,7 +745,7 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<RefdataValue> languages = []
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_" + LocaleHelper.getCurrentLang(), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: pkg, status: tippStatus]))
 
         languages
     }
@@ -760,7 +760,7 @@ class ControlledListService {
         Set<RefdataValue> languages = []
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_" + LocaleHelper.getCurrentLang(), [pkg: subscription.packages.pkg]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg]))
         }
         languages
     }

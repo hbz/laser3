@@ -283,7 +283,7 @@ class SubscriptionControllerService {
                 pu.setBenchmark('non-inherited member properties')
                 List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                 if(childSubs) {
-                    String localizedName = LocaleHelper.getLocalizedAttributeName('name')
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
                     String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
                     Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
 

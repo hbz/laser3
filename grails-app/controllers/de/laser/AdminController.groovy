@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.helper.AppUtils
 import de.laser.helper.DatabaseUtils
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
@@ -1034,7 +1034,7 @@ SELECT * FROM (
                 identifierNamespaceInstance: idnsInstance,
                 globalNamespaceStats: globalNamespaceStats,
                 detailsStats: detailsStats,
-                currentLang: LocaleHelper.getCurrentLang()
+                currentLang: LocaleUtils.getCurrentLang()
         ]
     }
 
@@ -1305,7 +1305,7 @@ SELECT * FROM (
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleHelper.getCurrentLang()),
+                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
                 attrMap     : attrMap,
                 usedRdvList : usedRdvList,
                 integrityCheckResult : integrityCheckResult

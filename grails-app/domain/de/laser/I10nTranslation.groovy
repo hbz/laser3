@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -162,7 +162,7 @@ class I10nTranslation {
     // -- helper --
 
     static String getRefdataValueColumn(Locale locale) {
-        switch(LocaleHelper.decodeLocale(locale.toString())) {
+        switch(LocaleUtils.decodeLocale(locale.toString())) {
             case 'de': 'rdv_value_de'
                 break
             case 'fr': 'rdv_value_fr'

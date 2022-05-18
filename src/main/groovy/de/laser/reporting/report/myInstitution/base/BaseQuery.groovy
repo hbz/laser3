@@ -4,7 +4,7 @@ import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
@@ -292,7 +292,7 @@ class BaseQuery {
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
 
-        String lang = LocaleHelper.getCurrentLang()
+        String lang = LocaleUtils.getCurrentLang()
 
         result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name_" + lang,

@@ -48,7 +48,7 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 ### Localization
 
-Localization dependent logic should be managed by *de.laser.helper.LocaleHelper* to ensure consistent behavior.
+Localization dependent logic should be managed by *de.laser.helper.LocaleUtils* to ensure consistent behavior.
 
 ### Logging
 

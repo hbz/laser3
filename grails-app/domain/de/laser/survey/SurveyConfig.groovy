@@ -5,7 +5,7 @@ import de.laser.DocContext
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.helper.DateUtils
 import de.laser.storage.RDStore
@@ -164,7 +164,7 @@ class SurveyConfig {
      * @return the translation for the given survey type
      */
     static getLocalizedValue(key) {
-        String locale = LocaleHelper.getCurrentLang()
+        String locale = LocaleUtils.getCurrentLang()
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {

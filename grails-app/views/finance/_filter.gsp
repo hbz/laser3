@@ -1,9 +1,9 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.helper.LocaleHelper; de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtils; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.LocaleUtils; de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.DateUtils; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
-    String locale = LocaleHelper.getCurrentLang()
+    String locale = LocaleUtils.getCurrentLang()
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
 %>
 

@@ -1,7 +1,7 @@
 package de.laser.base
 
 import de.laser.I10nTranslation
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
@@ -40,7 +40,7 @@ abstract class AbstractI10n {
      */
     String getI10n(String property, String locale) {
         String result
-        locale = LocaleHelper.decodeLocale(locale)
+        locale = LocaleUtils.decodeLocale(locale)
 
         if (I10nTranslation.supportedLocales.contains(locale)) {
             result = this."${property}_${locale}"

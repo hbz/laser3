@@ -199,6 +199,7 @@ war {
     enabled = true
     archiveBaseName = 'laser3'          // ?
     archiveFileName = 'laser3.war'
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 grails {
     pathingJar = true // windows - command line limitation

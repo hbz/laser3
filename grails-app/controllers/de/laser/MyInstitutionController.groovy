@@ -3477,7 +3477,7 @@ join sub.orgRelations or_sub where
         }*/
         //result.validSubChilds = validSubChildren
 
-        String localizedName = LocaleHelper.getLocalizedAttributeName('name')
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
@@ -3691,7 +3691,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        result.languageSuffix = LocaleHelper.getCurrentLang()
+        result.languageSuffix = LocaleUtils.getCurrentLang()
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
@@ -3780,7 +3780,7 @@ join sub.orgRelations or_sub where
                     }
                 //}
 
-        result.languageSuffix = LocaleHelper.getCurrentLang()
+        result.languageSuffix = LocaleUtils.getCurrentLang()
 
         Map<String,Set<PropertyDefinition>> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->

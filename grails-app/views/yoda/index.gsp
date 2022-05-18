@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.LocaleHelper; java.lang.management.ManagementFactory" %>
+<%@ page import="java.lang.management.ManagementFactory" %>
 <!doctype html>
 <html>
 <head>

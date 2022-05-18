@@ -1,7 +1,7 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.helper.LocaleHelper; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.helper.LocaleUtils; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 
-<g:set var="languageSuffix" value="${LocaleHelper.getCurrentLang()}"/>
+<g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
 <table class="ui table sortable la-js-responsive-table la-table">
     <colgroup>

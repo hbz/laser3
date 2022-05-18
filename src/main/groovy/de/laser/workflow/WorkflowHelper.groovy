@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.workflow
 
 import de.laser.RefdataValue
 import de.laser.storage.RDStore

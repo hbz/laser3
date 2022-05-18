@@ -3,7 +3,7 @@ package de.laser.properties
 import de.laser.GenericOIDService
 import de.laser.Org
 import de.laser.CacheService
-import de.laser.helper.LocaleHelper
+import de.laser.helper.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.cache.EhcacheWrapper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -154,7 +154,7 @@ class PropertyDefinitionGroup {
         }
 
         cache.get('propDefs').each { it ->
-            switch (LocaleHelper.getCurrentLang()) {
+            switch (LocaleUtils.getCurrentLang()) {
                 case 'en':
                     if (params.q == '*' || it.en?.toLowerCase()?.contains(params.q?.toLowerCase())) {
                         result.add([id:"${it.id}", text:"${it.en}"])

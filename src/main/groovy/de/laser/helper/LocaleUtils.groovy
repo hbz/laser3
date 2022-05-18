@@ -2,7 +2,7 @@ package de.laser.helper
 
 import org.springframework.context.i18n.LocaleContextHolder
 
-class LocaleHelper {
+class LocaleUtils {
 
     static String getCurrentLang() {
         decodeLocale(LocaleContextHolder.getLocale())
