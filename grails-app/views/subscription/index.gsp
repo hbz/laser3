@@ -441,8 +441,8 @@
                                                 <div class="right aligned wide column">
                                                     <g:link action="editEntitlementGroupItem"
                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                            class="ui icon button trigger-modal"
-                                                            data-tooltip="${message(code: 'subscription.details.ieGroups.edit')}">
+                                                            class="ui icon button trigger-modal la-popup-tooltip la-delay"
+                                                            data-content="${message(code: 'subscription.details.ieGroups.edit')}">
                                                         <i class="object group icon"></i>
                                                     </g:link>
                                                 </div>
