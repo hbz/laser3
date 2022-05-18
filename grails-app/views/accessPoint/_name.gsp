@@ -8,7 +8,7 @@
 
         <g:if test="${accessMethod == 'ezproxy'}">
             <span class="la-long-tooltip la-popup-tooltip la-delay"
-                  data-tooltip="${message(code: "accessPoint.ezproxy.help")}">
+                  data-content="${message(code: "accessPoint.ezproxy.help")}">
                 <i class="question circle icon la-popup"></i></span>
         </g:if>
 
@@ -22,7 +22,7 @@
                         <input type="radio" name="frequency" ${(i) == 0 ? 'checked=checked' : ''}>
                         <label>${message(code: "${nameOption.key}")}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                  data-tooltip="${message(code: "${nameOption.key}.help")}">
+                                  data-content="${message(code: "${nameOption.key}.help")}">
                                 <i class="question circle icon la-popup"></i></span>
                         </label>
                     </div>
