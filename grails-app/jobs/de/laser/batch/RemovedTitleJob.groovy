@@ -10,9 +10,9 @@ class RemovedTitleJob extends AbstractJob {
     def packageService
 
     static triggers = {
-       cron name:'StatusUpdateTrigger', cronExpression: "0 0 21 * * ?" //Fire at 03:00 every day
-//        cron name:'StatusUpdateTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
-//        cron name:'StatusUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
+       cron name:'RemoveTitleTrigger', cronExpression: "0 0 21 * * ?" //Fire at 21:00 every day
+//        cron name:'RemoveTitleTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
+//        cron name:'RemoveTitleTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
     }
 
     boolean isAvailable() {
@@ -33,9 +33,8 @@ class RemovedTitleJob extends AbstractJob {
         try {
             log.info("Execute::RemoveTitleJob - Start")
 
-            Set<PendingChange> titlesToRemove = PendingChange.executeQuery("select pc from PendingChange pc where pc.msgToken = :titleRemoved", [titleRemoved: PendingChangeConfiguration.TITLE_REMOVED])
-            if (!packageService.clearRemovedTitles(titlesToRemove) ) {
-                log.warn( 'Failed. Maybe ignored due blocked statusUpdateService')
+            if (!packageService.clearRemovedTitles() ) {
+                log.warn( 'Failed. Maybe ignored due blocked removedTitleJob')
             }
 
             log.info("Execute::RemoveTitleJob - Finished")

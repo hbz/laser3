@@ -115,6 +115,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Thread.currentThread().setName("GlobalDataSync_Json")
                 this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 Date oldDate = source.haveUpTo
+                //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
                 SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
                 String componentType
@@ -171,9 +172,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             log.info("end notifying subscriptions")
                             log.info("clearing removed titles")
-                            if(titlesToRemove.size() > 0) {
-                                packageService.clearRemovedTitles(titlesToRemove)
-                            }
+                            packageService.clearRemovedTitles()
                             log.info("end clearing titles")
                         }
                         else {
@@ -690,12 +689,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //loop through all packages
             packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
                 Set<PendingChange> packagePendingChanges = []
-                if(diffsOfPackage.find { Map<String,Object> diff -> diff.event in [PendingChangeConfiguration.NEW_TITLE,PendingChangeConfiguration.TITLE_DELETED] }) {
-                    int newCount = TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg.gokbId = :gokbId',[gokbId:packageUUID])[0]
-                    String newValue = newCount.toString()
-                    String oldValue = initialPackagesCounter.get(packageUUID).toString()
-                    PendingChange.construct([msgToken:PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED,target:Package.findByGokbId(packageUUID),status:RDStore.PENDING_CHANGE_HISTORY,prop:"tippCount",newValue:newValue,oldValue:oldValue])
-                }
                 //println("diffsOfPackage:"+diffsOfPackage)
                 diffsOfPackage.each { Map<String,Object> diff ->
                     log.debug(diff.toMapString())
@@ -1260,7 +1253,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             throw new SyncException("we:kb server is down")
         }
         else {
-            throw new SyncException("Platform data called without data for UUID ${platformUUID}! PANIC!")
+            log.warn("Platform ${platformUUID} seems to be unexistent!")
+            //test if local record trace exists ...
+            Platform result = Platform.findByGokbId(platformUUID)
+            if(result) {
+                log.warn("Platform found, set cascading delete ...")
+                result.status = RDStore.PLATFORM_STATUS_DELETED
+                result.save()
+                result
+            }
+            else null
         }
     }
 
@@ -1305,7 +1307,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param tippB the updated title record (ex we:kb)
      * @return a map of structure
      * [
-     *     event: {"add", "update", "delete"},
+     *     event: {"add", "update", "delete", "remove"},
      *     target: title,
      *     diffs: result of {@link #getTippDiff(java.lang.Object, java.lang.Object)}
      * ]
@@ -1314,19 +1316,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
         RefdataValue status = tippStatus.get(tippB.status)
-        if ((status == RDStore.TIPP_STATUS_DELETED || tippA.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED) && tippA.status != status) {
-            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId}")
-            RefdataValue oldStatus = tippA.status
-            tippA.status = RDStore.TIPP_STATUS_DELETED
-            tippA.save()
-            [event: "delete", oldValue: oldStatus, target: tippA]
-        }
-        else if(status == RDStore.TIPP_STATUS_REMOVED && tippA.status != status) {
+        if(status == RDStore.TIPP_STATUS_REMOVED && tippA.status != status) {
             //the difference to event: delete is that the title is an error and should have never been appeared in LAS:eR!
             log.info("TIPP with UUID ${tippA.gokbId} has been marked as erroneous and removed")
             tippA.status = RDStore.TIPP_STATUS_REMOVED
             tippA.save()
             [event: "remove", target: tippA]
+        }
+        else if ((status == RDStore.TIPP_STATUS_DELETED || tippA.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED || tippA.platform.status == RDStore.PLATFORM_STATUS_DELETED) && tippA.status != status) {
+            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId} or package/platform itself are marked as deleted")
+            RefdataValue oldStatus = tippA.status
+            tippA.status = RDStore.TIPP_STATUS_DELETED
+            tippA.save()
+            [event: "delete", oldValue: oldStatus, target: tippA]
         }
         else if(!(tippA.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
@@ -1948,8 +1950,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else http = new HTTPBuilder(source.uri+'/find')
         Map<String,Object> result = [:]
         //setting default status
-        queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED]
-        log.debug("mem check: ${Runtime.getRuntime().freeMemory()} bytes")
+        if(queryParams.componentType == 'TitleInstancePackagePlatform' || queryParams.component_type == 'TitleInstancePackagePlatform') {
+            queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED,"Removed"]
+            //queryParams.status = ["Removed"] //debug only
+        }
+        //log.debug(queryParams.toMapString())
         http.request(Method.POST, ContentType.JSON) { req ->
             body = queryParams
             requestContentType = ContentType.URLENC

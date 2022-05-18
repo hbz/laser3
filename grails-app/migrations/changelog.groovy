@@ -184,4 +184,5 @@ databaseChangeLog = {
 	//include file: 'changelog-2022-05-11.groovy' //refdatas are in use
 	include file: 'changelog-2022-05-12.groovy'
 	include file: 'changelog-2022-05-13.groovy'
+	include file: 'changelog-2022-05-18.groovy'
 }
