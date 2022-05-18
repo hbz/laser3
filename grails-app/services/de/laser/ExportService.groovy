@@ -57,7 +57,7 @@ class ExportService {
 	ContextService contextService
 	MessageSource messageSource
 
-	SimpleDateFormat formatter = DateUtils.getFixedSDF_yymd()
+	SimpleDateFormat formatter = DateUtils.getFixedSDF_yyyyMMdd()
 	FilterService filterService
 
 	/**
@@ -588,15 +588,15 @@ class ExportService {
 				cell.setCellValue('Period covered by Report:')
 				headerRow = sheet.createRow(4)
 				cell = headerRow.createCell(0)
-				cell.setCellValue("${data.startDate.format('yyyy-MM-dd')} to ${data.endDate.format('yyyy-MM-dd')}")
+				cell.setCellValue("${DateUtils.getFixedSDF_yyyyMMdd().format(data.startDate)} to ${DateUtils.getFixedSDF_yyyyMMdd().format(data.endDate)}")
 				headerRow = sheet.createRow(5)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Date run:")
 				headerRow = sheet.createRow(6)
 				cell = headerRow.createCell(0)
-				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
+				cell.setCellValue(DateUtils.getFixedSDF_yyyyMMdd().format(data.dateRun))
 				columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
-				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getFixedSDF_yyyyMM().format(month) })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -819,7 +819,7 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
 				cell = headerRow.createCell(1)
-				cell.setCellValue("Begin_Date:${data.startDate.format('yyyy-MM-dd')}; End_Date=${data.endDate.format('yyyy-MM-dd')}")
+				cell.setCellValue("Begin_Date:${DateUtils.getFixedSDF_yyyyMMdd().format(data.startDate)}; End_Date=${DateUtils.getFixedSDF_yyyyMMdd().format(data.endDate)}")
 				headerRow = sheet.createRow(10)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Created")
@@ -932,7 +932,7 @@ class ExportService {
 					if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
 						titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
 					titleRow.put("Reporting Period Total", periodTotal)
-					titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
+					titleRow.put(DateUtils.getFixedSDF_yyyyMM().format(report.reportFrom), report.reportCount)
 
 					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
@@ -944,8 +944,8 @@ class ExportService {
 					}
 
 					if (showOtherData) {
-						titleRow.put("Year First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy'): ' ')
-						titleRow.put("Date First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy-MM-dd'): ' ')
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyy().format(report.title.dateFirstOnline): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyyMMdd().format(report.title.dateFirstOnline): ' ')
 					}
 				}
 				else if(report instanceof Counter5Report) {
@@ -1020,8 +1020,8 @@ class ExportService {
 					}
 
 					if (showOtherData) {
-						titleRow.put("Year First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy'): ' ')
-						titleRow.put("Date First Online", report.title.dateFirstOnline ? report.title.dateFirstOnline.format('yyyy-MM-dd'): ' ')
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyy().format( report.title.dateFirstOnline ): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyyMMdd().format( report.title.dateFirstOnline ): ' ')
 					}
 
 				}
@@ -2149,7 +2149,7 @@ class ExportService {
 		titleHeaders.addAll(coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		if(showStatsInMonthRings){
-			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getFixedSDF_yyyyMM().format(month) })
 		}
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]

@@ -1585,7 +1585,7 @@ class FilterService {
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getLocalizedSDF_noTime().parse(params.asAt)
-                    params.asAt = dateFilter.format('yyyy-MM-dd')
+                    params.asAt = DateUtils.getFixedSDF_yyyyMMdd().format(dateFilter)
                     where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
@@ -1755,12 +1755,12 @@ class FilterService {
             }
             if(configMap.dateFirstOnlineFrom != null && !configMap.dateFirstOnlineFrom.isEmpty()) {
                 Date dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
-                params.dateFirstOnlineFrom = dateFirstOnlineFrom.format('yyyy-MM-dd')
+                params.dateFirstOnlineFrom = DateUtils.getFixedSDF_yyyyMMdd().format(dateFirstOnlineFrom)
                 where += " and (tipp_date_first_online is not null AND tipp_date_first_online >= :dateFirstOnlineFrom)"
             }
             if(configMap.dateFirstOnlineTo != null && !configMap.dateFirstOnlineTo.isEmpty()) {
                 Date dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
-                params.dateFirstOnlineTo = dateFirstOnlineTo.format('yyyy-MM-dd')
+                params.dateFirstOnlineTo = DateUtils.getFixedSDF_yyyyMMdd().format(dateFirstOnlineTo)
                 where += " and (tipp.date_first_online is not null AND tipp_date_first_online <= :dateFirstOnlineTo)"
             }
             if(configMap.yearsFirstOnline != null && !configMap.yearsFirstOnline.isEmpty()) {

@@ -1893,7 +1893,7 @@ class AjaxController {
                         }
                         finally {
                             if (target_object."${params.name}") {
-                                result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
+                                result = DateUtils.getLocalizedSDF_noTime().format( target_object."${params.name}" )
                             }
                         }
                         break

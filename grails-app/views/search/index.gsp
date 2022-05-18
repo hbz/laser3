@@ -1,10 +1,11 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.helper.LocaleHelper; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.survey.SurveyConfig; de.laser.helper.LocaleHelper; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 
-<% SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
-String period
-String languageSuffix = LocaleHelper.getCurrentLang()
+<%
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    SimpleDateFormat sdfNoTime = DateUtils.getLocalizedSDF_noTime()
+    String languageSuffix = LocaleHelper.getCurrentLang()
+    String period
 %>
 
 <!doctype html>
@@ -484,8 +485,8 @@ String languageSuffix = LocaleHelper.getCurrentLang()
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdfNoTime.format( sdf.parse(hit.getSourceAsMap().startDate) ) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdfNoTime.format( sdf.parse(hit.getSourceAsMap().endDate) ) : ''
                                         period = period ? period : ''
                                     %>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
@@ -556,8 +557,8 @@ String languageSuffix = LocaleHelper.getCurrentLang()
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdfNoTime.format( sdf.parse(hit.getSourceAsMap().startDate) ) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdfNoTime.format( sdf.parse(hit.getSourceAsMap().endDate) ) : ''
                                         period = period ? period : ''
                                     %>
 
@@ -622,8 +623,8 @@ String languageSuffix = LocaleHelper.getCurrentLang()
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdfNoTime.format( sdf.parse(hit.getSourceAsMap().startDate) ) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdfNoTime.format( sdf.parse(hit.getSourceAsMap().endDate) ) : ''
                                         period = period ? period : ''
                                     %>
 
@@ -661,8 +662,8 @@ String languageSuffix = LocaleHelper.getCurrentLang()
                                 </td>
                                 <td>
                                     <%
-                                        period = hit.getSourceAsMap().startDate ? sdf.parse(hit.getSourceAsMap().startDate).format(message(code: 'default.date.format.notime')) : ''
-                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdf.parse(hit.getSourceAsMap().endDate).format(message(code: 'default.date.format.notime')) : ''
+                                        period = hit.getSourceAsMap().startDate ? sdfNoTime.format( sdf.parse(hit.getSourceAsMap().startDate) ) : ''
+                                        period = hit.getSourceAsMap().endDate ? period + ' - ' + sdfNoTime.format( sdf.parse(hit.getSourceAsMap().endDate) ) : ''
                                         period = period ? period : ''
                                     %>
 

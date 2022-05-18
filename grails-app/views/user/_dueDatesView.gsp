@@ -6,13 +6,8 @@
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
         <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
-        <%
-            def sdf = DateUtils.getLocalizedSDF_noTime()
-            def dateString = sdf.format(dashboard_last_update)
-        %>
-
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
-                <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${dateString}" >
+                <semui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}" >
                     <i class="exclamation alternate triangle icon"  id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
                 </semui:msg>
             </g:if>

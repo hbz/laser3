@@ -1,6 +1,5 @@
 package de.laser.helper
 
-import grails.config.Config
 import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.springframework.core.env.Environment

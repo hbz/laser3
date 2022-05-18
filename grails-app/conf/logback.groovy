@@ -1,13 +1,13 @@
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.spi.FilterReply
+import de.laser.helper.DateUtils
 import grails.util.BuildSettings
 import grails.util.Environment
 import org.springframework.boot.logging.logback.ColorConverter
 import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
 
 import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 
 conversionRule 'clr', ColorConverter
 conversionRule 'wex', WhitespaceThrowableProxyConverter
@@ -79,7 +79,7 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 String targetDir = "${BuildSettings.BASE_DIR}/logs"
-String date = "${(new SimpleDateFormat("yyyy-MM-dd")).format(new Date())}"
+String date = "${DateUtils.getFixedSDF_yyyyMMdd().format(new Date())}"
 
 if (Environment.isDevelopmentMode() && targetDir != null) {
 

@@ -31,12 +31,12 @@ class AccessMethodController  {
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
-            //params.validFrom =  sdf.parse(new Date().format( 'dd.MM.yyyy' ));
+            //params.validFrom = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         if (params.validTo) {
             params.validTo = sdf.parse(params.validTo)
         } else {
-            //params.validTo =sdf.parse(new Date().format( 'dd.MM.yyyy' ));
+            //params.validTo = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         PlatformAccessMethod accessMethod = new PlatformAccessMethod(params)
 
@@ -116,12 +116,12 @@ class AccessMethodController  {
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
-            //params.validFrom =  sdf.parse(new Date().format( 'dd.MM.yyyy' ));
+            //params.validFrom = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         if (params.validTo) {
             params.validTo = sdf.parse(params.validTo)
         } else {
-            //params.validTo =sdf.parse(new Date().format( 'dd.MM.yyyy' ));
+            //params.validTo = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
 
         if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {

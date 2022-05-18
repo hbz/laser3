@@ -59,6 +59,7 @@ class StatsSyncService {
     List errors = []
     Map<String,List> availableReportCache = [:]
 
+    SimpleDateFormat yyyyMMdd = DateUtils.getFixedSDF_yyyyMMdd()
 
     static int submitCount=0
     static int completedCount=0
@@ -311,12 +312,12 @@ class StatsSyncService {
                                                 currentYearEnd.add(Calendar.MONTH, 1)
                                             }
                                         }
-                                        log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
+                                        log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)}")
                                         //LaserStatsCursor.withTransaction {
                                         //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                         boolean more = true
                                         while (more) {
-                                            log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")}")
+                                            log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)}")
                                             Map<String, Object> result = performCounter4Request(sql, statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, c4asPlatform, keyPair, namespaces)
                                             if(result.error && result.error != true) {
                                                 notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
@@ -334,7 +335,7 @@ class StatsSyncService {
                                             else {*/
                                             startTime.add(Calendar.YEAR, 1)
                                             currentYearEnd.add(Calendar.YEAR, 1)
-                                            log.debug("${Thread.currentThread().getName()} is getting to ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")} for report ${reportID}")
+                                            log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)} for report ${reportID}")
                                             if (calendarConfig.now.before(startTime)) {
                                                 more = false
                                                 log.debug("${Thread.currentThread().getName()} has finished current data fetching for report ${reportID}. Processing missing periods for ${keyPair.customerName}")
@@ -453,7 +454,7 @@ class StatsSyncService {
                                                 }
                                                 startTime.add(Calendar.YEAR, 1)
                                                 currentYearEnd.add(Calendar.YEAR, 1)
-                                                log.debug("${Thread.currentThread().getName()} is getting to ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")} for report ${reportId}")
+                                                log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)} for report ${reportId}")
                                                 if(calendarConfig.now.before(startTime)) {
                                                     more = false
                                                     log.debug("${Thread.currentThread().getName()} has finished fetching running data for report ${reportId}. Processing missing periods for ${keyPair.customerName} ...")
@@ -562,9 +563,9 @@ class StatsSyncService {
                         sus.ReportDefinition(Name: reportID, Release: 4) {
                             sus.Filters {
                                 sus.UsageDateRange {
-                                    sus.Begin(startTime.format("yyyy-MM-dd"))
+                                    sus.Begin(yyyyMMdd.format(startTime))
                                     //if (currentYearEnd.before(calendarConfig.now))
-                                    sus.End(endTime.format("yyyy-MM-dd"))
+                                    sus.End(yyyyMMdd.format(endTime))
                                     /*else {
                                         sus.End(calendarConfig.now.format("yyyy-MM-dd"))
                                     }*/
@@ -1261,10 +1262,10 @@ class StatsSyncService {
             if (! isNoUsageAvailableException(xml)) {
                 List notProcessedMonths = getNotProcessedMonths(xml)
                 if (! notProcessedMonths.empty) {
-                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, csr.availFrom.format('yyyy-MM'))
+                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, DateUtils.getFixedSDF_yyyyMM().format( csr.availFrom ))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = DateUtils.getFixedSDF_yymd().parse(getDateForLastDayOfMonth(it['end']))
+                            csr.availTo = DateUtils.getFixedSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it['end']))
                             csr.save()
                         } else {
                             writeNewCsr(0, it['begin'],it['end'],options)
@@ -1323,7 +1324,7 @@ class StatsSyncService {
                         csr = writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = DateUtils.getFixedSDF_yymd().parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtils.getFixedSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
                         csr.save()
                     }
@@ -1642,7 +1643,7 @@ class StatsSyncService {
         cal.setTime(new Date())
         cal.add(Calendar.MONTH, -2)
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
-        return cal.format('yyyy-MM-dd')
+        return yyyyMMdd.format(cal)
     }
 
     /**

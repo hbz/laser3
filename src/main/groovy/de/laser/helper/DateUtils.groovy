@@ -50,13 +50,13 @@ class DateUtils {
         getLocalizedSDF_byToken(DATE_FORMAT_ONLYTIME)
     }
 
-    // -- fixed
+    // -- fixed: no localization
 
-    static SimpleDateFormat getFixedSDF_yymd(){
+    static SimpleDateFormat getFixedSDF_yyyyMMdd(){
         return new SimpleDateFormat('yyyy-MM-dd')
     }
 
-    static SimpleDateFormat getFixedSDF_dmyy(){
+    static SimpleDateFormat getFixedSDF_ddMMyyyy(){
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
@@ -64,18 +64,22 @@ class DateUtils {
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
-    static SimpleDateFormat getFixedSDF_yym(){
+    static SimpleDateFormat getFixedSDF_yyyyMM(){
         return new SimpleDateFormat('yyyy-MM')
     }
 
-    static SimpleDateFormat getFixedSDF_yy(){
+    static SimpleDateFormat getFixedSDF_yyyy(){
         return new SimpleDateFormat('yyyy')
+    }
+
+    static SimpleDateFormat getFixedSDF_YYYY(){
+        return new SimpleDateFormat('YYYY')
     }
 
     // --
 
     static int getYearAsInteger(Date date) {
-        date ? getFixedSDF_yy().format(date).toInteger() : null
+        date ? getFixedSDF_yyyy().format(date).toInteger() : null
     }
 
     // --
