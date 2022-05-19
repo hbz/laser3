@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
@@ -43,6 +42,7 @@ class ManagementService {
     MessageSource messageSource
     MyInstitutionControllerService myInstitutionControllerService
     SubscriptionControllerService subscriptionControllerService
+    PackageService packageService
     SubscriptionService subscriptionService
 
     /**
@@ -333,7 +333,7 @@ class ManagementService {
                 validSubChildPackages.each { SubscriptionPackage sp ->
                     if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                         if (params.processOption == 'allWithTitle') {
-                            if (sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, true)) {
+                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, true)) {
                                 Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
                                 result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.successful', args, locale)
                             } else {
@@ -341,7 +341,7 @@ class ManagementService {
                                 result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.fail', args, locale)
                             }
                         } else {
-                            if (sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, false)) {
+                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, false)) {
                                 Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
                                 result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.onlyPackage.successful', args, locale)
                             } else {
@@ -399,11 +399,7 @@ class ManagementService {
                                 if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
                                     SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
                                     if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                                        if (params.processOption == 'unlinkwithIE') {
-                                            pkg_to_link.unlinkFromSubscription(subscription, result.institution, true)
-                                        } else {
-                                            pkg_to_link.unlinkFromSubscription(subscription, result.institution, false)
-                                        }
+                                        packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
                                     } else {
                                         Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
                                         result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)

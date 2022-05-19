@@ -64,7 +64,7 @@
                 </span>
             </th>
             <g:if test="${'onlyMemberSubs' in tableConfig}">
-                <th rowspan="2" class="la-no-uppercase">${message(code:'default.actions.label')}</th>
+                <th rowspan="2">${message(code:'default.actions.label')}</th>
             </g:if>
         </tr>
         <g:if test="${'withCostItems' in tableConfig}">
@@ -238,12 +238,12 @@
                 <g:if test="${'onlyMemberSubs' in tableConfig}">
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
-                            <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="ui icon negative button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.unlink.label')}" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui minus icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="ui icon positive button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.link.label')}" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="ui plus icon"></i>
                             </g:link>
                         </g:else>

@@ -104,18 +104,18 @@
                                                 <g:message code="subscription.packages.setting.label"/>
                                             </th>
                                             <th class="control-label">
-                                                <span data-tooltip="${message(code:"subscription.packages.notification.label")}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
                                                     <i class="ui large icon bullhorn"></i>
                                                 </span>
                                             </th>
                                             <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
                                                 <th class="control-label la-border-left" >
-                                                    <span data-tooltip="${message(code:'subscription.packages.auditable')}">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                         <i class="ui large icon thumbtack"></i>
                                                     </span>
                                                 </th>
                                                 <th class="control-label">
-                                                    <span data-tooltip="${message(code:'subscription.packages.notification.auditable')}">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
                                                         <i class="ui large icon bullhorn"></i>
                                                     </span>
                                                 </th>
@@ -180,7 +180,7 @@
                                     </g:each>
                                     <tr>
                                         <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
+                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
                                         </th>
                                         <td>
                                             <g:if test="${editmode}">

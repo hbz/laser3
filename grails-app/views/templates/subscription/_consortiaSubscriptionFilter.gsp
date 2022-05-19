@@ -131,7 +131,7 @@
             </div>
         </div>
 
-        <div class="three fields">
+        <div class="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID ? 'three' : 'two'} fields">
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">

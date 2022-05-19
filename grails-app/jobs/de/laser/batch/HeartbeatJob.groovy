@@ -16,7 +16,7 @@ class HeartbeatJob extends AbstractJob {
     static triggers = {
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins: 0 0/10 * * * ?
-    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0/10 * * * * ?"
+    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "* 0/5 * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?

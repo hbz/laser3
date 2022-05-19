@@ -93,7 +93,7 @@ class PendingChange {
         oldValue column: 'pc_old_value', type: 'text'
         newValue column: 'pc_new_value', type: 'text'
         payload column: 'pc_payload', type: 'text'
-        msgToken column: 'pc_msg_token'
+        msgToken column: 'pc_msg_token', index: 'pending_change_msg_token_idx'
         msgParams column: 'pc_msg_doc', type: 'text'
         ts column: 'pc_ts', index: 'pending_change_ts_idx'
         owner column: 'pc_owner', index: 'pending_change_owner_idx'
@@ -235,9 +235,9 @@ class PendingChange {
                 pc.status = configMap.status
                 pc.ts = new Date()
                 pc.owner = configMap.owner
-                if (pc.save())
-                    pc
-                else throw new CreationException("Error on hooking up pending change: ${pc.errors}")
+                if (pc.hasErrors())
+                    throw new CreationException("Error on hooking up pending change: ${pc.errors.getAllErrors().toListString()}")
+                else pc.save()
             }
         } else throw new CreationException("Pending changes need a target! Check if configMap.target is correctly set!")
     }

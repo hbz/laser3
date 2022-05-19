@@ -242,7 +242,7 @@ class ApiEZB {
                 out.scope           = lp.type.descr
                 out.note            = lp.note
                 out.isPublic        = lp.isPublic ? RDStore.YN_YES.value : RDStore.YN_NO.value
-                out.value           = lp.refValue.value
+                out.value           = lp.refValue ? lp.refValue.value : null
                 out.type            = PropertyDefinition.validTypes[lp.type.type]['en']
                 out.refdataCategory = lp.type.refdataCategory
                 out.paragraph       = lp.paragraph

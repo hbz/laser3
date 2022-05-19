@@ -9,7 +9,7 @@
     </g:else>
 
     <g:each in="${systemMessages}" var="message" status="i">
-        <div style="padding-top:1em; text-align:center">
+        <div style="padding-top:0.5em;text-align:center">
             <% println message.getLocalizedContent() %>
         </div>
     </g:each>

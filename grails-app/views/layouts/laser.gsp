@@ -398,7 +398,7 @@
                                         </div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeDeletedTIPPs">${message(code:'menu.yoda.expungeDeletedTIPPs')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</semui:link>
                                         <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>--%>
                                     </div>
                                 </div>
@@ -654,12 +654,12 @@
                 %{-- system messages --}%
 
                 <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
-                    <div id="systemMessages" class="ui message warning">
+                    <div id="systemMessages" class="ui message large warning">
                         <laser:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
                     </div>
                 </g:if>
                 <g:else>
-                    <div id="systemMessages" class="ui message warning hidden"></div>
+                    <div id="systemMessages" class="ui message large warning hidden"></div>
                 </g:else>
 
                 %{-- content --}%

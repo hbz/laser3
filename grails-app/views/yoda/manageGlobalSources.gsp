@@ -61,7 +61,7 @@
                   </g:if>
                   <g:elseif test="${source.type == "JSON"}">
                       <%
-                          Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",GlobalSourceSyncService.PERMANENTLY_DELETED]
+                          Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",GlobalSourceSyncService.PERMANENTLY_DELETED,"Removed"]
                           String statusString = ""
                           requestedStatus.each { String status ->
                               statusString += "&status=${status}"

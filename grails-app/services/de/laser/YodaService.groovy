@@ -5,14 +5,12 @@ import de.laser.exceptions.SyncException
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
-import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
@@ -24,9 +22,7 @@ import groovyx.net.http.Method
 class YodaService {
 
     ContextService contextService
-    ChangeNotificationService changeNotificationService
     DeletionService deletionService
-    GlobalService globalService
     GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
     PackageService packageService
@@ -57,7 +53,7 @@ class YodaService {
         Map<String,List<Package>> result = [pkgDuplicates: pkgDuplicates]
         if(pkgDuplicates) {
             log.debug("located package duplicates")
-            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
+            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :removed',[pkg:pkgDuplicates,removed:RDStore.TIPP_STATUS_REMOVED])
             List<Package> pkgDupsWithoutTipps = []
             pkgDuplicates.each { pkg ->
                 if(!pkgDupsWithTipps.contains(pkg))
@@ -81,320 +77,11 @@ class YodaService {
     }
 
     /**
-     * Checks the titles marked as deleted and verifies its holding state and we:kb equivalency state. It needs
-     * refactoring because it uses the OAI endpoint to determine titles. The complex decision procedure to mark a record
-     * as purgeable is explained along the code
-     * @return a {@link Map} containing the concerned title records, grouped by their state
-     */
-    Map<String,Object> listDeletedTIPPs() {
-        globalService.cleanUpGorm()
-        //merge duplicate tipps
-//        List<String,Integer> duplicateTIPPRows = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId,count(tipp.gokbId) from TitleInstancePackagePlatform tipp group by tipp.gokbId having count(tipp.gokbId) > 1')
-        List duplicateTIPPRows = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId,count(tipp.gokbId) from TitleInstancePackagePlatform tipp group by tipp.gokbId having count(tipp.gokbId) > 1')
-        List<String> duplicateTIPPKeys = []
-        List<Long> excludes = []
-        List<Map<String,Object>> mergingTIPPs = []
-        duplicateTIPPRows.eachWithIndex { row, int ctr ->
-            println("Processing entry ${ctr}. TIPP UUID ${row[0]} occurs ${row[1]} times in DB. Merging!")
-            duplicateTIPPKeys << row[0]
-            TitleInstancePackagePlatform mergeTarget = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(row[0], RDStore.TIPP_STATUS_DELETED)
-            if(!mergeTarget) {
-                println("no equivalent found, taking first ...")
-                mergeTarget = TitleInstancePackagePlatform.findByGokbId(row[0])
-            }
-            excludes << mergeTarget.id
-            println("merge target with LAS:eR object ${mergeTarget} located")
-            List<Long> iesToMerge = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.tipp.gokbId = :gokbId and ie.tipp != :mergeTarget',[gokbId:row[0], mergeTarget:mergeTarget])
-            if(iesToMerge) {
-                println("found IEs to merge: ${iesToMerge}")
-                mergingTIPPs << [mergeTarget:mergeTarget.id,iesToMerge:iesToMerge]
-            }
-        }
-        Map<String,RefdataValue> refdatas = [:]
-        RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS).each { tippStatus ->
-            refdatas[tippStatus.value] = tippStatus
-        }
-        //get to deleted tipps
-        globalService.cleanUpGorm()
-        println("move to TIPPs marked as deleted")
-        //aim is to exclude resp. update those which has been erroneously marked as deleted (duplicate etc.)
-        List<TitleInstancePackagePlatform> deletedTIPPs = TitleInstancePackagePlatform.findAllByStatus(RDStore.TIPP_STATUS_DELETED,[sort:'pkg.name',order:'asc'])
-        deletedTIPPs.addAll(TitleInstancePackagePlatform.findAllByGokbIdIsNull())
-        println "deleted TIPPs located: ${deletedTIPPs.size()}"
-        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-        HTTPBuilder http = new HTTPBuilder(grs.uri)
-        Map<String, NodeChildren> oaiRecords = [:]
-        List<Map<TitleInstancePackagePlatform,Map<String,Object>>> deletedWithoutGOKbRecord = []
-        List<Map<String,Map<String,Object>>> deletedWithGOKbRecord = []
-        /*
-            processing list of deleted TIPPs, doing the following checks:
-            - is there a remote GOKb record? Load remote package for that
-         */
-        deletedTIPPs.each { delTIPP ->
-            println("now processing entry #${delTIPP.id} ${delTIPP.gokbId} of package ${delTIPP.pkg} with uuid ${delTIPP.pkg.gokbId}")
-            if(!duplicateTIPPKeys.contains(delTIPP.gokbId)) {
-                NodeChildren oaiRecord = oaiRecords.get(delTIPP.pkg.gokbId)
-                if(!oaiRecord) {
-                    /*
-                        case: there is a TIPP in LAS:eR with an invalid GOKb package UUID, thus no record.
-                        If we have IssueEntitlements depending on it: check subscription state
-                            if deleted: mark IE as deleted
-                            else check if there is an equivalent GOKb record -> load package, check if there is an equivalent TitleInstance-Package-Platform entry (so a TIPP entry!)
-                            if so: remap to new UUID
-                            else show subscriber
-                    */
-                    def packageRecord = http.get(path:'packages',query:[verb:'getRecord',metadataPrefix:'gokb',identifier:delTIPP.pkg.gokbId],contentType:'xml') { resp, xml ->
-                        GPathResult record = new XmlSlurper().parseText(xml.text)
-                        if(record.error.@code == 'idDoesNotExist')
-                            return "package ${delTIPP.pkg.gokbId} inexistent"
-                        else return record.'GetRecord'.record.metadata.gokb.package
-                    }
-                    //case one: GOKb package does not exist
-                    if(packageRecord instanceof GString) {
-                        println(packageRecord)
-                        List<Map<String,Object>> issueEntitlements = []
-                        //check eventually depending issue entitlements
-                        IssueEntitlement.findAllByTippAndStatusNotEqual(delTIPP,RDStore.TIPP_STATUS_DELETED).each { ie ->
-                            Map<String,Object> ieDetails = [ie:ie]
-                            if(ie.subscription.status == RDStore.TIPP_STATUS_DELETED) {
-                                println("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                                ieDetails.action = "deleteCascade"
-                            }
-                            else {
-                                println("associated subscription is not deleted, report ...")
-                                ieDetails.action = "report"
-                                Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) {
-                                    report.consortium = ie.subscription.getConsortia().shortname
-                                }
-                                else {
-                                    report.consortium = ""
-                                }
-                                ieDetails.report = report+[cause:"Paket ${delTIPP.pkg.gokbId} existiert nicht"]
-                            }
-                            issueEntitlements << ieDetails
-                        }
-                        Map<TitleInstancePackagePlatform,List<Map<String,Object>>> result = [:]
-                        result[delTIPP] = issueEntitlements
-                        deletedWithoutGOKbRecord << result
-                    }
-                    //case two: GOKb package does exist
-                    else if(packageRecord instanceof NodeChildren) {
-                        oaiRecords[delTIPP.pkg.gokbId] = packageRecord
-                        oaiRecord = packageRecord
-                    }
-                }
-                //case two continued: there is a GOKb record (preloaded by map or meanwhile fetched by OAI request)
-                //do NOT set to else if because the variable may be set in structure above
-                if(oaiRecord) {
-                    //find TIPP in remote record
-                    def gokbTIPP = oaiRecord.'**'.find { tipp ->
-                        tipp.@uuid == delTIPP.gokbId && tipp.status.text() != RDStore.TIPP_STATUS_DELETED.value
-                    }
-                    if(!gokbTIPP) {
-                        /*
-                        case: there is a TIPP in LAS:eR with an invalid GOKb UUID, thus no record.
-                        If we have IssueEntitlements depending on it: check subscription state
-                            if deleted: mark IE as deleted
-                            else check if there is an equivalent GOKb record -> load package, check if there is an equivalent TitleInstance-Package-Platform entry (so a TIPP entry!)
-                            if so: remap to new UUID
-                            else show subscriber
-                         */
-                        NodeChildren oaiTitleRecord = oaiRecords.get(delTIPP.title.gokbId)
-                        List<Map<String,Object>> issueEntitlements = []
-                        def equivalentTIPP
-                        boolean titleRecordExists
-                        boolean equivalentTIPPExists
-                        //load remote title record in order to determine equivalent TitleInstance-Package-Platform link
-                        if(!oaiTitleRecord) {
-                            def titleRecord = http.get(path:'titles',query:[verb:'getRecord',metadataPrefix:'gokb',identifier:delTIPP.title.gokbId],contentType:'xml') { resp, xml ->
-                                GPathResult record = new XmlSlurper().parseText(xml.text)
-                                if(record.error.@code == 'idDoesNotExist')
-                                    return "title ${delTIPP.title.gokbId} inexistent, name is ${delTIPP.title.title}"
-                                else if(record.'GetRecord'.record.header.status == 'deleted')
-                                    return "title ${delTIPP.title.gokbId} is marked as deleted, name is ${delTIPP.title.title}"
-                                else
-                                    return record.'GetRecord'.record.metadata.gokb.title
-                            }
-                            //no title record
-                            if(titleRecord instanceof GString) {
-                                println(titleRecord)
-                                titleRecordExists = false
-                            }
-                            //title record exists
-                            else if (titleRecord instanceof NodeChildren) {
-                                println("title instance ${delTIPP.title.gokbId} found, reconcile UUID by retrieving package and platform")
-                                titleRecordExists = true
-                                oaiTitleRecord = (NodeChildren) titleRecord
-                                oaiRecords.put(delTIPP.title.gokbId,oaiTitleRecord)
-                            }
-                        }
-                        //title record exists (by OAI PMH request or by preload in map)
-                        if(oaiTitleRecord) {
-                            //match package and platform
-                            equivalentTIPP = oaiTitleRecord.TIPPs.TIPP.find { node ->
-                                node.package.'@uuid' == delTIPP.pkg.gokbId && node.platform.'@uuid' == delTIPP.platform.gokbId
-                            }
-                            if(equivalentTIPP) {
-                                equivalentTIPPExists = true
-                                println("TIPP found: should remapped to UUID ${equivalentTIPP.@uuid}")
-                            }
-                            else {
-                                equivalentTIPPExists = false
-                                println("no equivalent TIPP found")
-                            }
-                        }
-                        IssueEntitlement.findAllByTippAndStatusNotEqual(delTIPP,RDStore.TIPP_STATUS_DELETED).each { ie ->
-                            Map<String,Object> ieDetails = [ie:ie]
-                            if(ie.subscription.status == RDStore.TIPP_STATUS_DELETED) {
-                                println("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                                ieDetails.action = "deleteCascade"
-                            }
-                            else {
-                                println("${ie.subscription} is current, check if action needs to be taken ...")
-                                Map<String,Object> report = [subscriber:ie.subscription.getSubscriber().shortname,subscription:ie.subscription.name,title:delTIPP.title.title,package:delTIPP.pkg.name]
-                                if(ie.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) {
-                                    report.consortium = ie.subscription.getConsortia().shortname
-                                }
-                                else {
-                                    report.consortium = ""
-                                }
-                                //does the title exist? If not, issue entitlement is void!
-                                if(!titleRecordExists){
-                                    ieDetails.action = "report"
-                                    ieDetails.report = report+[cause:"Titel ${delTIPP.title.gokbId} existiert nicht"]
-                                    println(ieDetails.report)
-                                }
-                                else if(titleRecordExists) {
-                                    //does the TIPP exist? If so: check if it is already existing in package; if not, create it.
-                                    if(equivalentTIPPExists) {
-                                        if(!ie.tipp.pkg.tipps.find {it.gokbId == equivalentTIPP.@uuid}){
-                                            ieDetails.action = "remap"
-                                            ieDetails.target = equivalentTIPP.@uuid
-                                        }
-                                        else println("no remapping necessary!")
-                                    }
-                                    //If not, report because it is void!
-                                    else {
-                                        ieDetails.action = "report"
-                                        ieDetails.report = report+[cause:"Kein äquivalentes TIPP gefunden"]
-                                        println(ieDetails.report)
-                                    }
-                                }
-                            }
-                            if(ieDetails.action)
-                                issueEntitlements << ieDetails
-                        }
-                        Map<TitleInstancePackagePlatform,List<Map<String,Object>>> result = [:]
-                        result[delTIPP] = issueEntitlements
-                        deletedWithoutGOKbRecord << result
-                    }
-                    else {
-                        /*
-                            case: there is a TIPP marked deleted with GOKb entry
-                            do further checks as follows:
-                            set TIPP and IssueEntitlement (by pending change) to that status
-                            otherwise do nothing
-                         */
-                        Map<String,Map<String,Object>> result = [:]
-                        RefdataValue currTippStatus = refdatas[gokbTIPP.status.text()]
-                        Map<String,Object> tippDetails = [issueEntitlements: IssueEntitlement.findAllByTippAndStatusNotEqual(delTIPP,RDStore.TIPP_STATUS_DELETED), action: 'updateStatus', status: currTippStatus]
-                        //storing key is needed in order to prevent LazyInitializationException when executing cleanup
-                        result[delTIPP.globalUID] = tippDetails
-                        deletedWithGOKbRecord << result
-                    }
-                }
-            }
-            else {
-                println("TIPP marked as deleted is a duplicate, so already considered")
-            }
-        }
-        http.shutdown()
-        [deletedWithoutGOKbRecord:deletedWithoutGOKbRecord,deletedWithGOKbRecord:deletedWithGOKbRecord,mergingTIPPs:mergingTIPPs,duplicateTIPPKeys:duplicateTIPPKeys,excludes:excludes]
-    }
-
-    /**
-     * Remaps the issue entitlements which hang on duplicates, merges title duplicates and deletes false records.
-     * Very dangerous method, handle with extreme care!
-     * Deprecated in its current form, it needs update if the cleanup needs to be used again one time
-     * @param result the decision map build in {@link #listDeletedTIPPs()}
+     * Executes the cleanup of titles marked as removed
      * @return a {@link List} of title records which should be reported because there are holdings on them
      */
-    List<List<String>> executeTIPPCleanup(Map result) {
-        //first: merge duplicate entries
-        result.mergingTIPPs.each { mergingTIPP ->
-            IssueEntitlement.withTransaction { status ->
-                try {
-                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp.id = :mergeTarget where ie.id in (:iesToMerge)',[mergeTarget:mergingTIPP.mergeTarget,iesToMerge:mergingTIPP.iesToMerge])
-                    status.flush()
-                }
-                catch (Exception e) {
-                    log.error("failure on merging TIPPs ... rollback!")
-                    status.setRollbackOnly()
-                }
-            }
-        }
-        println("remapping done, purge now duplicate entries ...")
-        globalService.cleanUpGorm()
-        List<List<String>> reportRows = []
-        Map<RefdataValue,Set<String>> pendingChangeSetupMap = [:]
-        Set<String> alreadyProcessed = []
+    def executeTIPPCleanup(Map result) {
 
-        result.deletedWithoutGOKbRecord.each { entry ->
-            entry.each { delTIPP,issueEntitlements ->
-                issueEntitlements.each { ieDetails ->
-                    IssueEntitlement ie = (IssueEntitlement) ieDetails.ie
-                    switch(ieDetails.action) {
-                        case "deleteCascade":
-                            //mark as deleted!
-                            println("deletion cascade: deleting ${ie}, deleting ${ie.subscription}")
-                            deletionService.deleteSubscription(ie.subscription,false)
-                            break
-                        case "report": reportRows << [ieDetails.report.consortium,ieDetails.report.subscriber,ieDetails.report.subscription,ieDetails.report.package,ieDetails.report.title,ieDetails.report.cause]
-                            break
-                        case "remap": if(!alreadyProcessed.contains(delTIPP.gokbId)){
-                            //mark obsolete ones as deleted!
-                            deletionService.deleteTIPP(delTIPP,TitleInstancePackagePlatform.findByGokbId(ieDetails.target))
-                            alreadyProcessed << delTIPP.gokbId
-                        }
-                            break
-                    }
-                }
-            }
-        }
-        result.deletedWithGOKbRecord.each { row ->
-            row.each { delTIPP, tippDetails ->
-                Set<Long> tippsToUpdate = pendingChangeSetupMap[tippDetails.status]
-                if(!tippsToUpdate)
-                    tippsToUpdate = []
-                tippsToUpdate << delTIPP
-                pendingChangeSetupMap[tippDetails.status] = tippsToUpdate
-            }
-        }
-        pendingChangeSetupMap.each { RefdataValue status, Set<String> tippsToUpdate ->
-            println("updating ${tippsToUpdate} to status ${status}")
-            TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :status where tipp.globalUID in :tippsToUpdate',[status:status,tippsToUpdate:tippsToUpdate])
-            //hook up pending changes
-            tippsToUpdate.each { tippKey ->
-                List<IssueEntitlement> iesToNotify = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.globalUID = :tippKey',[tippKey:tippKey])
-                if(iesToNotify) {
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGlobalUID(tippKey)
-                    iesToNotify.each { IssueEntitlement ie ->
-                        println("notifying subscription ${ie.subscription}")
-                        Map<String, Object> changeMap = [target:ie.subscription,oid:"${ie.class.name}:${ie.id}",prop:'status',newValue:status.id,oldValue:ie.status.id]
-                        changeNotificationService.determinePendingChangeBehavior(changeMap,PendingChangeConfiguration.TITLE_UPDATED,SubscriptionPackage.findBySubscriptionAndPkg(ie.subscription,tipp.pkg))
-                        //changeNotificationService.registerPendingChange(PendingChange.PROP_SUBSCRIPTION,ie.subscription,ie.subscription.getSubscriber(),changeMap,null,null,changeDesc)
-                    }
-                }
-                else println("no issue entitlements depending!")
-            }
-        }
-        Set<TitleInstancePackagePlatform> tippsToDelete = TitleInstancePackagePlatform.findAllByGokbIdInListAndIdNotInList(result.duplicateTIPPKeys,result.excludes)
-        //this is correct; only the duplicates should be deleted!
-        if(tippsToDelete)
-            deletionService.deleteTIPPsCascaded(tippsToDelete)
-        println("Cleanup finished!")
-        reportRows
     }
 
     /**
@@ -455,7 +142,7 @@ class YodaService {
      * @param doIt execute the cleanup?
      * @return a result map of titles whose we:kb entry has been marked as deleted
      */
-    Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
+    Map<String, Object> expungeRemovedTIPPs(boolean doIt) {
         GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
         Map<String, Object> result = [:]
         Map<String, String> wekbUuids = [:]
@@ -464,7 +151,7 @@ class YodaService {
         http.request(Method.POST, ContentType.JSON) { req ->
             body = [componentType: 'TitleInstancePackagePlatform',
                     max: 10000,
-                    status: ['Deleted', GlobalSourceSyncService.PERMANENTLY_DELETED]]
+                    status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
             requestContentType = ContentType.URLENC
             response.success = { resp, json ->
                 if(resp.status == 200) {
@@ -487,7 +174,7 @@ class YodaService {
         }
         http.shutdown()
         if(wekbUuids) {
-            List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted or tipp.gokbId in (:deletedWekbIDs)', [deleted: RDStore.TIPP_STATUS_DELETED, deletedWekbIDs: wekbUuids.keySet()])
+            List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :removed or tipp.gokbId in (:deletedWekbIDs)', [removed: RDStore.TIPP_STATUS_REMOVED, deletedWekbIDs: wekbUuids.keySet()])
             Set<String> keysToDelete = []
             deletedLaserTIPPs.each { Map row ->
                 Map<String, Object> titleRow = row

@@ -6,7 +6,7 @@
 <head>
     <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'license.member.plural')}</title>
 </head>
 
 <body>

@@ -160,7 +160,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
 }
 
 #maintenance *, #systemMessages {
-    color: #111 !important;
+    color: #2f2f2f !important;
 }
 #maintenance {
     position: fixed;

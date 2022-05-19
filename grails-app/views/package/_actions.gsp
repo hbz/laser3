@@ -78,13 +78,13 @@
                         <th class="control-label">
                             <g:message code="subscription.packages.setting.label"/>
                         </th>
-                        <th class="control-label"
-                            data-tooltip="${message(code: "subscription.packages.notification.label")}">
+                        <th class="control-label la-popup-tooltip la-delay"
+                            data-content="${message(code: "subscription.packages.notification.label")}">
                             <i class="ui large icon bullhorn"></i>
                         </th>
                         <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
-                            <th class="control-label"
-                                data-tooltip="${message(code: 'subscription.packages.auditable')}">
+                            <th class="control-label la-popup-tooltip la-delay"
+                                data-content="${message(code: 'subscription.packages.auditable')}">
                                 <i class="ui large icon thumbtack"></i>
                             </th>
                         </g:if>

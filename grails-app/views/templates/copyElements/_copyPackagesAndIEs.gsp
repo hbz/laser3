@@ -119,18 +119,18 @@
                                                             <th><g:message code="subscription.packages.changeType.label"/></th>
                                                             <th><g:message code="subscription.packages.setting.label"/></th>
                                                             <th>
-                                                                <span data-tooltip="${message(code:"subscription.packages.notification.label")}">
+                                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
                                                                     <i class="ui large icon bullhorn"></i>
                                                                 </span>
                                                             </th>
                                                             <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                                                                 <th>
-                                                                    <span data-tooltip="${message(code:'subscription.packages.auditable')}">
+                                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                                         <i class="ui large icon thumbtack"></i>
                                                                     </span>
                                                                 </th>
                                                                 <th>
-                                                                    <span data-tooltip="${message(code:'subscription.packages.notification.auditable')}">
+                                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
                                                                         <i class="ui large icon bullhorn"></i>
                                                                     </span>
                                                                 </th>
@@ -280,8 +280,8 @@
                                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                                                                     <g:if test="${!(pcc.settingKey in excludes)}">
                                                                         <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
-                                                                            <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
-                                                                                    class="ui thumbtack icon"></i></span>
+                                                                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.auditable')}"><i
+                                                                                    class="ui thumbtack icon "></i></span>
                                                                         </g:if>
                                                                     </g:if>
                                                                 </g:if>
