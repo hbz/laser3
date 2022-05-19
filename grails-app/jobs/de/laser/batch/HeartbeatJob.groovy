@@ -16,7 +16,7 @@ class HeartbeatJob extends AbstractJob {
     static triggers = {
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins: 0 0/10 * * * ?
-    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
+    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0/10 * * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -48,7 +48,15 @@ class HeartbeatJob extends AbstractJob {
         SystemActivityProfiler.update()
 
         try {
-            brokerMessagingTemplate.convertAndSend "/topic/status", new JSON(systemService.getStatus()).toString(false)
+            // org.springframework.messaging.simp.SimpMessageSendingOperations extends org.springframework.messaging.core.MessageSendingOperations
+            // +-- org.springframework.messaging.simp.SimpMessagingTemplate
+            //     +-- org.springframework.messaging.core.AbstractMessageSendingTemplate
+            //             -> convertAndSend(D destination, Object payload, @Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor);
+            //                  -> doConvert(Object payload, @Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor);
+            //		            -> send(D destination, Message<?> message);
+            //                         ^ org.springframework.messaging.simp.SimpMessagingTemplate
+
+            brokerMessagingTemplate.convertAndSend '/topic/status', new JSON(systemService.getStatus()).toString(false)
         } catch (Exception e) {
             log.error e.getMessage()
         }

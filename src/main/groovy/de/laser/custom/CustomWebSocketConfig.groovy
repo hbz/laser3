@@ -20,8 +20,8 @@ class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
-        messageBrokerRegistry.enableSimpleBroker '/socket/queue', '/socket/topic'
-        messageBrokerRegistry.setApplicationDestinationPrefixes '/socket/app'
+        messageBrokerRegistry.enableSimpleBroker '/topic', '/queue'
+        messageBrokerRegistry.setApplicationDestinationPrefixes '/app'
     }
 
     @Override
@@ -36,7 +36,7 @@ class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         SimpMessageSendingOperations brokerMessagingTemplate
     ) {
         def handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-        handler.destinationPrefixes = ['/socket/app']
+        handler.destinationPrefixes = ['/app']
         return handler
     }
 
@@ -47,7 +47,7 @@ class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         SimpMessageSendingOperations brokerMessagingTemplate
     ) {
         def handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-        handler.destinationPrefixes = ['/socket/app']
+        handler.destinationPrefixes = ['/app']
         return handler
     }
     

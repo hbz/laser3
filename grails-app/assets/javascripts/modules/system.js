@@ -13,11 +13,12 @@ system = {
 
     status: function () {
         var socket = new SockJS(JSPC.vars.socketStompUrl)
-        var client = webstomp.over(socket, { debug: false })
+        var client = webstomp.over(socket, { debug: true })
 
         client.connect({}, function() {
             client.subscribe('/topic/status', function(message) {
                 var body = JSON.parse(message.body)
+                console.log( message )
                 console.log( body )
                 if (body && body.status && body.status === 'ok') {
                     if (body.maintenance) {
