@@ -382,7 +382,7 @@ class ApiCollectionReader {
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
         ieRows.eachWithIndex{ GroovyRowResult row, int i ->
-            println "now processing row ${i}"
+            //println "now processing row ${i}"
             //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
             Map<String, Object> ie = [globalUID: row['ie_guid']]
             ie.name = row['ie_name']
@@ -395,7 +395,7 @@ class ApiCollectionReader {
             ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
             List coverages = [], priceItems = []
             coverageMap.get(row['ie_id']).eachWithIndex { GroovyRowResult covRow, int j ->
-                println "processing coverage ${j}"
+                //println "processing coverage ${j}"
                 Map<String, Object> ieCov = [:]
                 ieCov.startDate        = covRow.containsKey('ic_start_date') && covRow['ic_start_date'] != null ? ApiToolkit.formatInternalDate(covRow['ic_start_date']) : null
                 ieCov.startVolume      = covRow['ic_start_volume']
@@ -411,7 +411,7 @@ class ApiCollectionReader {
             }
             ie.coverages = coverages
             priceItemMap.get(row['ie_id']).eachWithIndex { String currency, GroovyRowResult piRow, int p ->
-                println "processing price item ${p}"
+                //println "processing price item ${p}"
                 Map<String, Object> pi = [:]
                 pi.listCurrency = piRow['pi_list_currency']
                 pi.listPrice = piRow['pi_list_price']
@@ -427,7 +427,7 @@ class ApiCollectionReader {
             row.altnames = altNameMap.get(row['tipp_id'])
             row.publishers = publisherMap.get(row['tipp_id'])
             if(ignoreRelation != ApiReader.IGNORE_ALL) {
-                println "processing references"
+                //println "processing references"
                 if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
                     row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                     row.pkg = pkgData
@@ -444,7 +444,7 @@ class ApiCollectionReader {
                     }
                 }
             }
-            println "processing finished"
+            //println "processing finished"
             result << ie
         }
 
