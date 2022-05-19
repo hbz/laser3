@@ -223,8 +223,7 @@ class SubscriptionService {
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
-                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN,
-                      status   : statusId
+                      rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
             ]
         }
 

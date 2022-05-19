@@ -108,7 +108,7 @@
                         </th>
                         <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
-                                <span data-tooltip="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>

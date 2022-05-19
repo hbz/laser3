@@ -1707,7 +1707,7 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(result.package.unlinkFromSubscription(result.subscription, result.institution, true)){
+            if(packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1718,7 +1718,7 @@ class SubscriptionControllerService {
         else {
             String query = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
             Map<String,Object> queryParams = [sub: result.subscription, pkg_id: result.package.id]
-            int numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
+            int numOfPCs = packageService.removePackagePendingChanges(result.package, [result.subscription.id], false)
             int numOfIEs = IssueEntitlement.executeQuery(query, queryParams).size()
             int numOfCIs = CostItem.findAllBySubPkg(SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)).size()
             List conflictsList = packageService.listConflicts(result.package,result.subscription,numOfPCs,numOfIEs,numOfCIs)
@@ -1729,7 +1729,7 @@ class SubscriptionControllerService {
                     String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
-                    int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
+                    int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
                     int numOfCIsChildSubs = childSubsPackages ? CostItem.findAllBySubPkgInList(childSubsPackages).size() : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
@@ -1823,6 +1823,7 @@ class SubscriptionControllerService {
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
+            result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
 
             [result:result,status:STATUS_OK]
         }
@@ -2219,7 +2220,7 @@ class SubscriptionControllerService {
                             }
                         }
                         if (ieCandIdentifier) {
-                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED, value: ieCandIdentifier]
+                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED, value: ieCandIdentifier]
                             //check where indices are needed!
                             List<String> matches = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and id.value = :value',unfilteredParams)
                             ieCoverages.add(covStmt)
@@ -2257,8 +2258,8 @@ class SubscriptionControllerService {
                 }
                 /*
                 if (!params.pagination) {
-                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
-                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
+                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
+                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
                     Map<String, Set> allIdentifiers = [:]
                     identifierRows.each { Map row ->
                         Set<Map> ids = allIdentifiers.get(row.gokbId)
@@ -2560,48 +2561,108 @@ class SubscriptionControllerService {
         else {
             SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
             boolean error = false
-            params.each { Map.Entry<Object,Object> p ->
-                if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
-                    String ie_to_edit = p.key.substring(10)
-                    IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
-                    if (params.bulkOperation == "edit") {
-                        if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
-                            ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
-                        }
-                        if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
-                            ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
-                        }
-                        /* legacy???
-                        if (params.bulk_medium.trim().length() > 0) {
-                            RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
-                            log.debug("Selected medium is ${selected_refdata}");
-                            ie.medium = selected_refdata
+            if(params.chkall == 'on') {
+                params.ieAcceptStatusFixed = true
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
+                if(params.bulkOperation == "edit") {
+                    if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                        Date accessStartDate = formatter.parse(params.bulk_access_start_date)
+                        String updateQuery = "update IssueEntitlement e set e.accessStartDate = :accessStartDate where e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessStartDate: accessStartDate])
+                    }
+                    if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                        Date accessEndDate = formatter.parse(params.bulk_access_end_date)
+                        String updateQuery = "update IssueEntitlement e set e.accessEndDate = :accessEndDate where e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessEndDate: accessEndDate])
+                    }
+                    if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        params.select = 'bulkInsertTitleGroup'
+                        if(!params.pkgIds && !params.pkgfilter)
+                            params.pkgIds = result.subscription.packages.pkg.id
+                        Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
+                        //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
+                        //log.debug(sqlQuery.params.toMapString())
+                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                        /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: entitlementGroup)
+                            if (!issueEntitlementGroupItem.save()) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
                         }*/
-                        if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
-                            IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
-                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
-                                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                        ie: ie,
-                                        ieGroup: entitlementGroup)
-                                if (!issueEntitlementGroupItem.save()) {
-                                    log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                    }
+                }
+                else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
+                    if(params.bulkOperation == "removeWithChildren") {
+                        //case statement fails to evaluate with parameters ... so, let's go the hard-coded way!
+                        String deleteMemberQuery = "update IssueEntitlement e set e.status.id = case when ((select tipp.status.id from IssueEntitlement et join et.tipp tipp where et.id = e.id) = ${RDStore.TIPP_STATUS_REMOVED.id}) then ${RDStore.TIPP_STATUS_REMOVED.id} else ${RDStore.TIPP_STATUS_DELETED.id} end where e.subscription in (:subscriptions) and e.tipp in (select tipp ${query.query})"
+                        query.queryParams.subscriptions.addAll(result.subscription.getDerivedSubscriptions())
+                        IssueEntitlement.executeUpdate(deleteMemberQuery, query.queryParams)
+                    }
+                    else {
+                        String deleteQuery = "update IssueEntitlement e set e.status.id = case when ((select tipp.status.id from IssueEntitlement et join et.tipp tipp where et.id = e.id) = ${RDStore.TIPP_STATUS_REMOVED.id}) then ${RDStore.TIPP_STATUS_REMOVED.id} else ${RDStore.TIPP_STATUS_DELETED.id} end where e.subscription in (:subscriptions) and e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(deleteQuery, query.queryParams)
+                    }
+                }
+            }
+            else {
+                params.each { Map.Entry<Object,Object> p ->
+                    if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
+                        String ie_to_edit = p.key.substring(10)
+                        IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
+                        if (params.bulkOperation == "edit") {
+                            if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                                ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
+                            }
+                            if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                                ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
+                            }
+                            /* legacy???
+                            if (params.bulk_medium.trim().length() > 0) {
+                                RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
+                                log.debug("Selected medium is ${selected_refdata}");
+                                ie.medium = selected_refdata
+                            }*/
+                            if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
+                                IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
+                                if(entitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
+                                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                            ie: ie,
+                                            ieGroup: entitlementGroup)
+                                    if (!issueEntitlementGroupItem.save()) {
+                                        log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                    }
                                 }
                             }
+                            if (!ie.save()) {
+                                log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
+                                error = true
+                            }
                         }
-                        if (!ie.save()) {
-                            log.error("Problem saving ${ie.errors}")
-                            error = true
-                        }
-                    } else if (params.bulkOperation == "remove") {
-                        log.debug("Updating ie ${ie.id} status to deleted")
-                        ie.status = RDStore.TIPP_STATUS_DELETED
-                        if (!ie.save()) {
-                            log.error("Problem saving ${ie.errors}")
-                            error = true
+                        else if (params.bulkOperation in ["remove", "removeWithChildren"]) {
+                            if(ie.tipp.status == RDStore.TIPP_STATUS_REMOVED) {
+                                log.debug("Updating ie ${ie.id} status to removed")
+                                ie.status = RDStore.TIPP_STATUS_REMOVED
+                            }
+                            else {
+                                log.debug("Updating ie ${ie.id} status to deleted")
+                                ie.status = RDStore.TIPP_STATUS_DELETED
+                            }
+                            if (ie.save()) {
+                                if(params.bulkOperation == "removeWithChildren")
+                                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.subscription in (select s from Subscription s where s.instanceOf = :parent) and ie.tipp = :tipp', [parent: ie.subscription, tipp: ie.tipp, newStatus: ie.status])
+                            }
+                            else {
+                                log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
+                                error = true
+                            }
                         }
                     }
                 }
             }
+
             if(error)
                 [result:result,status:STATUS_ERROR]
             else [result:result,status:STATUS_OK]

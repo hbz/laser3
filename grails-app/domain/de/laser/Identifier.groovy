@@ -85,7 +85,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         pkg   column:'id_pkg_fk', index: 'id_pkg_idx'
         sub   column:'id_sub_fk', index: 'id_sub_idx'
         tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
-        instanceOf column: 'id_instance_of_fk'
+        instanceOf column: 'id_instance_of_fk', index: 'id_instanceof_idx'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'

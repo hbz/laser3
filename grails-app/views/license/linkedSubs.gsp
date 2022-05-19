@@ -32,7 +32,7 @@
             <div class="three fields">
                 <div class="field">
                     <label for="subscription">${message(code:'subscription')}</label>
-                    <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
+                    <select id="subscription" name="subscription" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${subscriptionsForFilter}" var="sub">
                             <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
