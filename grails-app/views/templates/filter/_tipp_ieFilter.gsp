@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <g:if test="${controllerName == 'package'}">
     <g:set var="seriesNames"
@@ -36,8 +36,8 @@
            value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-
 </g:if>
+<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
@@ -49,7 +49,7 @@
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
 
-        <div class="two fields">
+        <div class="three fields">
             <div class="field">
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
@@ -78,6 +78,37 @@
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
+            <g:if test="${!showStatsFilter && !(actionName in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
+                <div class="field">
+                    <label for="status">
+                        ${message(code: 'default.status.label')}
+                    </label>
+                    <select name="status" id="status" multiple=""
+                            class="ui search selection dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${availableStatus}" var="status">
+                            <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                                    value="${status.id}">
+                                ${status.getI10n('value')}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+            <div class="field">
+                <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
+                <select name="coverageDepth" id="coverageDepth" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${coverageDepths}" var="coverageDepth">
+                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
+                                value="${coverageDepth}">
+                            ${coverageDepth.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
         </div>
 
         <div class="four fields">
@@ -213,21 +244,6 @@
 
 
         <div class="three fields">
-            <div class="field">
-                <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
-                <select name="coverageDepth" id="coverageDepth" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${coverageDepths}"
-                            var="coverageDepth">
-                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
-                                value="${coverageDepth}">
-                            ${coverageDepth.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
             <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>

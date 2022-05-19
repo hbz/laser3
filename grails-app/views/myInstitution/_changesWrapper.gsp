@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${editable}">
     <div id="pendingChangesWrapper">
@@ -42,7 +43,12 @@
                     </div><!-- .column -->
                     <div class="ten wide column">
                         <g:if test="${entry.packageSubscription}">
-                            <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                            <g:if test="${entry.msgToken == de.laser.PendingChangeConfiguration.TITLE_REMOVED}">
+                                <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}" params="[status: RDStore.TIPP_STATUS_REMOVED.id]">${raw(entry.eventString)}</g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                            </g:else>
                         </g:if>
                         <g:else>
                             ${raw(entry.eventString)}

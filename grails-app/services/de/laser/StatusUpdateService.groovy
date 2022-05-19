@@ -302,7 +302,7 @@ class StatusUpdateService extends AbstractLockableService {
         SubscriptionPackage.withTransaction { TransactionStatus stat ->
             allSPs.each { SubscriptionPackage sp ->
                 //for session refresh
-                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :deleted and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,deleted:RDStore.TIPP_STATUS_DELETED])
+                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :removed and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,removed:RDStore.TIPP_STATUS_REMOVED])
                 //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
                 currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
                     Map<String,Object> changeMap = [target:ieA.subscription]
