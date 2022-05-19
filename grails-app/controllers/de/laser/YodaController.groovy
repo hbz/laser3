@@ -617,11 +617,11 @@ class YodaController {
     }
 
     /**
-     * Call to delete titles without we:kb reference and marked as deleted
+     * Call to delete titles without we:kb reference and marked as removed
      */
     @Secured(['ROLE_YODA'])
-    Map<String, Object> expungeDeletedTIPPs() {
-        yodaService.expungeDeletedTIPPs(Boolean.valueOf(params.doIt))
+    Map<String, Object> expungeRemovedTIPPs() {
+        yodaService.expungeRemovedTIPPs(Boolean.valueOf(params.doIt))
     }
 
     @Deprecated

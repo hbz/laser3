@@ -7,11 +7,25 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht
+
+4258    19.05.2022  rc-2.3  2.3         Andreas Bug         vergessener Titel für View korrigiert
+
+4257    19.05.2022  rc-2.3  2.3         Andreas Bug         Status wurde trotz explizit aufgehobenem Filterwert erwartet
+
+4252    19.05.2022  rc-2.3  2.3         Andreas Feature     Lizenz-Dropdown durchsuchbar gemacht
+
+4251    19.05.2022  rc-2.3  2.3         Andreas Feature     Schrift angepasst, Erklär-Tooltips zu Buttons hinzugefügt 
+
 4250    18.05.2022  rc-2.3  2.3         Moe     Bug         Automatische Lizenzverlängerung: Status der Vorgängerlizenz bleibt auf aktiv
 
 4259    18.05.2022  rc-2.3  2.3         Moe     Feature     Übernahme von Dauerhaften Titel von Vorgänger Lizenzen in Titelumfrage
 
 4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
+
+4194    18.05.2022  rc-2.3  2.3         Andreas Feature     Prozessfluss zum Umgang mit fehlerhaften Titel impelementiert
+
+3899    18.05.2022  rc-2.3  2.3         Andreas Feature     Beschleunigen der Paketentknüpfung durch Indizierung
 
 4244    16.05.2022  rc-2.3  2.3         Moe     Feature     we:kb und ygor sollten sich in neuem Tab öffnen
 
