@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4194    18.05.2022  rc-2.3  2.3         Andreas Feature     Prozessfluss zum Umgang mit fehlerhaften Titel impelementiert
+
+3899    18.05.2022  rc-2.3  2.3         Andreas Feature     Beschleunigen der Paketentknüpfung durch Indizierung
+
 4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
 
 --      13.05.2022  rc-2.3  2.3         Andreas Bug         Statistik-Sync matcht jetzt auch gegen Print-Identifier
