@@ -78,19 +78,33 @@
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
+            <g:if test="${!showStatsFilter && !(actionName in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
+                <div class="field">
+                    <label for="status">
+                        ${message(code: 'default.status.label')}
+                    </label>
+                    <select name="status" id="status" multiple=""
+                            class="ui search selection dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
 
+                        <g:each in="${availableStatus}" var="status">
+                            <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                                    value="${status.id}">
+                                ${status.getI10n('value')}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <div class="field">
-                <label for="status">
-                    ${message(code: 'default.status.label')}
-                </label>
-                <select name="status" id="status" multiple=""
+                <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
+                <select name="coverageDepth" id="coverageDepth" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${availableStatus}" var="status">
-                        <option <%=(params.list('status')?.contains(status)) ? 'selected="selected"' : ''%>
-                                value="${status}">
-                            ${status.getI10n('value')}
+                    <g:each in="${coverageDepths}" var="coverageDepth">
+                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
+                                value="${coverageDepth}">
+                            ${coverageDepth.getI10n("value")}
                         </option>
                     </g:each>
                 </select>
@@ -230,21 +244,6 @@
 
 
         <div class="three fields">
-            <div class="field">
-                <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
-                <select name="coverageDepth" id="coverageDepth" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${coverageDepths}"
-                            var="coverageDepth">
-                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
-                                value="${coverageDepth}">
-                            ${coverageDepth.getI10n("value")}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
             <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>

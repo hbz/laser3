@@ -1200,9 +1200,10 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null) {
-            base_qry += " and ie.status.id = :status "
-            qry_params.status = params.status
+        else if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = params.list('status').collect { String statusId -> Long.parseLong(statusId) }
+            base_qry += " and ie.status.id in (:status) "
+            qry_params.status = status
         }
         else if (params.notStatus != '' && params.notStatus != null){
             base_qry += " and ie.status.id != :notStatus "
