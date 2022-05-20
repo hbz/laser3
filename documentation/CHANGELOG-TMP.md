@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4220    20.05.2022  rc-2.3  2.3         Moe     Feature     Mehrere Vorgängerlizenzen zur Bildung des Bestands zulassen
+
 4255    19.05.2022  rc-2.3  2.3         Moe     Bug         Meine Lizenzverwaltung springen zwischen den Reiter erst durch doppelklick
 
 4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht
