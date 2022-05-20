@@ -128,6 +128,7 @@ class ApiCollectionReader {
             Map<String, Object> tmp     = [:]
 
             tmp.globalUID               = it.globalUID
+            tmp.isVisibleForSubscriber  = it.isVisibleForSubscriber ? "Yes" : "No"
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
             tmp.currencyRate            = it.currencyRate
@@ -365,8 +366,8 @@ class ApiCollectionReader {
         ddcRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, ddc_tipp_fk from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id join title_instance_package_platform on ddc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         langRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, lang_tipp_fk from language join refdata_value on lang_rv_fk = rdv_id join title_instance_package_platform on lang_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         altNameRows = sql.rows('select altname_name, altname_tipp_fk from alternative_name join title_instance_package_platform on altname_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
-        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
-        packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name from package where pkg_id = :pkgId', pkgParams),
+        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
+        packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId', pkgParams),
         packageIDs = sql.rows('select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId', pkgParams),
         packageAltNames = sql.rows('select altname_name from alternative_name where altname_pkg_fk = :pkgId', pkgParams),
         titlePublishers = sql.rows('select rdv_value, org_guid, org_gokb_id, org_name, or_end_date, or_start_date, or_tipp_fk from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join title_instance_package_platform on or_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams)
