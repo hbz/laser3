@@ -893,7 +893,7 @@ class SubscriptionController {
         }
         if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
             log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
+        redirect action: 'index', id: result.subscription.id
     }
 
     /**
@@ -995,12 +995,12 @@ class SubscriptionController {
             }
             else {
                 flash.error = message(code:'default.save.error.general.message')
-                redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+                redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.status]
                 return
             }
         }
         else {
-            redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+            redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.status]
             return
         }
     }

@@ -83,8 +83,8 @@
                                     <div class="divider"></div>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</semui:link>
 
-                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem">we:kb</a>
-                                    <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
+                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}"  target="_blank" class="item" role="menuitem">we:kb</a>
+                                    <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" target="_blank" class="item" role="menuitem">YGOR</a>
                             </div>
                         </div>
 
@@ -421,7 +421,7 @@
                                         </div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeDeletedTIPPs">${message(code:'menu.yoda.expungeDeletedTIPPs')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</semui:link>
                                         <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>--%>
                                     </div>
                                 </div>

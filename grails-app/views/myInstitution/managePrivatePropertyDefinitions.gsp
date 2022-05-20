@@ -134,26 +134,26 @@
                                         <td class="x">
                                             <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
-                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-modern-button">
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
                                                         <i class="star icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button">
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
                                                         <i class="la-star slash icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
-                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button la-modern-button">
+                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button la-modern-button la-popup-tooltip la-delay">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center" params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button">
+                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center" params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
                                                             <i class="la-redo slash icon"></i>
                                                         </g:link>
                                                     </g:else>

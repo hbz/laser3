@@ -56,8 +56,8 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub INTENDED -> CURRENT
 
-           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and ((s.instanceOf != null and s.instanceOf.startDate < :currentDate) or '+
-                   '(s.instanceOf = null and s.startDate < :currentDate )) and s.isMultiYear = true',
+           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and ((parent != null and parent.startDate < :currentDate) or '+
+                   '(parent = null and s.startDate < :currentDate )) and s.isMultiYear = true',
                    [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
@@ -137,7 +137,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((s.instanceOf != null and s.instanceOf.endDate < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
+            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((parent != null and parent < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
                 [status: RDStore.SUBSCRIPTION_CURRENT,currentDate: currentDate])
 
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)
@@ -302,7 +302,7 @@ class StatusUpdateService extends AbstractLockableService {
         SubscriptionPackage.withTransaction { TransactionStatus stat ->
             allSPs.each { SubscriptionPackage sp ->
                 //for session refresh
-                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :deleted and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,deleted:RDStore.TIPP_STATUS_DELETED])
+                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :removed and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,removed:RDStore.TIPP_STATUS_REMOVED])
                 //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
                 currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
                     Map<String,Object> changeMap = [target:ieA.subscription]

@@ -83,6 +83,7 @@ class ApiUnsecuredMapReader {
         result.globalUID    = org.globalUID
         result.gokbId       = org.gokbId
         result.name         = org.name
+        result.status       = org.status?.value
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
@@ -106,6 +107,7 @@ class ApiUnsecuredMapReader {
         result.name         = pkg.name
         result.altnames     = ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
         result.gokbId       = pkg.gokbId
+        result.status       = pkg.packageStatus?.value
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
@@ -131,6 +133,7 @@ class ApiUnsecuredMapReader {
             altnames << altNameRow['altname_name']
         }
         result.gokbId       = pkg['pkg_gokb_id']
+        result.status       = pkg['pkg_status']
 
         // References
         List<Map<String, Object>> identifiers = []
@@ -157,6 +160,7 @@ class ApiUnsecuredMapReader {
         result.gokbId       = pform.gokbId
         result.name         = pform.name
         result.primaryUrl   = pform.primaryUrl
+        result.status       = pform.status?.value
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -176,6 +180,7 @@ class ApiUnsecuredMapReader {
         result.gokbId       = pform['plat_gokb_id']
         result.name         = pform['plat_name']
         result.primaryUrl   = pform['plat_primary_url']
+        result.status       = pform['plat_status']
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -332,7 +337,7 @@ class ApiUnsecuredMapReader {
 
         // RefdataValues
         //result.type                 = pform.type?.value
-        //result.status               = pform.status?.value
+        result.status               = pform.status?.value
         result.serviceProvider      = pform.serviceProvider?.value
         result.softwareProvider     = pform.softwareProvider?.value
 

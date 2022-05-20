@@ -128,6 +128,7 @@ class ApiCollectionReader {
             Map<String, Object> tmp     = [:]
 
             tmp.globalUID               = it.globalUID
+            tmp.isVisibleForSubscriber  = it.isVisibleForSubscriber ? "Yes" : "No"
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
             tmp.currencyRate            = it.currencyRate
@@ -365,8 +366,8 @@ class ApiCollectionReader {
         ddcRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, ddc_tipp_fk from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id join title_instance_package_platform on ddc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         langRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, lang_tipp_fk from language join refdata_value on lang_rv_fk = rdv_id join title_instance_package_platform on lang_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         altNameRows = sql.rows('select altname_name, altname_tipp_fk from alternative_name join title_instance_package_platform on altname_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
-        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
-        packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name from package where pkg_id = :pkgId', pkgParams),
+        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
+        packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId', pkgParams),
         packageIDs = sql.rows('select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId', pkgParams),
         packageAltNames = sql.rows('select altname_name from alternative_name where altname_pkg_fk = :pkgId', pkgParams),
         titlePublishers = sql.rows('select rdv_value, org_guid, org_gokb_id, org_name, or_end_date, or_start_date, or_tipp_fk from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join title_instance_package_platform on or_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams)
@@ -382,7 +383,7 @@ class ApiCollectionReader {
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
         ieRows.eachWithIndex{ GroovyRowResult row, int i ->
-            println "now processing row ${i}"
+            //println "now processing row ${i}"
             //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
             Map<String, Object> ie = [globalUID: row['ie_guid']]
             ie.name = row['ie_name']
@@ -395,7 +396,7 @@ class ApiCollectionReader {
             ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
             List coverages = [], priceItems = []
             coverageMap.get(row['ie_id']).eachWithIndex { GroovyRowResult covRow, int j ->
-                println "processing coverage ${j}"
+                //println "processing coverage ${j}"
                 Map<String, Object> ieCov = [:]
                 ieCov.startDate        = covRow.containsKey('ic_start_date') && covRow['ic_start_date'] != null ? ApiToolkit.formatInternalDate(covRow['ic_start_date']) : null
                 ieCov.startVolume      = covRow['ic_start_volume']
@@ -411,7 +412,7 @@ class ApiCollectionReader {
             }
             ie.coverages = coverages
             priceItemMap.get(row['ie_id']).eachWithIndex { String currency, GroovyRowResult piRow, int p ->
-                println "processing price item ${p}"
+                //println "processing price item ${p}"
                 Map<String, Object> pi = [:]
                 pi.listCurrency = piRow['pi_list_currency']
                 pi.listPrice = piRow['pi_list_price']
@@ -427,7 +428,7 @@ class ApiCollectionReader {
             row.altnames = altNameMap.get(row['tipp_id'])
             row.publishers = publisherMap.get(row['tipp_id'])
             if(ignoreRelation != ApiReader.IGNORE_ALL) {
-                println "processing references"
+                //println "processing references"
                 if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
                     row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                     row.pkg = pkgData
@@ -444,7 +445,7 @@ class ApiCollectionReader {
                     }
                 }
             }
-            println "processing finished"
+            //println "processing finished"
             result << ie
         }
 

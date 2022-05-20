@@ -7,6 +7,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -20,13 +21,14 @@ import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.text.DateFormat
+import java.sql.Connection
 import java.text.SimpleDateFormat
 
 /**
@@ -46,6 +48,8 @@ class SurveyService {
     GenericOIDService genericOIDService
     SubscriptionService subscriptionService
     FilterService filterService
+
+    LinksGenerationService linksGenerationService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -1738,7 +1742,7 @@ class SurveyService {
         Map<String, Object> result = [:]
 
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-        if(subscribedPlatforms) {
+        if (subscribedPlatforms) {
             List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(org, subscribedPlatforms)
             customerIdentifiers.size() > 0
         }else {
@@ -1799,4 +1803,114 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    void transferPerpetualAccessTitlesOfOldSubs(List<Long> entitlementsToTake, Subscription participantSub) {
+        Sql sql = GlobalService.obtainSqlConnection()
+        Connection connection = sql.dataSource.getConnection()
+
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
+                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+        if(newIes.size() > 0){
+
+            List newIesIds = newIes.collect {it[0]}
+
+           sql.executeInsert('''insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo)
+            select 0, i.ie_id, now(), now(), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage
+            join issue_entitlement ie on ie.ie_id = issue_entitlement_coverage.ic_ie_fk
+            join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk
+            join issue_entitlement i on tipp.tipp_id = i.ie_tipp_fk
+            where i.ie_id = any(:newIeIds)
+            and ie.ie_id = any(:ieIds) order  by ic_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+
+            sql.executeInsert('''insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price)
+                                select 0, i.ie_id, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item
+                                join issue_entitlement ie on ie.ie_id = price_item.pi_ie_fk
+                                join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk
+                                join issue_entitlement i on tipp.tipp_id = i.ie_tipp_fk
+                                where i.ie_id = any(:newIeIds)
+                                and ie.ie_id = any(:ieIds) order  by pi_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+        }
     }
+
+    List<IssueEntitlement> getPerpetualAccessIesBySub(Subscription subscription) {
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+        List<IssueEntitlement> issueEntitlements = []
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    "where ie2.ie_subscription_fk = any(:subs) " +
+                    "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
+                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
+        }
+        return issueEntitlements
+    }
+
+    List<Long> getPerpetualAccessIeIDsBySub(Subscription subscription) {
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+        List<Long> issueEntitlementIds = []
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    "where ie2.ie_subscription_fk = any(:subs) " +
+                    "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
+                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            issueEntitlementIds = ieIds.ie_id
+        }
+        return issueEntitlementIds
+    }
+
+    Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
+        Integer count = 0
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+
+            def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            count = titles.size()
+        }
+        return count
+    }
+
+}

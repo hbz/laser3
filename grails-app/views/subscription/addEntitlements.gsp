@@ -105,7 +105,7 @@
                        class="fluid ui button"/>
             </g:if>
             <g:else>
-                <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                     <input type="submit" disabled="disabled"
                            value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                            class="fluid ui button"/>
@@ -242,7 +242,7 @@
                     </g:link>
                 </g:if>
                 <g:else>
-                    <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                    <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                         <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
                                 params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
                             <i class="plus icon"></i>
@@ -262,7 +262,7 @@
                    class="ui button"/>
         </g:if>
         <g:else>
-            <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+            <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                 <input type="submit" disabled="disabled"
                        value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                        class="ui button"/>
