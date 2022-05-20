@@ -973,7 +973,7 @@ class SubscriptionService {
     }
 
     /**
-     * Adds the given package to the given subscription. It may be specified if titles should be created as well or not.
+     * Adds the given package to the given subscription. It may be specified if titles should be created as well or not
      * @param subscription the subscription whose holding should be enriched
      * @param pkg the package to link
      * @param createEntitlements should entitlements be created as well?
@@ -993,6 +993,14 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Adds the holding of the given package to the given member subscriptions, copying the stock of the given parent subscription if requested.
+     * The method uses native SQL for copying the issue entitlements, (eventual) coverages and price items
+     * @param subscription the parent {@link Subscription} whose holding serves as base
+     * @param memberSubs the {@link List} of member {@link Subscription}s which should be linked to the given package
+     * @param pkg the {@link de.laser.Package} to be linked
+     * @param createEntitlements should {@link IssueEntitlement}s be created along with the linking?
+     */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
@@ -1440,6 +1448,15 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
+     * @param sub the {@link Subscription} to which the entitlements should be attached
+     * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
+     * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
+     * @param withPriceData should price data be added as well?
+     * @param acceptStatus the accept status reference data key
+     * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
+     */
     void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, Long acceptStatus, pickAndChoosePerpetualAccess) {
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] keys = checkMap.keySet().toArray()
