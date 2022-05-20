@@ -11,6 +11,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
+/**
+ * This controller manages notes for subscriptions, licenses or organisations.
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocController  {
 
