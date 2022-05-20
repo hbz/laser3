@@ -19,11 +19,16 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
 
+/**
+ * This class is an endpoint implemented for the Electronic Journals Library (Elektronische Zeitschriftenbibliothek) of the <a href="https://ezb.uni-regensburg.de/index.phtml?bibid=AAAAA&colors=7&lang=en">Regensburg university library</a>.
+ */
 @Slf4j
 class ApiEZB {
 
     /**
-     * checks EZB_SERVER_ACCESS
+     * Checks EZB_SERVER_ACCESS, i.e. if the given institution authorised access to its data for the EZB endpoint
+     * @param org the institution ({@link Org}) whose data should be accessed
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Org org) {
 
@@ -40,7 +45,10 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
+     * Checks if the given subscription is accessible.
+     * Checks implicitly EZB_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the EZB endpoint
+     * @param sub the {@link Subscription} to which access is requested
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Subscription sub) {
 
@@ -69,7 +77,10 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
+     * Checks if the given license is accessible.
+     * Checks implicitly EZB_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the EZB endpoint
+     * @param lic the {@link License} to which access is requested
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(License lic) {
 
@@ -98,7 +109,8 @@ class ApiEZB {
     }
 
     /**
-     * checks EZB_SERVER_ACCESS
+     * Retrieves all institutions which have given access to the EZB.
+     * Checks EZB_SERVER_ACCESS; here those which have granted access to their data for the EZB
      */
     static private List<Org> getAccessibleOrgs() {
 
@@ -115,9 +127,9 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
-     *
-     * @return JSON
+     * Lists the details of all institutions which have granted access to the EZB endpoint.
+     * Checks implicit EZB_SERVER_ACCESS, i.e. if the requested institution is among those which gave permission to EZB
+     * @return a {@link JSON} containing a list of the organisation stubs
      */
     static JSON getAllOrgs() {
         Collection<Object> result = []
@@ -131,8 +143,9 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
-     *
+     * Retrieves a list of all accessible subscriptions for the EZB harvester
+     * @param changedFrom a timestamp from which recent subscriptions should be retrieved
+     * @param contextOrg the institution (the EZB service organisation) requesting access
      * @return JSON | FORBIDDEN
      */
     static JSON getAllSubscriptions(Date changedFrom = null, Org contextOrg) {
@@ -165,7 +178,11 @@ class ApiEZB {
     }
 
     /**
+     * Requests the given subscription and returns a TSV table containing the requested subscription's details if the requesting institution has access to the details.
+     * The table is in the KBART format, see the <a href="https://www.niso.org/standards-committees/kbart">KBART specification</a>.
+     * @param sub the {@link Subscription} to be retrieved
      * @return TSV | FORBIDDEN
+     * @see Subscription
      */
     static requestSubscription(Subscription sub) {
         Map<String, List> export
@@ -186,7 +203,6 @@ class ApiEZB {
                 log.error("No platform available! Continue without proprietary namespace!")
             }
             Sql sql = GlobalService.obtainSqlConnection()
-            //copy needed because exportService cannot be used in static context! This is a temp solution!
             log.debug("Begin generateTitleExportKBARTSQL")
             sql.withTransaction {
                 List<String> titleHeaders = getBaseTitleHeaders()
@@ -232,6 +248,12 @@ class ApiEZB {
         return (hasAccess ? export : Constants.HTTP_FORBIDDEN)
     }
 
+    /**
+     * Requests the ILL indicators (interlibrary loan indicators) for the given license and outputs them as a set of {@link LicenseProperty} records in a JSON array
+     * @param lic the license whose interlibrary loan
+     * @return JSON | FORBIDDEN
+     * @see License
+     */
     static requestIllIndicators(License lic) {
         List<Map<String, Object>> result = []
         if(!lic) {
@@ -258,6 +280,17 @@ class ApiEZB {
 
     //-------------------------------------- helper methods -------------------------------------------
 
+    /**
+     * Builds a row for the KBART export table, assembling the data contained in the output
+     * @param sql the {@link Sql} connection
+     * @param row the base database row
+     * @param packageIDs the list of package identifiers
+     * @param titleNS the proprietary identifier namespace of the provider
+     * @param otherTitleIdentifierNamespaces other identifier namespaces apart from the core title identifier namespaces
+     * @param allPriceItems the {@link de.laser.finance.PriceItem} map for the given holding
+     * @return a {@link List} containing the columns for the next row of the export table
+     * @see IdentifierNamespace
+     */
     static List buildRow(Sql sql, GroovyRowResult row, List<GroovyRowResult> packageIDs, String titleNS, List<GroovyRowResult> otherTitleIdentifierNamespaces, Map<Long, Map<RefdataValue, GroovyRowResult>> allPriceItems) {
         SimpleDateFormat formatter = DateUtils.getSDF_ymd()
         List<GroovyRowResult> identifiers = sql.rows('select id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = :tipp', [tipp: row['tipp_id']])
@@ -389,6 +422,10 @@ class ApiEZB {
         outRow
     }
 
+    /**
+     * Returns the base title headers for the KBART table
+     * @return a {@link List} of title headers; they are specified according to the KBART standard (<a href="https://groups.niso.org/higherlogic/ws/public/download/16900/RP-9-2014_KBART.pdf">see here, section 6.6</a>)
+     */
     static List<String> getBaseTitleHeaders() {
         ['publication_title',
          'print_identifier',
@@ -446,6 +483,13 @@ class ApiEZB {
          'localprice_usd']
     }
 
+    /**
+     * Concatenates the given list of identifiers of a given namespace to a character-separated string enumeration
+     * @param rows the list of identifier records
+     * @param namespace the namespace within which the concatenating identifiers are
+     * @param separator the character separating the entries
+     * @return the concatenated enumeration string
+     */
     static String joinIdentifiers(List<GroovyRowResult> rows, String namespace, String separator) {
         String joined = ' '
         List values = []

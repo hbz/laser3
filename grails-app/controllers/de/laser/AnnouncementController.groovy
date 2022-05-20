@@ -5,6 +5,9 @@ import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller is for managing central system-wide announcements
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AnnouncementController  {
 

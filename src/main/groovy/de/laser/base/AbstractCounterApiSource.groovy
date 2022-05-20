@@ -7,6 +7,9 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
 import grails.converters.JSON
 
+/**
+ * Is actually deprecated and kept by reference; to be removed in later versions
+ */
 abstract class AbstractCounterApiSource {
 
     String baseUrl

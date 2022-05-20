@@ -1450,7 +1450,7 @@ class ExportService {
 
 	/**
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
+	 * The standard is defined here: <a href="https://www.niso.org/standards-committees/kbart">KBART definition</a>
 	 * @param entitlementData a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
@@ -2311,6 +2311,19 @@ class ExportService {
 		 'perpetual_access']
 	}
 
+	/**
+	 * Builds a row for the export table, assembling the data contained in the output
+	 * @param titleRecord the title to be displayed in the row
+	 * @param identifierMap a map of title {@link Identifier}s
+	 * @param priceItemMap a map of title {@link de.laser.finance.PriceItem}s
+	 * @param reportMap a map of COUNTER reports (see {@link AbstractReport} implementations)
+	 * @param perpetuallyPurchasedTitleURLs a list of title URLs of titles which the given subscriber have perpetually bought
+	 * @param coreTitleIdentifierNamespaces {@link List} of identifier namespaces which are core set for titles
+	 * @param otherTitleIdentifierNamespaces {@link List} of identifier namespaces beyond the core set
+	 * @param showStatsInMonthRings if given: a {@link List} of usage report months
+	 * @param subscriber the institution ({@link Org}) whose holding should be exported
+	 * @return a {@link List} containing the columns for the next output row
+	 */
 	List buildRow(GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reportMap, Collection perpetuallyPurchasedTitleURLs, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, List showStatsInMonthRings, Org subscriber) {
 		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
 		if(titleRecord.containsKey('ie_id')) {
