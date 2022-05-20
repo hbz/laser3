@@ -54,7 +54,13 @@
                     </g:else>
                 </g:if>
                 <g:else>
-                    ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value')}
+                    <%
+                        if (ie.perpetualAccessBySub) {
+                            println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                        } else {
+                            RDStore.YN_NO.getI10n('value')
+                        }
+                    %>
                 </g:else>
             </div>
         </div>

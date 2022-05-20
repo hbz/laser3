@@ -1908,6 +1908,14 @@ class SurveyController {
 
         Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
 
+        if(params.transferPerpetualAccessTitlesOfOldSubs){
+            List<Long> issueEntitlementIds = surveyService.getPerpetualAccessIeIDsBySub(participantSub)
+
+            if(issueEntitlementIds.size() > 0){
+                surveyService.transferPerpetualAccessTitlesOfOldSubs(issueEntitlementIds, participantSub)
+            }
+        }
+
         if(params.process == "preliminary" && params.list('selectedIEs')) {
             IssueEntitlementGroup issueEntitlementGroup
             if (params.issueEntitlementGroupNew) {
@@ -1942,16 +1950,6 @@ class SurveyController {
             }
 
             flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()])
-        }
-
-        if(params.transferPerpetualAccessTitlesOfOldSubs){
-               List<IssueEntitlement> issueEntitlements = surveyService.getPerpetualAccessIesBySub(participantSub)
-
-                Sql sql = GlobalService.obtainSqlConnection()
-
-                if(issueEntitlements.size() > 0){
-                    surveyService.transferPerpetualAccessTitlesOfOldSubs(issueEntitlements, participantSub)
-                }
         }
 
         if(params.process == "reject" && params.list('selectedIEs')) {
