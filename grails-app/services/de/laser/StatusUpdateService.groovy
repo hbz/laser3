@@ -56,8 +56,8 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub INTENDED -> CURRENT
 
-           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and ((s.instanceOf != null and s.instanceOf.startDate < :currentDate) or '+
-                   '(s.instanceOf = null and s.startDate < :currentDate )) and s.isMultiYear = true',
+           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and ((parent != null and parent.startDate < :currentDate) or '+
+                   '(parent = null and s.startDate < :currentDate )) and s.isMultiYear = true',
                    [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
@@ -137,7 +137,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((s.instanceOf != null and s.instanceOf.endDate < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
+            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((parent != null and parent < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
                 [status: RDStore.SUBSCRIPTION_CURRENT,currentDate: currentDate])
 
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)
