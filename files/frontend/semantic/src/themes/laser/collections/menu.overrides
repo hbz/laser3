@@ -88,6 +88,7 @@
 
 /* Custom Input */
 .ui.menu .item.la-pagination-custom-input {
+  position: relative;
   padding-top:0;
   padding-bottom: 0;
   .ui.form input[type=text] {
@@ -103,6 +104,11 @@
       align-self: center;
       margin-left: 4px;
     }
+  }
+  .ui.basic.red.pointing.prompt.label {
+    position: absolute;
+    top: 70%;
+    left: -50%;
   }
 }
 /* Title */

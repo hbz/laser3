@@ -115,7 +115,7 @@ class SemanticUiNavigationTagLib {
             linkParams.order = params.order
         }
 
-        def linkTagAttrs = [action: action]
+        Map<String, Object> linkTagAttrs = [action: action]
         if (attrs.controller) {
             linkTagAttrs.controller = attrs.controller
         }
@@ -242,7 +242,10 @@ class SemanticUiNavigationTagLib {
             }
         }
         // all button
-        def allLinkAttrs = linkTagAttrs.clone()
+        Map<String, Object> allLinkAttrs = linkTagAttrs.clone()
+        Map<String, Object> customInputAttrs = linkTagAttrs.clone()
+        customInputAttrs.params = new LinkedHashMap<String, Object>()
+        customInputAttrs.params.putAll(linkTagAttrs.params)
         allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, locale)]
         if(total <= 200) {
             allLinkAttrs.class = "item"
@@ -257,13 +260,18 @@ class SemanticUiNavigationTagLib {
         out << '<div class="item la-pagination-custom-input">'
         out << '    <div class="ui mini form">'
         out << '            <div class="field">'
-        out << '                <input maxlength="8" placeholder="Seite:" type="text">'
-        out << '                <i class="large chevron circle right link icon la-popup-tooltip" data-content="Gehe zur Seite"></i>'
+        out << '                <input  name="paginationCustomInput" maxlength="6" placeholder="Seite:" type="text">'
+        customInputAttrs.params.remove('offset')
+        customInputAttrs.params.remove('class')
+        customInputAttrs.class= "la-pagination-custom-link"
+        customInputAttrs
+        out << link(customInputAttrs, '<i class="large chevron circle right icon la-popup-tooltip" data-content="Gehe zur Seite"></i>')
         out << '            </div>'
         out << '    </div>'
         out << '</div>'
         out << '</nav>'
         out << '</div><!--.pagination-->'
+
     }
 
 
