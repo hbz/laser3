@@ -91,7 +91,7 @@ class ApiPkg {
 		result.contentType      	= pkg.contentType?.value
 		result.scope     			= pkg.scope?.value
 		result.file	 				= pkg.file?.value
-		result.packageStatus    	= pkg.packageStatus?.value
+		result.status				= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
 		result.consistent       	= pkg.consistent?.value
 
