@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4255    19.05.2022  rc-2.3  2.3         Moe     Bug         Meine Lizenzverwaltung springen zwischen den Reiter erst durch doppelklick
+
 4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht
 
 4258    19.05.2022  rc-2.3  2.3         Andreas Bug         vergessener Titel für View korrigiert
