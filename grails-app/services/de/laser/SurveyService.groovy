@@ -1880,8 +1880,6 @@ class SurveyService {
                     "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlementIds = ieIds.ie_id
-            println(ieIds)
-            println(issueEntitlementIds)
         }
         return issueEntitlementIds
     }
