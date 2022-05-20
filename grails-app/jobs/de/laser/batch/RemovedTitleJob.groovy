@@ -1,8 +1,9 @@
 package de.laser.batch
 
 import de.laser.base.AbstractJob
-import de.laser.system.SystemEvent
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class RemovedTitleJob extends AbstractJob {
 
     def packageService
@@ -13,6 +14,8 @@ class RemovedTitleJob extends AbstractJob {
 //        cron name:'RemoveTitleTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
     }
 
+    static List<List> configurationProperties = []
+
     boolean isAvailable() {
         !jobIsRunning && !packageService.titleCleanupRunning
     }
@@ -21,27 +24,17 @@ class RemovedTitleJob extends AbstractJob {
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start('REMOVE_TITLE_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-
-        SystemEvent.createEvent('REMOVE_TITLE_JOB_START')
-
         try {
-            log.info("Execute::RemoveTitleJob - Start")
-
             if (!packageService.clearRemovedTitles() ) {
-                log.warn( 'Failed. Maybe ignored due blocked removedTitleJob')
+                log.warn( 'RemoveTitleJob failed. Maybe ignored due blocked removedTitleJob' )
             }
-
-            log.info("Execute::RemoveTitleJob - Finished")
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-        SystemEvent.createEvent('REMOVE_TITLE_JOB_COMPLETE')
-
-        jobIsRunning = false
+        stop('REMOVE_TITLE_JOB_COMPLETE')
     }
 }

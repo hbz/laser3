@@ -1,7 +1,5 @@
 println("/\/\ -- local config file found and loaded -- /\/\")
 
-activateTestJob = false
-
 aggr_es_cluster   = 'laser3'
 aggr_es_hostname  = '127.0.0.1'
 
@@ -15,7 +13,7 @@ documentStorageLocation = '/tmp/laserDocumentStorage'  // uploaded documents
 
 financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
-globalDataSyncJobActiv = false
+globalDataSyncJobActive = false
 
 grails.mail.disabled        = true
 grails.mail.default.from    = 'laser@local'
@@ -26,6 +24,7 @@ grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run' // pdf generation; se
 grails.plugin.databasemigration.updateOnStart = true
 grails.serverURL = 'http://localhost:8080'
 
+indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
@@ -41,8 +40,6 @@ notificationsJobActive = false
 
 pgDumpPath = '/usr/bin/pg_dump'
 
-quartzHeartbeat = 'auto'
-
 reporting.elasticSearch.url                = 'http://localhost:9200'
 reporting.elasticSearch.indicies.packages  = 'wekbpackages'
 reporting.elasticSearch.indicies.platforms = 'wekbplatforms'
@@ -54,4 +51,6 @@ showSystemInfo = true
 statsApiUrl = 'https://sushi.xy.z'
 
 systemEmail = 'laser@local'
+
+testJobActivate = false
 

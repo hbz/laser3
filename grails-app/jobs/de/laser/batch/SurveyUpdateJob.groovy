@@ -3,8 +3,9 @@ package de.laser.batch
 import de.laser.SurveyUpdateService
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
-
+@Slf4j
 class SurveyUpdateJob extends AbstractJob {
 
     SurveyUpdateService surveyUpdateService
@@ -13,7 +14,7 @@ class SurveyUpdateJob extends AbstractJob {
         cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }
 
-    static List<String> configFlags = []
+    static List<List> configurationProperties = []
 
     boolean isAvailable() {
         !jobIsRunning && !surveyUpdateService.running
@@ -23,26 +24,17 @@ class SurveyUpdateJob extends AbstractJob {
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start('SURVEY_UPDATE_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-
         try {
-            log.info("Execute::SurveyUpdateJob - Start")
-            SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
-
             if (! surveyUpdateService.surveyCheck()) {
                 log.warn('Failed. Maybe ignored due blocked surveyUpdateService')
             }
-
-            log.info("Execute::SurveyUpdateJob - Finished")
-            SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-
-        jobIsRunning = false
+        stop('SURVEY_UPDATE_JOB_COMPLETE')
     }
 }

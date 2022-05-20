@@ -1,19 +1,16 @@
 package de.laser.batch
 
 import de.laser.GlobalSourceSyncService
-import de.laser.system.SystemEvent
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class GlobalDataSyncJob extends AbstractJob {
 
     GlobalSourceSyncService globalSourceSyncService
 
     static triggers = {
-    // Delay 20 seconds, run every 10 mins.
-    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
-    // Example - every 10 mins 0 0/10 * * * ? 
-    // At 5 past 4am every day
     cron name:'globalDataSyncTrigger', startDelay:180000, cronExpression: "0 1 0 * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
@@ -25,40 +22,28 @@ class GlobalDataSyncJob extends AbstractJob {
     //                  `- Second, 0-59
     }
 
-    static List<String> configFlags = ['globalDataSyncJobActiv']
+    static List<List> configurationProperties = [ ConfigMapper.GLOBAL_DATA_SYNC_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning && !globalSourceSyncService.running
+        !jobIsRunning && !globalSourceSyncService.running && ConfigMapper.getGlobalDataSyncJobActive()
     }
     boolean isRunning() {
         jobIsRunning
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start('GD_SYNC_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-
         try {
-            log.debug("GlobalDataSyncJob");
-
-            if ( ConfigMapper.getGlobalDataSyncJobActiv() ) {
-                log.debug("Running GlobalDataSyncJob batch job")
-                SystemEvent.createEvent('GD_SYNC_JOB_START')
-
-                if (! globalSourceSyncService.startSync()) {
-                    log.warn( 'Failed. Maybe ignored due blocked globalSourceSyncService')
-                }
-
-                SystemEvent.createEvent('GD_SYNC_JOB_COMPLETE')
+            if (! globalSourceSyncService.startSync()) {
+                log.warn( 'GlobalDataSyncJob failed. Maybe ignored due blocked globalSourceSyncService' )
             }
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-
-        jobIsRunning = false
+        stop('GD_SYNC_JOB_COMPLETE')
   }
 }
 

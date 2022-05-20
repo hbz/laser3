@@ -4,16 +4,14 @@ import de.laser.StatsSyncService
 import de.laser.system.SystemEvent
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class StatsSyncJob extends AbstractJob {
 
     StatsSyncService statsSyncService
 
     static triggers = {
-        // Delay 20 seconds, run every 10 mins.
-        // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
-        // Example - every 10 mins 0 0/10 * * * ?
-        // At 4am each Sunday - Sync stats
         cron name:'statsSyncTrigger', cronExpression: "0 0 4 ? * *"
         //cron name:'statsSyncTrigger', cronExpression: "0 0/10 * * * ?" //debug only!
         // cronExpression: "s m h D M W Y"
@@ -26,37 +24,25 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static List<String> configFlags = ['laserStatsSyncJobActive']
+    static List<List> configurationProperties = [ ConfigMapper.LASER_STATS_SYNC_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running && Boolean.valueOf(ConfigMapper.getLaserStatsSyncJobActive())
+        !jobIsRunning && !statsSyncService.running && ConfigMapper.getLaserStatsSyncJobActive()
     }
     boolean isRunning() {
         jobIsRunning
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start('STATS_SYNC_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-
         try {
-            log.debug("Execute::statsSyncJob")
-
-            if (ConfigMapper.getLaserStatsSyncJobActive()) {
-                log.debug("Running Stats SYNC batch job")
-                SystemEvent.createEvent('STATS_SYNC_JOB_START')
-
-                statsSyncService.doFetch(true)
-
-                SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
-            }
+            statsSyncService.doFetch(true)
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-
-        jobIsRunning = false
+        stop('STATS_SYNC_JOB_COMPLETE')
     }
 }

@@ -4,7 +4,9 @@ import de.laser.StatusUpdateService
 import de.laser.SubscriptionService
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class StatusUpdateJob extends AbstractJob {
 
     StatusUpdateService statusUpdateService
@@ -16,7 +18,7 @@ class StatusUpdateJob extends AbstractJob {
 //        cron name:'StatusUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
     }
 
-    static List<String> configFlags = []
+    static List<List> configurationProperties = []
 
     boolean isAvailable() {
         !jobIsRunning && !statusUpdateService.running
@@ -26,27 +28,17 @@ class StatusUpdateJob extends AbstractJob {
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start('SUB_UPDATE_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-
-        SystemEvent.createEvent('SUB_UPDATE_JOB_START')
-
         try {
-            log.info("Execute::SubscriptionUpdateJob - Start")
-
             if (!statusUpdateService.subscriptionCheck() || !statusUpdateService.licenseCheck() || !subscriptionService.freezeSubscriptionHoldings() ) {
-                log.warn( 'Failed. Maybe ignored due blocked statusUpdateService')
+                log.warn( 'StatusUpdateJob failed. Maybe ignored due blocked statusUpdateService' )
             }
-
-            log.info("Execute::SubscriptionUpdateJob - Finished")
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-        SystemEvent.createEvent('SUB_UPDATE_JOB_COMPLETE')
-
-        jobIsRunning = false
+        stop('SUB_UPDATE_JOB_COMPLETE')
     }
 }

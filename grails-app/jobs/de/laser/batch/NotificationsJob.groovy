@@ -3,7 +3,9 @@ package de.laser.batch
 import de.laser.ChangeNotificationService
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class NotificationsJob extends AbstractJob {
 
     ChangeNotificationService changeNotificationService
@@ -18,34 +20,27 @@ class NotificationsJob extends AbstractJob {
     cron name:'notificationsTrigger', cronExpression: "0 0 0/1 * * ?"
   }
     */
-    static List<String> configFlags = ['notificationsJobActive']
+    static List<List> configurationProperties = [ ConfigMapper.NOTIFICATIONS_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning && !changeNotificationService.running
+        !jobIsRunning && !changeNotificationService.running && ConfigMapper.getNotificationsJobActive()
     }
     boolean isRunning() {
         jobIsRunning
     }
 
     def execute() {
-        if (! isAvailable()) {
+        if (! start()) {
             return false
         }
-        jobIsRunning = true
-
         try {
-            log.debug("NotificationsJob")
-
-            if (ConfigMapper.getNotificationsJobActive()) {
-                if (! changeNotificationService.aggregateAndNotifyChanges()) {
-                    log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
-                }
+            if (! changeNotificationService.aggregateAndNotifyChanges()) {
+                log.warn( 'NotificationsJob failed. Maybe ignored due blocked changeNotificationService' )
             }
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-
-        jobIsRunning = false
+        stop()
     }
 }

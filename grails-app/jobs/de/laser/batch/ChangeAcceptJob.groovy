@@ -2,19 +2,16 @@ package de.laser.batch
 
 import de.laser.PendingChangeService
 import de.laser.PendingChange
-import de.laser.system.SystemEvent
 import de.laser.storage.RDStore
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class ChangeAcceptJob extends AbstractJob {
 
   PendingChangeService pendingChangeService
 
   /*static triggers = {
-   // Delay 20 seconds, run every 10 mins.
-   // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
-   // Example - every 10 mins 0 0/10 * * * ? 
-   // At 5 past 3am every day
    cron name:'changeAcceptJobTrigger', startDelay:180000, cronExpression: "0 0 4 * * ?"
    // cronExpression: "s m h D M W Y"
    //                  | | | | | | `- Year [optional]
@@ -25,7 +22,7 @@ class ChangeAcceptJob extends AbstractJob {
    //                  | `- Minute, 0-59
    //                  `- Second, 0-59
  }*/
-    static List<String> configFlags = []
+    static List<List> configurationProperties = []
 
     boolean isAvailable() {
         !jobIsRunning && !pendingChangeService.running
@@ -38,12 +35,10 @@ class ChangeAcceptJob extends AbstractJob {
     * Accept pending changes from master subscriptions on slave subscriptions
     **/
     def execute(){
-        if (! isAvailable()) {
+
+        if (! start('CAJ_JOB_START')) {
             return false
         }
-        jobIsRunning = true
-        SystemEvent.createEvent('CAJ_JOB_START')
-
         try {
             // Get all changes associated with slaved subscriptions
             String subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved = true and ( pc.status is null or pc.status = :status ) order by pc.ts desc"
@@ -59,15 +54,10 @@ class ChangeAcceptJob extends AbstractJob {
             if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges)) {
                 log.warn( 'Failed. Maybe ignored due blocked pendingChangeService')
             }
-
-            log.debug("****Change Accept Job Complete*****")
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-
-        SystemEvent.createEvent('CAJ_JOB_COMPLETE')
-
-        jobIsRunning = false
+        stop('CAJ_JOB_COMPLETE')
     }
 }

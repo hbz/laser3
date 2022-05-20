@@ -1,29 +1,44 @@
 package de.laser.base
 
+import de.laser.system.SystemEvent
+import groovy.util.logging.Slf4j
+
+@Slf4j
 abstract class AbstractJob {
-    private Date job_start
-    private Date job_end
 
-    static List<String> configFlags = []
+    static List<List> configurationProperties = []
 
-    //Todo REDUCE VISIBILITY after changing code to use method setJobStart/End instead of modifying the jobIsRunning attribute
-    protected boolean jobIsRunning = false
+    boolean jobIsRunning = false
 
     abstract boolean isAvailable()
 
-    protected boolean isRunning() {
+    boolean isRunning() {
         jobIsRunning
     }
 
-    protected setJobStart(){
-        job_start = new Date()
+    protected boolean start(String startEventToken = null) {
+        if (! isAvailable()) {
+            return false
+        }
+        else {
+            jobIsRunning = true
+
+            log.info ' -> ' + this.class.simpleName + ' started'
+
+            if (startEventToken) {
+                SystemEvent.createEvent( startEventToken )
+            }
+        }
+        true
     }
 
-    protected setJobEnd(){
-        job_end = new Date()
-    }
+    protected void stop(String stopEventToken = null) {
+        log.info ' -> ' + this.class.simpleName + ' finished'
 
-    protected long getJobDurationInMillis(){
-        job_end.getTime() - job_start.getTime()
+        if (stopEventToken) {
+            SystemEvent.createEvent( stopEventToken )
+        }
+
+        jobIsRunning = false
     }
 }

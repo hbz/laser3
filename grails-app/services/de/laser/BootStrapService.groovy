@@ -43,6 +43,8 @@ class BootStrapService {
      */
     void init (boolean quickStart) {
 
+        ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, null ) // config injection
+
         if (Environment.isDevelopmentMode() && ! quickStart) {
             ConfigMapper.checkCurrentConfig()
         }

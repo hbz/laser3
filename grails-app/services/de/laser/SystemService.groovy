@@ -34,7 +34,7 @@ class SystemService {
             if (! ConfigMapper.getNotificationsJobActive()) {
                 checks.notificationsJobActive = "NOT active"
             }
-            if (! ConfigMapper.getGlobalDataSyncJobActiv()) {
+            if (! ConfigMapper.getGlobalDataSyncJobActive()) {
                 checks.globalDataSyncJob = "NOT active"
             }
             if (! ConfigMapper.getIsUpdateDashboardTableInDatabase()) {

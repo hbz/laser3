@@ -4,6 +4,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
+import de.laser.base.AbstractJob
 import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.properties.LicenseProperty
@@ -23,6 +24,7 @@ import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.Action
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -110,7 +112,7 @@ class YodaController {
 
         // DEBUG ONLY: changeNotificationService.aggregateAndNotifyChanges()
 
-        result.currentConfig   = grails.util.Holders.config
+        result.currentConfig   = Holders.grailsApplication.config
         result.quartzScheduler = quartzScheduler
 
         Map<String, Object> groups = [:]
@@ -119,7 +121,7 @@ class YodaController {
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                 def clazz = Class.forName(key.getName())
-                def cf  = clazz.configFlags
+                List<List> cp  = clazz.getAt('configurationProperties')
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 List nft = triggers.collect{ it.nextFireTime ?: null }
@@ -131,11 +133,11 @@ class YodaController {
 
                 Map map = [
                         name: clazz.simpleName,
-                        configFlags: cf.join(', '),
+                        configurationProperties: cp,
                         services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
-                        running: applicationContext.getBean(key.getName()).isRunning(),
-                        available: applicationContext.getBean(key.getName()).isAvailable()
+                        running: (applicationContext.getBean(key.getName()) as AbstractJob).isRunning(),
+                        available: (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
                 ]
 
                 List crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }

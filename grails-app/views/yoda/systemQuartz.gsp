@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -12,6 +13,11 @@
 </semui:breadcrumbs>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemQuartz')}</h1>
+
+##
+${ConfigMapper.getQuartzHeartbeat()} ##
+%{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
+%{--${ConfigMapper.getQuartzHeartbeat()} ##--}%
 
 <g:each in="${quartz}" var="groupKey, group">
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
@@ -32,23 +38,20 @@
 
                     boolean isActive = true
 
-                    if (job.configFlags) {
-                        job.configFlags.split(',').each { flag ->
-                            isActive = isActive && (currentConfig.get(flag.trim()) && ! (currentConfig.get(flag.trim()) in [null, false]))
+                    if (job.configurationProperties) {
+                        job.configurationProperties.each { prop ->
+                            isActive = isActive && (currentConfig.get(prop[0].trim()) && ! (currentConfig.get(prop[0].trim()) in [null, false]))
                         }
                     }
 
-                    if (job.running) {
+                    if (job.running || isActive) {
                         tdClass = 'table-td-yoda-green'
                     }
-                    else if (! job.nextFireTime) {
+                    else if (! job.available && ! job.nextFireTime) {
                         tdClass = 'table-td-yoda-red'
                         tdStyle = 'color:grey'
                     }
-                    else if (isActive) {
-                        tdClass = 'table-td-yoda-green'
-                    }
-                    else if (job.available) {
+                    else if (! job.available) {
                         tdClass = 'table-td-yoda-yellow'
                         tdStyle = 'color:grey'
                     }
@@ -63,12 +66,12 @@
                         </g:each>
                     </td>
                     <td class="${tdClass}" style="${tdStyle}">
-                        <g:each in="${job.configFlags.split(',')}" var="flag">
-                            <g:if test="${currentConfig.get(flag.trim())}">
-                                ${flag} = ${currentConfig.get(flag.trim())} <br />
+                        <g:each in="${job.configurationProperties}" var="prop">
+                            <g:if test="${currentConfig.get(prop[0].trim())}">
+                                ${prop[0]} = ${currentConfig.get(prop[0].trim())} <br />
                             </g:if>
                             <g:else>
-                                ${flag} <br />
+                                ${prop[0]} <br />
                             </g:else>
                         </g:each>
                     </td>

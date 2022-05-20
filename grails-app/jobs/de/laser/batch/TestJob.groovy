@@ -4,7 +4,9 @@ import de.laser.ContextService
 import de.laser.Org
 import de.laser.helper.ConfigMapper
 import de.laser.base.AbstractJob
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class TestJob extends AbstractJob {
 
     ContextService contextService
@@ -22,29 +24,27 @@ class TestJob extends AbstractJob {
     //                  `- Second, 0-59
     }
 
-    static List<String> configFlags = ['activateTestJob']
+    static List<List> configurationProperties = [ ConfigMapper.TEST_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning // no service needed
+        !jobIsRunning && ConfigMapper.getTestJobActive()
     }
     boolean isRunning() {
         jobIsRunning
     }
 
     def execute() {
-        if (ConfigMapper.getActivateTestJob()) {
-            if (! isAvailable()) {
-                return false
-            }
-            jobIsRunning = true
-
-            log.debug("Ping")
-
-            // provocate error @  WebUtils.retrieveGrailsWebRequest().getSession()
-
-            Org ctx = contextService.getOrg()
-
-            jobIsRunning = false
+        if (! start()) {
+            return false
         }
+        try {
+            log.debug( 'Ping' )
+            // provocate error @  WebUtils.retrieveGrailsWebRequest().getSession()
+            Org ctx = contextService.getOrg()
+        }
+        catch (Exception e) {
+            log.error( e.toString() )
+        }
+        stop()
     }
 }

@@ -13,7 +13,6 @@ class ConfigMapper {
     
     // -- controlled configuration
 
-    static final List ACTIVATE_TEST_JOB             = ['activateTestJob',   Boolean]
     static final List AGGR_ES_CLUSTER               = ['aggr_es_cluster',   String]
     static final List AGGR_ES_HOSTNAME              = ['aggr_es_hostname',  String]
     static final List AGGR_ES_INDICES               = ['aggr_es_indices',   Map]
@@ -26,12 +25,14 @@ class ConfigMapper {
 
     static final List FINANCIALS_CURRENCY           = ['financials.currency', String]
 
-    static final List GLOBAL_DATA_SYNC_JOB_ACTIV                    = ['globalDataSyncJobActiv', Boolean]
+
+    static final List GLOBAL_DATA_SYNC_JOB_ACTIVE                   = ['globalDataSyncJobActive', Boolean]
     static final List GRAILS_MAIL_DISABLED                          = ['grails.mail.disabled',   Boolean]
     static final List GRAILS_PLUGIN_WKHTMLTOPDF_BINARY              = ['grails.plugin.wkhtmltopdf.binary',     String]
     static final List GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER          = ['grails.plugin.wkhtmltopdf.xvfbRunner', String]
     static final List GRAILS_SERVER_URL                             = ['grails.serverURL', String]
 
+    static final List INDEX_UPDATE_JOB_ACTIVE                       = ['indexUpdateJobActive', Boolean]
     static final List IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS     = ['isSendEmailsForDueDatesOfAllUsers', Boolean]
     static final List IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE         = ['isUpdateDashboardTableInDatabase',  Boolean]
 
@@ -43,29 +44,32 @@ class ConfigMapper {
     static final List NOTIFICATIONS_EMAIL_REPLY_TO            = ['notifications.email.replyTo', String]
     static final List NOTIFICATIONS_JOB_ACTIVE                = ['notificationsJobActive', Boolean]
 
-    static final List PGDUMP_PATH         = ['pgDumpPath', String]
-    static final List QUARTZ_HEARTBEAT    = ['quartzHeartbeat', String]
-    static final List REPORTING           = ['reporting', Map]
+    static final List PGDUMP_PATH           = ['pgDumpPath', String]
+    static final List QUARTZ_HEARTBEAT      = ['quartzHeartbeat', Date]
+    static final List REPORTING             = ['reporting', Map]
 
-    static final List SHOW_DEBUG_INFO     = ['showDebugInfo',  Boolean]
-    static final List SHOW_SYSTEM_INFO    = ['showSystemInfo', Boolean]
-    static final List SHOW_STATS_INFO     = ['showStatsInfo',  Boolean]
-    static final List STATS_API_URL       = ['statsApiUrl', String]
-    static final List SYSTEM_EMAIL        = ['systemEmail', String]
+    static final List SHOW_DEBUG_INFO       = ['showDebugInfo',  Boolean]
+    static final List SHOW_SYSTEM_INFO      = ['showSystemInfo', Boolean]
+    static final List SHOW_STATS_INFO       = ['showStatsInfo',  Boolean]
+    static final List STATS_API_URL         = ['statsApiUrl', String]
+    static final List SYSTEM_EMAIL          = ['systemEmail', String]
+
+    static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
 
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
-            ACTIVATE_TEST_JOB, AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES, AGGR_ES_GOKB_CLUSTER, AGGR_ES_GOKB_HOSTNAME, AGGR_ES_GOKB_INDEX,
+            AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES, AGGR_ES_GOKB_CLUSTER, AGGR_ES_GOKB_HOSTNAME, AGGR_ES_GOKB_INDEX,
             DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION,
             FINANCIALS_CURRENCY,
-            GLOBAL_DATA_SYNC_JOB_ACTIV, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
-            IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
+            GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
+            INDEX_UPDATE_JOB_ACTIVE, IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
             LASER_STATS_SYNC_JOB_ACTIVE, LASER_SYSTEM_ID,
             NOTIFICATIONS_EMAIL_FROM, NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, NOTIFICATIONS_EMAIL_REPLY_TO, NOTIFICATIONS_JOB_ACTIVE,
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, SYSTEM_EMAIL
+            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, SYSTEM_EMAIL,
+            TEST_JOB_ACTIVE
 
     ]
 
@@ -89,7 +93,7 @@ class ConfigMapper {
         println ": --------------------------------------------->"
     }
 
-    // -- basic getter --
+    // -- basic getter/setter --
 
     static def getConfig(String token, Class cls) {
         readConfig( [token, cls] )
@@ -98,11 +102,17 @@ class ConfigMapper {
         readConfig( ['grails.plugin.' + token, cls] )
     }
 
+    static def setConfig(String token, def value) {
+        log.warn 'Changing grailsApplication.config -> ' + token + ' = ' + value
+
+        Holders.grailsApplication.config.put(token, value)
+    }
+    static def setConfig(List cfg, def value) {
+        setConfig(cfg[0] as String, value)
+    }
+
     // -- comfortable --
 
-    static boolean getActivateTestJob(int output = LOGGER) {
-        readConfig( ACTIVATE_TEST_JOB, output )
-    }
     static String getAggrEsCluster(int output = LOGGER) {
         readConfig( AGGR_ES_CLUSTER, output )
     }
@@ -130,11 +140,14 @@ class ConfigMapper {
     static String getFinancialsCurrency(int output = LOGGER) {
         readConfig( FINANCIALS_CURRENCY, output )
     }
-    static boolean getGlobalDataSyncJobActiv(int output = LOGGER) {
-        readConfig( GLOBAL_DATA_SYNC_JOB_ACTIV, output )
+    static boolean getGlobalDataSyncJobActive(int output = LOGGER) {
+        readConfig( GLOBAL_DATA_SYNC_JOB_ACTIVE, output )
     }
     static boolean getGrailsMailDisabled(int output = LOGGER) {
         readConfig( GRAILS_MAIL_DISABLED, output )
+    }
+    static boolean getIndexUpdateJobActive(int output = LOGGER) {
+        readConfig( INDEX_UPDATE_JOB_ACTIVE, output )
     }
     static String getWkhtmltopdfBinary(int output = LOGGER) {
         readConfig( GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, output )
@@ -172,8 +185,8 @@ class ConfigMapper {
     static String getPgDumpPath(int output = LOGGER) {
         readConfig( PGDUMP_PATH, output )
     }
-    static String getQuartzHeartbeat(int output = LOGGER) {
-        readConfig( QUARTZ_HEARTBEAT, output )
+    static Date getQuartzHeartbeat(int output = LOGGER) {
+        readConfig( QUARTZ_HEARTBEAT, output ) as Date
     }
     static Map getReporting(int output = LOGGER) {
         readConfig( REPORTING, output ) as Map
@@ -192,6 +205,9 @@ class ConfigMapper {
     }
     static String getSystemEmail(int output = LOGGER) {
         readConfig( SYSTEM_EMAIL, output )
+    }
+    static boolean getTestJobActive(int output = LOGGER) {
+        readConfig( TEST_JOB_ACTIVE, output )
     }
 
     // -- raw --
