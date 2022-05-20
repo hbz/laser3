@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4262    20.05.2022  rc-2.3  2.3         Andreas Bug         diverse Fehler bei der Kopie von Titel zwischen Lizenzen behoben
+
+4144    20.05.2022  rc-2.3  2.3         Andreas Feature     Archivplattformen werden nun beim Paket angezeigt
+
+4076    20.05.2022  rc-2.3  2.3         Andreas Bug         Titel wurden bei Kopie einer Lizenz nicht übertragen
+
+4035    20.05.2022  rc-2.3  2.3         Andreas Feature     Optionen bei Aufhebung der Vererbung beim Lizenznamen aufgehoben
+
+2794    20.05.2022  rc-2.3  2.3         Andreas Bug         Sortierung der DBS-Fächergruppen korrigiert
+
 4255    19.05.2022  rc-2.3  2.3         Moe     Bug         Meine Lizenzverwaltung springen zwischen den Reiter erst durch doppelklick
 
 4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht

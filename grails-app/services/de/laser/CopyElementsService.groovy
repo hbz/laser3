@@ -832,11 +832,11 @@ class CopyElementsService {
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
-            boolean isTargetSubChanged = false, bulkOperationRunning = false
+            boolean bulkOperationRunning = false
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
-                if (it.name == 'PackageTransfer_'+sourceObject.id) {
+                if (it.name == 'PackageTransfer_'+targetObject?.id) {
                     bulkOperationRunning = true
                 }
             }
@@ -851,26 +851,24 @@ class CopyElementsService {
                     }
                     PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp', [sp: toDelete])
                 }
-                isTargetSubChanged = true
             }
 
             log.debug(params.toMapString())
-            if(!bulkOperationRunning) {
+            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
                 executorService.execute({
                     try {
-                        Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
-                        if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        Thread.currentThread().setName("PackageTransfer_${targetObject.id}")
+                        if (params.subscription?.deletePackageIds) {
                             List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
                             deletePackages(packagesToDelete, targetObject, flash)
-                            isTargetSubChanged = true
                         }
-                        if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.takePackageIds) {
                             List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
                             copyPackages(packagesToTake, targetObject, flash)
-                            isTargetSubChanged = true
                         }
 
-                        if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.takePackageSettings) {
                             List takePackageNotifications = params.list('subscription.takePackageNotifications'),
                             takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
                             takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
@@ -881,7 +879,7 @@ class CopyElementsService {
                                 notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
                                 SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
                                 SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
-                                if(setting[2] != 'null') {
+                                if(setting[2] != 'null' && targetPackage) {
                                     Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
                                     PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
                                     if (newPcc) {
@@ -896,19 +894,16 @@ class CopyElementsService {
                                     }
                                 }
                             }
-                            isTargetSubChanged = true
                         }
 
-                        if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.takeTitleGroups) {
                             List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
                             copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
-
                         }
 
-                        if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.deleteTitleGroups) {
                             List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                             deleteIssueEntitlementGroupItem(deleteTitleGroups)
-
                         }
                     }
                     catch (Exception e) {
@@ -916,7 +911,9 @@ class CopyElementsService {
                     }
                 })
             }
-
+            else if(bulkOperationRunning) {
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+            }
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }
                 deleteEntitlements(entitlementsToDelete, targetObject, flash)
@@ -1543,12 +1540,12 @@ class CopyElementsService {
                 List<OrgAccessPointLink> pkgOapls = []
                 if(subscriptionPackage.oapls)
                     pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                subscriptionPackage.properties.oapls = null
-                subscriptionPackage.properties.pendingChangeConfig = null //copied in next step
+                subscriptionPackage.oapls = null
+                subscriptionPackage.pendingChangeConfig = null //copied in next step
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
+                newSubscriptionPackage.pkg = subscriptionPackage.pkg
                 newSubscriptionPackage.subscription = targetObject
-
+                newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
                 if (save(newSubscriptionPackage, flash)) {
                     pkgOapls.each { OrgAccessPointLink oapl ->
 
