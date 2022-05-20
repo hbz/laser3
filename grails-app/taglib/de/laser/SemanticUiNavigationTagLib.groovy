@@ -257,7 +257,7 @@ class SemanticUiNavigationTagLib {
             out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
         // Custom Input
-        out << '<div class="item la-pagination-custom-input">'
+        out << '<div class="item la-pagination-custom-input"  data-total="'+ total +'">'
         out << '    <div class="ui mini form">'
         out << '            <div class="field">'
         out << '                <input  name="paginationCustomInput" maxlength="6" placeholder="Seite:" type="text">'
