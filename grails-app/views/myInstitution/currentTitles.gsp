@@ -318,7 +318,14 @@
                                         </div>
 
                                         <div class="eight wide column">
-                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}  ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
+                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+                                            <%
+                                                if (ie.perpetualAccessBySub) {
+                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                                                } else {
+                                                    RDStore.YN_NO.getI10n('value')
+                                                }
+                                            %>
                                         </div>
                                     </g:each>
                                 </div>
