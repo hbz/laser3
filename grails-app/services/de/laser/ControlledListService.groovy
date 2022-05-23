@@ -282,7 +282,7 @@ class ControlledListService {
             filter += ' and genfunc_filter_matcher(ie.name,:query) = true '
             filterParams.put('query',params.query)
         }
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and ie.status != :removed order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams+[removed: RDStore.TIPP_STATUS_REMOVED])
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
@@ -401,6 +401,14 @@ class ControlledListService {
                 else filter.status = RefdataValue.get(params.status)
                 queryString += " and s.status = :status "
             }
+        }
+        else if(filter.ctx) {
+            filter.status = filter.ctx.status
+            queryString += " and s.status = :status "
+        }
+        else if(filter.sub) {
+            filter.status = filter.sub.status
+            queryString += " and s.status = :status "
         }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT

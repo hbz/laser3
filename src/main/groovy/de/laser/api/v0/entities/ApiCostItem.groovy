@@ -173,7 +173,7 @@ class ApiCostItem {
         result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
         result.reference           = costItem.reference
-        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
+        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : null)
 
         result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
 
@@ -186,7 +186,7 @@ class ApiCostItem {
         result.costItemCategory    = costItem.costItemCategory?.value
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
-        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: null
         result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References
