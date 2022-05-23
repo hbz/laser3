@@ -137,7 +137,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((parent != null and parent < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
+            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((parent != null and parent.endDate < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
                 [status: RDStore.SUBSCRIPTION_CURRENT,currentDate: currentDate])
 
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)

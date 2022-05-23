@@ -1322,9 +1322,14 @@ class SubscriptionControllerService {
             result.subscriber = newSub.getSubscriber()
 
             result.subscriberSubs = []
-            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-            if(subscriptions) {
-                result.subscriberSubs = subscriptions
+
+            Set<Subscription> subscriptions = []
+            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
+                subscriptions << newSub
+                if (subscriptions) {
+                    result.subscriberSubs = subscriptions.toList()
+                }
             }
 
             if (params.hasPerpetualAccess) {
@@ -1342,9 +1347,12 @@ class SubscriptionControllerService {
             }
             if(params.tab == 'currentIEs') {
                 GrailsParameterMap parameterMap = params.clone()
-                Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
-                List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + previousIes
+                Map query = [:]
+                if(subscriptions) {
+                    query = filterService.getIssueEntitlementQuery(parameterMap + [ieAcceptStatusFixed: true], subscriptions)
+                    List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                    sourceIEs = sourceIEs + previousIes
+                }
 
                 query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
                 List<Long> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
@@ -1369,7 +1377,11 @@ class SubscriptionControllerService {
             }
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
-            result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
+            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+            } else {
+                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+            }
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
