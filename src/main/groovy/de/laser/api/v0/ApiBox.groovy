@@ -3,6 +3,9 @@ package de.laser.api.v0
 import de.laser.RefdataValue
 import de.laser.helper.Constants
 
+/**
+ * This class is for checking and validating of API requests
+ */
 class ApiBox {
 
     static final List FAILURE_CODES  = [

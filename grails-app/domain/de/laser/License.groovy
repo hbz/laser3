@@ -25,14 +25,14 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 /**
- * One of the central domains in LAS:eR; only {@link Subscription} is more essential.
- * A license is the entity which retains the framing conditions for one or more subscriptions. Like with subscriptions, there are consortial and local objects.
+ * <p>One of the central domains in LAS:eR; only {@link Subscription} is more essential.</p>
+ * <p>A license is the entity which retains the framing conditions for one or more subscriptions. Like with subscriptions, there are consortial and local objects.
  * Consortial objects have two levels: a parent and a child level whereas local objects have only one level. Former are used by consortia; their child objects are
  * assigned to basic members or single users. Latter ones are used by single users. The main difference between consortia and local objects (counts for subscriptions as well!) is
  * that consortia control both levels and domain attributes and properties ({@link LicenseProperty}) may be passed from the parent to the child object just as documents (the {@link DocContext}
  * linking is being shared for that; technically, we multiply the pointers to the same document when we share one). On intellectual level, the passing of parental attributes to a child is
- * named two different ways: domain attributes and properties are inherited to child objects, documents are shared among the children.
- * The child-parent relation is represented by the {@link #instanceOf} field; a child is instance of a parent
+ * named two different ways: domain attributes and properties are inherited to child objects, documents are shared among the children.</p>
+ * <p>The child-parent relation is represented by the {@link #instanceOf} field; a child is instance of a parent.</p>
  */
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
