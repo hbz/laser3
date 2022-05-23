@@ -19,6 +19,10 @@
 
 3729    23.05.2022  rc-2.3  2.3         Andreas Feature     Nachbesserungen für die neu strukturierte Sicht
 
+4253    23.05.2022  rc-2.3  2.3         Moe     Bug         TN verwalten: Dokument anlegen funktioniert nicht
+
+4220    20.05.2022  rc-2.3  2.3         Moe     Feature     Mehrere Vorgängerlizenzen zur Bildung des Bestands zulassen
+
 4262    20.05.2022  rc-2.3  2.3         Andreas Bug         diverse Fehler bei der Kopie von Titel zwischen Lizenzen behoben
 
 4144    20.05.2022  rc-2.3  2.3         Andreas Feature     Archivplattformen werden nun beim Paket angezeigt

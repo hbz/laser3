@@ -2052,7 +2052,13 @@ join sub.orgRelations or_sub where
                         [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                 result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
-                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+                } else {
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                }
+
 
                 result.subscriber = result.subscription.getSubscriber()
             }

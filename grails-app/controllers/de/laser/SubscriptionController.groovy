@@ -456,7 +456,8 @@ class SubscriptionController {
     })
     def membersSubscriptionsManagement() {
         def input_file
-        if(params.tab == 'documents' && params.upload_file) {
+
+        if(params.tab == 'documents' && params.processOption == 'newDoc') {
             input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file')
