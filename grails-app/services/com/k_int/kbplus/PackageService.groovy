@@ -191,7 +191,7 @@ class PackageService {
      */
     int removePackagePendingChanges(de.laser.Package pkg, List subIds, boolean confirmed) {
         int count = 0
-        List<Long> tippIDs = pkg.tipps.id
+        List<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: pkg])
         if(confirmed) {
             count = PendingChange.executeUpdate('delete from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs) and pc.payload is null))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])
             List oldStylePCs = PendingChange.executeQuery('select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)', [subIds: subIds])
