@@ -481,8 +481,8 @@ class SubscriptionController {
             if(ctrlResult.result.tabPlat && !params.tabPlat)
                 params.tabPlat = ctrlResult.result.tabPlat.toString()
 
-            ctrlResult.result
         }
+        ctrlResult.result
     }
 
     /**
@@ -764,7 +764,7 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tippIDs,TitleInstancePackagePlatform.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                 }
@@ -776,6 +776,7 @@ class SubscriptionController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, Object> configMap = [:]
                 configMap.putAll(params)
+                configMap.remove("subscription")
                 configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
                 Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
                 Map sheetData = [:]

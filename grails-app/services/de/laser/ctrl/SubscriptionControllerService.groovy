@@ -2025,6 +2025,7 @@ class SubscriptionControllerService {
                                                                issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name)]
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
+                result.tippIDs = tippIds
                 Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]

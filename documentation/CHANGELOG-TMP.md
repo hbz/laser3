@@ -11,6 +11,10 @@
 
 4265    24.05.2022  rc-2.3  2.3         Andreas Bug         Teilnehmerübertrag beschleunigt
 
+4264    24.05.2022  rc-2.3  2.3         Andreas Bug         500er bei Entknüpfung eines Teilnehmerpaketes von einer Lizenz behoben
+
+4254    24.05.2022  rc-2.3  2.3         Andreas Feature     Kundennummern-Sicht bei Anbietern und Lieferanten grundsätzlich abgeklemmt
+
 4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
 
 4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf

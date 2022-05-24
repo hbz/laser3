@@ -2069,7 +2069,7 @@ class ExportService {
 		Sql sql = GlobalService.obtainSqlConnection()
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		Locale locale = LocaleContextHolder.getLocale()
-		List<GroovyRowResult> titles = sql.rows(queryData.query+' where '+queryData.where+queryData.order, queryData.params),
+		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),
 		identifiers, coverages, priceItems, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces
 		Map<Long, List<GroovyRowResult>> coverageMap = [:], priceItemMap = [:]
 		Map<Long, Map<Date, GroovyRowResult>> reportMap = [:]
@@ -2078,11 +2078,11 @@ class ExportService {
 			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
-			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
 			coverageMap.putAll(preprocessRows(coverages, 'tc_tipp_fk'))
 			priceItemMap.putAll(preprocessRows(priceItems, 'pi_tipp_fk'))
