@@ -1545,7 +1545,7 @@ class FilterService {
         as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
         as defined in myInstitutionController.currentTitles()
          */
-        String query = "", where = "", orderClause = "", refdata_value_col = I10nTranslation.getRefdataValueColumn(LocaleContextHolder.getLocale())
+        String query = "", join = "", where = "", orderClause = "", refdata_value_col = I10nTranslation.getRefdataValueColumn(LocaleContextHolder.getLocale())
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
         //sql.withTransaction {
@@ -1564,19 +1564,19 @@ class FilterService {
                 String subFilter = ""
                 if(configMap.sub) {
                     params.subscription = configMap.sub.id
-                    where += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                     subFilter = " and ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscription) {
                     params.subscription = configMap.subscription.id
-                    where += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                     subFilter = " and ie_subscription_fk = :subscription"
                 }
                 else if(configMap.subscriptions) {
                     List<Object> subIds = []
                     subIds.addAll(configMap.subscriptions.id)
                     params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
-                    where += " join issue_entitlement on ie_tipp_fk = tipp_id"
+                    join += " join issue_entitlement on ie_tipp_fk = tipp_id"
                     subFilter = " and ie_subscription_fk = any(:subscriptions)"
                 }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
@@ -1832,7 +1832,7 @@ class FilterService {
             }
             */
         //}
-        [query: query, where: where, order: orderClause, params: params]
+        [query: query, join: join, where: where, order: orderClause, params: params]
     }
 
     List listReaderWrapper(Map params, String key) {

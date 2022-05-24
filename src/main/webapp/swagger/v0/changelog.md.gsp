@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.138
+
+- internal refactoring
+
 #### 0.137
 
 - added new attribute: `CostItemCollection.isVisibleForSubscriber`

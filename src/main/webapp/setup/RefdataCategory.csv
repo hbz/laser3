@@ -5,6 +5,7 @@ access.method,Access Method,Access Method
 access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
+archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority
 category.a.f,Preiskategorie Beck,Price category Beck
 category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
@@ -183,5 +184,6 @@ workflow.workflow.status,Status,Status
 y.n,Ja/Nein,Yes/No
 y.n.l,Ja/Nein/Eingeschränkt/Keine Angaben,Yes/No/limited/no statement
 y.n.o,Ja/Nein/Anderes,Yes/No/Others
+y.n.p,Ja/Nein/Teilweise,Yes/No/Partly
 y.n.r,Ja/Nein/Eingeschränkt/Keine Angaben/Nicht relevant,Yes/No/limited/no statement/not relevant
 y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown

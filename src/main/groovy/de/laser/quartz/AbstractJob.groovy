@@ -1,5 +1,8 @@
 package de.laser.quartz
 
+/**
+ * Abstract class for scheduled cronjobs.
+ */
 abstract class AbstractJob {
     private Date job_start
     private Date job_end
