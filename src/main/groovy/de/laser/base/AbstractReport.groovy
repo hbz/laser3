@@ -4,6 +4,9 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.TitleInstancePackagePlatform
 
+/**
+ * Abstract class for central properties of every revision of COUNTER reports.
+ */
 abstract class AbstractReport {
 
     TitleInstancePackagePlatform title

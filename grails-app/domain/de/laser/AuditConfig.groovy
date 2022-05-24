@@ -101,12 +101,12 @@ class AuditConfig {
     static AuditConfig getConfig(Object obj, String field) {
         if (! obj)
             return null
-
-        AuditConfig.findWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name,
-                referenceField: field
+        AuditConfig ret = AuditConfig.findByReferenceIdAndReferenceClassAndReferenceField(
+                obj.getId(),
+                obj.getClass().name,
+                field
         )
+        ret
     }
 
     /**

@@ -98,7 +98,7 @@
             <g:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
         </g:if>
 
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
 
         <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>

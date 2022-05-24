@@ -78,9 +78,6 @@ class CostItem extends AbstractBase
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION, i18n = 'financials.costItemConfiguration')
     RefdataValue costItemElementConfiguration
 
-    @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
-    RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
-
     @RefdataAnnotation(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
     RefdataValue billingCurrency
 
@@ -88,8 +85,6 @@ class CostItem extends AbstractBase
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
-    //legacy, to be replaced by ...
-    Integer taxRate
     //... this construct:
     TAX_TYPES taxKey
 
@@ -143,8 +138,6 @@ class CostItem extends AbstractBase
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
         billingSumRounding              column:'ci_billing_sum_rounding'
-        taxCode         column: 'ci_tax_code'
-        taxRate                         column: 'ci_tax_rate'
         taxKey          column: 'ci_tax_enum'
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
@@ -183,8 +176,6 @@ class CostItem extends AbstractBase
         datePaid        (nullable: true)
         costInLocalCurrency (nullable: true)
         currencyRate(nullable: true)
-        taxCode     (nullable: true)
-        taxRate     (nullable: true)
         taxKey      (nullable: true)
         invoiceDate (nullable: true)
         financialYear(nullable: true)

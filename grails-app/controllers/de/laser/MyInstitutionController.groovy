@@ -1408,8 +1408,13 @@ join sub.orgRelations or_sub where
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.validOn = checkedDate.getTime()
+            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements, IssueEntitlement.class.name)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
@@ -2052,7 +2057,13 @@ join sub.orgRelations or_sub where
                         [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                 result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
-                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+                } else {
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                }
+
 
                 result.subscriber = result.subscription.getSubscriber()
             }
