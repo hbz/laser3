@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4266    24.05.2022  rc-2.3  2.3         Andreas Bug         Vererbung der Merkmale kam zunächst nicht durch
+
+4265    24.05.2022  rc-2.3  2.3         Andreas Bug         Teilnehmerübertrag beschleunigt
+
 4264    24.05.2022  rc-2.3  2.3         Andreas Bug         500er bei Entknüpfung eines Teilnehmerpaketes von einer Lizenz behoben
 
 4254    24.05.2022  rc-2.3  2.3         Andreas Feature     Kundennummern-Sicht bei Anbietern und Lieferanten grundsätzlich abgeklemmt
