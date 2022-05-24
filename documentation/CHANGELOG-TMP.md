@@ -15,6 +15,8 @@
 
 4254    24.05.2022  rc-2.3  2.3         Andreas Feature     Kundennummern-Sicht bei Anbietern und Lieferanten grundsätzlich abgeklemmt
 
+4215    24.05.2022  rc-2.3  2.3         Andreas Bug         Bugfix und Umstellung des KBART-Exports auf natives SQL
+
 4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
 
 4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf

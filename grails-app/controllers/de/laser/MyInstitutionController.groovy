@@ -1408,8 +1408,13 @@ join sub.orgRelations or_sub where
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.validOn = checkedDate.getTime()
+            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements, IssueEntitlement.class.name)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
