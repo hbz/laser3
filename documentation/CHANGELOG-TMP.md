@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
+
+4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf
+
+4137    23.05.2022  rc-2.3  2.3         Andreas Bug         Fehlertext bei fehlendem Lizenzbeug angepasst
+
+4136    23.05.2022  rc-2.3  2.3         Andreas Bug         Vorbelegung der Elternlizenz wiederhergestellt
+
+3958    23.05.2022  rc-2.3  2.3         Andreas Bug         Neuen Dokumententyp "Kündigung" aufgenommen
+
+3729    23.05.2022  rc-2.3  2.3         Andreas Feature     Nachbesserungen für die neu strukturierte Sicht
+
 4253    23.05.2022  rc-2.3  2.3         Moe     Bug         TN verwalten: Dokument anlegen funktioniert nicht
 
 4220    20.05.2022  rc-2.3  2.3         Moe     Feature     Mehrere Vorgängerlizenzen zur Bildung des Bestands zulassen
