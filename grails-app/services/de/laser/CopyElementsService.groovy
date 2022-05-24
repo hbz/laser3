@@ -210,12 +210,12 @@ class CopyElementsService {
         if(sourceObject instanceof SurveyConfig) {
             Org contextOrg = contextService.getOrg()
             objectsToCompare.each { Object obj ->
-                        Map customProperties = result.customProperties
-                        customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
-                        result.customProperties = customProperties
-                        Map privateProperties = result.privateProperties
-                        privateProperties = comparisonService.buildComparisonTreePropertyDefintion(privateProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant?.id == contextOrg.id }.sort { it.getI10n('name') })
-                        result.privateProperties = privateProperties
+                Map customProperties = result.customProperties
+                customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
+                result.customProperties = customProperties
+                Map privateProperties = result.privateProperties
+                privateProperties = comparisonService.buildComparisonTreePropertyDefintion(privateProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant?.id == contextOrg.id }.sort { it.getI10n('name') })
+                result.privateProperties = privateProperties
             }
         }
 
@@ -337,19 +337,20 @@ class CopyElementsService {
                     }
                 }
 
+                //only the bare properties should be transferred
                 if (subMember.propertySet) {
                     Org org = contextService.getOrg()
-                        //customProperties of ContextOrg && privateProperties of ContextOrg
-                        subMember.propertySet.each {subProp ->
-                            if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
-                            {
-                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
-                                copiedProp = subProp.copyInto(copiedProp)
-                                copiedProp.save()
-                            }
+                    //customProperties of ContextOrg && privateProperties of ContextOrg
+                    subMember.propertySet.each {subProp ->
+                        if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
+                        {
+                            SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
+                            copiedProp = subProp.copyInto(copiedProp)
+                            copiedProp.save()
                         }
+                    }
 
-                   /* for (prop in subMember.propertySet) {
+                    /* for (prop in subMember.propertySet) {
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
@@ -387,23 +388,25 @@ class CopyElementsService {
                         pkg.properties.oapls = null
                         pkg.properties.pendingChangeConfig = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                        //InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscription
-
+                        newSubscriptionPackage.pkg = pkg.pkg
                         if (newSubscriptionPackage.save()) {
                             pkgOapls.each { oapl ->
 
-                                def oaplProperties = oapl.properties
-                                oaplProperties.globalUID = null
+                                //oapl.globalUID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
-                                InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                //InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                newOrgAccessPointLink.platform = oapl.platform
+                                newOrgAccessPointLink.oap = oapl.oap
+                                newOrgAccessPointLink.active = oapl.active
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
                             }
                         }
                     }
                 }
-                if (subMember.issueEntitlements && targetObject.issueEntitlements) {
+                if (IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
                     memberHoldingsToTransfer << newSubscription
                     //Sql sql = GlobalService.obtainSqlConnection()
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])

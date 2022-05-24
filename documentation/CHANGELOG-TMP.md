@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4266    24.05.2022  rc-2.3  2.3         Andreas Bug         Vererbung der Merkmale kam zunächst nicht durch
+
+4265    24.05.2022  rc-2.3  2.3         Andreas Bug         Teilnehmerübertrag beschleunigt
+
 4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
 
 4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf
