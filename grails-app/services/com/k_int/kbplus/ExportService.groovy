@@ -2377,17 +2377,17 @@ class ExportService {
 		row.add(createCell(format, titleRecord['openAccess'] ?: ' ', style))
 		if(titleRecord.priceItems) {
 			//listprice_eur
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_EUR.id)?.get('pi_list_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_EUR.value)?.get('pi_list_price') ?: ' ', style))
 			//listprice_gbp
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_GBP.id)?.get('pi_list_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_GBP.value)?.get('pi_list_price') ?: ' ', style))
 			//listprice_usd
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_USD.id)?.get('pi_list_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_USD.value)?.get('pi_list_price') ?: ' ', style))
 			//localprice_eur
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_EUR.id)?.get('pi_local_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_EUR.value)?.get('pi_local_price') ?: ' ', style))
 			//localprice_gbp
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_GBP.id)?.get('pi_local_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_GBP.value)?.get('pi_local_price') ?: ' ', style))
 			//localprice_usd
-			row.add(createCell(format, priceItemMap.get(RDStore.CURRENCY_USD.id)?.get('pi_local_price') ?: ' ', style))
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_USD.value)?.get('pi_local_price') ?: ' ', style))
 		}
 		else {
 			//empty values for price item columns
@@ -2450,22 +2450,22 @@ class ExportService {
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
 			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
 			coverageMap.putAll(preprocessRows(coverages, 'tc_tipp_fk'))
-			priceItemMap.putAll(preprocessRows(priceItems, 'pi_tipp_fk'))
+			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_tipp_fk'))
 		}
 		else if(entitlementInstance == IssueEntitlement.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_ie_fk, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
 			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
 			coverageMap.putAll(preprocessRows(coverages, 'ic_ie_fk'))
-			priceItemMap.putAll(preprocessRows(priceItems, 'pi_ie_fk'))
+			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_ie_fk'))
 			if(showStatsInMonthRings && subscriber) {
 				Connection connection = sql.dataSource.getConnection()
 				Calendar filterTime = GregorianCalendar.getInstance()
@@ -2612,15 +2612,15 @@ class ExportService {
 		result
 	}
 
-	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows) {
+	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows, String tippKey) {
 		Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
 		priceItemRows.each { GroovyRowResult piRow ->
-			Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
+			Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow[tippKey])
 			if(!priceItemMap)
 				priceItemMap = [:]
 			if(piRow['pi_list_currency']) {
 				priceItemMap.put(piRow['pi_list_currency'], piRow)
-				priceItems.put(piRow['pi_ie_fk'], priceItemMap)
+				priceItems.put(piRow[tippKey], priceItemMap)
 			}
 		}
 		priceItems
