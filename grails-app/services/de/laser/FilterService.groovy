@@ -1838,9 +1838,10 @@ class FilterService {
     List listReaderWrapper(Map params, String key) {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
-        else {
+        else if(params[key] instanceof List) {
             return params[key]
         }
+        else return [params[key]]
     }
 
 }

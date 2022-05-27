@@ -371,7 +371,7 @@ class ApiCollectionReader {
         packageIDs = sql.rows('select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId', pkgParams),
         packageAltNames = sql.rows('select altname_name from alternative_name where altname_pkg_fk = :pkgId', pkgParams),
         titlePublishers = sql.rows('select rdv_value, org_guid, org_gokb_id, org_name, or_end_date, or_start_date, or_tipp_fk from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join title_instance_package_platform on or_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams)
-        Map<Long, Map<String, GroovyRowResult>> priceItemMap = ExportService.preprocessPriceItemRows(priceItemRows)
+        Map<Long, Map<String, GroovyRowResult>> priceItemMap = ExportService.preprocessPriceItemRows(priceItemRows, 'pi_ie_fk')
         Map<Long, List<GroovyRowResult>> identifierMap = ExportService.preprocessRows(idRows, 'id_tipp_fk'),
         coverageMap = ExportService.preprocessRows(coverageRows, 'ic_ie_fk'),
         ddcMap = ExportService.preprocessRows(ddcRows, 'ddc_tipp_fk'),
