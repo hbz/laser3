@@ -224,16 +224,6 @@
 
                     </div>
 
-                    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                        <div class="field">
-                            <div class="ui checkbox toggle">
-                                <g:checkBox name="transferPerpetualAccessTitlesOfOldSubs" value="${true}"/>
-                                <label><g:message
-                                        code="renewEntitlementsWithSurvey.transferPerpetualAccessTitles"/></label>
-                            </div>
-                        </div>
-                    </g:if>
-
 
                     <div class="ui two fields">
                         <div class="field">

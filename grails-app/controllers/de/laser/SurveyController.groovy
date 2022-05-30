@@ -1907,13 +1907,6 @@ class SurveyController {
 
         Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
 
-        if(params.transferPerpetualAccessTitlesOfOldSubs){
-            List<Long> issueEntitlementIds = surveyService.getPerpetualAccessIeIDsBySub(participantSub)
-
-            if(issueEntitlementIds.size() > 0){
-                surveyService.transferPerpetualAccessTitlesOfOldSubs(issueEntitlementIds, participantSub)
-            }
-        }
 
         if(params.process == "preliminary" && params.list('selectedIEs')) {
             IssueEntitlementGroup issueEntitlementGroup
