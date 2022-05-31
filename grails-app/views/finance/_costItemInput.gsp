@@ -252,6 +252,16 @@
                             <g:if test="${(mode != 'copy') && costItem && costItem.sub && costItem.sub.instanceOf}">
                                 <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriber().sortname}" />
                             </g:if>
+                            <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
+                                          from="${validSubChilds}" multiple="multiple"
+                                          optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
+                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                          value="${Subscription.class.name + ':forParent'}"
+                                />
+                            </g:elseif>
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
@@ -739,7 +749,8 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
-                                alert("${message(code:'financials.newCosts.noSubscriptionError')}")
+                                let alertText = "${institution.getCustomerType() == "ORG_CONSORTIUM" ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
+                                alert(alertText);
                             }
                             else {
                                 //console.log(JSPC.app.finance${idSuffix}.newLicenseeTarget.val());

@@ -186,6 +186,22 @@
                                     </div>
                                 </dd>
                             </dl>
+                            <dl>
+                                <dt>${message(code: 'package.archivingAgency.label')}</dt>
+                                <dd>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${packageInstanceRecord.packageArchivingAgencies}" var="arcAgency">
+                                            <div class="item">
+                                                <ul style="list-style-type: none">
+                                                    <li>${arcAgency.archivingAgency ? RefdataValue.getByValueAndCategory(arcAgency.archivingAgency, RDConstants.ARCHIVING_AGENCY).getI10n("value") : message(code: 'package.archivingAgency.invalid')}</li>
+                                                    <li>${message(code: 'package.archivingAgency.openAccess.label')}: ${arcAgency.openAccess ? RefdataValue.getByValueAndCategory(arcAgency.openAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
+                                                    <li>${message(code: 'package.archivingAgency.postCancellationAccess.label')}: ${arcAgency.postCancellationAccess ? RefdataValue.getByValueAndCategory(arcAgency.postCancellationAccess, RDConstants.Y_N_P).getI10n("value") : ""}</li>
+                                                </ul>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </dd>
+                            </dl>
                         </div>
                     </div>
                 </div>
