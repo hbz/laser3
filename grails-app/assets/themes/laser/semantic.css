@@ -1299,10 +1299,6 @@ i.icon.la-list-icon:before {
   font-style: normal;
   font-weight: 400;
 }
-
-.la-wait {
-  cursor: wait;
-}
 /*!
  * # Semantic UI 2.4.2 - Button
  * http://github.com/semantic-org/semantic-ui/

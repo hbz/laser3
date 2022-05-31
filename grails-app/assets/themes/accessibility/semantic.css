@@ -1506,10 +1506,6 @@ i.icon.la-list-icon:before {
   font-style: normal;
   font-weight: 400;
 }
-
-.la-wait {
-  cursor: wait;
-}
 /*!
  * # Semantic UI 2.4.2 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -27075,6 +27071,7 @@ Floated Menu / Item
 /* Custom Input */
 
 .ui.menu .item.la-pagination-custom-input {
+  position: relative;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -27098,6 +27095,12 @@ Floated Menu / Item
   -ms-flex-item-align: center;
   align-self: center;
   margin-left: 4px;
+}
+
+.ui.menu .item.la-pagination-custom-input .ui.basic.red.pointing.prompt.label {
+  position: absolute;
+  top: 70%;
+  left: -50%;
 }
 
 /* Title */

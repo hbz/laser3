@@ -356,10 +356,6 @@
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>
-
-
-%{--    <g:render template="/templates/paginationCostumInput" />--}%
-
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
