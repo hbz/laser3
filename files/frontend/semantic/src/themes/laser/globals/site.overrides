@@ -462,3 +462,6 @@ i.icon.la-list-icon{
     font-style: normal;
     font-weight: 400;
 }
+.la-wait{
+    cursor: wait;
+}

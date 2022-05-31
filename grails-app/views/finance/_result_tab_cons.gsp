@@ -432,6 +432,7 @@
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${offset}" total="${data.count}"/>
     </g:else>
+    <g:render template="/templates/paginationCostumInput" />
 </g:if>
 <!-- _result_tab_cons.gsp -->
 

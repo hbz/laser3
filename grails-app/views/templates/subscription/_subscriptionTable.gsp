@@ -358,7 +358,7 @@
                     total="${num_sub_rows}"/>
 
 
-    <g:render template="/templates/paginationCostumInput" />
+%{--    <g:render template="/templates/paginationCostumInput" />--}%
 
 </g:if>
 

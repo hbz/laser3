@@ -146,6 +146,7 @@
                 prev="${message(code: 'default.paginate.prev')}"
                 max="${max}"
                 total="${num_visiblePersons}"/>
+<g:render template="/templates/paginationCostumInput" />
 
 </body>
 
