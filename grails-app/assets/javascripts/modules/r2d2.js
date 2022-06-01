@@ -249,6 +249,75 @@ r2d2 = {
                 }
             }
         });
+
+        //Pagination: Custom Input Page Number
+        $(".la-pagination-custom-link").on( "click", function(e) {
+            validateInput(e);
+
+        });
+
+        $('.la-pagination-custom-input input').bind('keypress', function(e) {
+            if(e.keyCode==13){
+                validateInput(e);
+                if (isValid == 1) {
+                    location.href = $('.la-pagination-custom-link').attr('href');
+                    $("html").css("cursor", "wait");
+                }
+            }
+        });
+
+        function validateInput(e){
+            $.fn.form.settings.rules.smallerEqualThanTotal = function (inputValue) {
+                let inputValueNumber = parseInt(inputValue);
+                return inputValueNumber <= Math.round(Math.ceil($('.la-pagination-custom-input').data('total')/10));
+            } ;
+            $.fn.form.settings.rules.biggerThan = function (inputValue, validationValue) {
+                let inputValueNumber = parseInt(inputValue);
+                return inputValueNumber > validationValue;
+            } ;
+            $(".la-pagination-custom-input .ui.form").form({
+                inline: true,
+                fields: {
+                    paginationCustomInput: {
+                        identifier: "paginationCustomInput",
+                        rules: [
+                            {
+                                type: "empty",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                            },
+                            {
+                                type: "integer",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                            },
+                            {
+                                type: "smallerEqualThanTotal",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
+                            },
+                            {
+                                type: "biggerThan[0]",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
+                            }
+                        ]
+                    }
+                },
+                onInvalid: function() {
+                    return (isValid = 0);
+                },
+                onValid: function() {
+                    return (isValid = 1);
+                }
+            });
+
+            $(".la-pagination-custom-input .ui.form").form("validate form");
+
+
+            if (isValid == 0) {
+                e.preventDefault();
+            }
+            else {
+                $("html").css("cursor", "wait");
+            }
+        }
     },
 
 
