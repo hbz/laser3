@@ -2639,7 +2639,7 @@ class SubscriptionControllerService {
                                 ie.medium = selected_refdata
                             }*/
                             if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
-                                IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
+                                IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(params.titleGroupInsert)
                                 if(entitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
                                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                             ie: ie,
