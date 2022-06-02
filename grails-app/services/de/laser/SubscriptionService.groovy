@@ -206,7 +206,7 @@ class SubscriptionService {
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and roleT.roleType in (:rdvSubscr) " +
-                    " and ( ci is null or ci.costItemStatus != :deleted )"
+                    " and ( ci is null or ci.costItemStatus != :deleted or ci.owner = :org )"
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
@@ -353,16 +353,12 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             pu.setBenchmark('costs init')
 
-            List costsRaw = CostItem.executeQuery(
+            List costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             pu.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
-            Set costs = []
-            costsRaw.each { row ->
-                List rowCleared = row[0] != null && row[0].owner.id != contextOrg.id ? [null, row[1], row[2]] : row
-                costs << rowCleared
-            }
+            result.costs = costs
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->

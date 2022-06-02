@@ -115,7 +115,7 @@ class SemanticUiNavigationTagLib {
             linkParams.order = params.order
         }
 
-        def linkTagAttrs = [action: action]
+        Map<String, Object> linkTagAttrs = [action: action]
         if (attrs.controller) {
             linkTagAttrs.controller = attrs.controller
         }
@@ -242,7 +242,10 @@ class SemanticUiNavigationTagLib {
             }
         }
         // all button
-        def allLinkAttrs = linkTagAttrs.clone()
+        Map<String, Object> allLinkAttrs = linkTagAttrs.clone()
+        Map<String, Object> customInputAttrs = linkTagAttrs.clone()
+        customInputAttrs.params = new LinkedHashMap<String, Object>()
+        customInputAttrs.params.putAll(linkTagAttrs.params)
         allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, locale)]
         if(total <= 200) {
             allLinkAttrs.class = "item"
@@ -253,8 +256,37 @@ class SemanticUiNavigationTagLib {
         else {
             out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
+        // Custom Input
+        out << '<div class="item la-pagination-custom-input"  data-total="'+ total +'" data-max="'+ max +'">'
+        out << '    <div class="ui mini form">'
+        out << '            <div class="field">'
+        out << '                <input autocomplete="off"  id="myInput" name="paginationCustomInput" maxlength="6" placeholder="' + message(code:'pagination.keyboardInput.placeholder') + '" type="text">'
+        customInputAttrs.params.remove('offset')
+        customInputAttrs.params.remove('class')
+        customInputAttrs.class= "la-pagination-custom-link js-no-wait-wheel"
+        customInputAttrs
+        out << link(customInputAttrs, '<i class="large chevron circle right icon la-popup-tooltip" data-content="' + message(code:'pagination.keyboardInput.goToPage') + '"></i>')
+        out << '            </div>'
+        out << '    </div>'
+        out << '</div>'
         out << '</nav>'
         out << '</div><!--.pagination-->'
+
+        out << """<script>
+                      const formObject = \$('.la-pagination-custom-input .ui.form');
+                      const linkObject = \$('.la-pagination-custom-link');
+                      const inputObject = \$('.la-pagination-custom-input input');
+                      let oldHref = linkObject.attr('href');
+                      let validFlag;
+                    \$(function() {
+                      inputObject.on('input', function() {
+                        formObject.form('validate form');
+                        let newOffset = (\$(this).val() - 1) * ${max};
+                        let newHref = oldHref + '&offset=' + newOffset;
+                        linkObject.attr('href', newHref);
+                      });
+                    });
+                </script>"""
     }
 
 
