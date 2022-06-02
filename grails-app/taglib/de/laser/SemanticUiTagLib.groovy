@@ -61,7 +61,9 @@ class SemanticUiTagLib {
     def msg = { attrs, body ->
 
         out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
-        out << '<i aria-hidden="true" class="close icon"></i>'
+        if (attrs.noClose) {}
+        else
+            out << '<i aria-hidden="true" class="close icon"></i>'
         out << '<div class="content">'
 
         if (attrs.header) {

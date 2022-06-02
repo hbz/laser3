@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4287    01.06.2022  rc-2.3  2.3         Andreas Bug         Fehlzugriff bei Mehrfachverknüpfung von Titel zu Titelgruppen behoben
+
 4280    27.05.2022  rc-2.3  2.3         Andreas Bug         diverse Ausbesserungen an der Bestandsverwaltung
 
 4266    24.05.2022  rc-2.3  2.3         Andreas Bug         Vererbung der Merkmale kam zunächst nicht durch
