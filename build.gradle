@@ -127,7 +127,7 @@ dependencies {
     implementation 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
-    implementation 'org.hibernate:hibernate-ehcache:5.6.9.Final'            // from 5.1.16.Final
+    implementation 'org.hibernate:hibernate-ehcache:5.6.9.Final'            // from 5.1.16.Final : + org.hibernate:hibernate-core:5.6.9.Final
     implementation 'net.sf.ehcache:ehcache:2.10.9.2'                        // from 2.10.6
 //    implementation 'org.hibernate:hibernate-jcache:5.4.33.Final'          // instead of hibernate-ehcache:5.1.16.Final
 //    implementation 'org.ehcache:ehcache:3.9.9'                            // instead of net.sf.ehcache:ehcache:2.10.9.2

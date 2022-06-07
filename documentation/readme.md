@@ -1,5 +1,5 @@
 
-## Upgrade to Grails 5.1.7
+## Upgrade to Grails 5.1.8
 
 #### Updated core and dependencies
 
@@ -15,7 +15,7 @@ See [upgrade.md](./upgrade.md) for detailed information.
 
 ### Setup with SDKMAN
 
-    sdk i grails 5.1.7 
+    sdk i grails 5.1.8 
     sdk i groovy 3.0.7
     sdk i java 11.0.12
 
