@@ -52,6 +52,7 @@ class FinanceController  {
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItems(params,result)
+            result.ciTitles = result.financialData.ciTitles
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
@@ -99,6 +100,7 @@ class FinanceController  {
                     [sub: result.subscription, ctxOrg: result.contextOrg]
             )[0]
             result.financialData = financeService.getCostItemsForSubscription(params,result)
+            result.ciTitles = result.financialData.ciTitles
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])

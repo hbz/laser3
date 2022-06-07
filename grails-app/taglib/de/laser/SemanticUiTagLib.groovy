@@ -61,7 +61,9 @@ class SemanticUiTagLib {
     def msg = { attrs, body ->
 
         out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
-        out << '<i aria-hidden="true" class="close icon"></i>'
+        if (attrs.noClose) {}
+        else
+            out << '<i aria-hidden="true" class="close icon"></i>'
         out << '<div class="content">'
 
         if (attrs.header) {
@@ -240,24 +242,36 @@ class SemanticUiTagLib {
                         else hasAuditConfig = auditService.getAuditConfig(obj, objAttr)
 
                         if (hasAuditConfig) {
-                            out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
-                            out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
-
-                            out   << '<div class="menu">'
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
-                                    controller: 'ajax',
-                                    action: 'toggleAudit',
-                                    params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'item'
-                            )
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>erhalten</strong>',
-                                    controller: 'ajax',
-                                    action: 'toggleAudit',
-                                    params: ['owner': oid, 'property': [objAttr], keep: true],
-                                    class: 'item'
-                            )
-                            out   << '</div>'
-                            out << '</div>'
+                            if(attrs.withoutOptions) {
+                                out << '<a role="button" data-content="Wert wird vererbt" class="ui icon green button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                                out << g.createLink(
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr], keep: true],
+                                )
+                                out << '">'
+                                out << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out << '</a>'
+                            }
+                            else {
+                                out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
+                                out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out   << '<div class="menu">'
+                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr]],
+                                        class: 'item'
+                                )
+                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>erhalten</strong>',
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr], keep: true],
+                                        class: 'item'
+                                )
+                                out   << '</div>'
+                                out << '</div>'
+                            }
                         }
                         else {
                             out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'

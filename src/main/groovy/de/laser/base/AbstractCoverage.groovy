@@ -4,6 +4,9 @@ import grails.gorm.dirty.checking.DirtyCheck
 
 import javax.persistence.Transient
 
+/**
+ * This is an abstract class containing central properties both for global package-level and issue entitlement-level coverage statements.
+ */
 @DirtyCheck
 abstract class AbstractCoverage {
 

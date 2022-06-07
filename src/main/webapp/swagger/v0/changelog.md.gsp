@@ -2,6 +2,21 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.138
+
+- internal refactoring
+
+#### 0.137
+
+- added new attribute: `CostItemCollection.isVisibleForSubscriber`
+- added new attribute: `License.openEnded`
+- added new attribute: `PackageStub.status`
+- added new attribute: `Platform.status`
+- added new attribute: `PlatformStub.status`
+- added new attribute: `Organisation.status`
+- added new attribute: `OrganisationStub.status`
+- modified attribute: `Package.packageStatus` to `Package.status`
+
 #### 0.136
 
 - added new endpoint: __/ezb/license/illIndicators__

@@ -501,50 +501,54 @@ class ManagementService {
             FlashScope flash = getCurrentFlashScope()
             PropertyDefinition propertiesFilterPropDef = params.propertiesFilterPropDef ? genericOIDService.resolveOID(params.propertiesFilterPropDef.replace(" ", "")) : null
             List selectedSubs = params.list("selectedSubs")
-            if (selectedSubs.size() > 0 && params.processOption && propertiesFilterPropDef && params.filterPropValue) {
+            if (selectedSubs.size() > 0 && params.processOption && propertiesFilterPropDef) {
                 int newProperties = 0
                 int changeProperties = 0
                 int deletedProperties = 0
                 Object[] args
                     if(params.processOption == 'changeCreateProperty') {
-                        Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
-                        subscriptions.each { Subscription subscription ->
-                            if (subscription.isEditableBy(result.user)) {
-                                List<SubscriptionProperty> existingProps = []
-                                String propDefFlag
-                                if (propertiesFilterPropDef.tenant == result.institution) {
-                                    //private Property
-                                    existingProps.addAll(subscription.propertySet.findAll { SubscriptionProperty sp ->
-                                        sp.owner.id == subscription.id && sp.type.id == propertiesFilterPropDef.id
-                                    })
-                                    propDefFlag = PropertyDefinition.PRIVATE_PROPERTY
-                                } else {
-                                    //custom Property
-                                    existingProps.addAll(subscription.propertySet.findAll { SubscriptionProperty sp ->
-                                        sp.type.id == propertiesFilterPropDef.id && sp.owner.id == subscription.id && sp.tenant.id == result.institution.id
-                                    })
-                                    propDefFlag = PropertyDefinition.CUSTOM_PROPERTY
-                                }
-                                if (existingProps.size() == 0 || propertiesFilterPropDef.multipleOccurrence) {
-                                    AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(propDefFlag, subscription, propertiesFilterPropDef, result.institution)
-                                    if (newProp.hasErrors()) {
-                                        log.error(newProp.errors.toString())
+                        if(params.filterPropValue) {
+                            Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                            subscriptions.each { Subscription subscription ->
+                                if (subscription.isEditableBy(result.user)) {
+                                    List<SubscriptionProperty> existingProps = []
+                                    String propDefFlag
+                                    if (propertiesFilterPropDef.tenant == result.institution) {
+                                        //private Property
+                                        existingProps.addAll(subscription.propertySet.findAll { SubscriptionProperty sp ->
+                                            sp.owner.id == subscription.id && sp.type.id == propertiesFilterPropDef.id
+                                        })
+                                        propDefFlag = PropertyDefinition.PRIVATE_PROPERTY
                                     } else {
-                                        log.debug("New property created: " + newProp.type.name)
-                                        newProperties++
-                                        subscriptionService.updateProperty(controller, newProp, params.filterPropValue)
+                                        //custom Property
+                                        existingProps.addAll(subscription.propertySet.findAll { SubscriptionProperty sp ->
+                                            sp.type.id == propertiesFilterPropDef.id && sp.owner.id == subscription.id && sp.tenant.id == result.institution.id
+                                        })
+                                        propDefFlag = PropertyDefinition.CUSTOM_PROPERTY
+                                    }
+                                    if (existingProps.size() == 0 || propertiesFilterPropDef.multipleOccurrence) {
+                                        AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(propDefFlag, subscription, propertiesFilterPropDef, result.institution)
+                                        if (newProp.hasErrors()) {
+                                            log.error(newProp.errors.toString())
+                                        } else {
+                                            log.debug("New property created: " + newProp.type.name)
+                                            newProperties++
+                                            subscriptionService.updateProperty(controller, newProp, params.filterPropValue)
+                                        }
+                                    }
+                                    if (existingProps.size() == 1) {
+                                        SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
+                                        changeProperties++
+                                        subscriptionService.updateProperty(controller, privateProp, params.filterPropValue)
                                     }
                                 }
-                                if (existingProps.size() == 1) {
-                                    SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
-                                    changeProperties++
-                                    subscriptionService.updateProperty(controller, privateProp, params.filterPropValue)
-                                }
                             }
-                        }
 
-                        args = [newProperties, changeProperties]
-                        flash.message = messageSource.getMessage('subscriptionsManagement.successful.property', args, locale)
+                            args = [newProperties, changeProperties]
+                            flash.message = messageSource.getMessage('subscriptionsManagement.successful.property', args, locale)
+                        }else{
+                                flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
+                        }
 
                     }else if(params.processOption == 'deleteAllProperties'){
                         List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)

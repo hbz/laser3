@@ -456,7 +456,8 @@ class SubscriptionController {
     })
     def membersSubscriptionsManagement() {
         def input_file
-        if(params.tab == 'documents' && params.upload_file) {
+
+        if(params.tab == 'documents' && params.processOption == 'newDoc') {
             input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file')
@@ -480,8 +481,8 @@ class SubscriptionController {
             if(ctrlResult.result.tabPlat && !params.tabPlat)
                 params.tabPlat = ctrlResult.result.tabPlat.toString()
 
-            ctrlResult.result
         }
+        ctrlResult.result
     }
 
     /**
@@ -660,7 +661,11 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tab-separated-values"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.sub = ctrlResult.result.subscription
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -759,11 +764,15 @@ class SubscriptionController {
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.remove("subscription")
+            configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                 }
@@ -773,9 +782,6 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
                 Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
@@ -893,7 +899,7 @@ class SubscriptionController {
         }
         if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
             log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
+        redirect action: 'index', id: result.subscription.id
     }
 
     /**
@@ -1189,7 +1195,7 @@ class SubscriptionController {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ieIDs,IssueEntitlement.class.name)
+            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id], IssueEntitlement.class.name)
             out.withWriter { Writer writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1279,7 +1285,7 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(exportIEIDs, IssueEntitlement.class.name)
+                Map<String, List> tableData = exportService.generateTitleExportKBART([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name)
                 out.withWriter { Writer writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
