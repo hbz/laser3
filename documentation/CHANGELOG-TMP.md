@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4288    07.06.2022  rc-2.3  2.3         Moe     Bug         Umfragen: Kostenvorzeichen automatisch "positiv" bei Konsortialpreis
+
 4289    07.06.2022  rc-2.3  2.3         Moe     Feature     Umfragen: Teilnehmer mit aktiven Lizenzen auswählen
 
 4286    07.06.2022  rc-2.3  2.3         Moe     Feature     Lizenz kopieren: TN mitbedenken

@@ -25,7 +25,7 @@
 <semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" name="editCost_${idSuffix}" action="newSurveyCostItem">
 
-        <g:render template="costItemInputSurvey" />
+        <g:render template="costItemInputSurvey" model="[idSuffix: 'newSurveyCostItem']"/>
 
     </g:form>
 
