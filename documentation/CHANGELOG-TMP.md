@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4289    07.06.2022  rc-2.3  2.3         Moe     Feature     Umfragen: Teilnehmer mit aktiven Lizenzen auswählen
+
 4286    07.06.2022  rc-2.3  2.3         Moe     Feature     Lizenz kopieren: TN mitbedenken
 
 4283    07.06.2022  rc-2.3  2.3         Moe     Feature     Dauerhafte Kauf Flag Umstellung auch bei Elternlizenzen triggern

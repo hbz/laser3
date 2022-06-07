@@ -901,6 +901,8 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
+        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
