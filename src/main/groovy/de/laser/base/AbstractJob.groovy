@@ -3,6 +3,9 @@ package de.laser.base
 import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
+/**
+ * Abstract class for scheduled cronjobs.
+ */
 @Slf4j
 abstract class AbstractJob {
 
