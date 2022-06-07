@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.DateUtils
 import de.laser.helper.LocaleUtils
 import de.laser.storage.RDConstants

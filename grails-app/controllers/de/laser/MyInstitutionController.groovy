@@ -7,6 +7,7 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.finance.PriceItem
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role

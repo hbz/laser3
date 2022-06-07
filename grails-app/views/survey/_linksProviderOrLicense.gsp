@@ -57,7 +57,7 @@
     <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui la-vertical buttons">
             <g:if test="${linkType == 'License' && !surveyInfo.license}">
-                <g:render template="linksProviderOrLicenseModal"
+                <laser:render template="linksProviderOrLicenseModal"
                           model="${[tmplText      : message(code: 'surveyInfo.link.license'),
                                     tmplButtonText: message(code: 'surveyInfo.link.license'),
                                     tmplModalID   : 'survey_link_license',
@@ -68,7 +68,7 @@
                           ]}"/>
             </g:if>
             <g:elseif test="${linkType == 'Provider' && !surveyInfo.provider}">
-                <g:render template="linksProviderOrLicenseModal"
+                <laser:render template="linksProviderOrLicenseModal"
                           model="${[tmplText      : message(code: 'surveyInfo.link.provider'),
                                     tmplButtonText: message(code: 'surveyInfo.link.provider'),
                                     tmplModalID   : 'survey_link_provider',

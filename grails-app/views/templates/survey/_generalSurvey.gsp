@@ -212,12 +212,12 @@
         </div>
 
         <div class="ui card">
-            <g:render template="/survey/linksProviderOrLicense"
+            <laser:render template="/survey/linksProviderOrLicense"
                       model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
         </div>
 
         <div class="ui card">
-            <g:render template="/survey/linksProviderOrLicense"
+            <laser:render template="/survey/linksProviderOrLicense"
                       model="[linkType: 'Provider', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
         </div>
 

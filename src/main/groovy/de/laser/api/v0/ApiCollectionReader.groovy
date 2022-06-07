@@ -18,7 +18,7 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
-import de.laser.PriceItem
+import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.Address

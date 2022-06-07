@@ -9,7 +9,7 @@ import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
-import de.laser.PriceItem
+import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
 import groovy.sql.GroovyRowResult

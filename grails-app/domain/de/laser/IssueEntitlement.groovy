@@ -3,9 +3,9 @@ package de.laser
 
 import de.laser.base.AbstractBase
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.finance.PriceItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import de.laser.annotations.RefdataInfo
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -22,14 +22,14 @@ import java.text.Normalizer
  *     <li>acces start/end may be different</li>
  *     <li>name</li>
  *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
- *     <li>prices may differ from list prices on global level (the {@link PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>prices may differ from list prices on global level (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
  *     <li>coverage entities may differ from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
  * </ul>
  * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
  * @see IssueEntitlementCoverage
  * @see IssueEntitlementGroup
  * @see IssueEntitlementGroupItem
- * @see PriceItem
+ * @see de.laser.finance.PriceItem
  * @see TitleInstancePackagePlatform
  * @see Subscription
  */

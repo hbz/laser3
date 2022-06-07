@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.finance.PriceItem
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.exceptions.SyncException
