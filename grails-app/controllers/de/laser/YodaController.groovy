@@ -167,7 +167,7 @@ class YodaController {
 
         result.hibernateSession = sessionFactory
 
-        result.ehcacheManager = cacheService.getCacheManager()
+        result.ehcacheManager = cacheService.getEhcacheManager()
 
         if (params.key) {
             JSON entry = contextService.getSessionCache().get(params.key) as JSON

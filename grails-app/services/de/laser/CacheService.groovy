@@ -31,9 +31,8 @@ class CacheService implements ApplicationContextAware {
      * Initialises the cache manager
      * @return a new cache manager instance
      */
-    CacheManager getCacheManager() {
-
-        return CacheManager.newInstance()
+    CacheManager getEhcacheManager() {
+        CacheManager.getInstance()
     }
 
     /**
@@ -43,8 +42,7 @@ class CacheService implements ApplicationContextAware {
      * @return the cache instance
      */
     Cache getCache(CacheManager cacheManager, String cacheName) {
-
-        def cache = null
+        Cache cache = null
 
         if (cacheManager) {
             if (! cacheManager.getCache(cacheName)) {
@@ -67,7 +65,7 @@ class CacheService implements ApplicationContextAware {
         if (! cache_ttl_300) {
 
             String cacheName = 'TTL_300_CACHE'
-            CacheManager cacheManager = getCacheManager()
+            CacheManager cacheManager = getEhcacheManager()
             cache_ttl_300 = getCache(cacheManager, cacheName)
 
             cache_ttl_300.getCacheConfiguration().setTimeToLiveSeconds(300)
@@ -87,7 +85,7 @@ class CacheService implements ApplicationContextAware {
         if (! cache_ttl_1800) {
 
             String cacheName = 'TTL_1800_CACHE'
-            CacheManager cacheManager = getCacheManager()
+            CacheManager cacheManager = getEhcacheManager()
             cache_ttl_1800 = getCache(cacheManager, cacheName)
 
             cache_ttl_1800.getCacheConfiguration().setTimeToLiveSeconds(1800)
@@ -123,7 +121,7 @@ class CacheService implements ApplicationContextAware {
         if (! shared_user_cache) {
 
             String cacheName = 'SHARED_USER_CACHE'
-            CacheManager cacheManager = getCacheManager()
+            CacheManager cacheManager = getEhcacheManager()
             shared_user_cache = getCache(cacheManager, cacheName)
 
             shared_user_cache.getCacheConfiguration().setCopyOnRead(true)
@@ -144,7 +142,7 @@ class CacheService implements ApplicationContextAware {
         if (! shared_org_cache) {
 
             String cacheName = 'SHARED_ORG_CACHE'
-            CacheManager cacheManager = getCacheManager()
+            CacheManager cacheManager = getEhcacheManager()
             shared_org_cache = getCache(cacheManager, cacheName)
 
             shared_org_cache.getCacheConfiguration().setCopyOnRead(true)
@@ -209,6 +207,6 @@ class CacheService implements ApplicationContextAware {
      * @return a generic patch (substitutes call of {@link #getDiskStorePath(net.sf.ehcache.CacheManager)} with a new instance as argument)
      */
     String getDiskStorePath() {
-        getDiskStorePath( CacheManager.newInstance() )
+        getDiskStorePath( getEhcacheManager() )
     }
 }
