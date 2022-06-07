@@ -1,0 +1,110 @@
+
+// Show Buttons only on hover
+.ui.divided.middle.la-flex-list .item {
+  display: flex;
+  align-items: center;
+  justify-content:space-between;
+  table-layout: unset;
+  &:after {
+    content: unset;
+    display: unset;
+    height: unset;
+    clear: unset;
+    visibility: unset;
+  }
+  .button {
+    opacity: 0;
+    -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
+    transition: opacity 1s;
+    &.disabled {
+      opacity: 0!important;
+      -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
+      transition: opacity 1s;
+    }
+  }
+
+  &:hover .button {
+    opacity: 1;
+  }
+  &:hover .button.disabled {
+    opacity: 0.3!important;
+  }
+  .button:focus {
+    opacity: 1;
+  }
+}
+// Show Buttons only on hover
+.la-timeLineSegment-contact .row{
+  .button {
+    opacity: 0;
+    transition: opacity 1s;
+    &.disabled {
+      opacity: 0!important;
+      transition: opacity 1s;
+    }
+  }
+
+  &:hover .button {
+    opacity: 1;
+  }
+  &:hover .button.disabled {
+    opacity: 0.3!important;
+  }
+  .button:focus {
+    opacity: 1;
+  }
+}
+
+td .la-list-border-around {
+     border: 1px solid @laSecondaryColor;
+}
+
+.ui.item.person-details:hover {
+  background: white!important;
+}
+.la-icon-list {
+  margin-top: 0.714em;
+  .item {
+    display: table-row;
+    >.ui.icon {
+      display: table-cell;
+      padding: 0 0 .2em .5em;
+      vertical-align: middle;
+    }
+    .content {
+      display: table-cell;
+      width: 100%;
+      padding: 0 0 .2em .5em;
+      //vertical-align: middle;
+    }
+  }
+}
+// from bootstrap css, already woven into laser
+dl {
+  margin-bottom: 20px;
+}
+dt,
+dd {
+  line-height: 20px;
+}
+dt {
+  font-weight: bold;
+}
+dd {
+  margin-left: 10px;
+}
+// List for Breadcrumbs without list-style
+.ui.breadcrumb {
+    ul{
+    display: inline;
+    padding: 0;
+        li {
+        display: inline;
+        }
+    }
+}
+
+.ui.list .list > .disabled.item,
+.ui.list > .disabled.item {
+  pointer-events: all;
+}

@@ -1,0 +1,307 @@
+.finance_index .ui.ribbon.label,
+.finance_subFinancialData .ui.ribbon.label{
+  left: calc(-1rem - 1.8em);
+  top: -22px;
+}
+.ui.modal>.content.la-twoSided-ribbon {
+  padding: 0 1.5rem 0 1.5rem;
+}
+.finance_index .ui.right.ribbon.label,
+ .finance_subFinancialData .ui.right.ribbon.label{
+  left: calc(104.2%);
+  top: -22px;
+}
+.ui.card .ui.label {
+  margin: 0;
+  //background-color: #d3dae3;
+}
+// annual rings
+
+.ui.label.la-annual-rings {
+  position: relative;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: @laSecondaryBackground;
+  border: 1px solid #d3dae3;
+  vertical-align: super;
+  margin: 0 1.142857em;
+  .ui.tiny.label {
+    font-size: .45rem;
+  }
+  .icon {
+    font-size: 1em;
+    width: auto;
+    margin: 0em @iconDistance 0em @iconDistance;
+    vertical-align: sub;
+  }
+  >a {
+    opacity: 0.7;
+    text-decoration: none;
+  }
+  i.disabled.icon {
+    opacity: 0!important;
+    margin: 0 0 0 .1em;
+  }
+  .la-status-active {
+    background-color: @green;
+    opacity: 1;
+    font-weight: bolder;
+    color: white;
+  }
+  .la-status-inactive {
+    background-color: @red;
+    opacity: 1;
+    font-weight: bolder;
+    color: white;
+  }
+  .la-status-else {
+    background-color: @yellow;
+    opacity: 1;
+    font-weight: bolder;
+    color: white;
+  }
+  .la-annual-rings-text {
+    vertical-align: sub;
+    padding-right: 0.5em;
+  }
+}
+// annual rings modern
+.ui.la-annual-rings-modern {
+  display: inline-flex;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+  align-items:center;
+  .icon {
+    //margin: 0em @iconDistance 0em @iconDistance;
+  }
+  >a {
+    opacity: 1;
+    text-decoration: none;
+    display: inline-block;
+    width: 2.1em;
+    &:hover {
+      filter: brightness(0.85);
+    }
+  }
+  i.disabled.icon {
+    opacity: 0!important;
+    //margin: 0 0 0 .1em;
+  }
+  .la-status-active {
+    color: @green;
+    opacity: 1;
+  }
+  .la-status-inactive {
+    color: @red;
+    opacity: 1;
+  }
+  .la-status-else {
+    color: @yellow;
+    opacity: 1;
+  }
+  .la-annual-rings-text {
+    padding: 3px;
+    margin-top: 0.3rem;
+    margin-right: -0.3em;
+    color: rgba(0,0,0,.6);
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+}
+
+// not used yet
+//left side
+.ui.left-tag.labels .label,
+.ui.left-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: @tagHorizontalPadding;
+  padding-right: @tagHorizontalPadding;
+
+  border-radius: 0em @borderRadius @borderRadius 0em;
+  transition: @tagTransition;
+}
+.ui.left-tag.labels .label:before,
+.ui.left-tag.label:before {
+  position: absolute;
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+
+  top: @tagTriangleTopOffset;
+  right: @tagTriangleRightOffset;
+  content: '';
+
+  background-color: inherit;
+  background-image: @tagTriangleBackgroundImage;
+
+  width: @tagTriangleSize;
+  height: @tagTriangleSize;
+  transition: @tagTransition;
+}
+//right-side
+.ui.right-tag.labels .label,
+.ui.right-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: @tagHorizontalPadding;
+  padding-right: @tagHorizontalPadding;
+
+  border-radius: 0em @borderRadius @borderRadius 0em;
+  transition: @tagTransition;
+}
+.ui.right-tag.labels .label:after,
+.ui.right-tag.label:after {
+  position: absolute;
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  top: @tagTriangleTopOffset;
+  //left: @tagTriangleRightOffset;
+  content: '';
+  background-color: inherit;
+  background-image: @tagTriangleBackgroundImage;
+  width: @tagTriangleSize;
+  height: @tagTriangleSize;
+  transition: @tagTransition;
+}
+
+  // labels in confirmation modal
+.confirmation-term {
+  span {
+    margin: 0 .5em 0 0;
+    padding: .4em .833em;
+    min-width: 3em;
+    text-align: center;
+    font-size: .85714286rem;
+    display: inline-block;
+    line-height: 1;
+    vertical-align: baseline;
+    background-color: #e8e8e8;
+    background-image: none;
+    color: rgba(0,0,0,.6);
+    text-transform: none;
+    font-weight: 700;
+    border: 0 solid transparent;
+    border-radius: 0;
+    white-space: nowrap;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+}
+#js-confirmation-term-where-detail {
+  margin: 0 .5em 0 0;
+  padding: .4em .833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: .85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0,0,0,.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.confirmation-content {
+  padding-top: 0!important;
+  padding-bottom: 0!important;
+  li{
+
+  }
+  li:nth-child(n+2){
+    padding-top: 0.5rem;
+  }
+}
+
+.confirmation-content span {
+  min-width: 2em;
+  min-height: 2em;
+  padding: .5em!important;
+  line-height: 1em;
+  text-align: center;
+  border-radius: 500rem;
+  display: inline-block;
+  line-height: 1em;
+  vertical-align: baseline;
+  margin: 0 .14285714em;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0,0,0,.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+
+  -webkit-transition: background .1s ease;
+  transition: background .1s ease;
+}
+
+/*******************************
+             Types
+*******************************/
+
+.ui.image.label {
+  margin-top: 5px;
+  .detail {
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+}
+.ui.label.la-advanced-label {
+  background-color: #d3dae3;
+}
+/* label what server */
+
+.ui.label.la-server-label {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999;
+  padding:0.2em;
+  font-size: 2.5rem;
+}
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+
+.ui.label.survey-renewal {
+  background-color: @lightGreenGenerated ;
+}
+
+.ui.label.survey-interest {
+  background-color:  @lightRedGenerated;
+}
+
+.ui.label.survey-selection {
+  background-color: @lightBlueGenerated;
+}
+.ui.label.survey-subscription {
+  background-color: @lightOrangeGenerated;
+}
+
+.ui.blue.circular.label {
+  &:hover, &:focus {
+    border-radius: 0;
+    transition:border-radius;
+  }
+}

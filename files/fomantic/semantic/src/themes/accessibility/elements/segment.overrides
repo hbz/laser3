@@ -1,0 +1,106 @@
+
+
+/*******************************
+            Segment
+*******************************/
+
+.ui.segment.la-filter {
+  background: @laFilterBackground;
+  border: none;
+  &:last-child {
+    margin-bottom: 1em;
+  }
+}
+.ui.segment.la-form {
+  border: none;
+}
+.ui.segment.la-filter-temp {
+  background: @laFilterBackground;
+  border: none;
+}
+.ui.segment.la-role-admin {
+  border-right: 10px solid @blue;
+}
+.ui.segment.la-role-yoda {
+  border-right: 10px solid @green;
+}
+.ui.segment.la-search {
+  background: #f1ebe5;
+  border: none;
+}
+
+/* Grey */
+.ui.grey.segment:not(.inverted) {
+  border-top: 1px solid #d3dae3 !important;
+}
+/***********************************
+        Footer Segment
+***********************************/
+.ui.segment.la-footer {
+  padding: 3em 1em;
+
+  h2 {
+    font-size: 1.07142857rem!important;
+  }
+
+}
+
+.la-filter {
+
+  .ui.selection.dropdown {
+    //color: @white;
+  }
+  .ui.form .field>label {
+    color: @white;
+  }
+  .ui.form input[type=text],
+  .ui.form input[type=text]:focus{
+    color: @white;
+    border: 1px solid @white;
+
+  }
+  .ui.form input[type=text]:focus{
+
+    background-color: @laFilterChosen;
+  }
+
+  .ui.selection.visible.dropdown>.text:not(.default){
+    color: @white;
+  }
+}
+.la-filter-temp {
+  .ui.form .field>label {
+    color: @white;
+  }
+
+}
+// Filter Selected
+
+.la-filter-selected {
+  background:  @laFilterChosen!important;
+}
+.la-calendar-selected input {
+  background: @laFilterChosen!important;
+}
+.ui.selection.dropdown{
+  &.la-filter-dropdown-selected,
+  &.la-filter-selected{
+    color: white;
+    background: @laFilterChosen!important;
+    border: 1px solid @white;
+  }
+}
+/* Bottom */
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}
+aside.la-metabox {
+  position: absolute !important;
+  width: inherit;
+  margin: 0 !important;
+}
+aside.la-metabox + .la-metabox-spacer {
+  height: 70px;
+  margin: 1rem 0;
+  padding: 1em 0;
+}

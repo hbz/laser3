@@ -1,0 +1,149 @@
+form {
+  margin: 0 0 20px;
+}
+/* Field */
+.ui.form .inline.fields {
+  margin: 0;
+  align-items: center;
+  &.la-filter-inline{
+    padding-top: 0.3rem;
+  }
+}
+
+
+/*.ui.form .fields .field.la-field-right-aligned {
+  text-align: right;
+  margin-top: 1.2rem;
+} */
+
+.ui.form .fields .field {
+  margin: 0em 0em 1em;
+}
+.ui.form .fields .field.la-modal-fieldset-no-margin {
+  padding: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  .la-exchange-rate {
+    input {
+      vertical-align: middle;
+    }
+  }
+}
+.ui.form .fields .field.la-modal-fieldset-margin {
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  padding: 15px;
+}
+.ui.form .fields .field.la-modal-fieldset-margin-right {
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  padding: 15px;
+}
+.ui.form .fields.la-forms-grid,
+.ui.form .fields .field.la-forms-grid{
+  padding: 25px;
+  background: @laAlternativeBackground;
+}
+.ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
+.ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field{
+  margin-bottom: 1em;
+}
+
+
+
+/* Menue Search Animated Input
+
+.ui.icon.input > i.icon#btn-search:not(.link){
+  pointer-events: auto;
+}
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+i.search.icon {
+  color: white;
+}
+i.search.icon.open {
+  color:black;
+}
+input#spotlightSearch[type="search"] {
+  display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+*/
+
+
+// Search Form Spothlight
+
+input#spotlightSearch[type="search"]:hover,
+input#spotlightSearch[type="search"]:focus{
+  background: @lightGrey;
+}
+
+i.search.icon#btn-search {
+  color:black;
+}
+.la-search-advanced i.search.icon{
+  color:white;
+}
+input#spotlightSearch[type="search"] {
+  //display: none;
+}
+
+.ui.input > input#spotlightSearch:focus  {
+  border-color: @lightGrey;
+}
+
+// Account Currency
+.ui.form .la-account-currency {
+  .field {
+    margin: 0;
+    white-space: nowrap;
+     input.la-82Percent {
+      width: 82%;
+    }
+  }
+}
+.ui.form .field>.selection.dropdown.la-currency {
+  margin-left: -17px;
+  width: 105%;
+}
+.ui.form {
+  .fields.la-fields-no-margin-button .field{
+    margin: 0;
+  }
+}
+//select2 is not caring about the width of container around
+.ui.form .la-select2-fixed-width {
+          width: 356.938px;
+}
+/*--------------------
+       Disabled
+---------------------*/
+
+.ui.form .disabled.fields .field,
+.ui.form .disabled.field,
+.ui.form .field :disabled {
+  pointer-events: none;
+  opacity: @disabledOpacity;
+}
+
+/* Smaller input field for table headers */
+.ui.form .field .ui.input input.la-input-small {
+  width: 80px;
+}
+legend {
+  margin: 0 0 .28571429rem 0;
+  color: rgba(0,0,0,.87);
+  font-size: .92857143em;
+  font-weight: 700;
+}
+.ui.form .fields .field.la-more-margin {
+  margin: 0 0 2em;
+}
