@@ -202,7 +202,7 @@ class SubscriptionService {
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and roleT.roleType in (:rdvSubscr) " +
-                    " and ( ci is null or ci.costItemStatus != :deleted )"
+                    " and ( ci is null or ci.costItemStatus != :deleted or ci.owner = :org )"
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
@@ -349,16 +349,12 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             pu.setBenchmark('costs init')
 
-            List costsRaw = CostItem.executeQuery(
+            List costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             pu.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
-            Set costs = []
-            costsRaw.each { row ->
-                List rowCleared = row[0] != null && row[0].owner.id != contextOrg.id ? [null, row[1], row[2]] : row
-                costs << rowCleared
-            }
+            result.costs = costs
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
@@ -969,7 +965,7 @@ class SubscriptionService {
     }
 
     /**
-     * Adds the given package to the given subscription. It may be specified if titles should be created as well or not.
+     * Adds the given package to the given subscription. It may be specified if titles should be created as well or not
      * @param subscription the subscription whose holding should be enriched
      * @param pkg the package to link
      * @param createEntitlements should entitlements be created as well?
@@ -989,6 +985,14 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Adds the holding of the given package to the given member subscriptions, copying the stock of the given parent subscription if requested.
+     * The method uses native SQL for copying the issue entitlements, (eventual) coverages and price items
+     * @param subscription the parent {@link Subscription} whose holding serves as base
+     * @param memberSubs the {@link List} of member {@link Subscription}s which should be linked to the given package
+     * @param pkg the {@link de.laser.Package} to be linked
+     * @param createEntitlements should {@link IssueEntitlement}s be created along with the linking?
+     */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding) values (0, :pkgId, :subId, false) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
@@ -1001,23 +1005,23 @@ class SubscriptionService {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
             sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) select ' +
                     '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId') { BatchingPreparedStatementWrapper stmt ->
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
             sql.withBatch('insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) select ' +
-                    '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id), now(), now(), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId') { BatchingPreparedStatementWrapper stmt ->
+                    '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = :current), now(), now(), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, current: RDStore.TIPP_STATUS_CURRENT])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
             sql.withBatch('insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) select ' +
-                    "0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId') { BatchingPreparedStatementWrapper stmt ->
+                    "0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = :current), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, current: RDStore.TIPP_STATUS_CURRENT])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
         }
@@ -1436,6 +1440,15 @@ class SubscriptionService {
         }
     }
 
+    /**
+     * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
+     * @param sub the {@link Subscription} to which the entitlements should be attached
+     * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
+     * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
+     * @param withPriceData should price data be added as well?
+     * @param acceptStatus the accept status reference data key
+     * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
+     */
     void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, Long acceptStatus, pickAndChoosePerpetualAccess) {
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] keys = checkMap.keySet().toArray()

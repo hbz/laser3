@@ -85,6 +85,9 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     fail = true
                                 }
 
+                                subscription.status = RDStore.SUBSCRIPTION_EXPIRED
+                                subscription.save()
+
                                 //link to license
                                 Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subscription, RDStore.LINKTYPE_LICENSE)
                                 precedingLicenses.each { Links link ->
@@ -173,10 +176,16 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                         if (newIssueEntitlement.save()) {
                                             ie.coverages.each { IssueEntitlementCoverage coverage ->
-                                                def coverageProperties = coverage.properties
-                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
-                                                InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
-                                                newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage(issueEntitlement: newIssueEntitlement)
+                                                newIssueEntitlementCoverage.startDate = coverage.startDate
+                                                newIssueEntitlementCoverage.startVolume = coverage.startVolume
+                                                newIssueEntitlementCoverage.startIssue = coverage.startIssue
+                                                newIssueEntitlementCoverage.endDate = coverage.endDate
+                                                newIssueEntitlementCoverage.endVolume = coverage.endVolume
+                                                newIssueEntitlementCoverage.endIssue = coverage.endIssue
+                                                newIssueEntitlementCoverage.coverageDepth = coverage.coverageDepth
+                                                newIssueEntitlementCoverage.coverageNote = coverage.coverageNote
+                                                newIssueEntitlementCoverage.embargo = coverage.embargo
 
                                                 if (!newIssueEntitlementCoverage.save()) {
                                                     log.error("Problem saving IssueEntitlementCoverage ${newIssueEntitlementCoverage.errors}")
@@ -185,12 +194,15 @@ class RenewSubscriptionService extends AbstractLockableService {
                                             }
 
                                             ie.priceItems.each { PriceItem priceItem ->
-                                                def priceItemProperties = priceItem.properties
+                                                PriceItem newPriceItem = new PriceItem(issueEntitlement: newIssueEntitlement)
+                                                newPriceItem.startDate = priceItem.startDate
+                                                newPriceItem.endDate = priceItem.endDate
+                                                newPriceItem.listPrice = priceItem.listPrice
+                                                newPriceItem.listCurrency = priceItem.listCurrency
+                                                newPriceItem.localPrice = priceItem.localPrice
+                                                newPriceItem.localCurrency = priceItem.localCurrency
+                                                newPriceItem.setGlobalUID()
 
-                                                PriceItem newPriceItem = new PriceItem()
-                                                InvokerHelper.setProperties(newPriceItem, priceItemProperties)
-                                                newPriceItem.issueEntitlement = newIssueEntitlement
-                                                newPriceItem.globalUID = null
 
                                                 if (!newPriceItem.save()) {
                                                     log.error("Problem saving PriceItem ${newPriceItem.errors}")

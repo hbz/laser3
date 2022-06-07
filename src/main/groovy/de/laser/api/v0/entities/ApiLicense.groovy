@@ -137,9 +137,10 @@ class ApiLicense {
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
         result.globalUID        = lic.globalUID
-        // removed - result.contact          = lic.contact
+        result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
+        result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)

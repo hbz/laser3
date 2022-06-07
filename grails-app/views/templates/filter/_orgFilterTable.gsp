@@ -393,16 +393,39 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('publicContacts')}">
                 <td>
+                    <g:set var="plctr" value="${0}"/>
+                    <g:set var="pubLinksSorted" value="${org?.prsLinks?.toSorted()}"/>
                     <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                         <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
-                            <laser:render template="/templates/cpa/person_details" model="${[
-                                    personRole          : pl,
-                                    tmplShowDeleteButton: false,
-                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
-                                    controller          : 'organisation',
-                                    action              : 'show',
-                                    id                  : org.id
-                            ]}"/>
+                            <g:if test="${plctr == 0}">
+                                <laser:render template="/templates/cpa/person_details" model="${[
+                                        personRole          : pl,
+                                        tmplShowDeleteButton: false,
+                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
+                                        controller          : 'organisation',
+                                        action              : 'show',
+                                        id                  : org.id
+                                ]}"/>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${plctr == 1}">
+                                    <div class="ui accordion styled info">
+                                    <div class="title">
+                                        <strong><i class="dropdown icon"></i><g:message code="org.privateContacts.showMore"/></strong>
+                                        </div>
+                                        <div class="content">
+                                </g:if>
+                                <laser:render template="/templates/cpa/person_details" model="${[
+                                        personRole          : pl,
+                                        tmplShowDeleteButton: false,
+                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
+                                        controller          : 'organisation',
+                                        action              : 'show',
+                                        id                  : org.id
+                                ]}"/>
+                                <g:if test="${plctr == pubLinksSorted.size()-1}"></div></div></g:if>
+                            </g:else>
+                            <g:set var="plctr" value="${plctr+1}"/>
                         </g:if>
                     </g:each>
                 </td>
@@ -410,28 +433,57 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
                 <td>
                     <g:set var="visiblePrivateContacts" value="[]"/>
-                    <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
+                    <g:set var="orgLinksSorted" value="${org?.prsLinks?.toSorted()}"/>
+                    <g:set var="ol" value="${0}"/>
+                    <g:each in="${orgLinksSorted}" var="pl">
                         <g:if test="${pl?.functionType?.value && (!pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
-
                             <g:if test="${!visiblePrivateContacts.contains(pl.prs.id)}">
                                 <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}"/>
-
-                                <laser:render template="/templates/cpa/person_full_details" model="${[
-                                        person                 : pl.prs,
-                                        personContext          : org,
-                                        tmplShowDeleteButton   : true,
-                                        tmplShowAddPersonRoles : false,
-                                        tmplShowAddContacts    : false,
-                                        tmplShowAddAddresses   : false,
-                                        tmplShowFunctions      : true,
-                                        tmplShowPositions      : true,
-                                        tmplShowResponsiblities: false,
-                                        tmplConfigShow         : ['E-Mail', 'Mail', 'Phone'],
-                                        controller             : 'organisation',
-                                        action                 : 'show',
-                                        id                     : org.id,
-                                        editable               : true
-                                ]}"/>
+                                <g:if test="${ol == 0}">
+                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                            person                 : pl.prs,
+                                            personContext          : org,
+                                            tmplShowDeleteButton   : true,
+                                            tmplShowAddPersonRoles : false,
+                                            tmplShowAddContacts    : false,
+                                            tmplShowAddAddresses   : false,
+                                            tmplShowFunctions      : true,
+                                            tmplShowPositions      : true,
+                                            tmplShowResponsiblities: false,
+                                            tmplConfigShow         : ['E-Mail', 'Mail', 'Phone'],
+                                            controller             : 'organisation',
+                                            action                 : 'show',
+                                            id                     : org.id,
+                                            editable               : true
+                                    ]}"/>
+                                </g:if>
+                                <g:else>
+                                    <g:if test="${ol == 1}">
+                                        <div class="ui accordion styled info">
+                                        <div class="title">
+                                            <strong><i class="dropdown icon"></i><g:message code="org.privateContacts.showMore"/></strong>
+                                        </div>
+                                        <div class="content">
+                                    </g:if>
+                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                            person                 : pl.prs,
+                                            personContext          : org,
+                                            tmplShowDeleteButton   : true,
+                                            tmplShowAddPersonRoles : false,
+                                            tmplShowAddContacts    : false,
+                                            tmplShowAddAddresses   : false,
+                                            tmplShowFunctions      : true,
+                                            tmplShowPositions      : true,
+                                            tmplShowResponsiblities: false,
+                                            tmplConfigShow         : ['E-Mail', 'Mail', 'Phone'],
+                                            controller             : 'organisation',
+                                            action                 : 'show',
+                                            id                     : org.id,
+                                            editable               : true
+                                    ]}"/>
+                                    <g:if test="${ol == orgLinksSorted.size()-1}"></div></div></g:if>
+                                </g:else>
+                                <g:set var="ol" value="${ol+1}"/>
                             </g:if>
                         </g:if>
                     <%--
@@ -469,7 +521,7 @@
                             subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
                         }
                         else subStatus = params.subStatus
-                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id.toString() : null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
+                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         /*if(params.subPerpetual == "on") {
                             (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
@@ -478,7 +530,7 @@
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id : null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
@@ -495,7 +547,7 @@
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString(), RDStore.SUBSCRIPTION_EXPIRED.id.toString()], hasPerpetualAccess: RDStore.YN_YES.id.toString(), isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString()], isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}

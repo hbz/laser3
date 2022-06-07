@@ -25,7 +25,7 @@
                         <table class="ui celled la-js-responsive-table la-table table" id="firstTable">
                             <thead>
                             <tr>
-                                <th colspan="5">
+                                <th colspan="6">
                                     <g:if test="${sourceObject}"><g:link controller="subscription"
                                                                          action="members"
                                                                          id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
@@ -82,7 +82,7 @@
                         <table class="ui celled la-js-responsive-table la-table table" id="secondTable">
                             <thead>
                             <tr>
-                                <th colspan="4">
+                                <th colspan="6">
                                     <g:if test="${targetObject}"><g:link controller="subscription"
                                                                          action="members"
                                                                          id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>

@@ -181,7 +181,7 @@ class LinksGenerationService {
         result
     }
 
-    @Deprecated
+
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
         Set first = getRecursiveNext([startingPoint].toSet(),position)
@@ -198,7 +198,7 @@ class LinksGenerationService {
         else chain
     }
 
-    @Deprecated
+
     private Set<Subscription> getRecursiveNext(Set points, String position) {
         String pair
         if(position == 'sourceSubscription')

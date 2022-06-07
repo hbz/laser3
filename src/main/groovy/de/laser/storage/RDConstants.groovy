@@ -10,6 +10,7 @@ class RDConstants {
     public static final String ACCESS_METHOD_IP       = 'access.method.ip'
     public static final String ACCESS_POINT_TYPE      = 'access.point.type'
     public static final String ADDRESS_TYPE           = 'address.type'
+    public static final String ARCHIVING_AGENCY       = 'archiving.agency'
     public static final String AUTHORITY              = 'authority'
 
     public static final String CATEGORY_A_F           = 'category.a.f'
@@ -39,6 +40,7 @@ class RDConstants {
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE = 'customer.identifier.type'
 
+    public static final String DBS_SUBJECT_GROUP        = 'dbs.subject.group'
     public static final String DDC                      = 'ddc'
     public static final String DOCUMENT_CONTEXT_STATUS  = 'document.context.status'
     public static final String DOCUMENT_TYPE            = 'document.type'
@@ -188,5 +190,6 @@ class RDConstants {
 
     public static final String Y_N                    = 'y.n'
     public static final String Y_N_O                  = 'y.n.o'
+    public static final String Y_N_P                  = 'y.n.p'
     public static final String Y_N_U                  = 'y.n.u'
 }

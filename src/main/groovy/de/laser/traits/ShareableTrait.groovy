@@ -7,6 +7,10 @@ import de.laser.storage.BeanStore
 
 import javax.persistence.Transient
 
+/**
+ * This trait is being attached to each object class which can be inherited to member objects.
+ * See {@link de.laser.Subscription} for the intellectual background of the inheritance concept
+ */
 trait ShareableTrait {
 
     // static belongsTo = [ sharedFrom: ShareableTrait_IMPL ]
@@ -18,6 +22,10 @@ trait ShareableTrait {
 
     // static constraints = { sharedFrom(nullable:true, blank:true); isShared(nullable:true, blank:false, default:false) }
 
+    /**
+     * Sets the sharing flag for the given target object
+     * @param target the {@link DocContext} or {@link OrgRole} which should be shared with members
+     */
     @Transient
     def addShareForTarget_trait(ShareSupport target) {
         log?.debug ("addShareForTarget " + this + " for " + target)
@@ -30,6 +38,10 @@ trait ShareableTrait {
         }
     }
 
+    /**
+     * Unsets the sharing flag from the given target object
+     * @param target the {@link DocContext} or {@link OrgRole} whose sharing with members should be abandoned
+     */
     @Transient
     def deleteShareForTarget_trait(ShareSupport target) {
         log?.debug ("deleteShareForTarget " + this + " for " + target)

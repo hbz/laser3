@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
+<%@ page import="org.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -186,8 +186,7 @@
                             <g:each var="propValue" in="${propValuesForSourceSub}">
                                 <g:if test="${propValue instanceof SubscriptionProperty || propValue instanceof LicenseProperty}">
                                     <div class="ui checkbox la-toggle-radio la-inherit">
-                                        <input type="checkbox" name="auditProperties"
-                                               value="${propValue.id}" ${!AuditConfig.getConfig(propValue) ? '' : 'checked'}/>
+                                        <input type="checkbox" name="auditProperties" value="${propValue.id}" ${!AuditConfig.getConfig(GrailsHibernateUtil.unwrapIfProxy(propValue)) ? '' : 'checked'}/>
                                     </div>
                                     <br />
                                 </g:if>

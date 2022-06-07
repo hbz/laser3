@@ -8,6 +8,9 @@ import de.laser.system.SystemProfiler
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller contains public (= open) methods for system profiling
+ */
 @Secured(['permitAll'])
 class AjaxOpenController {
 
@@ -19,6 +22,10 @@ class AjaxOpenController {
         render test as JSON
     }
 
+    /**
+     * Call to update the system profiler
+     * @return the current profiler state as JSON
+     */
     @Secured(['permitAll'])
     def profiler() {
         Map<String, Object> result = [status: 'failed']
@@ -38,6 +45,9 @@ class AjaxOpenController {
         render result as JSON
     }
 
+    /**
+     * Call to list the system messages
+     */
     @Secured(['permitAll'])
     def messages() {
         render template: '/templates/systemMessages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]

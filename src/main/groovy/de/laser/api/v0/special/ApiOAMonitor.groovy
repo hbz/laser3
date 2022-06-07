@@ -42,7 +42,7 @@ class ApiOAMonitor {
 
     /**
      * Checks if the given subscription is accessible.
-     * Checks implicitely OAMONITOR_SERVER_ACCESS, i.e. if the requested institution is among those which authorised access to the OA monitor endpoint
+     * Checks implicitly OAMONITOR_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the OA monitor endpoint
      * @param sub the {@link Subscription} to which access is requested
      * @return true if access is granted, false otherwise
      */
@@ -162,6 +162,8 @@ class ApiOAMonitor {
     /**
      * Requests the given subscription and returns a {@link Map} containing the requested subscription's details if
      * the requesting institution has access to the details
+     * @param sub the {@link Subscription} to be retrieved
+     * @param context the institution ({@link Org}) requesting access (in most cases the OA monitor)
      * @return JSON | FORBIDDEN
      * @see Subscription
      */

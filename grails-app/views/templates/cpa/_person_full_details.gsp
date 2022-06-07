@@ -130,7 +130,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button js-open-confirm-modal la-modern-button"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"
@@ -183,7 +183,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
+                                    <g:link class="ui icon negative button js-open-confirm-modal la-modern-button"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"

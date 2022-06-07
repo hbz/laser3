@@ -336,11 +336,17 @@
           type: string
           description: Mapping RefdataCategory "${RDConstants.LICENSE_CATEGORY}"
           enum: <% printRefdataEnum(RDConstants.LICENSE_CATEGORY, 12) %>
+          example: ${RefdataValue.getByValueAndCategory('Agreement', RDConstants.LICENSE_CATEGORY).value}
         linkedLicenses:
           type: array
           description: Other subscriptions related to this license instance.
           items:
             $ref: "#/components/schemas/Link_License"
+        openEnded:
+          type: string
+          description: Is the license never due? Maps to the RefdataCategory "${RDConstants.Y_N_U}"
+          enum: <% printRefdataEnum(RDConstants.Y_N_U, 12) %>
+          example: ${RDStore.YNU_UNKNOWN.value}
         organisations: # mapping attr orgRelations
           type: array
           description: Organisations related to this license.
@@ -494,11 +500,6 @@
           type: string
           description: Sort name of the organisation for easier retrieval in lists. Convetion is city, abbreviation.
           example: Köln, hbz
-        status:
-          type: string
-          description: The organisation status. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: Current
         subjectGroup:
           type: array
           description: A set of subject groups which are aimed by the given organisation. The values map to the RefdataCategory ${RDConstants.SUBJECT_GROUP}.
@@ -519,6 +520,13 @@
       - $ref: "#components/schemas/PackageStub"
       - type: object
         properties:
+          <%-- needs we:kb connection
+          altNames:
+            type: array
+            description: A set of alternative names of the package.
+            example: ["OECD iLibrary Books, Papers, Statistics (BPS)", "OECD iLibrary Journals"]
+            items:
+              type: string--%>
           breakable:
             type: string
             description: Can the contents of this package be licensed partly or only as a whole? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -547,11 +555,6 @@
             description: Scope of validity for the given package, i.e. is it a globally offered set of titles or restricted to countries and/or regions? Maps to the RefdataCategory "${RDConstants.PACKAGE_SCOPE}".
             enum: <% printRefdataEnum(RDConstants.PACKAGE_SCOPE, 12) %>
             example: Global
-          packageStatus:
-            type: string
-            description: Status of the package. Maps to the RefdataCategory "${RDConstants.PACKAGE_STATUS}".
-            enum: <% printRefdataEnum(RDConstants.PACKAGE_STATUS, 12) %>
-            example: Current
           contentType:
             type: string
             description: The type of content offered in this package. Maps to the RefdataCategory "${RDConstants.PACKAGE_CONTENT_TYPE}".
@@ -940,6 +943,11 @@
             description: Should the final sum be rounded? Maps to the RefdataCategory "${RDConstants.Y_N}".
             enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
             example: ${RDStore.YN_NO.value}
+          isVisibleForSubscriber:
+            type: string #mapped to boolean
+            description: Is the given cost item visible for the subscriber? Maps to the RefdataCategory "${RDConstants.Y_N}".
+            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+            example: ${RDStore.YN_YES.value}
           invoiceDate:
             type: string
             description: Timestamp when the invoice has been issued.
@@ -1524,6 +1532,11 @@
           description: Further set of identifiers of the organisation.
           items:
             $ref: "#/components/schemas/Identifier"
+        status:
+          type: string
+          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
+          example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
@@ -1591,7 +1604,11 @@
           type: string
           description: Name of the package.
           example: ACS eBooks Complete Collection
-
+        status:
+          type: string
+          description: Status of the package. Maps to the RefdataCategory "${RDConstants.PACKAGE_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.PACKAGE_STATUS, 12) %>
+          example: "Current"
 
     PlatformStub:
       type: object
@@ -1613,7 +1630,11 @@
           type: string
           description: Primary URL of the host platform.
           example: https://meiner-elibrary.de
-
+        status:
+          type: string
+          description: Status of the platform. Maps to the RefdataCategory "${RDConstants.PLATFORM_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 12) %>
+          example: ${RDStore.PLATFORM_STATUS_CURRENT.value}
 
     SubscriptionStub:
       type: object

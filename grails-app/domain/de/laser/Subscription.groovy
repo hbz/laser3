@@ -26,8 +26,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 /**
- * This is the most central of all the domains and the turning point of everything: the subscription.
- * A subscription describes the permission of an institution to use electronic resources; that is what the institution actually
+ * <p>This is the most central of all the domains and the turning point of everything: the subscription.</p>
+ * <p>A subscription describes the permission of an institution to use electronic resources; that is what the institution actually
  * purchases from a provider when licensing titles to the institution itself (local subscription, see below) or to a group of institutions
  * participating in a bulk order. This bulk ordering is called consortial subscription. In the German-speaking area, there are (currently, November 11th, 2021) 18
  * so called consortial institutions (in short consortia) (Konsortialstellen) which are organising such bulk licensings with the providers
@@ -40,8 +40,8 @@ import java.time.LocalDate
  * usually have but not necessarily need to be bound to a time ranging, spanned between {@link #startDate} and {@link #endDate};
  * it should become standard to organise subscriptions in rings of year, ranging between January 1st and December 31st of a year.
  * Nonetheless, it is possible to set different dates (of course they should not overlap) or to define a subscription ranging over
- * several years; they are then called multi-year subscriptions. Structure may then be:
- * It is even possible to omit the dates completely. Test access subscriptions for example have no subscription range defined since
+ * several years; they are then called multi-year subscriptions.</p>
+ * <p>It is even possible to omit the dates completely. Test access subscriptions for example have no subscription range defined since
  * an institution takes a subscription test-wise to see how the titles are being appreciated among the end users.
  * There are three types of subscriptions:
  * <ol>
@@ -49,16 +49,16 @@ import java.time.LocalDate
  *     <li>consortial (member) subscriptions</li>
  *     <li>local subscriptions</li>
  * </ol>
- * (above them, there are administrative subscriptions as well, but they are for hbz-internal purposes only and technically consortial subscriptions)
- * Consortial parent subscriptions can be maintained only by consortia, local subscriptions only by single users. Consortia may add member institutions
+ * (above them, there are administrative subscriptions as well, but they are for hbz-internal purposes only and technically consortial subscriptions)</p>
+ * <p>Consortial parent subscriptions can be maintained only by consortia, local subscriptions only by single users. Consortia may add member institutions
  * to consortial subscriptions; they then get member subscriptions. Basic members and single users may have consortia member subscriptions, but they have
  * reading rights only. Members may add notes to the subscriptions; single users may add above that own documents, tasks, notes and properties to the
  * consortial member subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
  * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members. Shared
- * items are thus visible on both levels - on parent and on member level. The inhertiance may be configured to take effect automatically or only after accepting it -
- * this is controlled by the {@link #isSlaved} flag
- * Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
- * subscription or its holding and reporting is mainly fed by data from and around subscriptions
+ * items are thus visible on both levels - on parent and on member level. The inheritance may be configured to take effect automatically or only after accepting it -
+ * this is controlled by the {@link #isSlaved} flag. Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
+ * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
+ * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
  * @see Platform
  * @see Package

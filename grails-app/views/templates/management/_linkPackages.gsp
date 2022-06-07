@@ -62,22 +62,22 @@
             <div class="ui buttons">
                 <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
                         data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage.confirm')}"
-                        data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
-                        params="[processOption: 'allWithoutTitle', tab: params.tab]">${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage')}</g:link>
+                        data-confirm-term-how="ok" action="${actionName}"
+                        params="[processOption: 'allWithoutTitle', tab: params.tab, id: params.id]">${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage')}</g:link>
                 <div class="or" data-text="${message(code: 'default.or')}"></div>
                 <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
                         data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
-                        data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
-                        params="[processOption: 'allWithTitle', tab: params.tab]">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</g:link>
+                        data-confirm-term-how="ok" action="${actionName}"
+                        params="[processOption: 'allWithTitle', tab: params.tab, id: params.id]">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</g:link>
             </div>
 
         </div>
     </g:if>
 
-    <g:form action="${actionName}" params="[tab: params.tab]" data-confirm-id="processLinkPackagesMembers_form"
+    <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form"
             method="post"
             class="ui form packagesForm">
-        <g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>
+        <%--<g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>--%>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="ui segment">

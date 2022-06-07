@@ -7,6 +7,50 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4287    01.06.2022  rc-2.3  2.3         Andreas Bug         Fehlzugriff bei Mehrfachverknüpfung von Titel zu Titelgruppen behoben
+
+4280    27.05.2022  rc-2.3  2.3         Andreas Bug         diverse Ausbesserungen an der Bestandsverwaltung
+
+4266    24.05.2022  rc-2.3  2.3         Andreas Bug         Vererbung der Merkmale kam zunächst nicht durch
+
+4265    24.05.2022  rc-2.3  2.3         Andreas Bug         Teilnehmerübertrag beschleunigt
+
+4264    24.05.2022  rc-2.3  2.3         Andreas Bug         500er bei Entknüpfung eines Teilnehmerpaketes von einer Lizenz behoben
+
+4254    24.05.2022  rc-2.3  2.3         Andreas Feature     Kundennummern-Sicht bei Anbietern und Lieferanten grundsätzlich abgeklemmt
+
+4215    24.05.2022  rc-2.3  2.3         Andreas Bug         Bugfix und Umstellung des KBART-Exports auf natives SQL
+
+4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
+
+4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf
+
+4137    23.05.2022  rc-2.3  2.3         Andreas Bug         Fehlertext bei fehlendem Lizenzbeug angepasst
+
+4136    23.05.2022  rc-2.3  2.3         Andreas Bug         Vorbelegung der Elternlizenz wiederhergestellt
+
+3958    23.05.2022  rc-2.3  2.3         Andreas Bug         Neuen Dokumententyp "Kündigung" aufgenommen
+
+3729    23.05.2022  rc-2.3  2.3         Andreas Feature     Nachbesserungen für die neu strukturierte Sicht
+
+4253    23.05.2022  rc-2.3  2.3         Moe     Bug         TN verwalten: Dokument anlegen funktioniert nicht
+
+4220    20.05.2022  rc-2.3  2.3         Moe     Feature     Mehrere Vorgängerlizenzen zur Bildung des Bestands zulassen
+
+4262    20.05.2022  rc-2.3  2.3         Andreas Bug         diverse Fehler bei der Kopie von Titel zwischen Lizenzen behoben
+
+4144    20.05.2022  rc-2.3  2.3         Andreas Feature     Archivplattformen werden nun beim Paket angezeigt
+
+4076    20.05.2022  rc-2.3  2.3         Andreas Bug         Titel wurden bei Kopie einer Lizenz nicht übertragen
+
+4035    20.05.2022  rc-2.3  2.3         Andreas Feature     Optionen bei Aufhebung der Vererbung beim Lizenznamen aufgehoben
+
+2794    20.05.2022  rc-2.3  2.3         Andreas Bug         Sortierung der DBS-Fächergruppen korrigiert
+
+4255    19.05.2022  rc-2.3  2.3         Moe     Bug         Meine Lizenzverwaltung springen zwischen den Reiter erst durch doppelklick
+
+4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht
+
 4258    19.05.2022  rc-2.3  2.3         Andreas Bug         vergessener Titel für View korrigiert
 
 4257    19.05.2022  rc-2.3  2.3         Andreas Bug         Status wurde trotz explizit aufgehobenem Filterwert erwartet
@@ -15,9 +59,17 @@
 
 4251    19.05.2022  rc-2.3  2.3         Andreas Feature     Schrift angepasst, Erklär-Tooltips zu Buttons hinzugefügt 
 
+4250    18.05.2022  rc-2.3  2.3         Moe     Bug         Automatische Lizenzverlängerung: Status der Vorgängerlizenz bleibt auf aktiv
+
+4259    18.05.2022  rc-2.3  2.3         Moe     Feature     Übernahme von Dauerhaften Titel von Vorgänger Lizenzen in Titelumfrage
+
+4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
+
 4194    18.05.2022  rc-2.3  2.3         Andreas Feature     Prozessfluss zum Umgang mit fehlerhaften Titel impelementiert
 
 3899    18.05.2022  rc-2.3  2.3         Andreas Feature     Beschleunigen der Paketentknüpfung durch Indizierung
+
+4244    16.05.2022  rc-2.3  2.3         Moe     Feature     we:kb und ygor sollten sich in neuem Tab öffnen
 
 4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
 

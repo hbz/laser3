@@ -2,7 +2,7 @@
     <semui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
-            <laser:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView]"/>
+            <laser:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView,ciTitles:ciTitles]"/>
             <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">

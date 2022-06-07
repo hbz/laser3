@@ -8,6 +8,9 @@ import grails.util.Holders
 import grails.core.GrailsClass
 import groovy.util.logging.Slf4j
 
+/**
+ * Util class for determining domain classes
+ */
 @Slf4j
 class AppUtils {
 
@@ -84,6 +87,11 @@ class AppUtils {
 
     // -- domain classes
 
+    /**
+     * Gets the domain class entity for the given class name. The name has to be complete
+     * @param qualifiedName the fully qualified name of the class to retrieve
+     * @return the {@link GrailsClass} instance
+     */
     static GrailsClass getDomainClass(String qualifiedName) {
         // fallback
         String fallback = qualifiedName.replace('class ', '')
@@ -95,6 +103,11 @@ class AppUtils {
         dc
     }
 
+    /**
+     * Gets the domain class entity for the given class name. The name can be completed, i.e. does not need to be fully qualified
+     * @param qualifiedName the name of the class to retrieve
+     * @return the {@link GrailsClass} instance
+     */
     static GrailsClass getDomainClassGeneric(String name) {
         GrailsClass dc
         List<String> namespaces = [ 'de.laser' ]
@@ -109,6 +122,10 @@ class AppUtils {
         dc
     }
 
+    /**
+     * Returns a complete list of currently registered domain classes
+     * @return a list of {@link GrailsClass} entitles
+     */
     static List<GrailsClass> getAllDomainClasses() {
         Holders.grailsApplication.getArtefacts('Domain').toList()
     }

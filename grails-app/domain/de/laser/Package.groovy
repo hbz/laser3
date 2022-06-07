@@ -14,9 +14,9 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 /**
- * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-chosse).
- * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Package.groovy">here</a>)
- * If a package is being subscribed, the subscription is being represented by a {@link SubscriptionPackage} connection
+ * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-choose).
+ * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Package.groovy">here</a>).
+ * If a package is being subscribed, the link between subscription and package is being represented by a {@link SubscriptionPackage} connection
  * @see TitleInstancePackagePlatform
  * @see Platform
  * @see SubscriptionPackage

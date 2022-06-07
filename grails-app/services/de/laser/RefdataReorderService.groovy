@@ -59,8 +59,14 @@ class RefdataReorderService {
             c.save()
         }
 
-        //ToDo Order of cost.item.elements
+        //dbs: order by key (question number)
+        order = 10
+        RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :dbs order by rdv.value asc', [dbs: RDConstants.DBS_SUBJECT_GROUP]).eachWithIndex { RefdataValue rdv, int i ->
+            rdv.order = i*order
+            rdv.save()
+        }
 
+        //ToDo Order of cost.item.elements
 
         List list = []
         list.add([owner: 'concurrent.access',       sortToEnd: ['Other', 'Not Specified']])

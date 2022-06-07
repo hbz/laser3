@@ -117,7 +117,7 @@ class SubscriptionPackage implements Comparable {
    * @return the count of {@link IssueEntitlement}s of the holding which is not marked as deleted
    */
   int getIssueEntitlementCountOfPackage(){
-    IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status != :removed', [sub: this.subscription, pkg: this.pkg, deleted: RDStore.TIPP_STATUS_REMOVED])[0]
+    IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status != :removed', [sub: this.subscription, pkg: this.pkg, removed: RDStore.TIPP_STATUS_REMOVED])[0]
   }
 
   /**

@@ -492,7 +492,10 @@ class PackageController {
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(titlesList, TitleInstancePackagePlatform.class.name) : []
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -641,7 +644,10 @@ class PackageController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList,TitleInstancePackagePlatform.class.name)
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
