@@ -1553,6 +1553,16 @@ class SubscriptionController {
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    if (ctrlResult.result.isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")){
+                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
+                        ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
+                    } else {
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_SUBSCRIBER:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     break
