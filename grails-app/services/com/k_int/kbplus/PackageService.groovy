@@ -142,7 +142,7 @@ class PackageService {
                 Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
                 //delete matches
                 //IssueEntitlement.withSession { Session session ->
-                String updateQuery = "update IssueEntitlement ie set ie.status.id = case when ((select tipp.status.id from IssueEntitlement et join et.tipp tipp where et.id = ie.id) = ${RDStore.TIPP_STATUS_REMOVED.id}) then ${RDStore.TIPP_STATUS_REMOVED.id} else ${RDStore.TIPP_STATUS_DELETED.id} end where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                 IssueEntitlement.executeUpdate(updateQuery, queryParams)
                 removePackagePendingChanges(pkg, subList, true)
 
