@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4288    07.06.2022  rc-2.3  2.3         Moe     Bug         Umfragen: Kostenvorzeichen automatisch "positiv" bei Konsortialpreis
+
+4289    07.06.2022  rc-2.3  2.3         Moe     Feature     Umfragen: Teilnehmer mit aktiven Lizenzen auswählen
+
+4286    07.06.2022  rc-2.3  2.3         Moe     Feature     Lizenz kopieren: TN mitbedenken
+
+4283    07.06.2022  rc-2.3  2.3         Moe     Feature     Dauerhafte Kauf Flag Umstellung auch bei Elternlizenzen triggern
+
 4287    01.06.2022  rc-2.3  2.3         Andreas Bug         Fehlzugriff bei Mehrfachverknüpfung von Titel zu Titelgruppen behoben
 
 4280    27.05.2022  rc-2.3  2.3         Andreas Bug         diverse Ausbesserungen an der Bestandsverwaltung
