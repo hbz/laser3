@@ -2641,7 +2641,7 @@ class SurveyController {
                 Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
                 surveyService.emailsToSurveyUsers([result.surveyInfo.id])
             })
-            executorService.shutdown()
+            //executorService.shutdown()
 
         }
 
