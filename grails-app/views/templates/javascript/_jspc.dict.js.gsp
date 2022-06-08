@@ -38,7 +38,9 @@
             'responsive.table.selectElement',
             'pagination.keyboardInput.validation.integer',
             'pagination.keyboardInput.validation.smaller',
-            'pagination.keyboardInput.validation.biggerZero'
+            'pagination.keyboardInput.validation.biggerZero',
+            'dropdown.message.addResult',
+            'select2.noMatchesFound'
     ]
 
     println """

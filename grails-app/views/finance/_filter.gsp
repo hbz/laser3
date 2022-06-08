@@ -75,7 +75,30 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
-                    <select name="filterCITitle" id="filterCITitle"  class="ui dropdown search selection">
+
+                    <%--<input id="filterCITitle" name="filterCITitle" type="text" value="${filterPresets?.filterCITitle}"/>--%>
+%{--
+                        <select name="filterCITitle" id="filterCITitle" class="ui search dropdown allowAdditions">
+                            <g:if test="${filterPresets?.filterCITitle}"><input type="hidden" value="${filterPresets?.filterCITitle}"></g:if>
+                            <option value=""><g:message code="default.select.all.label"/></option>
+                            <g:each in="${ciTitles}" var="ciTitle">
+                                <option value="${ciTitle}">${ciTitle}</option>
+                            </g:each>
+                        </select>--}%
+
+            <div class="ui search selection dropdown allowAdditions" id="filterCITitle">
+                <input type="hidden" name="filterCITitle" value="${filterPresets?.filterCITitle}">
+                <i class="dropdown icon"></i>
+                <input type="text" class="search">
+                <div class="default text"><g:message code="default.select.all.label"/></div>
+                <div class="menu">
+                <g:each in="${ciTitles}" var="ciTitle">
+                        <div class="item" data-value="${ciTitle}">${ciTitle}</div>
+                </g:each>
+                </div>
+            </div>
+
+%{--                    <select name="filterCITitle" id="filterCITitle"  class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
                         <g:each in="${ciTitles}" var="ciTitle">
                             <option <%=(filterPresets?.filterCITitle?.contains(ciTitle.toString())) ? 'selected="selected"' : ''%>
@@ -83,7 +106,7 @@
                                 ${ciTitle}
                             </option>
                         </g:each>
-                    </select>
+                    </select>--}%
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field"><!--NEW -->
@@ -371,6 +394,7 @@
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
         JSPC.app.setupDropdowns();
+
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
         });
