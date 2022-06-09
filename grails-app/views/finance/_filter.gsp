@@ -74,7 +74,7 @@
 
             <div class="three fields">
                 <div class="field">
-                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label
+                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
                     <div class="ui search selection dropdown allowAdditions" id="filterCITitle">
                         <input type="hidden" name="filterCITitle" value="${filterPresets?.filterCITitle}">
                         <i class="dropdown icon"></i>
