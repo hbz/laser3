@@ -102,6 +102,9 @@ dependencies {
     implementation 'org.hibernate:hibernate-core:5.6.9.Final'               // from 5.4.18.Final
     implementation 'org.grails.plugins:gsp'
 
+    //implementation 'org.springframework:spring-websocket'
+    //implementation 'org.springframework:spring-messaging'
+
     implementation 'io.micronaut:micronaut-http-client'
     compileOnly 'io.micronaut:micronaut-inject-groovy'
 

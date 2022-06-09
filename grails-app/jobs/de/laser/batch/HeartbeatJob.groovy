@@ -1,12 +1,14 @@
 package de.laser.batch
 
 import de.laser.SystemService
+import de.laser.custom.CustomWebSocketConfig
 import de.laser.helper.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import groovy.util.logging.Slf4j
+import org.springframework.messaging.Message
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 
 @Slf4j
@@ -17,6 +19,7 @@ class HeartbeatJob extends AbstractJob {
     SystemService systemService
 
     static triggers = {
+//    cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0/5 * * * * ?"
     cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
@@ -57,7 +60,8 @@ class HeartbeatJob extends AbstractJob {
             //		            -> send(D destination, Message<?> message);
             //                         ^ org.springframework.messaging.simp.SimpMessagingTemplate
 
-            brokerMessagingTemplate.convertAndSend '/topic/status', new JSON(systemService.getStatus()).toString(false)
+            brokerMessagingTemplate.convertAndSend( CustomWebSocketConfig.WS_TOPIC_STATUS, new JSON(systemService.getStatus()).toString(false) )
+
         } catch (Exception e) {
             log.error e.getMessage()
         }

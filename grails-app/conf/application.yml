@@ -162,7 +162,7 @@ grails:
                         access: [ 'permitAll' ]
                     -   pattern: '/static/**'
                         access: [ 'permitAll' ]
-                    -   pattern: '/socket/**'
+                    -   pattern: '/ws-socket/**'
                         access: [ 'permitAll' ]
                     -   pattern: '/**/js/**'
                         access: [ 'permitAll' ]

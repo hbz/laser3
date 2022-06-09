@@ -12,11 +12,10 @@ system = {
     },
 
     status: function () {
-        var socket = new SockJS(JSPC.vars.socketStompUrl)
+        var socket = new SockJS(JSPC.vars.ws.stompUrl)
         var client = webstomp.over(socket, { debug: true })
-
-        client.connect({}, function() {
-            client.subscribe('/topic/status', function(message) {
+        var subscription = function() {
+            client.subscribe(JSPC.vars.ws.topicStatusUrl, function(message) {
                 var body = JSON.parse(message.body)
                 console.log( message )
                 console.log( body )
@@ -33,7 +32,8 @@ system = {
                     }
                 }
             });
-        });
+        }
+        client.connect({}, subscription )
     },
 
     profiler: function (uri) {

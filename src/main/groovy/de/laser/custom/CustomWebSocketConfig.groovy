@@ -18,15 +18,21 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 @EnableWebSocketMessageBroker
 class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    final static String WS_STOMP        = '/ws-socket'
+    final static String WS_APP          = '/ws-app'
+    final static String WS_TOPIC        = '/ws-topic'
+    final static String WS_TOPIC_STATUS = '/ws-topic/status'
+
     @Override
     void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
-        messageBrokerRegistry.enableSimpleBroker '/topic', '/queue'
-        messageBrokerRegistry.setApplicationDestinationPrefixes '/app'
+        messageBrokerRegistry.enableSimpleBroker( WS_TOPIC )
+        // messageBrokerRegistry.setUserDestinationPrefix( '/user' )
+        messageBrokerRegistry.setApplicationDestinationPrefixes( WS_APP )
     }
 
     @Override
     void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-        stompEndpointRegistry.addEndpoint('/socket/stomp').withSockJS()
+        stompEndpointRegistry.addEndpoint( WS_STOMP ).withSockJS()
     }
 
     @Bean
@@ -36,7 +42,7 @@ class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         SimpMessageSendingOperations brokerMessagingTemplate
     ) {
         def handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-        handler.destinationPrefixes = ['/app']
+        handler.destinationPrefixes = [ WS_APP ]
         return handler
     }
 
@@ -47,7 +53,7 @@ class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         SimpMessageSendingOperations brokerMessagingTemplate
     ) {
         def handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-        handler.destinationPrefixes = ['/app']
+        handler.destinationPrefixes = [ WS_APP ]
         return handler
     }
     
