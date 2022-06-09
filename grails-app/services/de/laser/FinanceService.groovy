@@ -554,7 +554,7 @@ class FinanceService {
             Map<String,Object> filterQuery = processFilterParams(params)
             Map<String,Object> result = [filterPresets:filterQuery.filterData]
             SortedSet<String> costTitles = new TreeSet<String>()
-            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and ci.sub = :sub order by ci.costTitle asc', [ctx: org, sub: sub]))
+            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and (ci.sub = :sub or ci.sub.instanceOf = :sub) order by ci.costTitle asc', [ctx: org, sub: sub]))
             result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
