@@ -74,16 +74,18 @@
 
             <div class="three fields">
                 <div class="field">
-                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
-                    <select name="filterCITitle" id="filterCITitle"  class="ui dropdown search selection">
-                        <option value=""><g:message code="default.select.all.label"/></option>
+                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label
+                    <div class="ui search selection dropdown allowAdditions" id="filterCITitle">
+                        <input type="hidden" name="filterCITitle" value="${filterPresets?.filterCITitle}">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
+                        <div class="menu">
                         <g:each in="${ciTitles}" var="ciTitle">
-                            <option <%=(filterPresets?.filterCITitle?.contains(ciTitle.toString())) ? 'selected="selected"' : ''%>
-                                    value="${ciTitle}">
-                                ${ciTitle}
-                            </option>
+                                <div class="item" data-value="${ciTitle}">${ciTitle}</div>
                         </g:each>
-                    </select>
+                        </div>
+                    </div>
                 </div>
                 <g:if test="${!fixedSubscription}">
                     <div class="field"><!--NEW -->
@@ -371,6 +373,7 @@
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
         JSPC.app.setupDropdowns();
+
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
         });
