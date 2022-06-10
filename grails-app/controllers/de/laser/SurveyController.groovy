@@ -901,6 +901,8 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
+        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
@@ -1907,13 +1909,6 @@ class SurveyController {
 
         Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
 
-        if(params.transferPerpetualAccessTitlesOfOldSubs){
-            List<Long> issueEntitlementIds = surveyService.getPerpetualAccessIeIDsBySub(participantSub)
-
-            if(issueEntitlementIds.size() > 0){
-                surveyService.transferPerpetualAccessTitlesOfOldSubs(issueEntitlementIds, participantSub)
-            }
-        }
 
         if(params.process == "preliminary" && params.list('selectedIEs')) {
             IssueEntitlementGroup issueEntitlementGroup
@@ -2646,7 +2641,7 @@ class SurveyController {
                 Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
                 surveyService.emailsToSurveyUsers([result.surveyInfo.id])
             })
-            executorService.shutdown()
+            //executorService.shutdown()
 
         }
 

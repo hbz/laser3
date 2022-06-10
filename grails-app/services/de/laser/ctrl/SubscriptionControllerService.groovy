@@ -2610,12 +2610,12 @@ class SubscriptionControllerService {
                 else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
                     if(params.bulkOperation == "removeWithChildren") {
                         //case statement fails to evaluate with parameters ... so, let's go the hard-coded way!
-                        String deleteMemberQuery = "update IssueEntitlement e set e.status.id = case when ((select tipp.status.id from IssueEntitlement et join et.tipp tipp where et.id = e.id) = ${RDStore.TIPP_STATUS_REMOVED.id}) then ${RDStore.TIPP_STATUS_REMOVED.id} else ${RDStore.TIPP_STATUS_DELETED.id} end where e.subscription in (:subscriptions) and e.tipp in (select tipp ${query.query})"
+                        String deleteMemberQuery = "update IssueEntitlement e set e.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where e.subscription in (:subscriptions) and e.tipp in (select tipp ${query.query})"
                         query.queryParams.subscriptions.addAll(result.subscription.getDerivedSubscriptions())
                         IssueEntitlement.executeUpdate(deleteMemberQuery, query.queryParams)
                     }
                     else {
-                        String deleteQuery = "update IssueEntitlement e set e.status.id = case when ((select tipp.status.id from IssueEntitlement et join et.tipp tipp where et.id = e.id) = ${RDStore.TIPP_STATUS_REMOVED.id}) then ${RDStore.TIPP_STATUS_REMOVED.id} else ${RDStore.TIPP_STATUS_DELETED.id} end where e.subscription in (:subscriptions) and e.id in (select ie.id ${query.query})"
+                        String deleteQuery = "update IssueEntitlement e set e.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where e.subscription in (:subscriptions) and e.id in (select ie.id ${query.query})"
                         IssueEntitlement.executeUpdate(deleteQuery, query.queryParams)
                     }
                 }
