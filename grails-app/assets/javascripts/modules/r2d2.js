@@ -217,7 +217,7 @@ r2d2 = {
             minCharacters: 3,
             apiSettings: {
 
-                url: JSPC.vars.spotlightSearchUrl + "/?query={query}",
+                url: JSPC.vars.searchSpotlightSearch + "/?query={query}",
                 onResponse: function(elasticResponse) {
                     var response = { results : {} };
 

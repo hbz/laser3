@@ -2,12 +2,9 @@ package spring
 
 import de.laser.custom.CustomMigrationCallbacks
 import de.laser.custom.CustomPasswordEncoderFactories
-//import de.laser.custom.CustomReloadableResourceBundleMessageSource
-//import de.laser.custom.CustomPluginAwareResourceBundleMessageSource
 import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
-import de.laser.custom.CustomWebSocketConfig
 import de.laser.custom.CustomWkhtmltoxService
 //import org.grails.spring.context.support.ReloadableResourceBundleMessageSource
 //import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
@@ -35,10 +32,6 @@ beans = {
     passwordEncoder( CustomPasswordEncoderFactories ) { bean ->
         bean.factoryMethod = "createDelegatingPasswordEncoder"
     }
-    // .. ]
-
-    // [ websockets ..
-    webSocketConfig( CustomWebSocketConfig )
     // .. ]
 
     // reloadableResourceBundleMessageSource ( CustomReloadableResourceBundleMessageSource )

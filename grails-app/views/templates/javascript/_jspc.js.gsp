@@ -4,15 +4,16 @@ JSPC = {
     currLanguage : $('html').attr('lang'),
 
     vars : { // -- var injection
-        locale: "${message(code:'default.locale.label')}",
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        ajaxProfilerUrl: "<g:createLink controller='ajaxOpen' action='profiler'/>",
-        ajaxMessagesUrl: "<g:createLink controller='ajaxOpen' action='messages'/>",
-        ajaxJsonLookupUrl: "<g:createLink controller='ajaxJson' action='lookup'/>",
-        spotlightSearchUrl: "<g:createLink controller='search' action='spotlightSearch'/>",
-        ws: {
-            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketConfig.WS_STOMP)}",
-            topicStatusUrl: "${de.laser.custom.CustomWebSocketConfig.WS_TOPIC_STATUS}",
+        locale: "${message(code:'default.locale.label')}",
+        searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
+        ajax: {
+            openMessages: "<g:createLink controller='ajaxOpen' action='messages'/>",
+            openProfiler: "<g:createLink controller='ajaxOpen' action='profiler'/>",
+            openJsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>"
+        },
+        sse: {
+            status: "${de.laser.sse.SSEController.STATUS_ES}"
         }
     },
 

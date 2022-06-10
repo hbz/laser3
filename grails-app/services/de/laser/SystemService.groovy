@@ -54,7 +54,7 @@ class SystemService {
         return checks
     }
 
-    Map getStatus() {
+    Map getStatusMessage(long messageId = 0) {
         Map result = [ status: 'error' ]
 
         try {
@@ -65,6 +65,9 @@ class SystemService {
             ]
         } catch(Exception e) {
             log.error( e.getMessage() )
+        }
+        if (messageId) {
+            result.putAt('id', messageId)
         }
 
         result
