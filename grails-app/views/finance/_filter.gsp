@@ -74,7 +74,11 @@
 
             <div class="three fields">
                 <div class="field">
-                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}</label>
+                    <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
+                        <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </label>
                     <div class="ui search selection dropdown allowAdditions" id="filterCITitle">
                         <input type="hidden" name="filterCITitle" value="${filterPresets?.filterCITitle}">
                         <i class="dropdown icon"></i>
@@ -360,7 +364,11 @@
                     cache: false
                 },
                 clearable: true,
-                minCharacters: 0
+                minCharacters: 0,
+                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                onChange: function (value, text, $selectedItem) {
+                    value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                }
             });
         });
         $(".newFilter").keypress(function(e){
@@ -375,7 +383,19 @@
         JSPC.app.setupDropdowns();
 
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
-            type: 'year'
+            type: 'year',
+            onChange: function(date, text, mode) {
+                // deal with colored input field only when in filter context
+                if ($(this).parents('.la-filter').length) {
+                    if (!text) {
+                        $(this).removeClass("la-calendar-selected");
+                    } else {
+                        if( ! $(this).hasClass("la-calendar-selected") ) {
+                            $(this).addClass("la-calendar-selected");
+                        }
+                    }
+                }
+            },
         });
         $("#filterCIUnpaid").change(function() {
             if($(this).is(":checked"))
