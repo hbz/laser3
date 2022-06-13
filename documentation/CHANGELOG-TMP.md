@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4062    13.06.2022  rc-2.3  2.3         Andreas Feature     Umstellung der Kostenauflistung auf Anzahl 
+
 4213    09.06.2022  rc-2.3  2.3         Ingrid/Andreas Feature  Kostenfilter nach Titel unterstützt jetzt neben den vorhandenen Werten auch Substrings
 
 4288    07.06.2022  rc-2.3  2.3         Moe     Bug         Umfragen: Kostenvorzeichen automatisch "positiv" bei Konsortialpreis
