@@ -912,9 +912,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         if(nominalPlatform) {
                             result.nominalPlatform = nominalPlatform
-                            if (!result.save())
-                                throw new SyncException(result.errors)
                         }
+                        if (!result.save())
+                            throw new SyncException(result.errors)
                     }
                     if(packageRecord.providerUuid) {
                         try {
