@@ -57,6 +57,10 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 *de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and unify job implementations. 
 These should be used to wrap the execution logic.
 
+### ReactiveX
+
+*io.reactivex:rxjava* and *org.grails.plugins:rxjava* are outdated. Refactoring should take place.
+
 ### Service usage in domain classes
 
 Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.

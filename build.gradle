@@ -24,7 +24,7 @@ buildscript {
 
         // -- dependency resolving issue
 
-        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' // TODO - remove
+        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
         classpath 'org.quartz-scheduler:quartz:2.3.2'
     }
 }
@@ -85,7 +85,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.grails:grails-core'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-tomcat'          // compileOnly?
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat'    // compileOnly?
     implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
     implementation 'org.grails:grails-plugin-rest'
@@ -103,11 +103,9 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-    implementation 'io.reactivex:rxjava'
+    implementation 'io.reactivex:rxjava:1.3.8'                              // 3.x available
 //    implementation 'io.reactivex.rxjava3:rxjava:3.1.5'
-//    implementation 'io.micronaut.rxjava3:micronaut-rxjava3:2.2.1'
-    implementation 'org.grails.plugins:rxjava'
-
+//    implementation 'io.projectreactor:reactor-core'
     compileOnly 'io.micronaut:micronaut-inject-groovy'
 
     console 'org.grails:grails-console'
@@ -123,12 +121,13 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.2'
 
     implementation 'org.grails.plugins:spring-security-core:5.0.0'          // from 3.2.3
-    implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // TODO - remove
+    implementation 'org.grails.plugins:http-builder-helper:1.1.0'
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // from 3.0.3
     implementation 'org.grails.plugins:database-migration:4.1.0'            // from 3.0.3
     implementation 'org.grails.plugins:grails-executor:0.4'                 // DEPRECATED
     implementation 'org.grails.plugins:mail:3.0.0'                          // from 2.0.0
     implementation 'org.grails.plugins:quartz:2.0.13'
+    implementation 'org.grails.plugins:rxjava:1.1.1'                        // 2.x available
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
 
     implementation 'org.hibernate:hibernate-ehcache:5.6.9.Final'            // from 5.1.16.Final : + org.hibernate:hibernate-core:5.6.9.Final
@@ -148,7 +147,7 @@ dependencies {
 
     // -- dependency resolving issue
 
-    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1' // TODO - remove
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
 

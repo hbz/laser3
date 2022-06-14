@@ -266,7 +266,7 @@
                                     </div>
                                 </div>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon quote left"></i>${message(code: 'menu.admin.systemMessage')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon envelope"></i>${message(code:'menu.admin.announcements')}</semui:link>
 
                                 <div class="divider"></div>

@@ -12,13 +12,14 @@ system = {
     },
 
     status: function () {
+        let eventSource
+
         window.addEventListener('beforeunload', function(event) {
             if (eventSource) {
                 eventSource.close()
             }
         })
-
-        var eventSource = new EventSource( JSPC.vars.sse.status )
+        eventSource = new EventSource( JSPC.vars.sse.status )
 
         eventSource.onmessage = function(event) {
             if (event.data) {
@@ -37,6 +38,19 @@ system = {
                     }
                 }
             }
+        }
+        eventSource.onopen = function(event) {
+            console.log( 'EventSource open: ' )
+            console.log( event )
+        }
+        eventSource.onclose = function(event) {
+            console.log( 'EventSource close: ' )
+            console.log( event )
+        }
+        eventSource.onerror = function(event) {
+            console.log( 'EventSource error: ' )
+            console.log( event )
+            eventSource.close()
         }
     },
 

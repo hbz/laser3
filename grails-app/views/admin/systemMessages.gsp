@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.sse.SSEController" %>
 <!doctype html>
 <html>
 <head>
@@ -14,14 +14,18 @@
 
 <h1 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h1>
 
-<semui:messages data="${flash}" />
-
 <div class="la-float-right">
     <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-semui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />
 <br />
+
+<div class="ui info message">
+    <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info', args: [SSEController.HEARTBEAT_IN_SECONDS])}
+</div>
+
+<semui:messages data="${flash}" />
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>

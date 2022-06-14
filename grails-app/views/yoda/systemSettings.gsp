@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigMapper; de.laser.system.SystemSetting" %>
+<%@ page import="de.laser.helper.ConfigMapper; de.laser.system.SystemSetting; de.laser.sse.SSEController" %>
 <!doctype html>
 <html>
 <head>
@@ -18,6 +18,10 @@
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
+
+    <div class="ui info message">
+        <i class="ui icon hand point right"></i> ${message(code: 'system.maintenanceMode.info', args: [SSEController.HEARTBEAT_IN_SECONDS])}
+    </div>
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>

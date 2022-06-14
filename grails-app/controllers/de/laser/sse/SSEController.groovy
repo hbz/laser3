@@ -2,9 +2,11 @@ package de.laser.sse
 
 import de.laser.ContextService
 import de.laser.SystemService
+import de.laser.helper.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.rx.web.RxController
+import org.grails.plugins.rx.web.sse.SseResult
 import rx.Observable
 
 import java.util.concurrent.TimeUnit
@@ -21,24 +23,35 @@ class SSEController implements RxController {
 
     @Secured(['permitAll'])
     def status() {
-        println 'SSEController INDEX'
+        try {
+            int prevHashCode = -1
 
-        int prevHashCode = -1
-        rx.stream(
-            Observable.interval(HEARTBEAT_IN_SECONDS, TimeUnit.SECONDS).map {
+            Observable<SseResult> obsSser = Observable.interval(HEARTBEAT_IN_SECONDS, TimeUnit.SECONDS).map {
                 try {
                     // rx.event(new JSON(systemService.getStatusMessage(++i)).toString())
                     String message = new JSON(systemService.getStatusMessage()).toString()
-                    println ' -> #' + it + ' : ' + message.hashCode()
+                    //println DateUtils.getLocalizedSDF_onlyTime().format(new Date()) + ' -> #' + it.toString() + ' : ' + message.hashCode()
+
                     if (message.hashCode() != prevHashCode) {
                         prevHashCode = message.hashCode()
-                        return rx.render(message)
+                        SseResult result = rx.event(message)
+                        return result
                     }
-                } catch(Exception e) {
-                    println e
+                    else {
+                        SseResult result = rx.event(['ping': 'pong'])
+                        return result
+                    }
+                }
+                catch (Exception e) {
+                    log.warn 'SSEController.index() -> rx.stream{} -> Observable.interval().map{}'
                     log.debug e.getMessage()
                 }
             }
-        )
+            rx.stream( obsSser )
+        }
+        catch (Exception e) {
+            log.warn 'SSEController.index() -> rx.stream()'
+            log.debug e.getMessage()
+        }
     }
 }
