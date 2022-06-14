@@ -4,6 +4,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
@@ -286,7 +287,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION])
+        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL])
                 && changes.oldMap.containsKey('hasPerpetualAccess')
                 && changes.newMap.containsKey('hasPerpetualAccess')
                 && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {

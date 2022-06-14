@@ -2439,16 +2439,10 @@ join sub.orgRelations or_sub where
 
             }
             Set<BudgetCode> allBudgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
-            Map<BudgetCode, List<CostItemGroup>> costItemGroups = [:]
+            Map<BudgetCode, Integer> costItemGroups = [:]
             if (allBudgetCodes) {
-                List<CostItemGroup> ciGroupsForBC = CostItemGroup.findAllByBudgetCodeInList(allBudgetCodes)
-                ciGroupsForBC.each { CostItemGroup cig ->
-                    List<CostItemGroup> ciGroupForBC = costItemGroups.get(cig.budgetCode)
-                    if (!ciGroupForBC) {
-                        ciGroupForBC = []
-                    }
-                    ciGroupForBC << cig
-                    costItemGroups.put(cig.budgetCode, ciGroupForBC)
+                BudgetCode.executeQuery('select new map(cig.budgetCode as budgetCode, count(cig.costItem) as usageCount) from CostItemGroup cig where cig.budgetCode in (:allBudgetCodes) group by cig.budgetCode', [allBudgetCodes: allBudgetCodes]).each { Map entry ->
+                    costItemGroups.put(entry.budgetCode, entry.usageCount)
                 }
             }
             result.budgetCodes = allBudgetCodes
