@@ -881,7 +881,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(!nominalPlatform) {
                                 nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
                             }
-                            newPackageProps.nominalPlatform = nominalPlatform
+                            if(nominalPlatform)
+                                newPackageProps.nominalPlatform = nominalPlatform
                         }
                         if(packageRecord.providerUuid) {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
@@ -909,8 +910,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(!nominalPlatform) {
                             nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
                         }
-                        result.nominalPlatform = nominalPlatform
-                        if(!result.save())
+                        if(nominalPlatform) {
+                            result.nominalPlatform = nominalPlatform
+                        }
+                        if (!result.save())
                             throw new SyncException(result.errors)
                     }
                     if(packageRecord.providerUuid) {
@@ -1074,8 +1077,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Platform plat = Platform.findByGokbId(platformData.uuid)
                 if(!plat)
                     plat = createOrUpdatePlatformJSON(platformData.uuid)
-                plat.org = provider
-                plat.save()
+                if(plat) {
+                    plat.org = provider
+                    plat.save()
+                }
             }
             if(providerRecord.identifiers) {
                 if(provider.ids) {
