@@ -384,7 +384,7 @@ class LicenseController {
             response.sendError(401); return
         }
         result.subscriptions = []
-        result.putAll(setSubscriptionFilterData())
+        result.putAll(_setSubscriptionFilterData())
         result.subscriptionsForFilter = []
         if(params.status != 'FETCH_ALL') {
             result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
@@ -408,7 +408,7 @@ class LicenseController {
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
             String query = "select l.destinationSubscription from Links l join l.destinationSubscription s join s.orgRelations oo where l.sourceLicense = :lic and l.linkType = :linkType and oo.roleType in :subscriberRoleTypes ${whereClause} order by oo.org.sortname asc, oo.org.name asc, s.name asc, s.startDate asc, s.endDate asc"
             result.validSubChilds = Subscription.executeQuery( query, queryParams )
-            ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+            ArrayList<Long> filteredOrgIds = _getOrgIdsForFilter()
 
             result.validSubChilds.each { sub ->
                 List<Org> subscr = sub.getAllSubscribers()
@@ -473,7 +473,7 @@ class LicenseController {
         if (!result) {
             response.sendError(401); return
         }
-        result.putAll(setSubscriptionFilterData())
+        result.putAll(_setSubscriptionFilterData())
         Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
         Set<Map<String,Object>> filteredMemberLicenses = []
         validMemberLicenses.each { License memberLicense ->
@@ -533,7 +533,7 @@ class LicenseController {
      * requires the {@link GrailsParameterMap} as parameter.
      * @return validOn and defaultSet-parameters of the filter
      */
-    private Map<String,Object> setSubscriptionFilterData() {
+    private Map<String,Object> _setSubscriptionFilterData() {
         Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date dateRestriction = null
@@ -560,7 +560,7 @@ class LicenseController {
      * Gets the linked consortia member institution IDs for filter views
      * @return a {@link List} of institution IDs
      */
-    private ArrayList<Long> getOrgIdsForFilter() {
+    private ArrayList<Long> _getOrgIdsForFilter() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")

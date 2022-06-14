@@ -134,7 +134,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           derivedSubscriptions: Subscription,
           pendingChanges      : PendingChange,
           propertySet         : SubscriptionProperty,
-          //privateProperties: SubscriptionPrivateProperty,
           costItems           : CostItem,
           ieGroups            : IssueEntitlementGroup
   ]
@@ -149,8 +148,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      propertySet: 'owner',
-                      //privateProperties: 'owner',
+                      propertySet: 'owner'
                       ]
 
     static transients = [

@@ -220,8 +220,8 @@ class PackageController {
             def listA
             def listB
             try {
-                listA = createCompareList(params.pkgA, params.dateA, params, result)
-                listB = createCompareList(params.pkgB, params.dateB, params, result)
+                listA = _createCompareList(params.pkgA, params.dateA, params, result)
+                listB = _createCompareList(params.pkgB, params.dateB, params, result)
                 if (!params.countA) {
                     String countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = :pid"
                     params.countA = Package.executeQuery(countHQL, [pid: result.pkgInsts.get(0).id])
@@ -283,7 +283,7 @@ class PackageController {
                                 def pissn = tippA ? tippA.getIdentifierValue('issn') : tippB.getIdentifierValue('issn');
                                 def eissn = tippA ? tippA.getIdentifierValue('eISSN') : tippB.getIdentifierValue('eISSN');
 
-                                writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.startDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.startDate)}\",\"${tippA?.startVolume ?: ''}\",\"${tippB?.startVolume ?: ''}\",\"${tippA?.startIssue ?: ''}\",\"${tippB?.startIssue ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.endDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.endDate)}\",\"${tippA?.endVolume ?: ''}\",\"${tippB?.endVolume ?: ''}\",\"${tippA?.endIssue ?: ''}\",\"${tippB?.endIssue ?: ''}\",\"${tippA?.coverageNote ?: ''}\",\"${tippB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
+                                writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${_formatDateOrNull(dateFormatter, tippA?.startDate)}\",\"${_formatDateOrNull(dateFormatter, tippB?.startDate)}\",\"${tippA?.startVolume ?: ''}\",\"${tippB?.startVolume ?: ''}\",\"${tippA?.startIssue ?: ''}\",\"${tippB?.startIssue ?: ''}\",\"${_formatDateOrNull(dateFormatter, tippA?.endDate)}\",\"${_formatDateOrNull(dateFormatter, tippB?.endDate)}\",\"${tippA?.endVolume ?: ''}\",\"${tippB?.endVolume ?: ''}\",\"${tippA?.endIssue ?: ''}\",\"${tippB?.endIssue ?: ''}\",\"${tippA?.coverageNote ?: ''}\",\"${tippB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
                             }
                             writer.write("END");
                             writer.flush();
@@ -317,7 +317,7 @@ class PackageController {
      * @param date the date to format
      * @return the formatted date string or an empty string
      */
-    private def formatDateOrNull(formatter, date) {
+    private def _formatDateOrNull(formatter, date) {
         return (date ? formatter.format(date) : '')
     }
 
@@ -329,7 +329,7 @@ class PackageController {
      * @param result the result map to fill
      * @return a filtered list of titles contained in the package
      */
-    private def createCompareList(pkg, dateStr, params, result) {
+    private def _createCompareList(pkg, dateStr, params, result) {
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date date = dateStr ? sdf.parse(dateStr) : new Date()

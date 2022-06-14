@@ -26,7 +26,7 @@ class ApiController {
     @Secured(['permitAll'])
     def index() {
         log.debug("API")
-        Map<String, Object> result = fillRequestMap(params)
+        Map<String, Object> result = _fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -41,7 +41,7 @@ class ApiController {
      */
     @Secured(['permitAll'])
     def loadSpecs() {
-        Map<String, Object> result = fillRequestMap(params)
+        Map<String, Object> result = _fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -56,7 +56,7 @@ class ApiController {
      */
     @Secured(['permitAll'])
     def loadChangelog() {
-        Map<String, Object> result = fillRequestMap(params)
+        Map<String, Object> result = _fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -85,7 +85,7 @@ class ApiController {
      * @param params (unused) the request parameter
      * @return a {@link Map} containing api key, password and context if a context is supplied; when context is missing, the map values are empty
      */
-    private Map<String, Object> fillRequestMap (GrailsParameterMap params) {
+    private Map<String, Object> _fillRequestMap(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         Org org = contextService.getOrg()
 

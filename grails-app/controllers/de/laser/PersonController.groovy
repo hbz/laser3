@@ -52,7 +52,7 @@ class PersonController  {
                 case 'GET':
                     Person personInstance = new Person(params)
                     // processing dynamic form data
-                    addPersonRoles(personInstance)
+                    _addPersonRoles(personInstance)
 
                     [personInstance: personInstance, userMemberships: userMemberships]
                     break
@@ -650,7 +650,7 @@ class PersonController  {
 
     @Deprecated
     @Transactional
-    private addPersonRoles(Person prs){
+    private void _addPersonRoles(Person prs){
 
         if (params.functionType) {
             PersonRole result

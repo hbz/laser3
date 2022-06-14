@@ -922,7 +922,7 @@ join sub.orgRelations or_sub where
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(result.allSubscriptions, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) _exportcurrentSubscription(result.allSubscriptions, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -957,7 +957,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                    writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
                 }
                 out.close()
             }
@@ -973,7 +973,7 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
+    private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
@@ -3693,7 +3693,7 @@ join sub.orgRelations or_sub where
                     }
                 }
                 break
-            case 'delete': flash.message = deletePrivatePropertyDefinition(params)
+            case 'delete': flash.message = _deletePrivatePropertyDefinition(params)
                 break
         }
 
@@ -3836,7 +3836,7 @@ join sub.orgRelations or_sub where
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages
      */
-    private deletePrivatePropertyDefinition(params) {
+    private _deletePrivatePropertyDefinition(params) {
         PropertyDefinition.withTransaction {
             log.debug("delete private property definition for institution: " + params)
 

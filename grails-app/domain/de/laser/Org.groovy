@@ -157,7 +157,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                url          column:'org_url'
             urlGov          column:'org_url_gov'
       linkResolverBaseURL   column:'org_link_resolver_base_url', type: 'text'
-   //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
@@ -197,7 +196,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks            batchSize: 10
         affiliations        batchSize: 10
         propertySet    batchSize: 10
-        //privateProperties   batchSize: 10
         documents           batchSize: 10
         platforms           sort:'name', order:'asc', batchSize: 10
         hasCreated          batchSize: 10

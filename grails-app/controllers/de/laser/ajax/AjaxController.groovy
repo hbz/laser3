@@ -1493,7 +1493,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def hideDashboardDueDate(){
-        setDashboardDueDateIsHidden(true)
+        _setDashboardDueDateIsHidden(true)
     }
 
     /**
@@ -1501,7 +1501,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def showDashboardDueDate(){
-        setDashboardDueDateIsHidden(false)
+        _setDashboardDueDateIsHidden(false)
     }
 
     /**
@@ -1510,7 +1510,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    private setDashboardDueDateIsHidden(boolean isHidden){
+    private _setDashboardDueDateIsHidden(boolean isHidden){
         log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
 
         Map<String, Object> result = [:]
@@ -1555,7 +1555,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def dashboardDueDateSetIsDone() {
-       setDashboardDueDateIsDone(true)
+       _setDashboardDueDateIsDone(true)
     }
 
     /**
@@ -1563,7 +1563,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def dashboardDueDateSetIsUndone() {
-       setDashboardDueDateIsDone(false)
+       _setDashboardDueDateIsDone(false)
     }
 
     /**
@@ -1572,7 +1572,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    private setDashboardDueDateIsDone(boolean isDone){
+    private _setDashboardDueDateIsDone(boolean isDone){
         log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
 
         Map<String, Object> result = [:]
@@ -2069,17 +2069,17 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def dashboardChangesSetAccept() {
-        setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
+        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
     }
 
     @Secured(['ROLE_USER'])
     def dashboardChangesSetReject() {
-        setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
+        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
     }
 
     @Secured(['ROLE_USER'])
     @Transactional
-    private setDashboardChangesStatus(RefdataValue refdataValue){
+    private _setDashboardChangesStatus(RefdataValue refdataValue){
         log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
 
         Map<String, Object> result = [:]

@@ -1,6 +1,7 @@
 package de.laser.jobs
 
 import de.laser.SystemService
+import de.laser.annotations.UnderDevelopment
 import de.laser.custom.CustomWebSocketConfig
 import de.laser.helper.ConfigMapper
 import de.laser.system.SystemActivityProfiler
@@ -38,6 +39,7 @@ class HeartbeatJob extends AbstractJob {
         jobIsRunning
     }
 
+    @UnderDevelopment
     def execute() {
         //
         //  to reduce effort, simple logging is sufficient here

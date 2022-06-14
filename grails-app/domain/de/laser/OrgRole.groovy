@@ -117,18 +117,10 @@ class OrgRole implements ShareableTrait {
      * @return the destination, depending of its object type ({@link Package}, {@link Subscription}, {@link License} or {@link TitleInstancePackagePlatform})
      */
     def getOwner() {
-        if (pkg) {
-            return pkg
-        }
-        if (sub) {
-            return sub
-        }
-        if (lic) {
-            return lic
-        }
-        if (tipp) {
-            return tipp
-        }
+        if (pkg)        { return pkg }
+        else if (sub)   { return sub }
+        else if (lic)   { return lic }
+        else if (tipp)  { return tipp }
     }
 
     /**
@@ -137,18 +129,10 @@ class OrgRole implements ShareableTrait {
      * @return the status of the destination, depending on its class
      */
     def getOwnerStatus() {
-        if (pkg) {
-            return pkg.getPackageStatus()
-        }
-        if (sub) {
-            return sub.getStatus()
-        }
-        if (lic) {
-            return lic.getStatus()
-        }
-        if (tipp) {
-            return tipp.getStatus()
-        }
+        if (pkg)        { return pkg.getPackageStatus() }
+        else if (sub)   { return sub.getStatus() }
+        else if (lic)   { return lic.getStatus() }
+        else if (tipp)  { return tipp.getStatus() }
     }
 
     void afterUpdate(PostUpdateEvent event) {

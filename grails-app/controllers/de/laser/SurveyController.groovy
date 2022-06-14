@@ -4227,7 +4227,7 @@ class SurveyController {
                                         if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
-                                        def prop = setNewProperty(newProp, newValue)
+                                        def prop = _setNewProperty(newProp, newValue)
                                         countSuccessfulCopy++
                                     }
                                 }
@@ -4247,7 +4247,7 @@ class SurveyController {
                                         if (copyProperty.type.isRefdataValueType()) {
                                             newValue = copyProperty.refValue ? copyProperty.refValue : null
                                         }
-                                        def prop = setNewProperty(newProp, newValue)
+                                        def prop = _setNewProperty(newProp, newValue)
                                         countSuccessfulCopy++
                                     }
                                 }
@@ -4352,14 +4352,14 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                         }
                             countNewSubs++
-                            result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                            result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     } else {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
 
                 }
@@ -4373,7 +4373,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                         }
                         countNewSubs++
-                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
                     }
                     else {
                         use(TimeCategory) {
@@ -4381,7 +4381,7 @@ class SurveyController {
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                         }
                         countNewSubs++
-                        result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                     }
                 }else {
                     use(TimeCategory) {
@@ -4389,7 +4389,7 @@ class SurveyController {
                         newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                     }
                     countNewSubs++
-                    result.newSubs.addAll(processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
                 }
             }
         }
@@ -4401,7 +4401,7 @@ class SurveyController {
                     if (!(org in result.parentSuccessortParticipantsList)) {
 
                         countNewSubs++
-                        result.newSubs.addAll(processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
+                        result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
                     }
                 }
             }
@@ -4472,7 +4472,7 @@ class SurveyController {
      * @return the new member subscription instance
      */
     @DebugInfo(wtc = DebugInfo.IN_BETWEEN)
-    private def processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
+    private def _processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
 
         Org institution = contextService.getOrg()
 
@@ -4625,7 +4625,7 @@ class SurveyController {
      * @param value the value to set
      */
     @DebugInfo(wtc = DebugInfo.IN_BETWEEN)
-    private def setNewProperty(def property, def value) {
+    private def _setNewProperty(def property, def value) {
 
         String field = null
 

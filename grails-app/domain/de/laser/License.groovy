@@ -86,8 +86,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           prsLinks       :     PersonRole,
           derivedLicenses:    License,
           pendingChanges :     PendingChange,
-          propertySet    :   LicenseProperty,
-          //privateProperties:  LicensePrivateProperty
+          propertySet    :   LicenseProperty
   ]
 
   static mappedBy = [
@@ -99,8 +98,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
           pendingChanges:  'license',
-          propertySet:  'owner',
-          //privateProperties: 'owner'
+          propertySet:  'owner'
   ]
 
   static mapping = {
@@ -124,7 +122,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
        propertySet sort:'type', order:'desc', batchSize: 10
-    //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
               ids               sort: 'ns', batchSize: 10

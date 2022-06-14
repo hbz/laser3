@@ -26,7 +26,7 @@ group by o order by o.sortname, o.shortname
 ''');
 
     result.instStats.each { r ->
-      storeOrgInfo(result.orginfo, r[0], 'userCount', r[1]);
+      _storeOrgInfo(result.orginfo, r[0], 'userCount', r[1]);
     }
 
     result.soStats = Subscription.executeQuery('''
@@ -39,7 +39,7 @@ group by o order by o.sortname, o.shortname
 ''');
 
     result.soStats.each { r ->
-      storeOrgInfo(result.orginfo, r[0], 'subCount', r[1]);
+      _storeOrgInfo(result.orginfo, r[0], 'subCount', r[1]);
     }
 
     result.currentsoStats = Subscription.executeQuery('''
@@ -51,7 +51,7 @@ and orl.roleType.value = 'Subscriber'
 group by o order by o.sortname, o.shortname
 ''');
     result.currentsoStats.each { r ->
-      storeOrgInfo(result.orginfo, r[0], 'currentSoCount', r[1]);
+      _storeOrgInfo(result.orginfo, r[0], 'currentSoCount', r[1]);
     }
 
 
@@ -65,7 +65,7 @@ and orl.roleType.value = 'Licensee'
 group by o order by o.sortname, o.shortname
 ''');
     result.lStats.each { r ->
-      storeOrgInfo(result.orginfo, r[0], 'licCount', r[1]);
+      _storeOrgInfo(result.orginfo, r[0], 'licCount', r[1]);
     }
 
 
@@ -78,7 +78,7 @@ and orl.roleType.value = 'Licensee'
 group by o order by o.sortname, o.shortname
 ''');
     result.currentlStats.each { r ->
-      storeOrgInfo(result.orginfo, r[0], 'currentLicCount', r[1]);
+      _storeOrgInfo(result.orginfo, r[0], 'currentLicCount', r[1]);
     }
 
     withFormat {
@@ -110,7 +110,7 @@ group by o order by o.sortname, o.shortname
      * @param prop the key to store the value under
      * @param value the value to store
      */
-  private def storeOrgInfo(m, o, prop, value) {
+  private def _storeOrgInfo(m, o, prop, value) {
     if ( m[o] == null )
       m[o] = [:]
 
