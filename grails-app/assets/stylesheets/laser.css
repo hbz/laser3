@@ -2,6 +2,6 @@
  * FileName: laser.css
  *
  *= require base.css
- *= require /laser/semantic.min.css         //-- themes
+ *= require /laser/semantic.css         //-- themes
  *= require tmp_semui.css
  */
